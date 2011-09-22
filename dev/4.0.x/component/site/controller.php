@@ -36,7 +36,15 @@ class ProjectforkController extends JController
 	{
 		$cachable = true;
         $safeurlparams = array();
-
+        
+        
+        // Load Projectfork CSS
+        $doc = JFactory::getDocument();
+        $uri = JFactory::getURI();
+        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/media/css/com_projectfork_layout.css');
+        
+        unset($doc, $uri);
+        
 		parent::display($cachable, $safeurlparams);
 		return $this;
 	}
