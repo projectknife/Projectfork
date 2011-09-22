@@ -1,0 +1,26 @@
+DROP TABLE IF EXISTS `#__pf_projects`;
+CREATE TABLE IF NOT EXISTS `#__pf_projects` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Project ID',
+  `asset_id` int(10) unsigned NOT NULL COMMENT 'FK to the #__assets table',
+  `title` varchar(128) NOT NULL COMMENT 'Project title',
+  `alias` varchar(128) NOT NULL COMMENT 'Title alias. Used in SEF URL''s',
+  `description` text NOT NULL COMMENT 'Project description',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Project creation date',
+  `created_by` int(10) unsigned NOT NULL COMMENT 'Project owner',
+  `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Project modify date',
+  `modified_by` int(10) unsigned NOT NULL COMMENT 'Last user to modify the project',
+  `checked_out` int(10) unsigned NOT NULL COMMENT 'User who is currently editing the project',
+  `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
+  `attribs` text NOT NULL COMMENT 'Project attributes in JSON format',
+  `access` int(10) unsigned NOT NULL COMMENT 'Project ACL access level ID',
+  `archived` tinyint(1) NOT NULL COMMENT 'Project "archived" state',
+  `approved` tinyint(1) NOT NULL COMMENT 'Project "approved" state',
+  `start_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Project start date',
+  `end_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Project end date',
+  PRIMARY KEY (`id`),
+  KEY `idx_access` (`access`),
+  KEY `idx_createdby` (`created_by`),
+  KEY `idx_checkedout` (`checked_out`),
+  KEY `idx_archived` (`archived`),
+  KEY `idx_approved` (`approved`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8;

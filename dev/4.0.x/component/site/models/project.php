@@ -23,6 +23,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 
+// Import Joomla Model Item Class
 jimport('joomla.application.component.modelitem');
 
 
@@ -35,8 +36,105 @@ class ProjectforkModelProject extends JModelItem
     /**
 	 * Model context string.
 	 *
-	 * @var		string
+	 * @var    string
 	 */
 	protected $_context = 'com_projectfork.project';
+    
+    
+    /**
+	 * Method to auto-populate the model state.
+	 * Note. Calling getState in this method will result in recursion.
+	 *
+	 */
+    protected function populateState()
+	{
+		$app = JFactory::getApplication('site');
+
+		// Load state from the request.
+		$pk = JRequest::getInt('id');
+		$this->setState('project.id', $pk);
+        
+        $archived = JRequest::getInt('archived');
+        $this->setState('filter.archived', $archived);
+        
+        $approved = JRequest::getInt('approved');
+        $this->setState('filter.approved', $approved);
+        
+        $offset = JRequest::getUInt('limitstart');
+		$this->setState('list.offset', $offset);
+
+		// Load the parameters.
+		$params = $app->getParams();
+		$this->setState('params', $params);
+	}
+    
+    
+    /**
+	 * Method to get project data
+	 *
+	 * @param    integer    The id of the project
+	 * @return	 mixed	    Project data object on success, false on failure.
+	 */
+	public function &getItem($pk = null)
+	{
+	    // Initialise variables.
+		$pk = (!empty($pk)) ? $pk : (int) $this->getState('project.id');
+
+		if(is_null($this->_item))    $this->_item = array();
+        if(isset($this->_item[$pk])) return $this->_item[$pk];
+        
+        // Item not in cache - try to fetch it
+        try {
+            $db = $this->getDbo();
+			$query = $db->getQuery(true);
+            
+            $query->select(
+                $this->getState('item.select', 
+                    'p.id, p.asset_id, p.title, p.alias, p.description, '
+                    . 'p.created, p.created_by, p.modified, p.modified_by, p.checked_out, '
+                    . 'p.checked_out_time, p.attribs, p.access, p.archived, p.approved, '
+                    . 'p.start_date, p.end_date'
+                )
+            );
+			$query->from('#__pf_projects AS p');
+            
+            // Join on user table.
+			$query->select('u.name AS author');
+			$query->join('LEFT', '#__users AS u on u.id = p.created_by');
+            
+            // Filter by archived and approved state.
+			$archived = $this->getState('filter.archived');
+			$approved = $this->getState('filter.approved');
+            
+            $query->where('(p.archived = '.intval($archived).' AND p.approved = '.intval($approved).')');
+            
+            $db->setQuery($query);
+			$data = $db->loadObject();
+
+			if($error = $db->getErrorMsg()) throw new Exception($error);
+			if(empty($data)) return JError::raiseError(404,JText::_('COM_PROJECTFORK_ERROR_PROJECT_NOT_FOUND'));
+            
+            // Convert parameter fields to objects.
+			$registry = new JRegistry;
+			$registry->loadString($data->attribs);
+			$data->params = clone $this->getState('params');
+			$data->params->merge($registry);
+            
+            $this->_item[$pk] = $data;
+        }
+        catch (JException $e)
+		{
+			if ($e->getCode() == 404) {
+				// Need to go thru the error handler to allow Redirect to work.
+				JError::raiseError(404, $e->getMessage());
+			}
+			else {
+				$this->setError($e);
+				$this->_item[$pk] = false;
+			}
+		}
+
+	    return $this->_item[$pk];
+    }    
 }
 ?>
