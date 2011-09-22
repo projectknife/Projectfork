@@ -2,7 +2,7 @@
 /**
 * @package   Projectfork
 * @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
+* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 *
 * This file is part of Projectfork.
 *
@@ -22,13 +22,21 @@
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
-jimport('joomla.application.component.view');
 
-class ProjectforkViewProjects extends JView
+jimport('joomla.application.component.modelitem');
+
+
+/**
+ * Projectfork Component Milestone Model
+ *
+ */
+class ProjectforkModelMilestone extends JModelItem
 {
-	function display($tpl = null)
-	{
-		parent::display($tpl);
-	}
+    /**
+	 * Model context string.
+	 *
+	 * @var		string
+	 */
+	protected $_context = 'com_projectfork.milestone';
 }
 ?>
