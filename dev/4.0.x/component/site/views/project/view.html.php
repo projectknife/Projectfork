@@ -32,10 +32,26 @@ class ProjectforkViewProject extends JView
 	protected $params;
     protected $user;
     protected $state;
+    protected $form;
     
 	function display($tpl = null)
 	{
-	    // Initialise variables.
+	    switch($this->getLayout())
+        {
+            default:
+                $this->item($tpl);
+                break;
+                
+            case 'edit':
+                $this->edit($tpl);
+                break;    
+        }
+	}
+    
+    
+    public function item($tpl = null)
+    {
+        // Initialise variables.
 		$this->user	 = JFactory::getUser();
         $this->state = $this->get('State');
         $this->item  = $this->get('Item');
@@ -53,6 +69,17 @@ class ProjectforkViewProject extends JView
 		$item->slug = $item->alias ? ($item->id.':'.$item->alias) : $item->id;
         
 		parent::display($tpl);
-	} 
+    } 
+    
+    
+    public function edit($tpl = null)
+    {
+        // Initialise variables.
+        $this->form	 = $this->get('Form');
+		$this->item	 = $this->get('Item');
+		$this->state = $this->get('State');
+
+        parent::display($tpl);
+    }
 }
 ?>

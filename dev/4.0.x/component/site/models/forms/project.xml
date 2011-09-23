@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+		<field
+			id="id"
+			name="id"
+			type="hidden"
+			class="inputbox"
+			label="COM_PROJECTFORK_PROJECT_ID_LABEL"
+			size="10"
+			default="0"
+			readonly="true" 
+		/>
+		<field
+			name="asset_id"
+			type="hidden"
+			filter="unset" 
+		/>
+		<field
+			id="title"
+			name="title"
+			type="text"
+			label="JGLOBAL_TITLE"
+			description="JFIELD_TITLE_DESC"
+			class="inputbox"
+			size="30"
+			required="true" 
+		/>
+		<field
+			id="alias"
+			name="alias"
+			type="hidden"
+			label="JFIELD_ALIAS_LABEL"
+			description="JFIELD_ALIAS_DESC"
+			class="inputbox"
+			size="45" 
+		/>
+		<field
+			name="description"
+			type="editor"
+			buttons="true"
+			label="CONTENT_TEXT_LABEL"
+			description="CONTENT_TEXT_DESC"
+			class="inputbox"
+			asset_id="com_projectfork"
+		/>
+		<field
+			id="state"
+			name="state"
+			type="list"
+			label="JSTATUS"
+			description="JFIELD_PUBLISHED_DESC"
+			class="inputbox"
+			size="1"
+			default="1"
+		>
+		    <option value="1">PFACTIVE</option>
+			<option value="0">PFDISABLED</option>
+			<option value="2">JARCHIVED</option>
+			<option value="-2">JTRASHED</option>
+		</field>
+		<field
+			id="created"
+			name="created"
+			type="hidden"
+        />
+		<field
+			id="created_by"
+			name="created_by"
+			type="text"
+			filter="unset" 
+            label="PFPROJECT_OWNER"
+			description="PFPROJECT_OWNER_DESC"
+        />
+		<field
+			id="start_date"
+			name="start_date"
+			type="calendar"
+			label="PF_FIELD_START_DATE_LABEL"
+			description="PF_FIELD_START_DATE_DESC"
+			class="inputbox"
+			format="%Y-%m-%d %H:%M:%S"
+			size="22"
+			filter="user_utc" 
+		/>
+		<field
+			id="end_date"
+			name="end_date"
+			type="calendar"
+			label="PF_FIELD_END_DATE_LABEL"
+			description="PF_FIELD_END_DATE_DESC"
+			class="inputbox"
+			format="%Y-%m-%d %H:%M:%S"
+			size="22"
+			filter="user_utc" 
+		/>
+		<field
+			id="access"
+			name="access"
+			type="accesslevel"
+			label="JFIELD_ACCESS_LABEL"
+			description="JFIELD_ACCESS_DESC"
+			class="inputbox"
+			size="1" 
+		/>
+	</fieldset>
+</form>

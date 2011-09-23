@@ -54,11 +54,8 @@ class ProjectforkModelProject extends JModelItem
 		$pk = JRequest::getInt('id');
 		$this->setState('project.id', $pk);
         
-        $archived = JRequest::getInt('archived');
-        $this->setState('filter.archived', $archived);
-        
-        $approved = JRequest::getInt('approved');
-        $this->setState('filter.approved', $approved);
+        $state = JRequest::getInt('state');
+        $this->setState('filter.state', $state);
         
         $offset = JRequest::getUInt('limitstart');
 		$this->setState('list.offset', $offset);
@@ -92,7 +89,7 @@ class ProjectforkModelProject extends JModelItem
                 $this->getState('item.select', 
                     'p.id, p.asset_id, p.title, p.alias, p.description, '
                     . 'p.created, p.created_by, p.modified, p.modified_by, p.checked_out, '
-                    . 'p.checked_out_time, p.attribs, p.access, p.archived, p.approved, '
+                    . 'p.checked_out_time, p.attribs, p.access, p.state, '
                     . 'p.start_date, p.end_date'
                 )
             );
@@ -102,11 +99,10 @@ class ProjectforkModelProject extends JModelItem
 			$query->select('u.name AS author');
 			$query->join('LEFT', '#__users AS u on u.id = p.created_by');
             
-            // Filter by archived and approved state.
-			$archived = $this->getState('filter.archived');
-			$approved = $this->getState('filter.approved');
+            // Filter by state.
+			$state = $this->getState('filter.state');
             
-            $query->where('(p.archived = '.intval($archived).' AND p.approved = '.intval($approved).')');
+            $query->where('(p.state = '.intval($state).')');
             
             $db->setQuery($query);
 			$data = $db->loadObject();
