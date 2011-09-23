@@ -25,50 +25,38 @@ defined('_JEXEC') or die;
 <div id="projectfork" class="category-list view-projects">
     <div class="cat-items">
     
-        <h2>Projects</h2>
-        
-        <ul class="actions">
-            <li class="new-icon">
-            	<span class="readmore"><a href="index.php">New</a></span>
-            </li>    
-            <li class="copy-icon">
-            	<span class="readmore"><a href="index.php">Copy</a></span>
-            </li>    
-            <li class="archive-icon">
-            	<span class="readmore"><a href="index.php">Archive</a></span>
-            </li>    
-            <li class="delete-icon">
-            	<span class="readmore"><a href="index.php">Delete</a></span>
-            </li>    
-        </ul>
-        
+        <h2>Projects <input type="button" class="button" value="New Project" /></h2>
         
         <form name="adminForm" id="adminForm" action="index.php">
             
-            <fieldset class="filters filter">
+            <fieldset class="filters">
+            	<span class="display-bulk-actions">
+            			<select onchange="this.form.submit()" size="1" class="inputbox" name="bulk" id="bulk">
+            			<option selected="selected" value="">Bulk Actions</option>
+            			<option value="0">Archive</option>
+            			<option value="1">Copy</option>
+            			<option value="2">Delete</option>
+            		</select>
+            	</span>
 				<span class="display-company">
-					<label for="company">Company</label>
 						<select onchange="this.form.submit()" size="1" class="inputbox" name="company" id="company">
 						<option selected="selected" value="">Select Company</option>
 						<option value="0">All</option>
 					</select>
 				</span>
 				<span class="display-department">
-					<label for="department">Department</label>
 						<select onchange="this.form.submit()" size="1" class="inputbox" name="department" id="department">
 						<option selected="selected" value="">Select Department</option>
 						<option value="0">All</option>
 					</select>
 				</span>
 				<span class="display-status">
-					<label for="status">Status</label>
 						<select onchange="this.form.submit()" size="1" class="inputbox" name="status" id="status">
 						<option selected="selected" value="">Select Status</option>
 						<option value="0">All</option>
 					</select>
 				</span>
 				<span class="display-limit">
-					<label for="limit">Limit</label>
 						<select onchange="this.form.submit()" size="1" class="inputbox" name="limit" id="limit">
 						<option value="5">5</option>
 						<option selected="selected" value="10">10</option>
@@ -131,7 +119,7 @@ defined('_JEXEC') or die;
 	               		</td>
 	               		
 	               		<td class="list-owner">
-	               		Firstname Lastname											
+	               		Firstname L.											
 	               		</td>
 	               		
 	               		<td class="list-milestones">
@@ -165,7 +153,7 @@ defined('_JEXEC') or die;
 	               		
 	               		<td class="list-owner">
 	               		
-	               		Firstname Lastname											</td>
+	               		Firstname L.											</td>
 	               		
 	               		<td class="list-milestones">
 	               		<span title=""><a href="#">5</a></span>					
