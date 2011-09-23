@@ -38,7 +38,7 @@ class ProjectforkViewProject extends JView
 	    // Initialise variables.
 		$this->user	 = JFactory::getUser();
         $this->state = $this->get('State');
-        $this->item  = $this->get('Item');
+        //$this->item  = $this->get('Item');
         
         // Check for errors.
 		if (count($errors = $this->get('Errors'))) {
