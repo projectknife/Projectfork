@@ -1,5 +1,25 @@
 <?php
-// No direct access
+/**
+* @package   Projectfork
+* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
+*
+* This file is part of Projectfork.
+*
+* Projectfork is free software. This version may have been modified pursuant
+* to the GNU General Public License, and as distributed it includes or
+* is derivative of works licensed under the GNU General Public License or
+* other free or open source software licenses.
+*
+* Projectfork is distributed in the hope that it will be useful,
+* but WITHOUT ANY WARRANTY; without even the implied warranty of
+* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+* GNU General Public License for more details.
+*
+* You should have received a copy of the GNU General Public License
+* along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
+**/
+
 defined('_JEXEC') or die;
 ?>
 
@@ -8,16 +28,16 @@ defined('_JEXEC') or die;
 		<h2>Tasks</h2>
 		<ul class="actions">
 			<li class="new-icon">
-				<span title=""><a href="#">New Task</a></span>
+				<span class="readmore"><a href="#">New Task</a></span>
 			</li>
 			<li class="reorder-icon">
-				<span title=""><a href="#">Reorder</a></span>
+				<span class="readmore"><a href="#">Reorder</a></span>
 			</li>
 			<li class="copy-icon">
-				<span title=""><a href="#">Copy</a></span>
+				<span class="readmore"><a href="#">Copy</a></span>
 			</li>
 			<li class="delete-icon">
-				<span title=""><a href="#">Delete</a></span>
+				<span class="readmore"><a href="#">Delete</a></span>
 			</li>
 		</ul>
 		<form id="adminForm" name="adminForm" method="post" action="http://localhost:8888/projectfork_4/index.php?option=com_content&amp;view=category&amp;id=19&amp;Itemid=260">
