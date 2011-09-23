@@ -25,6 +25,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 // Include dependancies
 jimport('joomla.application.component.controller');
 
+// Add include paths
+JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'tables');
+
 $controller = JController::getInstance('Projectfork');
 $controller->execute(JRequest::getCmd('task'));
 $controller->redirect();
