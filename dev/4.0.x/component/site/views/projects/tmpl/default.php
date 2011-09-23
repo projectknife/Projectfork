@@ -20,102 +20,162 @@
 * along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
 **/
 
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die;
 ?>
-<div class="category-list project-projects" id="projectfork">
+<div id="projectfork" class="category-list view-projects">
     <div class="cat-items">
     
         <h2>Projects</h2>
         
         <ul class="actions">
-            <li><a href="index.php">New</a></li>    
-            <li><a href="index.php">Copy</a></li>    
-            <li><a href="index.php">Archive</a></li>    
-            <li><a href="index.php">Delete</a></li>    
+            <li class="new-icon">
+            	<span class="readmore"><a href="index.php">New</a></span>
+            </li>    
+            <li class="copy-icon">
+            	<span class="readmore"><a href="index.php">Copy</a></span>
+            </li>    
+            <li class="archive-icon">
+            	<span class="readmore"><a href="index.php">Archive</a></span>
+            </li>    
+            <li class="delete-icon">
+            	<span class="readmore"><a href="index.php">Delete</a></span>
+            </li>    
         </ul>
         
-        <dl class="article-info">
-            <dd class="category-name">Company: <a href="index.php">Pixelpraise</a></dd>
-            <dd class="hits">Open Projects: 5</dd>
-            <dd class="hits">Archived Projects: 0</dd>
-            <dd class="hits">Unapproved Projects: 0</dd>
-        </div>
         
         <form name="adminForm" id="adminForm" action="index.php">
-        
-            <fieldset class="filters">
-                <div class="display-search">
-                    Search&nbsp;
-                    <input type="text" class="inputbox" name="searchword" id="searchword"/>
-                    <button class="button" onclick="this.form.submit()" name="Search">Search</button>
-                </div>
-                <div class="display-state">
-                    State&nbsp;
-                    <select id="state" class="inputbox" onchange="this.form.submit()" size="1" name="state">
-                        <option value="0">Active</option>
-                        <option value="1">Archived</option>
-                        <option value="2">Unapproved</option>
-                    </select>
-                </div>
-                <div class="display-limit">
-                    Display #&nbsp;
-                    <select id="limit" class="inputbox" onchange="this.form.submit()" size="1" name="limit">
-                        <option value="5">5</option>
-                        <option selected="selected" value="10">10</option>
-                        <option value="15">15</option>
-                        <option value="20">20</option>
-                        <option value="25">25</option>
-                        <option value="30">30</option>
-                        <option value="50">50</option>
-                        <option value="100">100</option>
-                        <option value="0">All</option>
-                    </select>
-                    <input type="hidden" value="" name="filter_order"/>
-                    <input type="hidden" value="" name="filter_order_Dir"/>
-                    <input type="hidden" value="" name="limitstart"/>
-                </div>
-            </fieldset>
+            
+            <fieldset class="filters filter">
+				<span class="display-company">
+					<label for="company">Company</label>
+						<select onchange="this.form.submit()" size="1" class="inputbox" name="company" id="company">
+						<option selected="selected" value="">Select Company</option>
+						<option value="0">All</option>
+					</select>
+				</span>
+				<span class="display-department">
+					<label for="department">Department</label>
+						<select onchange="this.form.submit()" size="1" class="inputbox" name="department" id="department">
+						<option selected="selected" value="">Select Department</option>
+						<option value="0">All</option>
+					</select>
+				</span>
+				<span class="display-status">
+					<label for="status">Status</label>
+						<select onchange="this.form.submit()" size="1" class="inputbox" name="status" id="status">
+						<option selected="selected" value="">Select Status</option>
+						<option value="0">All</option>
+					</select>
+				</span>
+				<span class="display-limit">
+					<label for="limit">Limit</label>
+						<select onchange="this.form.submit()" size="1" class="inputbox" name="limit" id="limit">
+						<option value="5">5</option>
+						<option selected="selected" value="10">10</option>
+						<option value="15">15</option>
+						<option value="20">20</option>
+						<option value="25">25</option>
+						<option value="30">30</option>
+						<option value="50">50</option>
+						<option value="100">100</option>
+						<option value="0">All</option>
+					</select>
+				</span>
+
+				<input type="hidden" value="" name="filter_order">
+				<input type="hidden" value="" name="filter_order_Dir">
+				<input type="hidden" value="" name="limitstart">
+			</fieldset>
             
             <table class="category">
-                <thead>
-                    <tr>
-                        <th id="tableOrdering" class="list-title">
-                            <a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');">Title</a>
-                        </th>
-                        <th id="tableOrdering1" class="list-authors">
-                            <a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');">Author</a>
-                        </th>
-                        <th id="tableOrdering2" class="list-deadlines">
-                            <a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');">Deadline</a>
-                        </th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr class="cat-list-row0">
-                        <td class="list-title"><a href="index.php">Web Design Project 1</a></td>
-                        <td class="list-author">Super User</td>
-                        <td class="list-deadline">11-25-2011</td>
-                    </tr>
-                    <tr class="cat-list-row1">
-                        <td class="list-title"><a href="index.php">Web Design Project 2</a></td>
-                        <td class="list-author">Super User</td>
-                        <td class="list-deadline">11-25-2011</td>
-                    </tr>
-                    <tr class="cat-list-row0">
-                        <td class="list-title"><a href="index.php">Web Design Project 3</a></td>
-                        <td class="list-author">Super User</td>
-                        <td class="list-deadline">11-25-2011</td>
-                    </tr>
-                    <tr class="cat-list-row1">
-                        <td class="list-title"><a href="index.php">Web Design Project 4</a></td>
-                        <td class="list-author">Super User</td>
-                        <td class="list-deadline">11-25-2011</td>
-                    </tr>
-                    <tr class="cat-list-row0">
-                        <td class="list-title"><a href="index.php">Web Design Project 5</a></td>
-                        <td class="list-author">Super User</td>
-                        <td class="list-deadline">11-25-2011</td>
-                    </tr>
+               <thead>
+	               	<tr>
+	               		<th id="tableOrdering" class="list-select">
+	               			<input type="checkbox" onclick="checkAll(2);" value="" name="toggle">
+	               		</th>
+	               		<th id="tableOrdering2" class="list-title">
+	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');">Title</a></th>
+	               		
+	               		<th id="tableOrdering3" class="list-tags">
+	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.tags','asc','');">Tags</a></th>
+	               		
+	               		<th id="tableOrdering4" class="list-owner">
+	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.owner','asc','');">Owner</a></th>
+	               		
+	               		<th id="tableOrdering5" class="list-milestones">
+	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.milestones','asc','');">Milestones</a></th>
+	               		
+	               		<th id="tableOrdering6" class="list-tasks">
+	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.tasks','asc','');">Tasks</a></th>
+	               	</tr>
+               </thead>
+               <tbody>
+					<tr class="cat-list-row0">
+	               		<td class="list-select">
+	               			<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
+	               		</td>
+	               		<td class="list-title">
+	               		<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=8:beginners&amp;catid=19&amp;Itemid=260">
+	               		Joomla Template Design</a>
+	               		<ul class="actions">
+	               			<li class="edit-icon">
+	               				<span title=""><a href="#">Edit</a></span>
+	               			</li>
+	               			<li class="tasks-icon">
+	               				<span title=""><a href="#">View Tasks</a></span>
+	               			</li>
+	               		</ul>
+	               		</td>
+	               		<td class="list-tags">
+	               		<span class="tag"><a href="#">Design</a></span>, <span class="tag"><a href="#">Joomla</a></span>									
+	               		</td>
+	               		
+	               		<td class="list-owner">
+	               		Firstname Lastname											
+	               		</td>
+	               		
+	               		<td class="list-milestones">
+	               		5					
+	               		</td>
+	               		
+	               		<td class="list-tasks">
+	               		25					
+	               		</td>
+	               	
+	               	</tr>
+	               	<tr class="cat-list-row1">
+	               		<td class="list-select">
+	               			<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb1">
+	               		</td>
+	               		<td class="list-title">
+	               		<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=21:getting-help&amp;catid=19&amp;Itemid=436">
+	               		Joomla Extension Development</a>
+	               		<ul class="actions">
+	               			<li class="edit-icon">
+	               				<span title=""><a href="#">Edit</a></span>
+	               			</li>
+	               			<li class="tasks-icon">
+	               				<span title=""><a href="#">View Tasks</a></span>
+	               			</li>
+	               		</ul>
+	               		</td>
+	               		<td class="list-tags">
+	               		<span class="tag"><a href="#">Programming</a></span>, <span class="tag"><a href="#">Joomla</a></span>									
+	               		</td>
+	               		
+	               		<td class="list-owner">
+	               		
+	               		Firstname Lastname											</td>
+	               		
+	               		<td class="list-milestones">
+	               		5					
+	               		</td>
+	               		
+	               		<td class="list-tasks">
+	               		25					
+	               		</td>
+	               	
+	               	</tr>
                 </tbody>
             </table>
             
