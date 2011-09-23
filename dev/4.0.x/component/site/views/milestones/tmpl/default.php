@@ -22,7 +22,7 @@
 
 defined('_JEXEC') or die;
 ?>
-<div id="projectfork" class="category-list view-projects">
+<div id="projectfork" class="category-list view-milestones">
     <div class="cat-items">
     
         <h2>Milestones</h2>
