@@ -114,6 +114,9 @@ defined('_JEXEC') or die;
 	               			<li class="complete-icon">
 	               				<span title=""><a href="#">Complete</a></span>
 	               			</li>
+	               			<li class="delete-icon">
+	               				<span title=""><a href="#">Delete</a></span>
+	               			</li>
 	               		</ul>
 	               		</td>
 	               		<td class="list-tags">
@@ -146,6 +149,9 @@ defined('_JEXEC') or die;
 	               			</li>
 	               			<li class="complete-icon">
 	               				<span title=""><a href="#">Complete</a></span>
+	               			</li>
+	               			<li class="delete-icon">
+	               				<span title=""><a href="#">Delete</a></span>
 	               			</li>
 	               		</ul>
 	               		</td>

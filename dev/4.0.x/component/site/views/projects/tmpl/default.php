@@ -121,8 +121,8 @@ defined('_JEXEC') or die;
 	               			<li class="edit-icon">
 	               				<span title=""><a href="#">Edit</a></span>
 	               			</li>
-	               			<li class="tasks-icon">
-	               				<span title=""><a href="#">View Tasks</a></span>
+	               			<li class="delete-icon">
+	               				<span title=""><a href="#">Delete</a></span>
 	               			</li>
 	               		</ul>
 	               		</td>
@@ -135,11 +135,11 @@ defined('_JEXEC') or die;
 	               		</td>
 	               		
 	               		<td class="list-milestones">
-	               		5					
+	               		<span title=""><a href="#">5</a></span>				
 	               		</td>
 	               		
 	               		<td class="list-tasks">
-	               		25					
+	               		<span title=""><a href="#">25</a></span>					
 	               		</td>
 	               	
 	               	</tr>
@@ -154,8 +154,8 @@ defined('_JEXEC') or die;
 	               			<li class="edit-icon">
 	               				<span title=""><a href="#">Edit</a></span>
 	               			</li>
-	               			<li class="tasks-icon">
-	               				<span title=""><a href="#">View Tasks</a></span>
+	               			<li class="delete-icon">
+	               				<span title=""><a href="#">Delete</a></span>
 	               			</li>
 	               		</ul>
 	               		</td>
@@ -168,11 +168,11 @@ defined('_JEXEC') or die;
 	               		Firstname Lastname											</td>
 	               		
 	               		<td class="list-milestones">
-	               		5					
+	               		<span title=""><a href="#">5</a></span>					
 	               		</td>
 	               		
 	               		<td class="list-tasks">
-	               		25					
+	               		<span title=""><a href="#">25</a></span>					
 	               		</td>
 	               	
 	               	</tr>

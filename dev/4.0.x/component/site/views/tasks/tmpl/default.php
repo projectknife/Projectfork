@@ -103,7 +103,10 @@ defined('_JEXEC') or die;
 					<th id="tableOrdering3" class="list-author">
 					<a title="Click to sort by this column" href="javascript:tableOrdering('author','asc','');">Author</a>				</th>
 					
-					<th id="tableOrdering4" class="list-date">
+					<th id="tableOrdering4" class="list-comments">
+					<a title="Click to sort by this column" href="javascript:tableOrdering('a.comments','asc','');">Comments</a></th>
+					
+					<th id="tableOrdering5" class="list-date">
 					<a title="Click to sort by this column" href="javascript:tableOrdering('a.hits','asc','');">Due</a>				</th>
 				</tr>
 			</thead>
@@ -123,8 +126,8 @@ defined('_JEXEC') or die;
 						<li class="complete-icon">
 							<span title=""><a href="#">Complete</a></span>
 						</li>
-						<li class="comments-icon">
-							<span title=""><a href="#">Comments</a></span>
+						<li class="delete-icon">
+							<span title=""><a href="#">Delete</a></span>
 						</li>
 					</ul>
 					</td>
@@ -133,6 +136,10 @@ defined('_JEXEC') or die;
 					<td class="list-author">
 					
 					Firstname Lastname											</td>
+					
+					<td class="list-comments">
+					<span title=""><a href="#">6</a></span>				
+					</td>
 					
 					<td class="list-date">
 					12/04/2011					</td>
@@ -152,8 +159,8 @@ defined('_JEXEC') or die;
 						<li class="complete-icon">
 							<span title=""><a href="#">Complete</a></span>
 						</li>
-						<li class="comments-icon">
-							<span title=""><a href="#">Comments</a></span>
+						<li class="delete-icon">
+							<span title=""><a href="#">Delete</a></span>
 						</li>
 					</ul>
 					</td>
@@ -162,6 +169,10 @@ defined('_JEXEC') or die;
 					<td class="list-author">
 					
 					Firstname Lastname											</td>
+					
+					<td class="list-comments">
+					<span title=""><a href="#">6</a></span>				
+					</td>
 					
 					<td class="list-date">
 					12/03/2011					</td>
@@ -181,8 +192,8 @@ defined('_JEXEC') or die;
 						<li class="complete-icon">
 							<span title=""><a href="#">Complete</a></span>
 						</li>
-						<li class="comments-icon">
-							<span title=""><a href="#">Comments</a></span>
+						<li class="delete-icon">
+							<span title=""><a href="#">Delete</a></span>
 						</li>
 					</ul>
 					</td>
@@ -191,6 +202,10 @@ defined('_JEXEC') or die;
 					<td class="list-author">
 					
 					Firstname Lastname											</td>
+					
+					<td class="list-comments">
+					<span title=""><a href="#">6</a></span>				
+					</td>
 					
 					<td class="list-date">
 					12/02/2011					</td>
@@ -210,8 +225,8 @@ defined('_JEXEC') or die;
 						<li class="complete-icon">
 							<span title=""><a href="#">Complete</a></span>
 						</li>
-						<li class="comments-icon">
-							<span title=""><a href="#">Comments</a></span>
+						<li class="delete-icon">
+							<span title=""><a href="#">Delete</a></span>
 						</li>
 					</ul>
 					</td>
@@ -220,6 +235,10 @@ defined('_JEXEC') or die;
 					<td class="list-author">
 					
 					Firstname Lastname											</td>
+					
+					<td class="list-comments">
+					<span title=""><a href="#">6</a></span>				
+					</td>
 					
 					<td class="list-date">
 					12/01/2011					</td>
@@ -239,8 +258,8 @@ defined('_JEXEC') or die;
 						<li class="complete-icon">
 							<span title=""><a href="#">Complete</a></span>
 						</li>
-						<li class="comments-icon">
-							<span title=""><a href="#">Comments</a></span>
+						<li class="delete-icon">
+							<span title=""><a href="#">Delete</a></span>
 						</li>
 					</ul>
 					</td>
@@ -249,6 +268,10 @@ defined('_JEXEC') or die;
 					<td class="list-author">
 					
 					Firstname Lastname											</td>
+					
+					<td class="list-comments">
+					<span title=""><a href="#">6</a></span>				
+					</td>
 					
 					<td class="list-date">
 					11/30/2011					</td>
@@ -268,8 +291,8 @@ defined('_JEXEC') or die;
 						<li class="complete-icon">
 							<span title=""><a href="#">Complete</a></span>
 						</li>
-						<li class="comments-icon">
-							<span title=""><a href="#">Comments</a></span>
+						<li class="delete-icon">
+							<span title=""><a href="#">Delete</a></span>
 						</li>
 					</ul>
 					</td>
@@ -278,6 +301,10 @@ defined('_JEXEC') or die;
 					<td class="list-author">
 					
 					Firstname Lastname											</td>
+					
+					<td class="list-comments">
+					<span title=""><a href="#">6</a></span>				
+					</td>
 					
 					<td class="list-date">
 					11/29/2011					</td>
@@ -298,6 +325,10 @@ defined('_JEXEC') or die;
 					
 					Firstname Lastname											</td>
 					
+					<td class="list-comments">
+					<span title=""><a href="#">6</a></span>				
+					</td>
+					
 					<td class="list-date">
 					11/28/2011					</td>
 				
@@ -316,8 +347,8 @@ defined('_JEXEC') or die;
 						<li class="complete-icon">
 							<span title=""><a href="#">Complete</a></span>
 						</li>
-						<li class="comments-icon">
-							<span title=""><a href="#">Comments</a></span>
+						<li class="delete-icon">
+							<span title=""><a href="#">Delete</a></span>
 						</li>
 					</ul>
 					</td>
@@ -326,6 +357,10 @@ defined('_JEXEC') or die;
 					<td class="list-author">
 					
 					Firstname Lastname											</td>
+					
+					<td class="list-comments">
+					<span title=""><a href="#">6</a></span>				
+					</td>
 					
 					<td class="list-date">
 					11/27/2011					</td>
@@ -345,8 +380,8 @@ defined('_JEXEC') or die;
 						<li class="complete-icon">
 							<span title=""><a href="#">Complete</a></span>
 						</li>
-						<li class="comments-icon">
-							<span title=""><a href="#">Comments</a></span>
+						<li class="delete-icon">
+							<span title=""><a href="#">Delete</a></span>
 						</li>
 					</ul>
 					</td>
@@ -355,6 +390,10 @@ defined('_JEXEC') or die;
 					<td class="list-author">
 					
 					Firstname Lastname											</td>
+					
+					<td class="list-comments">
+					<span title=""><a href="#">6</a></span>				
+					</td>
 					
 					<td class="list-date">
 					11/26/2011					</td>
@@ -374,8 +413,8 @@ defined('_JEXEC') or die;
 						<li class="complete-icon">
 							<span title=""><a href="#">Complete</a></span>
 						</li>
-						<li class="comments-icon">
-							<span title=""><a href="#">Comments</a></span>
+						<li class="delete-icon">
+							<span title=""><a href="#">Delete</a></span>
 						</li>
 					</ul>
 					</td>
@@ -384,6 +423,10 @@ defined('_JEXEC') or die;
 					<td class="list-author">
 					
 					Firstname Lastname											</td>
+					
+					<td class="list-comments">
+					<span title=""><a href="#">6</a></span>				
+					</td>
 					
 					<td class="list-date">
 					11/25/2011					</td>
