@@ -41,7 +41,9 @@ class ProjectforkController extends JController
         // Load Projectfork CSS
         $doc = JFactory::getDocument();
         $uri = JFactory::getURI();
+        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/media/css/com_projectfork_icons.css');
         $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/media/css/com_projectfork_layout.css');
+        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/media/css/com_projectfork_theme.css');
         
         unset($doc, $uri);
         
