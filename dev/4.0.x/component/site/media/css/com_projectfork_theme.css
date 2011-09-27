@@ -1,1 +1,17 @@
 /* Projectfork Theme CSS */
+
+/* Due Date Module */
+.overdue {
+	color: red;
+}
+
+/* Calendar Module */
+.today{
+	background: #FFFFCC;
+}
+.calendar-weekend{
+	background: #EEE;
+}
+.calendar-item{
+	font-size: 11px;
+}

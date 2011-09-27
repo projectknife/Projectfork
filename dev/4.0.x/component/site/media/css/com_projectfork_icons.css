@@ -1,1 +1,33 @@
 /* Projectfork Icons CSS */
+
+/* Recent Activity (Activity Stream) */
+.list-type span{
+	display: block;
+	padding: 4px 10px;
+	margin: 0 auto;
+	text-align: center;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
+	color: #FFF;
+	font-weight: bold;
+	text-shadow: 0 1px 1px #000;
+}
+.type-comment{
+	background: blue;
+}
+.type-file{
+	background: green;
+}
+.type-milestone{
+	background: purple;
+}
+.type-project{
+	background: black;
+}
+.type-task{
+	background: red;
+}
+.type-task-list{
+	background: orange;
+}
