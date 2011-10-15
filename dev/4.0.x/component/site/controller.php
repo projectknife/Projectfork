@@ -36,17 +36,17 @@ class ProjectforkController extends JController
 	{
 		$cachable = true;
         $safeurlparams = array();
-        
-        
+
+
         // Load Projectfork CSS
         $doc = JFactory::getDocument();
         $uri = JFactory::getURI();
-        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/media/css/com_projectfork_icons.css');
-        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/media/css/com_projectfork_layout.css');
-        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/media/css/com_projectfork_theme.css');
-        
+        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_icons.css');
+        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_layout.css');
+        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_theme.css');
+
         unset($doc, $uri);
-        
+
 		parent::display($cachable, $safeurlparams);
 		return $this;
 	}
