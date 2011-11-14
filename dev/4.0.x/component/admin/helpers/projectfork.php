@@ -15,9 +15,18 @@ class ProjectforkHelper
 	 */
 	public static function addSubmenu($vName)
 	{
-		
+		JSubMenuHelper::addEntry(
+			JText::_('COM_PROJECTFORK_SUBMENU_DASHBOARD'),
+			'index.php?option=com_projectfork&view=dashboard',
+			$vName == 'dashboard'
+		);
+		JSubMenuHelper::addEntry(
+			JText::_('COM_PROJECTFORK_SUBMENU_PROJECTS'),
+			'index.php?option=com_projectfork&view=projects',
+			$vName == 'projects');
 	}
-    
+
+
     public static function getActions()
 	{
 		$user	= JFactory::getUser();
@@ -25,16 +34,16 @@ class ProjectforkHelper
 		$asset  = 'com_projectfork';
 
 		$actions = array(
-		    'core.admin', 
-            'core.manage', 
-            'core.create', 
-            'core.edit', 
-            'core.edit.own', 
-            'core.edit.state', 
+		    'core.admin',
+            'core.manage',
+            'core.create',
+            'core.edit',
+            'core.edit.own',
+            'core.edit.state',
             'core.delete'
 		);
 
-		foreach ($actions as $action) 
+		foreach ($actions as $action)
         {
 			$result->set($action, $user->authorise($action, $asset));
 		}

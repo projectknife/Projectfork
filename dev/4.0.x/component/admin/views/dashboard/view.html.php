@@ -32,7 +32,7 @@ class ProjectforkViewDashboard extends JView
 	 */
 	public function display($tpl = null)
 	{
-		$this->addToolbar();
+		if($this->getLayout() !== 'modal') $this->addToolbar();
 		parent::display($tpl);
 	}
 
