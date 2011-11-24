@@ -123,20 +123,16 @@ class ProjectforkModelProjectform extends JModelAdmin
             $data['alias'] = '';
         }
 
+        // Store/update the project access level
+        if(!$data['id']) $data['access'] = 0;
+
+        $lvl_id = $this->saveAccessLevel($data['title'], $data['access']);
+        if($lvl_id === false) return false;
+
+        if(!$data['id']) $data['access'] = $lvl_id;
+
         // Store the record
 		if (parent::save($data)) {
-            // Perform additional steps
-
-            // Get user viewing level model
-            JModel::addIncludePath (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_users'.DS.'models');
-            $config = array();
-            $level_model = JModel::getInstance('Level', 'UsersModel', $config);
-
-            $level_title = 'Project: '.$data['title'];
-            if(strlen($level_title) > 100) $level_title = substr($level_title, 0, 97).'...';
-
-            $level_data = array('id' => 0, 'title' => $data['title'], 'rules' => array());
-
 			return true;
 		}
 
@@ -182,4 +178,35 @@ class ProjectforkModelProjectform extends JModelAdmin
 
 		return array($title, $alias);
 	}
+
+
+    /**
+	 * Method to generate a new viewing access level for a project
+	 *
+	 * @param    string     $title    The project title
+	 * @param    integer    $id       Optional access level id
+	 * @param    array      $rules    Optional associated user groups
+	 * @return	 integer              The access level id
+	 */
+    protected function saveAccessLevel($title, $id = 0, $rules = array())
+    {
+        // Get user viewing level model
+        JModel::addIncludePath (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_users'.DS.'models');
+
+        $model = JModel::getInstance('Level', 'UsersModel');
+        $title = 'Project: '.$title;
+
+        // Trim project name if too long for access level
+        if(strlen($title) > 100) $title = substr($title, 0, 97).'...';
+
+        // Set access level data
+        $data = array('id' => $id, 'title' => $title, 'rules' => $rules);
+
+        // Store access level
+        if(!$model->save($data)) return false;
+
+        $id = $model->getState('level.id');
+
+        return $id;
+    }
 }
