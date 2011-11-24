@@ -38,19 +38,4 @@ class ProjectforkControllerProjectform extends JControllerForm
 	{
 		parent::__construct($config);
 	}
-
-
-    /**
-	 * Cancel form function.
-     * Called when the user presses the "Cancel" button on the form
-	 *
-	 */
-    public function cancel()
-    {
-        // If no return URL is specified, return to the projects overview
-        if(JRequest::getVar('return') == '') {
-            $this->setRedirect(JRoute::_('index.php?option=com_projectfork&view=projects', false));
-            return true;
-        }
-    }
 }

@@ -133,10 +133,9 @@ class ProjectforkModelProjectform extends JModelAdmin
             $level_model = JModel::getInstance('Level', 'UsersModel', $config);
 
             $level_title = 'Project: '.$data['title'];
-            if(str_len($level_title) > 100) $level_title = substr($level_title, 0, 97).'...';
+            if(strlen($level_title) > 100) $level_title = substr($level_title, 0, 97).'...';
 
             $level_data = array('id' => 0, 'title' => $data['title'], 'rules' => array());
-
 
 			return true;
 		}

@@ -38,6 +38,12 @@ class ProjectforkController extends JController
 	{
 		require_once JPATH_COMPONENT.'/helpers/projectfork.php';
 
+        //
+        if(JRequest::getVar('view') == 'projectforms') {
+            $this->setRedirect(JRoute::_('index.php?option=com_projectfork&view=projects', false));
+            return $this;
+        }
+
 		// Load the submenu.
 		ProjectforkHelper::addSubmenu(JRequest::getCmd('view', 'dashboard'));
 
