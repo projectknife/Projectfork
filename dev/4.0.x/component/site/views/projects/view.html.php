@@ -24,10 +24,17 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 jimport('joomla.application.component.view');
 
+
 class ProjectforkViewProjects extends JView
 {
 	function display($tpl = null)
 	{
+	    $items = $this->get('Items');
+        $page  = $this->get('Pagination');
+
+        $this->assignRef('items', $items);
+        $this->assignRef('page', $page);
+
 		parent::display($tpl);
 	}
 }

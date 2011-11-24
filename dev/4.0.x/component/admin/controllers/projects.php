@@ -21,9 +21,40 @@
 **/
 
 defined('_JEXEC') or die;
-?>
-<form action="<?php echo JRoute::_('index.php?option=com_projectfork'); ?>" method="post" name="adminForm">
 
-    <input type="hidden" name="task" value="" />
-	<?php echo JHtml::_('form.token'); ?>
-</form>
+jimport('joomla.application.component.controlleradmin');
+
+
+/**
+ * Project list controller class.
+ *
+ */
+class ProjectforkControllerProjects extends JControllerAdmin
+{
+	/**
+	 * Constructor.
+	 *
+	 * @param	array	$config	An optional associative array of configuration settings
+	 * @return	ProjectforkControllerProjects
+	 * @see		JController
+	 */
+	public function __construct($config = array())
+	{
+		parent::__construct($config);
+	}
+
+
+	/**
+	 * Proxy for getModel.
+	 *
+	 * @param	string	$name	The name of the model.
+	 * @param	string	$prefix	The prefix for the PHP class name.
+	 * @return	JModel
+	 */
+	public function getModel($name = 'Project', $prefix = 'ProjectformModel', $config = array('ignore_request' => true))
+	{
+		$model = parent::getModel($name, $prefix, $config);
+
+		return $model;
+	}
+}

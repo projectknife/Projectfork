@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+		<field name="title" type="text" label="JGLOBAL_TITLE"
+			description="JFIELD_TITLE_DESC" class="inputbox" size="30"
+			required="true" 
+        />
+		<field name="description" type="editor" class="inputbox"
+			label="COM_PROJECTFORK_FIELD_DESCRIPTION_LABEL" description="COM_PROJECTFORK_FIELD_DESCRIPTION_DESC"
+			buttons="true" 
+		/>
+		<field name="state" type="list" label="JSTATUS"
+			description="JFIELD_PUBLISHED_DESC" class="inputbox"
+			filter="intval" size="1" default="1"
+		>
+			<option value="1">JPUBLISHED</option>
+			<option value="0">JUNPUBLISHED</option>
+			<option value="2">JARCHIVED</option>
+			<option value="-2">JTRASHED</option>
+		</field>
+        <field name="created_by" type="user"
+			label="COM_PROJECTFORK_FIELD_PADMIN_LABEL" description="COM_PROJECTFORK_FIELD_PADMIN_DESC"
+        />
+		<field name="start_date" type="calendar" class="inputbox"
+			label="COM_PROJECTFORK_FIELD_STARTDATE_LABEL" description="COM_PROJECTFORK_FIELD_STARTDATE_DESC"
+			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
+        />
+        <field name="end_date" type="calendar" class="inputbox"
+			label="COM_PROJECTFORK_FIELD_ENDDATE_LABEL" description="COM_PROJECTFORK_FIELD_ENDDATE_DESC"
+			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
+        />
+		<field name="modified" type="calendar" class="readonly"
+			label="JGLOBAL_FIELD_MODIFIED_LABEL" 
+			size="22" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
+        />
+		<field name="modified_by" type="user"
+		    label="JGLOBAL_FIELD_MODIFIED_BY_LABEL"
+		    class="readonly"
+		    readonly="true"
+		    filter="unset"
+		/>
+		<field name="id" type="hidden" readonly="true"/>
+		<field name="asset_id" type="hidden" filter="unset"/>
+		<field name="alias" type="hidden" readonly="true"/>
+		<field name="access" type="hidden" readonly="true"/>
+		<field name="created" type="hidden" readonly="true"/>
+		<field name="checked_out" type="hidden" filter="unset" />
+		<field name="checked_out_time" type="hidden" filter="unset" />
+	</fieldset>
+	<fields name="attribs">
+	    <fieldset name="basic" label="COM_PROJECTFORK_ATTRIBS_FIELDSET_LABEL">
+	        <field
+				name="public"
+				type="list"
+				label="COM_PROJECTFORK_ATTRIBS_PUBLIC_LABEL"
+				description="COM_PROJECTFORK_ATTRIBS_PUBLIC_DESC">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+			<field
+				name="applications"
+				type="list"
+				label="COM_PROJECTFORK_ATTRIBS_APPLICATIONS_LABEL"
+				description="COM_PROJECTFORK_ATTRIBS_APPLICATIONS_DESC">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JNO</option>
+				<option value="1">JYES</option>
+			</field>
+	    </fieldset>
+	</fields>
+</form>

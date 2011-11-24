@@ -2,7 +2,7 @@
 /**
 * @package   Projectfork
 * @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
 *
@@ -20,7 +20,8 @@
 * along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
 **/
 
-defined( '_JEXEC' ) or die( 'Restricted access' );
+// No direct access
+defined('_JEXEC') or die;
 
 jimport('joomla.database.tableasset');
 
@@ -65,7 +66,7 @@ class JTableProject extends JTable
 	{
 		return $this->title;
 	}
-    
+
 
 	/**
 	 * Overloaded bind function
@@ -144,28 +145,28 @@ class JTableProject extends JTable
 	 */
 	public function store($updateNulls = false)
 	{
-		$date	= JFactory::getDate();
-		$user	= JFactory::getUser();
+		$date = JFactory::getDate();
+		$user = JFactory::getUser();
 
 		if ($this->id) {
 			// Existing item
 			$this->modified		= $date->toMySQL();
 			$this->modified_by	= $user->get('id');
-		} 
+		}
         else {
 			// New item. A project created_by field can be set by the user,
 			// so we don't touch it if set.
 			$this->created = $date->toMySQL();
 			if (empty($this->created_by)) $this->created_by = $user->get('id');
 		}
-        
+
 		// Verify that the alias is unique
 		$table = JTable::getInstance('Project','JTable');
-		if ($table->load(array('alias'=>$this->alias,'catid'=>$this->catid)) && ($table->id != $this->id || $this->id==0)) {
+		if ($table->load(array('alias'=>$this->alias)) && ($table->id != $this->id || $this->id==0)) {
 			$this->setError(JText::_('JLIB_DATABASE_ERROR_PROJECT_UNIQUE_ALIAS'));
 			return false;
 		}
-        
+
 		return parent::store($updateNulls);
 	}
 
@@ -244,7 +245,7 @@ class JTableProject extends JTable
 
 		return true;
 	}
-    
+
 
 	/**
 	 * Converts record to XML

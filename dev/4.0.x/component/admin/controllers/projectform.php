@@ -23,14 +23,34 @@
 // No direct access
 defined('_JEXEC') or die;
 
-// Access check.
-if (!JFactory::getUser()->authorise('core.manage', 'com_projectfork')) {
-	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
+jimport('joomla.application.component.controllerform');
+
+
+class ProjectforkControllerProjectform extends JControllerForm
+{
+	/**
+	 * Class constructor.
+	 *
+	 * @param	  array    $config    A named array of configuration variables
+	 * @return    JControllerForm
+	 */
+	public function __construct($config = array())
+	{
+		parent::__construct($config);
+	}
+
+
+    /**
+	 * Cancel form function.
+     * Called when the user presses the "Cancel" button on the form
+	 *
+	 */
+    public function cancel()
+    {
+        // If no return URL is specified, return to the projects overview
+        if(JRequest::getVar('return') == '') {
+            $this->setRedirect(JRoute::_('index.php?option=com_projectfork&view=projects', false));
+            return true;
+        }
+    }
 }
-
-// Include dependencies
-jimport('joomla.application.component.controller');
-
-$controller = JController::getInstance('Projectfork');
-$controller->execute(JRequest::getCmd('task'));
-$controller->redirect();
