@@ -2,7 +2,7 @@
 /**
 * @package   Projectfork
 * @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
+* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
 *
@@ -26,11 +26,22 @@ jimport('joomla.application.component.view');
 
 class ProjectforkViewProjects extends JView
 {
+    protected $items;
+	protected $pagination;
+	protected $state;
+	protected $managers;
+
+
 	/**
 	 * Display the view
 	 */
 	public function display($tpl = null)
 	{
+	    $this->items	  = $this->get('Items');
+		$this->pagination = $this->get('Pagination');
+		$this->state	  = $this->get('State');
+		$this->managers	  = $this->get('Managers');
+
 	    // Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseError(500, implode("\n", $errors));
