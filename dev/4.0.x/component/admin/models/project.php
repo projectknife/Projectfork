@@ -35,7 +35,7 @@ class ProjectforkModelProject extends JModelAdmin
 	/**
 	 * @var    string    The prefix to use with controller messages.
 	 */
-	protected $text_prefix = 'COM_PROJECTFORK';
+	protected $text_prefix = 'COM_PROJECTFORK_PROJECT';
 
 
 	/**

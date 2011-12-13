@@ -237,14 +237,18 @@ class JTableProject extends JTable
 		}
 
 		// If the JTable instance value is in the list of primary keys that were set, set the instance.
-		if (in_array($this->$k, $pks)) {
-			$this->state = $state;
-		}
-
+		if (in_array($this->$k, $pks)) $this->state = $state;
 		$this->setError('');
 
 		return true;
 	}
+
+
+
+    public function publish($pks = null, $state = 1, $userId = 0)
+    {
+        return $this->setState($pks, $state, $userId);
+    }
 
 
 	/**

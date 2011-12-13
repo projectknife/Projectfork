@@ -51,7 +51,7 @@ class ProjectforkControllerProjects extends JControllerAdmin
 	 * @param	string	$prefix	The prefix for the PHP class name.
 	 * @return	JModel
 	 */
-	public function getModel($name = 'Project', $prefix = 'ProjectformModel', $config = array('ignore_request' => true))
+	public function getModel($name = 'Project', $prefix = 'ProjectforkModel', $config = array('ignore_request' => true))
 	{
 		$model = parent::getModel($name, $prefix, $config);
 

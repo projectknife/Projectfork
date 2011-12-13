@@ -65,7 +65,18 @@ class ProjectforkViewProjects extends JView
 
 		JToolBarHelper::title(JText::_('COM_PROJECTFORK_PROJECTS_TITLE'), 'article.png');
 
-        JToolBarHelper::addNew('projectform.add');
+        JToolBarHelper::addNew('project.add');
+        JToolBarHelper::editList('project.edit');
+        JToolBarHelper::divider();
+        JToolBarHelper::publish('projects.publish', 'JTOOLBAR_PUBLISH', true);
+		JToolBarHelper::unpublish('projects.unpublish', 'JTOOLBAR_UNPUBLISH', true);
+		JToolBarHelper::divider();
+		JToolBarHelper::archiveList('projects.archive');
+		JToolBarHelper::checkin('projects.checkin');
+        JToolBarHelper::deleteList('', 'projects.delete','JTOOLBAR_EMPTY_TRASH');
+		JToolBarHelper::divider();
+        JToolBarHelper::trash('projects.trash');
+		JToolBarHelper::divider();
 	}
 }
 ?>
