@@ -52,6 +52,7 @@ class ProjectforkModelProjects extends JModelList
                 'checked_out', 'p.checked_out',
                 'checked_out_time', 'p.checked_out_time',
                 'attribs', 'p.attribs',
+                'access', 'p.access', 'access_level',
                 'state', 'p.state',
                 'start_date', 'p.start_date',
                 'end_date', 'p.end_date'
@@ -85,6 +86,9 @@ class ProjectforkModelProjects extends JModelList
 		$published = $this->getUserStateFromRequest($this->context.'.filter.published', 'filter_published', '');
 		$this->setState('filter.published', $published);
 
+        $access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', '');
+		$this->setState('filter.access', $access);
+
 		// List state information.
 		parent::populateState('p.title', 'asc');
 	}
@@ -105,6 +109,7 @@ class ProjectforkModelProjects extends JModelList
 		// Compile the store id.
 		$id	.= ':'.$this->getState('filter.search');
 		$id	.= ':'.$this->getState('filter.published');
+		$id	.= ':'.$this->getState('filter.access');
 		$id	.= ':'.$this->getState('filter.manager_id');
 
 		return parent::getStoreId($id);
@@ -128,8 +133,8 @@ class ProjectforkModelProjects extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'p.id, p.title, p.alias, p.checked_out, p.checked_out_time, '
-				. 'p.state, p.access, p.created, p.created_by, '
+				'p.id, p.title, p.alias, p.checked_out, p.checked_out_time,'
+				. 'p.state, p.access, p.access, p.created, p.created_by,'
 				. 'p.start_date, p.end_date'
 			)
 		);
@@ -160,6 +165,11 @@ class ProjectforkModelProjects extends JModelList
 		}
 		elseif ($published === '') {
 			$query->where('(p.state = 0 OR p.state = 1)');
+		}
+
+        // Filter by access level.
+		if ($access = $this->getState('filter.access')) {
+			$query->where('p.access = ' . (int) $access);
 		}
 
 		// Filter by manager

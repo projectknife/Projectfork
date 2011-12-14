@@ -123,18 +123,8 @@ class ProjectforkModelProject extends JModelAdmin
             $data['alias'] = '';
         }
 
-        // Store/update the project access level
-        if(!$data['id']) $data['access'] = 0;
-
-        $lvl_id = $this->saveAccessLevel($data['title'], $data['access']);
-        if($lvl_id === false) return false;
-
-        if(!$data['id']) $data['access'] = $lvl_id;
-
         // Store the record
-		if (parent::save($data)) {
-			return true;
-		}
+		if (parent::save($data)) return true;
 
 		return false;
 	}
@@ -178,35 +168,4 @@ class ProjectforkModelProject extends JModelAdmin
 
 		return array($title, $alias);
 	}
-
-
-    /**
-	 * Method to generate a new viewing access level for a project
-	 *
-	 * @param    string     $title    The project title
-	 * @param    integer    $id       Optional access level id
-	 * @param    array      $rules    Optional associated user groups
-	 * @return	 integer              The access level id
-	 */
-    protected function saveAccessLevel($title, $id = 0, $rules = array())
-    {
-        // Get user viewing level model
-        JModel::addIncludePath (JPATH_ADMINISTRATOR.DS.'components'.DS.'com_users'.DS.'models');
-
-        $model = JModel::getInstance('Level', 'UsersModel');
-        $title = 'Project: '.$title;
-
-        // Trim project name if too long for access level
-        if(strlen($title) > 100) $title = substr($title, 0, 97).'...';
-
-        // Set access level data
-        $data = array('id' => $id, 'title' => $title, 'rules' => $rules);
-
-        // Store access level
-        if(!$model->save($data)) return false;
-
-        $id = $model->getState('level.id');
-
-        return $id;
-    }
 }

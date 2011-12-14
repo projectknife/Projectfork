@@ -47,6 +47,17 @@ Joomla.submitbutton = function(task) {
 			<ul class="adminformlist">
 				<li><?php echo $this->form->getLabel('title').$this->form->getInput('title'); ?></li>
 				<li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
+				<li><?php echo $this->form->getLabel('access').$this->form->getInput('access'); ?></li>
+				<li>
+                    <span class="faux-label"><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></span>
+				    <div class="button2-left">
+                        <div class="blank">
+    					    <button type="button" onclick="document.location.href='#access-rules';">
+                                <?php echo JText::_('JGLOBAL_PERMISSIONS_ANCHOR'); ?>
+                            </button>
+					    </div>
+				    </div>
+				</li>
 			</ul>
 			<div class="clr"></div>
 			<?php echo $this->form->getLabel('description'); ?>
@@ -91,10 +102,22 @@ Joomla.submitbutton = function(task) {
        <div class="clr"></div>
     </div>
 
+    <div class="clr"></div>
+	<div class="width-100 fltlft">
+	    <?php echo JHtml::_('sliders.start','permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+
+		<?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_PROJECT_FIELDSET_RULES'), 'access-rules'); ?>
+    		<fieldset class="panelform">
+    		    <?php echo $this->form->getLabel('rules'); ?>
+    			<?php echo $this->form->getInput('rules'); ?>
+    		</fieldset>
+		<?php echo JHtml::_('sliders.end'); ?>
+    </div>
+    <div class="clr"></div>
+
     <div>
 		<?php
             echo $this->form->getInput('alias');
-            echo $this->form->getInput('access');
             echo $this->form->getInput('created');
             echo $this->form->getInput('id');
         ?>

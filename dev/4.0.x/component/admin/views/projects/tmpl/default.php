@@ -47,6 +47,11 @@ $save_order = $list_order == 'p.title';
 				<?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
 			</select>
 
+            <select name="filter_access" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('JOPTION_SELECT_ACCESS');?></option>
+				<?php echo JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'));?>
+			</select>
+
 			<select name="filter_manager_id" class="inputbox" onchange="this.form.submit()">
 				<option value=""><?php echo JText::_('JOPTION_SELECT_MANAGER');?></option>
 				<?php echo JHtml::_('select.options', $this->managers, 'value', 'text', $this->state->get('filter.manager_id'));?>
@@ -66,6 +71,9 @@ $save_order = $list_order == 'p.title';
 				</th>
 				<th width="5%">
 					<?php echo JHtml::_('grid.sort', 'JSTATUS', 'p.state', $list_dir, $list_order); ?>
+				</th>
+                <th width="10%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'p.access', $list_dir, $list_order); ?>
 				</th>
 				<th width="10%">
 					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MANAGED_BY', 'p.created_by', $list_dir, $list_order); ?>
@@ -111,6 +119,9 @@ $save_order = $list_order == 'p.title';
 				</td>
 				<td class="center">
 					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'projects.', $canChange, 'cb'); ?>
+				</td>
+                <td class="center">
+					<?php echo $this->escape($item->access_level); ?>
 				</td>
 				<td class="center">
 					<?php echo $this->escape($item->manager_name); ?>
