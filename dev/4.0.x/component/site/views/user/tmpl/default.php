@@ -22,8 +22,8 @@
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
 ?>
-<div id="projectfork" class="item-page view-milestone">
-	<h2>Milestone Name <input type="button" class="button" value="View Dashboard" /></h2>
+<div id="projectfork" class="item-page view-user">
+	<h2>User Name <input type="button" class="button" value="View Dashboard" /></h2>
 	<ul class="actions">
 						<li class="print-icon">
 			<a rel="nofollow" onclick="window.open(this.href,'win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no'); return false;" title="Print" href="#"><img alt="Print" src="/projectfork_4/media/system/images/printButton.png"></a>			</li>
@@ -38,8 +38,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 	</ul>
 	<dl class="article-info">
 		<dt class="article-info-term">Details</dt>
-		<dd class="milestone-name">
-			Milestone: <a href="#">Milestone Name</a>		
+		<dd class="user-name">
+			User: <a href="#">User Name</a>		
 		</dd>
 		<dd class="start-date">
 			Started on Saturday, 01 January 2011 00:00	
