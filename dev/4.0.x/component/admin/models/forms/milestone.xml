@@ -5,9 +5,8 @@
 			description="JFIELD_TITLE_DESC" class="inputbox" size="30"
 			required="true" 
         />
-		<field name="description" type="editor" class="inputbox"
+		<field name="description" type="text" class="inputbox" size="60" maxlength="255"
 			label="COM_PROJECTFORK_FIELD_DESCRIPTION_LABEL" description="COM_PROJECTFORK_FIELD_DESCRIPTION_DESC"
-			buttons="true" 
 		/>
 		<field name="state" type="list" label="JSTATUS"
 			description="JFIELD_PUBLISHED_DESC" class="inputbox"
@@ -27,14 +26,14 @@
 			type="spacer" 
         />
         <field name="created_by" type="user"
-			label="COM_PROJECTFORK_FIELD_PROJECT_MANAGER_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_MANAGER_DESC"
+			label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_MILESTONE_CREATED_BY_DESC"
         />
 		<field name="start_date" type="calendar" class="inputbox"
-			label="COM_PROJECTFORK_FIELD_PROJECT_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_START_DATE_DESC"
+			label="COM_PROJECTFORK_FIELD_MILESTONE_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_MILESTONE_START_DATE_DESC"
 			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
         />
         <field name="end_date" type="calendar" class="inputbox"
-			label="COM_PROJECTFORK_FILED_DEADLINE_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_END_DATE_DESC"
+			label="COM_PROJECTFORK_FILED_DEADLINE_LABEL" description="COM_PROJECTFORK_FIELD_MILESTONE_END_DATE_DESC"
 			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
         />
 		<field name="modified" type="calendar" class="readonly"
@@ -55,7 +54,7 @@
 			validate="rules"
 			filter="rules"
 			component="com_projectfork"
-			section="project" 
+			section="milestone" 
         />
 		<field name="id" type="hidden" readonly="true"/>
 		<field name="asset_id" type="hidden" filter="unset"/>
@@ -65,7 +64,7 @@
 		<field name="checked_out_time" type="hidden" filter="unset" />
 	</fieldset>
 	<fields name="attribs">
-	    <fieldset name="basic" label="COM_PROJECTFORK_PROJECT_ATTRIBS_FIELDSET_LABEL">
+	    <fieldset name="basic" label="COM_PROJECTFORK_MILESTONE_ATTRIBS_FIELDSET_LABEL">
 	        
 	    </fieldset>
 	</fields>

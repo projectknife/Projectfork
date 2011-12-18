@@ -23,27 +23,19 @@
 // No direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.controller');
+jimport('joomla.application.component.controllerform');
 
 
-class ProjectforkController extends JController
+class ProjectforkControllerMilestone extends JControllerForm
 {
 	/**
-	 * @var    string    The default view
+	 * Class constructor.
+	 *
+	 * @param	  array    $config    A named array of configuration variables
+	 * @return    JControllerForm
 	 */
-	protected $default_view = 'dashboard';
-
-
-	public function display($cachable = false, $urlparams = false)
+	public function __construct($config = array())
 	{
-		require_once JPATH_COMPONENT.'/helpers/projectfork.php';
-
-		// Load the submenu.
-		ProjectforkHelper::addSubmenu(JRequest::getCmd('view', 'dashboard'));
-
-		parent::display();
-
-		return $this;
+		parent::__construct($config);
 	}
 }
-?>

@@ -2,7 +2,7 @@
 /**
 * @package   Projectfork
 * @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
+* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
 *
 * This file is part of Projectfork.
 *
@@ -20,30 +20,41 @@
 * along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
 **/
 
-// No direct access
 defined('_JEXEC') or die;
 
-jimport('joomla.application.component.controller');
+jimport('joomla.application.component.controlleradmin');
 
 
-class ProjectforkController extends JController
+/**
+ * Milestone list controller class.
+ *
+ */
+class ProjectforkControllerMilestones extends JControllerAdmin
 {
 	/**
-	 * @var    string    The default view
+	 * Constructor.
+	 *
+	 * @param	array	$config	An optional associative array of configuration settings
+	 * @return	ProjectforkControllerMilestones
+	 * @see		JController
 	 */
-	protected $default_view = 'dashboard';
-
-
-	public function display($cachable = false, $urlparams = false)
+	public function __construct($config = array())
 	{
-		require_once JPATH_COMPONENT.'/helpers/projectfork.php';
+		parent::__construct($config);
+	}
 
-		// Load the submenu.
-		ProjectforkHelper::addSubmenu(JRequest::getCmd('view', 'dashboard'));
 
-		parent::display();
+	/**
+	 * Proxy for getModel.
+	 *
+	 * @param	string	$name	The name of the model.
+	 * @param	string	$prefix	The prefix for the PHP class name.
+	 * @return	JModel
+	 */
+	public function getModel($name = 'Milestone', $prefix = 'ProjectforkModel', $config = array('ignore_request' => true))
+	{
+		$model = parent::getModel($name, $prefix, $config);
 
-		return $this;
+		return $model;
 	}
 }
-?>

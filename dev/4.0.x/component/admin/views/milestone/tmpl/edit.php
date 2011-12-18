@@ -30,8 +30,7 @@ JHtml::_('behavior.keepalive');
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task) {
-    if (task == 'project.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
-	    <?php echo $this->form->getField('description')->save(); ?>
+    if (task == 'milestone.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
         Joomla.submitform(task, document.getElementById('item-form'));
 	}
     else {
@@ -39,13 +38,14 @@ Joomla.submitbutton = function(task) {
 	}
 }
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=project&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=milestone&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 
     <div class="width-60 fltlft">
         <fieldset class="adminform">
-			<legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_PROJECT') : JText::_('COM_PROJECTFORK_EDIT_PROJECT'); ?></legend>
+			<legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_MILESTONE') : JText::_('COM_PROJECTFORK_EDIT_MILESTONE'); ?></legend>
 			<ul class="adminformlist">
 				<li><?php echo $this->form->getLabel('title').$this->form->getInput('title'); ?></li>
+				<li><?php echo $this->form->getLabel('description').$this->form->getInput('description'); ?></li>
 				<li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
 				<li><?php echo $this->form->getLabel('access').$this->form->getInput('access'); ?></li>
 				<li>
@@ -60,9 +60,6 @@ Joomla.submitbutton = function(task) {
 				</li>
 			</ul>
 			<div class="clr"></div>
-			<?php echo $this->form->getLabel('description'); ?>
-			<div class="clr"></div>
-			<?php echo $this->form->getInput('description'); ?>
 		</fieldset>
     </div>
 
@@ -106,7 +103,7 @@ Joomla.submitbutton = function(task) {
 	<div class="width-100 fltlft">
 	    <?php echo JHtml::_('sliders.start','permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
 
-		<?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_PROJECT_FIELDSET_RULES'), 'access-rules'); ?>
+		<?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_MILESTONE_FIELDSET_RULES'), 'access-rules'); ?>
     		<fieldset class="panelform">
     		    <?php echo $this->form->getLabel('rules'); ?>
     			<?php echo $this->form->getInput('rules'); ?>

@@ -25,6 +25,11 @@ class ProjectforkHelper
 			'index.php?option=com_projectfork&view=projects',
 			($vName == 'projects')
         );
+        JSubMenuHelper::addEntry(
+			JText::_('COM_PROJECTFORK_SUBMENU_MILESTONES'),
+			'index.php?option=com_projectfork&view=milestones',
+			($vName == 'milestones')
+        );
 	}
 
 
