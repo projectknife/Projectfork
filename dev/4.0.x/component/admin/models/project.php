@@ -130,6 +130,34 @@ class ProjectforkModelProject extends JModelAdmin
 	}
 
 
+    /**
+	 * Method to set a project to active on the current user
+	 *
+	 * @param     array	     The form data
+	 * @return    boolean    True on success
+	 */
+    public function activate($data)
+    {
+        $app = JFactory::getApplication();
+
+        $id = (int) $data['id'];
+
+        if($id) {
+            $item = $this->getItem($id);
+            if(!$item) return false;
+
+            $app->setUserState('com_projectfork.active_project.id', $id);
+            $app->setUserState('com_projectfork.active_project.title', $item->title);
+        }
+        else {
+            $app->setUserState('com_projectfork.active_project.id', 0);
+            $app->setUserState('com_projectfork.active_project.title', '');
+        }
+
+        return true;
+    }
+
+
 	/**
 	 * Custom clean the cache of com_projectfork and projectfork modules
 	 *
