@@ -18,7 +18,15 @@
 .calendar-weekday,
 .calendar-weekend{
 	width: 14.3%;
+	padding: 5px;
 }
 .calendar-day{
 	height: 80px;
+}
+.calendar-item{
+	white-space: nowrap;
+	font-size: 10px;
+	letter-spacing: -0.02em;
+	max-width: 100px;
+	overflow: hidden;
 }
