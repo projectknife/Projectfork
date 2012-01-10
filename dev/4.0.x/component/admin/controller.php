@@ -49,6 +49,10 @@ class ProjectforkController extends JController
 	}
 
 
+    /**
+     * Sets the currently active project
+     *
+     **/
     public function activate()
     {
         $data = array();

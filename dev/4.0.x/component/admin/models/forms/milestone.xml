@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset>
-		<field name="title" type="text" label="JGLOBAL_TITLE"
+		<field name="project_id" type="project" label="COM_PROJECTFORK_FIELD_PROJECT_LABEL"
+			description="COM_PROJECTFORK_FIELD_PROJECT_DESC" class="inputbox" size="30"
+			required="true" 
+        />
+        <field name="title" type="text" label="JGLOBAL_TITLE"
 			description="JFIELD_TITLE_DESC" class="inputbox" size="30"
 			required="true" 
         />
@@ -33,7 +37,7 @@
 			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
         />
         <field name="end_date" type="calendar" class="inputbox"
-			label="COM_PROJECTFORK_FILED_DEADLINE_LABEL" description="COM_PROJECTFORK_FIELD_MILESTONE_END_DATE_DESC"
+			label="COM_PROJECTFORK_FIELD_DEADLINE_LABEL" description="COM_PROJECTFORK_FIELD_MILESTONE_END_DATE_DESC"
 			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
         />
 		<field name="modified" type="calendar" class="readonly"

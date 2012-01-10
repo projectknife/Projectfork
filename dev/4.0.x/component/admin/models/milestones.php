@@ -43,6 +43,7 @@ class ProjectforkModelMilestones extends JModelList
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
 				'id', 'a.id',
+                'project_id', 'a.project_id',
 				'title', 'a.title',
 				'description', 'a.description',
 				'alias', 'a.alias',
@@ -90,6 +91,9 @@ class ProjectforkModelMilestones extends JModelList
         $access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', '');
 		$this->setState('filter.access', $access);
 
+        $project = $this->getUserStateFromRequest('com_projectfork.active_project.id', '');
+        $this->setState('filter.project', $project);
+
 		// List state information.
 		parent::populateState('a.title', 'asc');
 	}
@@ -112,6 +116,7 @@ class ProjectforkModelMilestones extends JModelList
 		$id	.= ':'.$this->getState('filter.published');
 		$id	.= ':'.$this->getState('filter.access');
 		$id	.= ':'.$this->getState('filter.author_id');
+		$id	.= ':'.$this->getState('filter.project');
 
 		return parent::getStoreId($id);
 	}
@@ -134,7 +139,7 @@ class ProjectforkModelMilestones extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'a.id, a.title, a.alias, a.checked_out, a.checked_out_time,'
+				'a.id, a.project_id, a.title, a.alias, a.checked_out, a.checked_out_time,'
 				. 'a.state, a.access, a.created, a.created_by,'
 				. 'a.start_date, a.end_date'
 			)
@@ -153,11 +158,21 @@ class ProjectforkModelMilestones extends JModelList
 		$query->select('ua.name AS author_name');
 		$query->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
+        // Join over the projects for the project title.
+		$query->select('p.title AS project_title');
+		$query->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
+
 		// Implement View Level Access
 		if(!$user->authorise('core.admin')) {
 		    $groups	= implode(',', $user->getAuthorisedViewLevels());
 			$query->where('a.access IN ('.$groups.')');
 		}
+
+        // Filter by project
+        $project = $this->getState('filter.project');
+        if(is_numeric($project)) {
+            $query->where('a.project_id = ' . (int) $project);
+        }
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
