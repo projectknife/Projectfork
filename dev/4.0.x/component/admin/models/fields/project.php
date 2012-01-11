@@ -38,6 +38,7 @@ class JFormFieldProject extends JFormField
 	protected function getInput()
 	{
 		// Initialize variables.
+        $app      = JFactory::getApplication();
 		$html     = array();
 		$groups   = $this->getGroups();
 		$excluded = $this->getExcluded();
@@ -45,8 +46,8 @@ class JFormFieldProject extends JFormField
                  &amp;function=pfSelectProject_'.$this->id;
 
 		// Initialize some field attributes.
-		$attr = $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
-		$attr .= $this->element['size'] ? ' size="'.(int) $this->element['size'].'"'      : '';
+		$attr  = $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
+		$attr .= $this->element['size']  ? ' size="'.(int) $this->element['size'].'"'      : '';
 
 		// Initialize JavaScript field attributes.
 		$onchange = (string) $this->element['onchange'];
@@ -74,7 +75,15 @@ class JFormFieldProject extends JFormField
 		if ($this->value) {
 			$table->load($this->value);
 		} else {
-			$table->title = JText::_('COM_PROJECTFORK_SELECT_A_PROJECT');
+		    $active_id = (int) $app->getUserState('com_projectfork.active_project.id', 0);
+
+            if($active_id) {
+                $table->load($active_id);
+                $this->value = $active_id;
+            }
+            else {
+                $table->title = JText::_('COM_PROJECTFORK_SELECT_A_PROJECT');
+            }
 		}
 
 		// Create a dummy text field with the project title.

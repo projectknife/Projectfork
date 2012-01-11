@@ -68,6 +68,39 @@ class JTableMilestone extends JTable
 	}
 
 
+    /**
+	 * Method to get the parent asset id for the record
+	 *
+	 * @param   JTable   $table  A JTable object for the asset parent
+	 * @param   integer  $id
+	 * @return  integer
+	 */
+	protected function _getAssetParentId($table = null, $id = null)
+	{
+		// Initialise variables.
+		$assetId = null;
+		$db = $this->getDbo();
+
+		// This is a milestone under a project.
+		if ($this->project_id) {
+			// Build the query to get the asset id for the parent project.
+			$query	= $db->getQuery(true);
+			$query->select('asset_id');
+			$query->from('#__pf_projects');
+			$query->where('id = '.(int) $this->project_id);
+
+			// Get the asset id from the database.
+			$this->_db->setQuery($query);
+			if ($result = $this->_db->loadResult()) $assetId = (int) $result;
+		}
+
+		// Return the asset id.
+		if ($assetId) return $assetId;
+
+		return parent::_getAssetParentId($table, $id);
+	}
+
+
 	/**
 	 * Overloaded bind function
 	 *

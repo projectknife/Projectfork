@@ -22,7 +22,6 @@
 
 // No direct access
 defined('_JEXEC') or die;
-die ("sdfdgg");
 
 /**
  * Renders a project element
