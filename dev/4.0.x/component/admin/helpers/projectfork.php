@@ -36,12 +36,11 @@ class ProjectforkHelper
 	 */
 	public static function addSubmenu($vName)
 	{
-		JSubMenuHelper::addEntry(
+        JSubMenuHelper::addEntry(
 			JHtml::_('projectfork.activeproject'),
 			NULL,
-			true
+			false
 		);
-
 
         JSubMenuHelper::addEntry(
 			JText::_('COM_PROJECTFORK_SUBMENU_DASHBOARD'),
@@ -57,6 +56,11 @@ class ProjectforkHelper
 			JText::_('COM_PROJECTFORK_SUBMENU_MILESTONES'),
 			'index.php?option=com_projectfork&view=milestones',
 			($vName == 'milestones')
+        );
+        JSubMenuHelper::addEntry(
+			JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS'),
+			'index.php?option=com_projectfork&view=tasklists',
+			($vName == 'tasklists')
         );
 	}
 

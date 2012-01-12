@@ -57,8 +57,18 @@ abstract class JHtmlProjectfork
 			document.getElementById('active_project_name').innerHTML = title;
 			SqueezeBox.close();
             document.activeProjectForm.submit();
+		}
+        function pfClearActiveProject() {
+			document.getElementById('active_project_id').value = 0;
+			document.getElementById('active_project_name').innerHTML = '';
+            document.activeProjectForm.submit();
 		}";
 		$doc->addScriptDeclaration($js);
+
+        $btn_clear = '';
+        if($active_id) {
+            $btn_clear = '<a href="javascript: pfClearActiveProject();">Clear</a>';
+        }
 
         // Set the modal window link
         $link = 'index.php?option=com_projectfork&amp;view=projects&amp;layout=modal&amp;tmpl=component&amp;function=pfSelectActiveProject';
@@ -70,6 +80,7 @@ abstract class JHtmlProjectfork
               . '<a href="'.$link.'" rel="{handler: \'iframe\', size: {x: 800, y: 450}}" class="modal" id="active_project_name">'
               . $active_title
               . '</a>'
+              . $btn_clear
               . '<input type="hidden" name="id" value="'.$active_id.'" id="active_project_id"/>'
               . '<input type="hidden" name="task" value="activate" />'
               . '<input type="hidden" name="return" value="'.$return.'" />'

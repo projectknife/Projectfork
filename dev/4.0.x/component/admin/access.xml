@@ -29,4 +29,11 @@
 		<action name="milestone.edit.state" title="COM_PROJECTFORK_MILESTONE_ACTION_EDITSTATE" description="COM_PROJECTFORK_MILESTONE_ACTION_EDITSTATE_DESC" />
 		<action name="milestone.edit.own" title="COM_PROJECTFORK_MILESTONE_ACTION_EDITOWN" description="COM_PROJECTFORK_MILESTONE_ACTION_EDITOWN_DESC" />
 	</section>
+	<section name="tasklist">
+	    <action name="tasklist.create" title="COM_PROJECTFORK_TASKLIST_ACTION_CREATE" description="COM_PROJECTFORK_TASKLIST_ACTION_CREATE_DESC" />
+		<action name="tasklist.delete" title="COM_PROJECTFORK_TASKLIST_ACTION_DELETE" description="COM_PROJECTFORK_TASKLIST_ACTION_DELETE_DESC" />
+		<action name="tasklist.edit" title="COM_PROJECTFORK_TASKLIST_ACTION_EDIT" description="COM_PROJECTFORK_TASKLIST_ACTION_EDIT_DESC" />
+		<action name="tasklist.edit.state" title="COM_PROJECTFORK_TASKLIST_ACTION_EDITSTATE" description="COM_PROJECTFORK_TASKLIST_ACTION_EDITSTATE_DESC" />
+		<action name="tasklist.edit.own" title="COM_PROJECTFORK_TASKLIST_ACTION_EDITOWN" description="COM_PROJECTFORK_TASKLIST_ACTION_EDITOWN_DESC" />
+	</section>
 </access>
