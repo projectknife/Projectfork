@@ -123,8 +123,18 @@ class ProjectforkModelProject extends JModelAdmin
             $data['alias'] = '';
         }
 
+
+        // Create new access level?
+        $new_access = trim($data['access_new']);
+
+        if(!is_array($data['access_rules'])) $data['access_rules'] = array();
+        if(strlen($new_access)) $data['access'] = $this->saveAccessLevel($new_access, $data['access_rules']);
+        if(!$data['access'])    $data['access'] = 1;
+
+
         // Store the record
 		if (parent::save($data)) return true;
+
 
 		return false;
 	}
@@ -196,4 +206,38 @@ class ProjectforkModelProject extends JModelAdmin
 
 		return array($title, $alias);
 	}
+
+
+    /**
+    * Method to generate a new access level for a project
+    *
+    * @param    string    $title    The project title
+    * @param    array     $rules    Optional associated user groups
+    *
+    * @return   integer             The access level id
+    **/
+    protected function saveAccessLevel($title, $rules = array())
+    {
+        // Get user viewing level model
+        JModel::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_users'.DS.'models');
+
+        $model = JModel::getInstance('Level', 'UsersModel');
+
+
+        // Trim project name if too long for access level
+        if(strlen($title) > 100) $title = substr($title, 0, 97).'...';
+
+
+        // Set access level data
+        $data = array('id' => 0, 'title' => $title, 'rules' => $rules);
+
+
+        // Store access level
+        if(!$model->save($data)) return false;
+
+        $id = $model->getState('level.id');
+
+
+        return $id;
+    }
 }

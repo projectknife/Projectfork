@@ -38,6 +38,18 @@ Joomla.submitbutton = function(task) {
 	    alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 	}
 }
+Joomla.pfSelectAccess = function(idx) {
+    var access_val = $('jform_access').options[idx].value;
+
+    if(access_val == 0) {
+        $('jform_access_new-li').show();
+        $('jform_access_groups-li').show();
+    }
+    else {
+        $('jform_access_new-li').hide();
+        $('jform_access_groups-li').hide();
+    }
+}
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=project&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 
@@ -47,7 +59,6 @@ Joomla.submitbutton = function(task) {
 			<ul class="adminformlist">
 				<li><?php echo $this->form->getLabel('title').$this->form->getInput('title'); ?></li>
 				<li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
-				<li><?php echo $this->form->getLabel('access').$this->form->getInput('access'); ?></li>
 				<li>
                     <span class="faux-label"><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></span>
 				    <div class="button2-left">
@@ -82,6 +93,23 @@ Joomla.submitbutton = function(task) {
 					<?php endif; ?>
                 </ul>
             </fieldset>
+
+            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_ACCESS'), 'access-details'); ?>
+            <fieldset class="panelform">
+                <ul class="adminformlist">
+                    <li id="jform_access-li"><?php echo $this->form->getLabel('access').$this->form->getInput('access'); ?></li>
+				    <li id="jform_access_new-li" style="display: none;"><?php echo $this->form->getLabel('access_new').$this->form->getInput('access_new'); ?></li>
+                    <li id="jform_access_groups-li" style="display: none;">
+                        <label id="jform_access_groups-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_ACCESS_GROUPS_DESC');?>">
+                            <?php echo JText::_('COM_PROJECTFORK_FIELD_ACCESS_GROUPS_LABEL');?>
+                        </label>
+                        <div id="jform_access_groups">
+                        <?php echo JHtml::_('access.usergroups', 'jform[access_rules]', array()); ?>
+                        </div>
+                    </li>
+                </ul>
+            </fieldset>
+
 
             <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
 			<?php foreach ($fieldSets as $name => $fieldSet) : ?>

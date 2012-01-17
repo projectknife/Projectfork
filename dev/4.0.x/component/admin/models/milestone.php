@@ -84,6 +84,8 @@ class ProjectforkModelMilestone extends JModelAdmin
 		$form = $this->loadForm('com_projectfork.milestone', 'milestone', array('control' => 'jform', 'load_data' => $loadData));
 		if (empty($form)) return false;
 
+        $form->setFieldAttribute('access', 'params', '1, 2, 3, 4');
+
 		return $form;
 	}
 
