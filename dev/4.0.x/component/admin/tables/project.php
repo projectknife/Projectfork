@@ -107,24 +107,20 @@ class JTableProject extends JTable
 	 */
 	public function check()
 	{
-		if (trim($this->title) == '') {
+		jimport('joomla.mail.helper');
+
+        if (trim($this->title) == '') {
 			$this->setError(JText::_('COM_PROJECTFORK_WARNING_PROVIDE_VALID_TITLE'));
 			return false;
 		}
 
-		if (trim($this->alias) == '') {
-			$this->alias = $this->title;
-		}
-
+		if (trim($this->alias) == '') $this->alias = $this->title;
 		$this->alias = JApplication::stringURLSafe($this->alias);
+		if (trim(str_replace('-','',$this->alias)) == '') $this->alias = JFactory::getDate()->format('Y-m-d-H-i-s');
 
-		if (trim(str_replace('-','',$this->alias)) == '') {
-			$this->alias = JFactory::getDate()->format('Y-m-d-H-i-s');
-		}
 
-		if (trim(str_replace('&nbsp;', '', $this->description)) == '') {
-			$this->description = '';
-		}
+		if (trim(str_replace('&nbsp;', '', $this->description)) == '') $this->description = '';
+
 
 		// Check the start date is not earlier than the end date.
 		if ($this->end_date > $this->_db->getNullDate() && $this->end_date < $this->start_date) {
@@ -134,6 +130,27 @@ class JTableProject extends JTable
 			$this->end_date = $temp;
 		}
 
+
+        // Check attribs
+        $registry = new JRegistry;
+		$registry->loadJSON($this->attribs);
+
+        $website = $registry->get('website');
+        $email   = $registry->get('email');
+
+        // Validate website
+        if ((strlen($website) > 0)
+			&& (stripos($website, 'http://') === false)
+			&& (stripos($website, 'https://') === false)
+			&& (stripos($website, 'ftp://') === false))
+		{
+			$registry->setValue('website', 'http://'.$website);
+		}
+
+        // Validate contact email
+        if (!JMailHelper::isEmailAddress($email)) $registry->setValue('email', '');
+
+        $this->attribs = (string) $registry;
 		return true;
 	}
 

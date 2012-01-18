@@ -73,7 +73,18 @@
 	</fieldset>
 	<fields name="attribs">
 	    <fieldset name="basic" label="COM_PROJECTFORK_PROJECT_ATTRIBS_FIELDSET_LABEL">
-	        
+	        <field name="website" type="text" label="COM_PROJECTFORK_FIELD_WEBSITE_LABEL"
+			    description="COM_PROJECTFORK_FIELD_PROJECT_WEBSITE_DESC" class="inputbox" size="30"
+			    filter="url" 
+            />
+            <field name="email" type="text" label="COM_PROJECTFORK_FIELD_EMAIL_LABEL"
+			    description="COM_PROJECTFORK_FIELD_PROJECT_EMAIL_DESC" class="inputbox" size="30"
+			    filter="email" 
+            />
+            <field name="phone" type="text" label="COM_PROJECTFORK_FIELD_PHONE_LABEL"
+			    description="COM_PROJECTFORK_FIELD_PROJECT_PHONE_DESC" class="inputbox" size="30"
+			    filter="tel" 
+            />
 	    </fieldset>
 	</fields>
 </form>
