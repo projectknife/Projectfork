@@ -127,9 +127,10 @@ class ProjectforkModelProject extends JModelAdmin
         // Create new access level?
         $new_access = trim($data['access_new']);
 
-        if(!is_array($data['access_rules'])) $data['access_rules'] = array();
-        if(strlen($new_access)) $data['access'] = $this->saveAccessLevel($new_access, $data['access_rules']);
-        if(!$data['access'])    $data['access'] = 1;
+        if(!array_key_exists('access_rules', $data)) $data['access_rules'] = array();
+        if(!is_array($data['access_rules']))         $data['access_rules'] = array();
+        if(strlen($new_access))                      $data['access'] = $this->saveAccessLevel($new_access, $data['access_rules']);
+        if($data['access'] <= 0)                     $data['access'] = 1;
 
 
         // Store the record

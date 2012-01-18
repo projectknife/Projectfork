@@ -151,6 +151,8 @@ class JTableProject extends JTable
         if (!JMailHelper::isEmailAddress($email)) $registry->setValue('email', '');
 
         $this->attribs = (string) $registry;
+
+
 		return true;
 	}
 
