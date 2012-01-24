@@ -3,7 +3,7 @@
 	<fieldset>
 		<field name="project_id" type="project" label="COM_PROJECTFORK_FIELD_PROJECT_LABEL"
 			description="COM_PROJECTFORK_FIELD_PROJECT_DESC" class="inputbox" size="30"
-			required="true" 
+			required="true" view="milestone"
         />
         <field name="title" type="text" label="JGLOBAL_TITLE"
 			description="JFIELD_TITLE_DESC" class="inputbox" size="30"
@@ -21,9 +21,11 @@
 			<option value="2">JARCHIVED</option>
 			<option value="-2">JTRASHED</option>
 		</field>
-		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"
+		<field name="access" type="childaccesslevel" label="JFIELD_ACCESS_LABEL"
 			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" 
-        />
+        >
+            <option value="0">COM_PROJECTFORK_OPTION_INHERIT_FROM_PROJECT</option>
+        </field>
 		<field
 			name="buttonspacer"
 			description="JGLOBAL_ACTION_PERMISSIONS_DESCRIPTION"

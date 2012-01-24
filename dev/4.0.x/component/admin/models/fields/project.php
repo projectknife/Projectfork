@@ -20,7 +20,7 @@
 * along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
 **/
 
-defined('JPATH_BASE') or die;
+defined('JPATH_PLATFORM') or die;
 
 jimport('joomla.html.html');
 jimport('joomla.access.access');
@@ -62,6 +62,8 @@ class JFormFieldProject extends JFormField
 		$attr  = $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
 		$attr .= $this->element['size']  ? ' size="'.(int) $this->element['size'].'"'      : '';
 
+		$view = $this->element['view'] ? ((string) $this->element['view']).'.' : '';
+
 		// Initialize JavaScript field attributes.
 		$onchange = (string) $this->element['onchange'];
 
@@ -75,10 +77,9 @@ class JFormFieldProject extends JFormField
 		$script[] = '		if (old_id != id) {';
 		$script[] = '			document.getElementById("'.$this->id.'_id").value = id;';
 		$script[] = '			document.getElementById("'.$this->id.'_name").value = title;';
-		$script[] = '			'.$onchange;
+		$script[] = '			Joomla.submitbutton("'.$view.'setProject");';
 		$script[] = '		}';
-		$script[] = '		SqueezeBox.close();';
-		$script[] = '		window.location.reload();';
+		//$script[] = '		SqueezeBox.close();';
 		$script[] = '	}';
 
 		// Add the script to the document head.
@@ -99,6 +100,7 @@ class JFormFieldProject extends JFormField
                 $table->title = JText::_('COM_PROJECTFORK_SELECT_A_PROJECT');
             }
 		}
+
 
 		// Create a dummy text field with the project title.
 		$html[] = '<div class="fltlft">';
