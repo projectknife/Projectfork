@@ -30,7 +30,7 @@ JHtml::_('behavior.keepalive');
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task) {
-    if (task == 'milestone.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
+    if (task == 'milestone.cancel' || document.formvalidator.isValid(document.id('item-form')) || task == 'milestone.setProject') {
         Joomla.submitform(task, document.getElementById('item-form'));
 	}
     else {
