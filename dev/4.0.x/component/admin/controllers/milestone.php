@@ -38,4 +38,27 @@ class ProjectforkControllerMilestone extends JControllerForm
 	{
 		parent::__construct($config);
 	}
+
+
+    /**
+	 * Sets the project of the milestone currently being edited.
+	 *
+	 * @return	void
+	 */
+	function setProject()
+	{
+		// Initialise variables.
+		$app      = JFactory::getApplication();
+		$data     = JRequest::getVar('jform', array(), 'post', 'array');
+		$recordId = JRequest::getInt('id');
+		$project  = (int) $data['project_id'];
+
+        //Save the data in the session.
+		$app->setUserState('com_projectfork.edit.milestone.project',	$project);
+		$app->setUserState('com_projectfork.edit.milestone.data', $data);
+
+		$this->project_id = $project;
+
+		$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId), false));
+	}
 }
