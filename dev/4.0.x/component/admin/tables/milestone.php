@@ -81,10 +81,12 @@ class JTableMilestone extends JTable
 		$assetId = null;
 		$db = $this->getDbo();
 
+
 		// This is a milestone under a project.
 		if ($this->project_id) {
 			// Build the query to get the asset id for the parent project.
-			$query	= $db->getQuery(true);
+			$query = $db->getQuery(true);
+
 			$query->select('asset_id');
 			$query->from('#__pf_projects');
 			$query->where('id = '.(int) $this->project_id);
@@ -94,11 +96,36 @@ class JTableMilestone extends JTable
 			if ($result = $this->_db->loadResult()) $assetId = (int) $result;
 		}
 
+
 		// Return the asset id.
 		if ($assetId) return $assetId;
-
 		return parent::_getAssetParentId($table, $id);
 	}
+
+
+    /**
+	 * Method to get the project access level id
+	 *
+	 * @return  integer
+	 */
+    protected function _getAccessProjectId()
+    {
+        if((int) $this->project_id == 0) return 1;
+
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('access');
+		$query->from('#__pf_projects');
+		$query->where('id = '.(int) $this->project_id);
+
+        $db->setQuery($query);
+        $access = (int) $db->loadResult();
+
+        if(!$access) $access = 1;
+
+        return $access;
+    }
 
 
 	/**
@@ -113,6 +140,7 @@ class JTableMilestone extends JTable
 	{
 		if (isset($array['attribs']) && is_array($array['attribs'])) {
 			$registry = new JRegistry;
+
 			$registry->loadArray($array['attribs']);
 			$array['attribs'] = (string) $registry;
 		}
@@ -140,16 +168,13 @@ class JTableMilestone extends JTable
 		}
 
 		if (trim($this->alias) == '') $this->alias = $this->title;
-
 		$this->alias = JApplication::stringURLSafe($this->alias);
+		if (trim(str_replace('-','',$this->alias)) == '') $this->alias = JFactory::getDate()->format('Y-m-d-H-i-s');
 
-		if (trim(str_replace('-','',$this->alias)) == '') {
-			$this->alias = JFactory::getDate()->format('Y-m-d-H-i-s');
-		}
 
-		if (trim(str_replace('&nbsp;', '', $this->description)) == '') {
-			$this->description = '';
-		}
+		if (trim(str_replace('&nbsp;', '', $this->description)) == '') $this->description = '';
+
+
 
 		// Check the start date is not earlier than the end date.
 		if ($this->end_date > $this->_db->getNullDate() && $this->end_date < $this->start_date) {
@@ -159,14 +184,21 @@ class JTableMilestone extends JTable
 			$this->end_date = $temp;
 		}
 
+
         // Check if a project is selected
         if((int) $this->project_id == 0) {
             $this->setError(JText::_('COM_PROJECTFORK_WARNING_SELECT_PROJECT'));
 			return false;
         }
 
+
+        // Check for selected access level
+        if($this->access == 0) $this->access = $this->_getAccessProjectId();
+
+
 		return true;
 	}
+
 
 	/**
 	 * Overrides JTable::store to set modified data and user id.
@@ -185,7 +217,7 @@ class JTableMilestone extends JTable
 			$this->modified_by	= $user->get('id');
 		}
         else {
-			// New item. A project created_by field can be set by the user,
+			// New item. A created_by field can be set by the user,
 			// so we don't touch it if set.
 			$this->created = $date->toMySQL();
 			if (empty($this->created_by)) $this->created_by = $user->get('id');
@@ -217,10 +249,12 @@ class JTableMilestone extends JTable
 		// Initialise variables.
 		$k = $this->_tbl_key;
 
+
 		// Sanitize input.
 		JArrayHelper::toInteger($pks);
 		$userId = (int) $userId;
 		$state  = (int) $state;
+
 
 		// If there are no primary keys set check to see if the instance key is set.
 		if (empty($pks)) {
@@ -234,8 +268,10 @@ class JTableMilestone extends JTable
 			}
 		}
 
+
 		// Build the WHERE clause for the primary keys.
 		$where = $k.'='.implode(' OR '.$k.'=', $pks);
+
 
 		// Determine if there is checkin support for the table.
 		if (!property_exists($this, 'checked_out') || !property_exists($this, 'checked_out_time')) {
@@ -243,6 +279,7 @@ class JTableMilestone extends JTable
 		} else {
 			$checkin = ' AND (checked_out = 0 OR checked_out = '.(int) $userId.')';
 		}
+
 
 		// Update the state for rows with the given primary keys.
 		$this->_db->setQuery(
@@ -253,11 +290,13 @@ class JTableMilestone extends JTable
 		);
 		$this->_db->query();
 
+
 		// Check for a database error.
 		if ($this->_db->getErrorNum()) {
 			$this->setError($this->_db->getErrorMsg());
 			return false;
 		}
+
 
 		// If checkin is supported and all rows were adjusted, check them in.
 		if ($checkin && (count($pks) == $this->_db->getAffectedRows())) {
@@ -266,6 +305,7 @@ class JTableMilestone extends JTable
 				$this->checkin($pk);
 			}
 		}
+
 
 		// If the JTable instance value is in the list of primary keys that were set, set the instance.
 		if (in_array($this->$k, $pks)) $this->state = $state;
@@ -276,6 +316,10 @@ class JTableMilestone extends JTable
 
 
 
+    /**
+	 * @see    setState
+     *
+	 */
     public function publish($pks = null, $state = 1, $userId = 0)
     {
         return $this->setState($pks, $state, $userId);
