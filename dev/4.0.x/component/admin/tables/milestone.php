@@ -159,6 +159,12 @@ class JTableMilestone extends JTable
 			$this->end_date = $temp;
 		}
 
+        // Check if a project is selected
+        if((int) $this->project_id == 0) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_SELECT_PROJECT'));
+			return false;
+        }
+
 		return true;
 	}
 
