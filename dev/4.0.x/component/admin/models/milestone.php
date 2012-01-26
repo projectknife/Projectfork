@@ -84,7 +84,15 @@ class ProjectforkModelMilestone extends JModelAdmin
 		$form = $this->loadForm('com_projectfork.milestone', 'milestone', array('control' => 'jform', 'load_data' => $loadData));
 		if (empty($form)) return false;
 
-        $form->setFieldAttribute('access', 'params', '1, 2, 3, 4');
+
+        // Check if a project id is already selected. If not, set the currently active project as value
+        $project_id = (int) $form->getValue('project_id');
+        if (!$this->getState('milestone.id') && $project_id == 0) {
+            $app       = JFactory::getApplication();
+            $active_id = (int) $app->getUserState('com_projectfork.active_project.id', 0);
+
+            $form->setValue('project_id', null, $active_id);
+        }
 
 		return $form;
 	}
