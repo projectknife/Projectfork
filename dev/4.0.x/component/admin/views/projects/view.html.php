@@ -30,6 +30,7 @@ class ProjectforkViewProjects extends JView
 	protected $pagination;
 	protected $state;
 	protected $managers;
+    protected $nulldate;
 
 
 	/**
@@ -37,12 +38,16 @@ class ProjectforkViewProjects extends JView
 	 */
 	public function display($tpl = null)
 	{
+	    // Get data from model
 	    $this->items	  = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
 		$this->state	  = $this->get('State');
 		$this->managers	  = $this->get('Managers');
 
-	    // Check for errors.
+        // Get database null date
+        $this->nulldate = JFactory::getDbo()->getNullDate();
+
+	    // Check for errors
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseError(500, implode("\n", $errors));
 			return false;

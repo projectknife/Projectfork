@@ -175,6 +175,16 @@ class JTableMilestone extends JTable
 		if (trim(str_replace('&nbsp;', '', $this->description)) == '') $this->description = '';
 
 
+        // Check if a project is selected
+        if((int) $this->project_id == 0) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_SELECT_PROJECT'));
+			return false;
+        }
+
+
+        // Check for selected access level
+        if($this->access == 0) $this->access = $this->_getAccessProjectId();
+
 
 		// Check the start date is not earlier than the end date.
 		if ($this->end_date > $this->_db->getNullDate() && $this->end_date < $this->start_date) {
@@ -185,15 +195,17 @@ class JTableMilestone extends JTable
 		}
 
 
-        // Check if a project is selected
-        if((int) $this->project_id == 0) {
-            $this->setError(JText::_('COM_PROJECTFORK_WARNING_SELECT_PROJECT'));
-			return false;
-        }
+        // Check if the start and end dates are in bounds of the parent dates
+        $project = JTable::getInstance('project');
+        $project->load((int)$this->project_id);
 
+        $a_start = strtotime($project->start_date);
+        $a_end   = strtotime($project->end_date);
+        $b_start = strtotime($this->start_date);
+        $b_end   = strtotime($this->end_date);
 
-        // Check for selected access level
-        if($this->access == 0) $this->access = $this->_getAccessProjectId();
+        if($a_start > $b_start) $this->start_date = $project->start_date;
+        if($a_end < $b_end)     $this->end_date   = $project->end_date;
 
 
 		return true;

@@ -130,10 +130,10 @@ $save_order = $list_order == 'p.title';
 					<?php echo JHtml::_('date',$item->created, JText::_('DATE_FORMAT_LC4')); ?>
 				</td>
                 <td class="center nowrap">
-					<?php echo JHtml::_('date',$item->start_date, JText::_('DATE_FORMAT_LC4')); ?>
+					<?php echo (($item->start_date == $this->nulldate) ? JText::_('DATE_NOT_SET') : JHtml::_('date',$item->start_date, JText::_('DATE_FORMAT_LC4'))); ?>
 				</td>
                 <td class="center nowrap">
-					<?php echo JHtml::_('date',$item->end_date, JText::_('DATE_FORMAT_LC4')); ?>
+					<?php echo (($item->end_date == $this->nulldate) ? JText::_('DATE_NOT_SET') : JHtml::_('date',$item->end_date, JText::_('DATE_FORMAT_LC4'))); ?>
 				</td>
 				<td class="center">
 					<?php echo (int) $item->id; ?>

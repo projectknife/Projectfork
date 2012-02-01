@@ -30,6 +30,7 @@ class ProjectforkViewMilestones extends JView
 	protected $pagination;
 	protected $state;
 	protected $authors;
+    protected $nulldate;
 
 
 	/**
@@ -37,12 +38,17 @@ class ProjectforkViewMilestones extends JView
 	 */
 	public function display($tpl = null)
 	{
-	    $this->items	  = $this->get('Items');
+	    // Get data from model
+        $this->items	  = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
 		$this->state	  = $this->get('State');
 		$this->authors	  = $this->get('Authors');
 
-	    // Check for errors.
+        // Get database null date
+        $this->nulldate = JFactory::getDbo()->getNullDate();
+
+
+	    // Check for errors
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseError(500, implode("\n", $errors));
 			return false;
