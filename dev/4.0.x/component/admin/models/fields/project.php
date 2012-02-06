@@ -62,7 +62,7 @@ class JFormFieldProject extends JFormField
 		$attr  = $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
 		$attr .= $this->element['size']  ? ' size="'.(int) $this->element['size'].'"'      : '';
 
-		$view = $this->element['view'] ? ((string) $this->element['view']).'.' : '';
+		$view = $this->element['view'] ? ((string) $this->element['view']).'.' : ((string) JRequest::getCmd('view'));
 
 		// Initialize JavaScript field attributes.
 		$onchange = (string) $this->element['onchange'];
