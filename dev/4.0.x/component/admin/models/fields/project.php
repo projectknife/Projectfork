@@ -26,7 +26,6 @@ jimport('joomla.html.html');
 jimport('joomla.access.access');
 jimport('joomla.form.formfield');
 
-
 /**
  * Form Field class for selecting a project.
  *
@@ -126,5 +125,27 @@ class JFormFieldProject extends JFormField
 		$html[] = '<input type="hidden" id="'.$this->id.'_id" name="'.$this->name.'" value="'.(int) $this->value.'" />';
 
 		return implode("\n", $html);
+	}
+
+
+	/**
+	 * Method to get the filtering groups (null means no filtering)
+	 *
+	 * @return    mixed    array of filtering groups or null.
+	 */
+	protected function getGroups()
+	{
+		return null;
+	}
+
+
+	/**
+	 * Method to get the projects to exclude from the list of projects
+	 *
+	 * @return    mixed    Array of users to exclude or null to to not exclude them
+	 */
+	protected function getExcluded()
+	{
+		return null;
 	}
 }
