@@ -30,7 +30,7 @@ JHtml::_('behavior.keepalive');
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task) {
-    if (task == 'tasklist.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
+    if (task == 'tasklist.cancel' || document.formvalidator.isValid(document.id('item-form')) || task == 'tasklist.setProject') {
         Joomla.submitform(task, document.getElementById('item-form'));
 	}
     else {
@@ -45,6 +45,7 @@ Joomla.submitbutton = function(task) {
 			<legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_TASKLIST') : JText::_('COM_PROJECTFORK_EDIT_TASKLIST'); ?></legend>
 			<ul class="adminformlist">
 				<li><?php echo $this->form->getLabel('project_id').$this->form->getInput('project_id'); ?></li>
+				<li><?php echo $this->form->getLabel('milestone_id').$this->form->getInput('milestone_id'); ?></li>
 				<li><?php echo $this->form->getLabel('title').$this->form->getInput('title'); ?></li>
 				<li><?php echo $this->form->getLabel('description').$this->form->getInput('description'); ?></li>
 				<li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
