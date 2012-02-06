@@ -29,7 +29,6 @@ $user	    = JFactory::getUser();
 $uid	    = $user->get('id');
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
-$save_order = $list_order == 'a.title';
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=milestones'); ?>" method="post" name="adminForm" id="adminForm">
 
