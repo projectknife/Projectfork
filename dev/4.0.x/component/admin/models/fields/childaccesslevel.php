@@ -32,14 +32,9 @@ require_once(JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/projectfor
 
 
 /**
- * Form Field class for the Joomla Platform.
  * Provides a list of access levels. Access levels control what users in specific
  * groups can see.
  *
- * @package     Joomla.Platform
- * @subpackage  Form
- * @since       11.1
- * @see         JAccess
  */
 class JFormFieldChildAccessLevel extends JFormFieldList
 {
@@ -63,14 +58,11 @@ class JFormFieldChildAccessLevel extends JFormFieldList
 
 
 		// Initialize some field attributes.
-		$attr .= $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
-		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
-		$attr .= $this->element['size'] ? ' size="'.(int) $this->element['size'].'"' : '';
-		$attr .= $this->multiple ? ' multiple="multiple"' : '';
-
-
-		// Initialize JavaScript field attributes.
-		$attr .= $this->element['onchange'] ? ' onchange="'.(string) $this->element['onchange'].'"' : '';
+		$attr .= $this->element['class']                         ? ' class="'.(string) $this->element['class'].'"'       : '';
+		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"'                                : '';
+		$attr .= $this->element['size']                          ? ' size="'.(int) $this->element['size'].'"'            : '';
+		$attr .= $this->element['onchange']                      ? ' onchange="'.(string) $this->element['onchange'].'"' : '';
+        $attr .= $this->multiple                                 ? ' multiple="multiple"'                                : '';
 
 
 		// Get the field options and generate the list
@@ -82,7 +74,11 @@ class JFormFieldChildAccessLevel extends JFormFieldList
 	}
 
 
-
+    /**
+	 * Method to get the field list options markup.
+	 *
+	 * @return    array    The list options markup.
+	 */
     protected function getOptions()
 	{
 	    // Get custom options
@@ -97,7 +93,7 @@ class JFormFieldChildAccessLevel extends JFormFieldList
 	    $view          = $this->element['view']             ? (string) $this->element['view'] : (string) JRequest::getCmd('view');
 
         $parent_id = (int) $this->form->getValue($parent_field);
-        $data = JFactory::getApplication()->getUserState($parent_com.'.edit'.$view.'.data', array());
+        $data      = JFactory::getApplication()->getUserState($parent_com.'.edit'.$view.'.data', array());
 
         if(!$parent_id) return $options;
 
@@ -106,11 +102,10 @@ class JFormFieldChildAccessLevel extends JFormFieldList
         JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.$parent_com.DS.'tables');
 
         $table = JTable::getInstance($parent_type, $parent_prefix);
-
         if(!$table) return $options;
 
 
-        // Load the item
+        // Load the parent item
         if(!$table->load($parent_id)) return $options;
 
 
@@ -121,14 +116,19 @@ class JFormFieldChildAccessLevel extends JFormFieldList
         foreach($levels AS $level)
         {
             // Create a new option object based on the <option /> element.
-			$tmp = JHtml::_('select.option', (string) $level->value, JText::alt(trim((string) $level->text), preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname)), 'value', 'text');
+			$tmp = JHtml::_('select.option',
+                            (string) $level->value,
+                            JText::alt(trim((string) $level->text),
+                            preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname)),
+                            'value',
+                            'text'
+                           );
 
 			// Add the option object to the result set.
 			$options[] = $tmp;
         }
 
 		reset($options);
-
 		return $options;
 	}
 }
