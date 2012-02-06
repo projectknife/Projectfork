@@ -37,7 +37,6 @@ $save_order = $list_order == 'a.title';
 		<div class="filter-search fltlft">
 			<label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
 			<input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
-
 			<button type="submit" class="btn"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
 			<button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
 		</div>
@@ -97,13 +96,14 @@ $save_order = $list_order == 'a.title';
 		</thead>
         <tbody>
 		<?php foreach ($this->items as $i => $item) :
-            $item->max_ordering = 0; //??
+            $item->max_ordering = 0;
+
 			$ordering	= ($list_order == 'p.title');
-			$canCreate	= $user->authorise('core.create',		'com_projectfork.milestone.'.$item->id);
-			$canEdit	= $user->authorise('core.edit',			'com_projectfork.milestone.'.$item->id);
-			$canCheckin	= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0;
-			$canEditOwn	= $user->authorise('core.edit.own',		'com_projectfork.milestone.'.$item->id) && $item->created_by == $uid;
-			$canChange	= $user->authorise('core.edit.state',	'com_projectfork.milestone.'.$item->id) && $canCheckin;
+			$canCreate	= $user->authorise('core.create',	  'com_projectfork.milestone.'.$item->id);
+			$canEdit	= $user->authorise('core.edit',		  'com_projectfork.milestone.'.$item->id);
+			$canCheckin	= $user->authorise('core.manage',	  'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0;
+			$canEditOwn	= $user->authorise('core.edit.own',	  'com_projectfork.milestone.'.$item->id) && $item->created_by == $uid;
+			$canChange	= $user->authorise('core.edit.state', 'com_projectfork.milestone.'.$item->id) && $canCheckin;
             ?>
             <tr class="row<?php echo $i % 2; ?>">
 				<td class="center">
@@ -119,6 +119,7 @@ $save_order = $list_order == 'a.title';
 					<?php else : ?>
 						<?php echo $this->escape($item->title); ?>
 					<?php endif; ?>
+                    <?php echo ($item->description) ? '<p class="smallsub">'.$item->description.'</p>' : '<p class="smallsub">'.JText::_('COM_PROJECTFORK_NO_DESC').'</p>' ?>
 				</td>
                 <td><?php echo $this->escape($item->project_title); ?></td>
 				<td class="center">

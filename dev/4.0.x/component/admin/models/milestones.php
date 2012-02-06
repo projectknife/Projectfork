@@ -27,7 +27,7 @@ jimport('joomla.application.component.modellist');
 
 
 /**
- * Methods supporting a list of project records.
+ * Methods supporting a list of milestone records.
  *
  */
 class ProjectforkModelMilestones extends JModelList
@@ -36,7 +36,6 @@ class ProjectforkModelMilestones extends JModelList
 	 * Constructor
 	 *
 	 * @param	array	An optional associative array of configuration settings.
-	 * @see		JController
 	 */
 	public function __construct($config = array())
 	{
@@ -126,7 +125,6 @@ class ProjectforkModelMilestones extends JModelList
 	 * Build an SQL query to load the list data.
 	 *
 	 * @return	JDatabaseQuery
-	 * @since	1.6
 	 */
 	protected function getListQuery()
 	{
@@ -139,8 +137,8 @@ class ProjectforkModelMilestones extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'a.id, a.project_id, a.title, a.alias, a.checked_out, a.checked_out_time,'
-				. 'a.state, a.access, a.created, a.created_by,'
+				'a.id, a.project_id, a.title, a.description, a.alias, a.checked_out, '
+				. 'a.checked_out_time, a.state, a.access, a.created, a.created_by,'
 				. 'a.start_date, a.end_date'
 			)
 		);
