@@ -69,8 +69,11 @@ $save_order = $list_order == 'a.title';
 				<th>
 					<?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
 				</th>
-                <th width="25%">
+                <th width="20%">
 					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'p.title', $list_dir, $list_order); ?>
+				</th>
+                <th width="20%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONE', 'm.title', $list_dir, $list_order); ?>
 				</th>
 				<th width="5%">
 					<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $list_dir, $list_order); ?>
@@ -115,6 +118,7 @@ $save_order = $list_order == 'a.title';
 					<?php endif; ?>
 				</td>
                 <td><?php echo $this->escape($item->project_title); ?></td>
+                <td><?php echo $this->escape($item->milestone_title); ?></td>
 				<td class="center">
 					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'milestones.', $canChange, 'cb'); ?>
 				</td>

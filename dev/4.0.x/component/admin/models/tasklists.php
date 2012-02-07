@@ -195,7 +195,7 @@ class ProjectforkModelTasklists extends JModelList
 			$query->where('(a.state = 0 OR a.state = 1)');
 		}
 
-        // Filter by access level.
+        // Filter by access level
 		if ($access = $this->getState('filter.access')) {
 			$query->where('a.access = ' . (int) $access);
 		}
