@@ -254,11 +254,13 @@ class ProjectforkModelProject extends JModelAdmin
         $success = parent::delete($pks);
 
         $milestones = JTable::getInstance('Milestone', 'JTable');
+        $tasklists  = JTable::getInstance('Tasklist', 'JTable');
 
         foreach ($pks as $i => $pk)
 		{
-		    // Delete project milestones
-            if(!$milestones->deleteByProject($pk)) $success = false;
+		    // Delete all other items referenced to each project
+            if(!$milestones->deleteByReference($pk, 'project_id')) $success = false;
+            if(!$tasklists->deleteByReference($pk, 'project_id'))  $success = false;
 
         }
 

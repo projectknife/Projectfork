@@ -283,6 +283,35 @@ class JTableTasklist extends JTable
     }
 
 
+    /**
+	 * Deletes all items by a reference field
+     *
+     *
+     * @return    boolean    True on success, False on error
+	 */
+    public function deleteByReference($id, $field)
+    {
+        $success = true;
+
+        // Get the list of items to delete
+        $this->_db->setQuery(
+			'SELECT '.$this->_tbl_key.' FROM '.$this->_db->quoteName($this->_tbl).
+			' WHERE '.$this->_db->quoteName($field).' = '.(int) $id
+		);
+
+		// Return the result
+		$list = (array) $this->_db->loadResultArray();
+
+
+        foreach($list AS $pk)
+        {
+            if(!$this->delete($pk)) $success = false;
+        }
+
+        return $success;
+    }
+
+
 	/**
 	 * Converts record to XML
 	 *

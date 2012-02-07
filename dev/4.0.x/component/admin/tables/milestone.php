@@ -340,19 +340,19 @@ class JTableMilestone extends JTable
 
 
     /**
-	 * Deletes all milestones of a given project
+	 * Deletes all items by a reference field
      *
      *
      * @return    boolean    True on success, False on error
 	 */
-    public function deleteByProject($id)
+    public function deleteByReference($id, $field)
     {
         $success = true;
 
         // Get the list of items to delete
         $this->_db->setQuery(
 			'SELECT '.$this->_tbl_key.' FROM '.$this->_db->quoteName($this->_tbl).
-			' WHERE '.$this->_db->quoteName('project_id').' = '.(int) $id
+			' WHERE '.$this->_db->quoteName($field).' = '.(int) $id
 		);
 
 		// Return the result
