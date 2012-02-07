@@ -90,7 +90,7 @@ class JFormFieldProject extends JFormField
 			$table->load($this->value);
 		}
         else {
-		    $active_id = (int) $app->getUserState('com_projectfork.active_project.id', 0);
+		    $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
 
             if($active_id) {
                 $table->load($active_id);

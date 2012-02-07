@@ -56,6 +56,7 @@ $save_order = $list_order == 'a.title';
 				<option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
 				<?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
 			</select>
+            <?php echo JHtml::_('projectfork.filterProject');?>
 		</div>
 	</fieldset>
 	<div class="clr"></div>

@@ -134,8 +134,10 @@ class ProjectforkModelProject extends JModelAdmin
 
 
         // Store the record
-		if (parent::save($data)) return true;
-
+		if(parent::save($data)) {
+		    $this->setActive(array('id' => $this->getState('project.id')));
+		    return true;
+		}
 
 		return false;
 	}
@@ -252,9 +254,12 @@ class ProjectforkModelProject extends JModelAdmin
     public function delete(&$pks)
     {
         $success = parent::delete($pks);
+        $app     = JFactory::getApplication();
 
         $milestones = JTable::getInstance('Milestone', 'JTable');
         $tasklists  = JTable::getInstance('Tasklist', 'JTable');
+
+        $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
 
         foreach ($pks as $i => $pk)
 		{
@@ -262,6 +267,11 @@ class ProjectforkModelProject extends JModelAdmin
             if(!$milestones->deleteByReference($pk, 'project_id')) $success = false;
             if(!$tasklists->deleteByReference($pk, 'project_id'))  $success = false;
 
+            // The active project has been delete?
+            if($active_id == $pk) {
+                $app->setUserState('com_projectfork.project.active.id', 0);
+                $app->setUserState('com_projectfork.project.active.title', '');
+            }
         }
 
         return $success;

@@ -90,8 +90,9 @@ class ProjectforkModelMilestones extends JModelList
         $access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', '');
 		$this->setState('filter.access', $access);
 
-        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', '');
+        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
         $this->setState('filter.project', $project);
+        ProjectforkHelper::setActiveProject($project);
 
 		// List state information.
 		parent::populateState('a.title', 'asc');
@@ -168,7 +169,7 @@ class ProjectforkModelMilestones extends JModelList
 
         // Filter by project
         $project = $this->getState('filter.project');
-        if(is_numeric($project)) {
+        if(is_numeric($project) && $project != 0) {
             $query->where('a.project_id = ' . (int) $project);
         }
 
@@ -214,6 +215,7 @@ class ProjectforkModelMilestones extends JModelList
 		$orderDirn = $this->state->get('list.direction');
 
 		$query->order($db->getEscaped($orderCol.' '.$orderDirn));
+
 
 		return $query;
 	}

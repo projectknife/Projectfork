@@ -94,8 +94,9 @@ class ProjectforkModelTasklists extends JModelList
         $milestone = $this->getUserStateFromRequest($this->context.'.filter.milestone', 'filter_milestone', '');
 		$this->setState('filter.milestone', $milestone);
 
-        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', '');
+        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
         $this->setState('filter.project', $project);
+        ProjectforkHelper::setActiveProject($project);
 
 		// List state information.
 		parent::populateState('a.ordering', 'asc');
@@ -176,7 +177,7 @@ class ProjectforkModelTasklists extends JModelList
 
         // Filter by project
         $project = $this->getState('filter.project');
-        if(is_numeric($project)) {
+        if(is_numeric($project) && $project != 0) {
             $query->where('a.project_id = ' . (int) $project);
         }
 

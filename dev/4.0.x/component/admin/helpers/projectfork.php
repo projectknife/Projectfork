@@ -36,11 +36,11 @@ class ProjectforkHelper
 	 */
 	public static function addSubmenu($vName)
 	{
-        JSubMenuHelper::addEntry(
+        /*JSubMenuHelper::addEntry(
 			JHtml::_('projectfork.activeproject'),
 			NULL,
 			false
-		);
+		);*/
 
         JSubMenuHelper::addEntry(
 			JText::_('COM_PROJECTFORK_SUBMENU_DASHBOARD'),
@@ -251,7 +251,7 @@ class ProjectforkHelper
     public function setActiveProject($id = 0)
     {
         $model = JModel::getInstance('Project', 'ProjectforkModel');
-        $data  = array('id' => $id);
+        $data  = array('id' => (int) $id);
 
         return $model->setActive($data);
     }
