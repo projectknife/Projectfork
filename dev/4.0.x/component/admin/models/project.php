@@ -147,7 +147,7 @@ class ProjectforkModelProject extends JModelAdmin
 	 * @param     array	     The form data
 	 * @return    boolean    True on success
 	 */
-    public function activate($data)
+    public function setActive($data)
     {
         $app = JFactory::getApplication();
 
@@ -157,12 +157,12 @@ class ProjectforkModelProject extends JModelAdmin
             $item = $this->getItem($id);
             if(!$item) return false;
 
-            $app->setUserState('com_projectfork.active_project.id', $id);
-            $app->setUserState('com_projectfork.active_project.title', $item->title);
+            $app->setUserState('com_projectfork.project.active.id', $id);
+            $app->setUserState('com_projectfork.project.active.title', $item->title);
         }
         else {
-            $app->setUserState('com_projectfork.active_project.id', 0);
-            $app->setUserState('com_projectfork.active_project.title', '');
+            $app->setUserState('com_projectfork.project.active.id', 0);
+            $app->setUserState('com_projectfork.project.active.title', '');
         }
 
         return true;

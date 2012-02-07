@@ -38,4 +38,25 @@ class ProjectforkControllerProject extends JControllerForm
 	{
 		parent::__construct($config);
 	}
+
+
+    /**
+     * Sets the currently active project for the user
+     *
+     **/
+    public function setActive()
+    {
+        $data = array();
+        $data['id'] = JRequest::GetInt('id');
+
+        $model = $this->getModel('project');
+        $app   = JFactory::getApplication();
+
+        $model->setActive($data);
+
+        $return = base64_decode(JRequest::getVar('return'));
+        $app->redirect($return);
+
+        return $this;
+    }
 }

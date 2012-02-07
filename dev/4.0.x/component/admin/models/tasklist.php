@@ -89,7 +89,7 @@ class ProjectforkModelTasklist extends JModelAdmin
         $project_id = (int) $form->getValue('project_id');
         if (!$this->getState('tasklist.id') && $project_id == 0) {
             $app       = JFactory::getApplication();
-            $active_id = (int) $app->getUserState('com_projectfork.active_project.id', 0);
+            $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
 
             $form->setValue('project_id', null, $active_id);
         }

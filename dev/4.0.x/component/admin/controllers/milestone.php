@@ -53,6 +53,11 @@ class ProjectforkControllerMilestone extends JControllerForm
 		$recordId = JRequest::getInt('id');
 		$project  = (int) $data['project_id'];
 
+
+        // Set the project as active
+        ProjectforkHelper::setActiveProject($project);
+
+
         //Save the data in the session.
 		$app->setUserState('com_projectfork.edit.milestone.project',	$project);
 		$app->setUserState('com_projectfork.edit.milestone.data', $data);

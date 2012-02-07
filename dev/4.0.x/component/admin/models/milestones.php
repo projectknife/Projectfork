@@ -90,7 +90,7 @@ class ProjectforkModelMilestones extends JModelList
         $access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', '');
 		$this->setState('filter.access', $access);
 
-        $project = $this->getUserStateFromRequest('com_projectfork.active_project.id', '');
+        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', '');
         $this->setState('filter.project', $project);
 
 		// List state information.

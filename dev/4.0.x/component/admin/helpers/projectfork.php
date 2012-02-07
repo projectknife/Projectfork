@@ -100,7 +100,6 @@ class ProjectforkHelper
 	 *
      * @param    int     $access      The access level id
      * @param    bool    $children    Include child groups in the result?
-     *
 	 * @return	 array                The groups
 	 **/
     public function getGroupsByAccess($access, $children = true)
@@ -193,7 +192,6 @@ class ProjectforkHelper
      * The children are defined by the group hierarchy
 	 *
      * @param    int     $access      The access level id
-     *
 	 * @return	 array                The access levels
 	 **/
     public function getChildrenOfAccess($access)
@@ -240,5 +238,51 @@ class ProjectforkHelper
         }
 
         return $children;
+    }
+
+
+    /**
+	 * Sets the currently active project for the user.
+     * The active project serves as a global data filter.
+	 *
+     * @param    int        $id      The project id
+	 * @return	 boolean             True on success, False on error
+	 **/
+    public function setActiveProject($id = 0)
+    {
+        $model = JModel::getInstance('Project', 'ProjectforkModel');
+        $data  = array('id' => $id);
+
+        return $model->setActive($data);
+    }
+
+
+    /**
+	 * Returns the currently active project ID of the user.
+	 *
+     * @param    int     $alt      Alternative value of no project is set
+	 * @return	 int               The project id
+	 **/
+    public function getActiveProjectId($alt = 0)
+    {
+        $app = JFactory::getApplication();
+
+        return (int) $app->getUserState('com_projectfork.project.active.id', $alt);
+    }
+
+
+    /**
+	 * Returns the currently active project title of the user.
+	 *
+     * @param    string     $alt      Alternative value of no project is set
+	 * @return	 string               The project title
+	 **/
+    public function getActiveProjectTitle($alt = '')
+    {
+        $app = JFactory::getApplication();
+
+        if($alt) $alt = JText::_($alt);
+
+        return $app->getUserState('com_projectfork.project.active.title', $alt);
     }
 }

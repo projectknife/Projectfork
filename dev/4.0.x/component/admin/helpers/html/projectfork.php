@@ -45,10 +45,11 @@ abstract class JHtmlProjectfork
         $uri = JFactory::getURI();
 
         // Get currently active project data
-        $active_id    = (int) $app->getUserState('com_projectfork.active_project.id', 0);
-        $active_title = $app->getUserState('com_projectfork.active_project.title', '');
+        $active_id    = (int) $app->getUserState('com_projectfork.project.active.id', 0);
+        $active_title = $app->getUserState('com_projectfork.project.active.title', '');
 
         if(!$active_title) $active_title = 'Select';
+
 
         // Set the JS function
         $js = "
@@ -66,9 +67,10 @@ abstract class JHtmlProjectfork
 		$doc->addScriptDeclaration($js);
 
         $btn_clear = '';
-        if($active_id) {
+        if($active_id && $can_change) {
             $btn_clear = '<a href="javascript: pfClearActiveProject();">Clear</a>';
         }
+
 
         // Set the modal window link
         $link = 'index.php?option=com_projectfork&amp;view=projects&amp;layout=modal&amp;tmpl=component&amp;function=pfSelectActiveProject';
@@ -82,7 +84,7 @@ abstract class JHtmlProjectfork
               . '</a>'
               . $btn_clear
               . '<input type="hidden" name="id" value="'.$active_id.'" id="active_project_id"/>'
-              . '<input type="hidden" name="task" value="activate" />'
+              . '<input type="hidden" name="task" value="project.setActive" />'
               . '<input type="hidden" name="return" value="'.$return.'" />'
               . JHtml::_('form.token')
               . '</form>';

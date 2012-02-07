@@ -94,7 +94,7 @@ class ProjectforkModelTasklists extends JModelList
         $milestone = $this->getUserStateFromRequest($this->context.'.filter.milestone', 'filter_milestone', '');
 		$this->setState('filter.milestone', $milestone);
 
-        $project = $this->getUserStateFromRequest('com_projectfork.active_project.id', '');
+        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', '');
         $this->setState('filter.project', $project);
 
 		// List state information.

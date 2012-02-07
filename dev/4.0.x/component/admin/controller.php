@@ -36,8 +36,6 @@ class ProjectforkController extends JController
 
 	public function display($cachable = false, $urlparams = false)
 	{
-		require_once JPATH_COMPONENT.'/helpers/projectfork.php';
-
         JHtml::addIncludePath(JPATH_COMPONENT.'/helpers/html');
 
 		// Load the submenu.
@@ -47,25 +45,4 @@ class ProjectforkController extends JController
 
 		return $this;
 	}
-
-
-    /**
-     * Sets the currently active project
-     *
-     **/
-    public function activate()
-    {
-        $data = array();
-        $data['id'] = JRequest::GetInt('id');
-
-        $model = $this->getModel('project');
-        $app   = JFactory::getApplication();
-
-        $model->activate($data);
-
-        $return = base64_decode(JRequest::getVar('return'));
-        $app->redirect($return);
-
-        return $this;
-    }
 }

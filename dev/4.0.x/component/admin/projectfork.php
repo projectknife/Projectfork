@@ -30,6 +30,7 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_projectfork')) {
 
 // Include dependencies
 jimport('joomla.application.component.controller');
+require_once(JPATH_COMPONENT.'/helpers/projectfork.php');
 
 $controller = JController::getInstance('Projectfork');
 $controller->execute(JRequest::getCmd('task'));
