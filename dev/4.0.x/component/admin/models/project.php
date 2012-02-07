@@ -241,4 +241,27 @@ class ProjectforkModelProject extends JModelAdmin
 
         return $id;
     }
+
+
+    /**
+	 * Method to delete one or more records.
+	 *
+	 * @param     array    &$pks    An array of record primary keys.
+	 * @return    boolean           True if successful, false if an error occurs.
+	 */
+    public function delete(&$pks)
+    {
+        $success = parent::delete($pks);
+
+        $milestones = JTable::getInstance('Milestone', 'JTable');
+
+        foreach ($pks as $i => $pk)
+		{
+		    // Delete project milestones
+            if(!$milestones->deleteByProject($pk)) $success = false;
+
+        }
+
+        return $success;
+    }
 }

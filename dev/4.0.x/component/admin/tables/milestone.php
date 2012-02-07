@@ -25,6 +25,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.database.tableasset');
 
+
 /**
  * Milestone table
  *
@@ -338,6 +339,36 @@ class JTableMilestone extends JTable
     }
 
 
+    /**
+	 * Deletes all milestones of a given project
+     *
+     *
+     * @return    boolean    True on success, False on error
+	 */
+    public function deleteByProject($id)
+    {
+        $success = true;
+
+        // Get the list of items to delete
+        $this->_db->setQuery(
+			'SELECT '.$this->_tbl_key.' FROM '.$this->_db->quoteName($this->_tbl).
+			' WHERE '.$this->_db->quoteName('project_id').' = '.(int) $id
+		);
+
+		// Return the result
+		$list = (array) $this->_db->loadResultArray();
+
+
+        foreach($list AS $pk)
+        {
+            if(!$this->delete($pk)) $success = false;
+        }
+
+        return $success;
+    }
+
+
+
 	/**
 	 * Converts record to XML
 	 *
@@ -359,4 +390,3 @@ class JTableMilestone extends JTable
 		return parent::toXML($mapKeysToText);
 	}
 }
-?>
