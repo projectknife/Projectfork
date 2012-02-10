@@ -11,33 +11,5 @@
 			component="com_projectfork"
 			section="component" 
         />
-        <field
-			name="rulest"
-			type="rules"
-			label="JCONFIG_PERMISSIONS_LABEL"
-			class="inputbox"
-			validate="rules"
-			filter="rules"
-			component="com_projectfork"
-			section="project" 
-        />
 	</fieldset>
-	<fieldset name="internal" label="COM_PROJECTFORK_CONFIG_INTERNAL_LABEL" description="COM_PROJECTFORK_CONFIG_INTERNAL_DESC">
-        <field 
-            type="usergroup" 
-            name="group_root" 
-            multiple="false"
-            size="5"
-            label="COM_PROJECTFORK_CONFIG_FIELD_GROUP_ROOT_LABEL" 
-            description="COM_PROJECTFORK_CONFIG_FIELD_GROUP_ROOT_DESC"
-        ></field>
-        <field 
-            type="usergroup" 
-            name="group_companies" 
-            multiple="false"
-            size="5"
-            label="COM_PROJECTFORK_CONFIG_FIELD_GROUP_COMPANIES_LABEL" 
-            description="COM_PROJECTFORK_CONFIG_FIELD_GROUP_COMPANIES_DESC"
-        ></field>
-    </fieldset>
 </config>
