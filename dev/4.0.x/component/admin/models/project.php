@@ -123,7 +123,6 @@ class ProjectforkModelProject extends JModelAdmin
             $data['alias'] = '';
         }
 
-
         // Create new access level?
         $new_access = trim($data['access_new']);
 

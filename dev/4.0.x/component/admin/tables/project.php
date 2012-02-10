@@ -68,6 +68,38 @@ class JTableProject extends JTable
 	}
 
 
+    /**
+	 * Get the parent asset id for the record
+	 *
+	 * @param   JTable   $table  A JTable object for the asset parent.
+	 * @param   integer  $id     The id for the asset
+	 *
+	 * @return  integer  The id of the asset's parent
+	 */
+	protected function _getAssetParentId($table = null, $id = null)
+	{
+		// Initialise variables.
+		$assetId = null;
+        $query   = $this->_db->getQuery(true);
+
+
+		// Build the query to get the asset id for the parent category.
+		$query->select($this->_db->quoteName('id'))
+		      ->from($this->_db->quoteName('#__assets'))
+			  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_projectfork"));
+
+
+		// Get the asset id from the database.
+		$this->_db->setQuery($query);
+		if ($result = $this->_db->loadResult())$assetId = (int) $result;
+
+		// Return the asset id.
+		if ($assetId) return $assetId;
+
+		return parent::_getAssetParentId($table, $id);
+	}
+
+
 	/**
 	 * Overloaded bind function
 	 *
@@ -166,6 +198,8 @@ class JTableProject extends JTable
 	{
 		$date = JFactory::getDate();
 		$user = JFactory::getUser();
+
+
 
 		if ($this->id) {
 			// Existing item
@@ -282,8 +316,9 @@ class JTableProject extends JTable
 
 		if ($mapKeysToText) {
 			$query = 'SELECT name'
-			. ' FROM #__users'
-			. ' WHERE id = ' . (int) $this->created_by;
+			       . ' FROM #__users'
+			       . ' WHERE id = ' . (int) $this->created_by;
+
 			$db->setQuery($query);
 			$this->created_by = $db->loadResult();
 		}

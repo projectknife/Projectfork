@@ -101,8 +101,20 @@ class JFormFieldPermissions extends JFormField
 			// Find the asset id of the content.
 			// Note that for global configuration, com_config injects asset_id = 1 into the form.
 			$assetId = $this->form->getValue($assetField);
-		}
 
+            if(!$assetId) {
+                // This is a new item, get the asset id of the component
+                $db    = JFactory::getDbo();
+			    $query = $db->getQuery(true);
+
+                $query->select($db->quoteName('id'))
+		               ->from($db->quoteName('#__assets'))
+			           ->where($db->quoteName('name') . ' = ' . $db->quote($component));
+
+                $db->setQuery($query);
+		        if ($result = $db->loadResult())$assetId = (int) $result;
+            }
+		}
 
 		// Get the rules for just this asset (non-recursive).
 		$assetRules = JAccess::getAssetRules($assetId);
@@ -174,9 +186,8 @@ class JFormFieldPermissions extends JFormField
                 // Find out if this group has children and generate onchange event
                 // for the checkbox
                 if($allowcb) {
-                    $children = $this->getGroupChildren($i, $item->level, $count.'group_');
-                    $cb_js = "toggleUsergroupCheckbox(this, '$btn_id', '$div_id', '".implode(',', $children)."')";
-
+                    $children  = $this->getGroupChildren($i, $item->level, $count.'group_');
+                    $cb_js     = "toggleUsergroupCheckbox(this, '$btn_id', '$div_id', '".implode(',', $children)."')";
                     $head_js[] = "$('$eid').addEvent('change', function(){".$cb_js."});";
                 }
 
