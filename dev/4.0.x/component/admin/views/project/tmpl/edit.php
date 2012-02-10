@@ -27,6 +27,12 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.keepalive');
+
+JFactory::getDocument()->addScriptDeclaration(
+"window.addEvent('domready', function(){
+    var access_idx = $('jform_access').selectedIndex;
+    Joomla.pfSelectAccess(access_idx);
+});");
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task) {
@@ -42,12 +48,26 @@ Joomla.pfSelectAccess = function(idx) {
     var access_val = $('jform_access').options[idx].value;
 
     if(access_val == 0) {
+        $('jform_access_exist-li').hide();
+
         $('jform_access_new-li').show();
-        $('jform_access_groups-li').show();
+        $('jform_access_groups-lbl').show();
+        $$('li.usergroup').show();
+        $$('input.usergroup_cb').show();
+
+        $$('input.usergroup_cb').set('checked', '');
+        $$('button.usergroup_btn').set('disabled', 'disabled');
     }
     else {
         $('jform_access_new-li').hide();
-        $('jform_access_groups-li').hide();
+        $('jform_access_groups-lbl').hide();
+        $$('li.usergroup').hide();
+        $$('input.usergroup_cb').hide();
+
+        $('jform_access_exist-li').show();
+        $$('li.haslvl-'+access_val).show();
+
+        $$('button.usergroup_btn').set('disabled', '');
     }
 }
 </script>
@@ -94,17 +114,23 @@ Joomla.pfSelectAccess = function(idx) {
                 </ul>
             </fieldset>
 
-            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_ACCESS'), 'access-details'); ?>
+            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_PROJECT_FIELDSET_RULES'), 'access-details'); ?>
             <fieldset class="panelform">
                 <ul class="adminformlist">
                     <li id="jform_access-li"><?php echo $this->form->getLabel('access').$this->form->getInput('access'); ?></li>
 				    <li id="jform_access_new-li" style="display: none;"><?php echo $this->form->getLabel('access_new').$this->form->getInput('access_new'); ?></li>
-                    <li id="jform_access_groups-li" style="display: none;">
-                        <label id="jform_access_groups-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_ACCESS_GROUPS_DESC');?>">
-                            <?php echo JText::_('COM_PROJECTFORK_FIELD_ACCESS_GROUPS_LABEL');?>
+				    <li id="jform_access_exist-li" style="display: none;">
+                        <label id="jform_access_exist-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
+                            <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
+                        </label>
+                    </li>
+                    <li id="jform_access_groups-li">
+                        <label id="jform_access_groups-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_NEW_ACCESS_GROUPS_DESC');?>">
+                            <?php echo JText::_('COM_PROJECTFORK_FIELD_NEW_ACCESS_GROUPS_LABEL');?>
                         </label>
                         <div id="jform_access_groups">
-                        <?php echo JHtml::_('access.usergroups', 'jform[access_rules]', array()); ?>
+    			            <div class="clr"></div>
+                            <?php echo $this->form->getInput('rules'); ?>
                         </div>
                     </li>
                 </ul>
@@ -130,17 +156,6 @@ Joomla.pfSelectAccess = function(idx) {
        <div class="clr"></div>
     </div>
 
-    <div class="clr"></div>
-	<div class="width-100 fltlft">
-	    <?php echo JHtml::_('sliders.start','permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
-
-		<?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_PROJECT_FIELDSET_RULES'), 'access-rules'); ?>
-    		<fieldset class="panelform">
-    		    <?php echo $this->form->getLabel('rules'); ?>
-    			<?php echo $this->form->getInput('rules'); ?>
-    		</fieldset>
-		<?php echo JHtml::_('sliders.end'); ?>
-    </div>
     <div class="clr"></div>
 
     <div>

@@ -54,7 +54,7 @@
 		/>
 		<field
 			name="rules"
-			type="rules"
+			type="permissions"
 			label="JCONFIG_PERMISSIONS_LABEL"
 			class="inputbox"
 			validate="rules"

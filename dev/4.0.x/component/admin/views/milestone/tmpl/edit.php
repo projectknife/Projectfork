@@ -81,6 +81,13 @@ Joomla.submitbutton = function(task) {
                 </ul>
             </fieldset>
 
+            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_MILESTONE_FIELDSET_RULES'), 'access-rules'); ?>
+            <fieldset class="panelform">
+				<ul class="adminformlist">
+                    <li><?php echo $this->form->getLabel('rules').$this->form->getInput('rules'); ?></li>
+                </ul>
+            </fieldset>
+
             <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
 			<?php foreach ($fieldSets as $name => $fieldSet) : ?>
 				<?php echo JHtml::_('sliders.panel',JText::_($fieldSet->label), $name.'-options'); ?>
@@ -100,17 +107,6 @@ Joomla.submitbutton = function(task) {
        <div class="clr"></div>
     </div>
 
-    <div class="clr"></div>
-	<div class="width-100 fltlft">
-	    <?php echo JHtml::_('sliders.start','permissions-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
-
-		<?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_MILESTONE_FIELDSET_RULES'), 'access-rules'); ?>
-    		<fieldset class="panelform">
-    		    <?php echo $this->form->getLabel('rules'); ?>
-    			<?php echo $this->form->getInput('rules'); ?>
-    		</fieldset>
-		<?php echo JHtml::_('sliders.end'); ?>
-    </div>
     <div class="clr"></div>
 
     <div>

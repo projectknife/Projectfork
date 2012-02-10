@@ -18,20 +18,6 @@
 			<option value="2">JARCHIVED</option>
 			<option value="-2">JTRASHED</option>
 		</field>
-		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"
-			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" onchange="Joomla.pfSelectAccess(this.selectedIndex);" 
-        >
-            <option value="0">COM_PROJECTFORK_OPT_NEW_ACCESS</option>
-        </field>
-        <field name="access_new" type="text" class="inputbox" size="30" 
-			label="COM_PROJECTFORK_FIELD_ACCESS_NEW_LABEL" description="COM_PROJECTFORK_FIELD_ACCESS_NEW_DESC"
-			buttons="true" 
-		/>
-		<field
-			name="buttonspacer"
-			description="JGLOBAL_ACTION_PERMISSIONS_DESCRIPTION"
-			type="spacer" 
-        />
         <field name="created_by" type="user"
 			label="COM_PROJECTFORK_FIELD_PROJECT_MANAGER_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_MANAGER_DESC"
         />
@@ -53,15 +39,25 @@
 		    readonly="true"
 		    filter="unset"
 		/>
+		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"
+			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" onchange="Joomla.pfSelectAccess(this.selectedIndex);" 
+        >
+            <option value="0">COM_PROJECTFORK_OPT_NEW_ACCESS</option>
+        </field>
+        <field name="access_new" type="text" class="inputbox" size="30" 
+			label="COM_PROJECTFORK_FIELD_ACCESS_NEW_LABEL" description="COM_PROJECTFORK_FIELD_ACCESS_NEW_DESC"
+			buttons="true" 
+		/>
 		<field
 			name="rules"
-			type="rules"
+			type="permissions"
 			label="JCONFIG_PERMISSIONS_LABEL"
 			class="inputbox"
 			validate="rules"
 			filter="rules"
 			component="com_projectfork"
 			section="project" 
+			cb="true"
         />
 		<field name="id" type="hidden" readonly="true"/>
 		<field name="asset_id" type="hidden" filter="unset"/>
