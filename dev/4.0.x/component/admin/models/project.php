@@ -126,10 +126,27 @@ class ProjectforkModelProject extends JModelAdmin
         // Create new access level?
         $new_access = trim($data['access_new']);
 
-        if(!array_key_exists('access_rules', $data)) $data['access_rules'] = array();
-        if(!is_array($data['access_rules']))         $data['access_rules'] = array();
-        if(strlen($new_access))                      $data['access'] = $this->saveAccessLevel($new_access, $data['access_rules']);
-        if($data['access'] <= 0)                     $data['access'] = 1;
+        if(!array_key_exists('rules', $data)) $data['rules']  = array();
+        if(strlen($new_access))               $data['access'] = $this->saveAccessLevel($new_access, $data['rules']);
+        if($data['access'] <= 0)              $data['access'] = 1;
+
+
+        // Filter the rules
+        $rules = array();
+        foreach ((array) $data['rules'] as $action => $ids)
+		{
+			if(is_numeric($action)) continue;
+
+            // Build the rules array.
+			$rules[$action] = array();
+			foreach ($ids as $id => $p)
+			{
+				if ($p !== '')
+				{
+					$rules[$action][$id] = ($p == '1' || $p == 'true') ? true : false;
+				}
+			}
+		}
 
 
         // Store the record
@@ -218,7 +235,7 @@ class ProjectforkModelProject extends JModelAdmin
     *
     * @return   integer             The access level id
     **/
-    protected function saveAccessLevel($title, $rules = array())
+    protected function saveAccessLevel($title, $tmp_rules = array())
     {
         // Get user viewing level model
         JModel::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_users'.DS.'models');
@@ -228,6 +245,14 @@ class ProjectforkModelProject extends JModelAdmin
 
         // Trim project name if too long for access level
         if(strlen($title) > 100) $title = substr($title, 0, 97).'...';
+
+
+        // Filter out groups from the permission rules
+        $rules = array();
+        foreach($tmp_rules AS $key => $value)
+        {
+            if(is_numeric($key) && is_numeric($value)) $rules[] = $value;
+        }
 
 
         // Set access level data

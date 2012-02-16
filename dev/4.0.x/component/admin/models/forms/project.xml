@@ -53,8 +53,7 @@
 			type="permissions"
 			label="JCONFIG_PERMISSIONS_LABEL"
 			class="inputbox"
-			validate="rules"
-			filter="rules"
+
 			component="com_projectfork"
 			section="project" 
 			cb="true"
