@@ -99,7 +99,7 @@ class JTableMilestone extends JTable
 
 
 		// Return the asset id.
-		if ($assetId) return $assetId;
+		if($assetId) return $assetId;
 		return parent::_getAssetParentId($table, $id);
 	}
 
@@ -192,7 +192,7 @@ class JTableMilestone extends JTable
 			// Swap the dates
 			$temp = $this->start_date;
 			$this->start_date = $this->end_date;
-			$this->end_date = $temp;
+			$this->end_date   = $temp;
 		}
 
 
@@ -224,10 +224,11 @@ class JTableMilestone extends JTable
 		$date = JFactory::getDate();
 		$user = JFactory::getUser();
 
+
 		if ($this->id) {
 			// Existing item
-			$this->modified		= $date->toMySQL();
-			$this->modified_by	= $user->get('id');
+			$this->modified	   = $date->toMySQL();
+			$this->modified_by = $user->get('id');
 		}
         else {
 			// New item. A created_by field can be set by the user,

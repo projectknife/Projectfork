@@ -109,6 +109,18 @@ class JFormFieldChildAccessLevel extends JFormFieldList
         if(!$table->load($parent_id)) return $options;
 
 
+        // Inject the access level of the parent id into the 0 value option
+        $tmp_options = array();
+        foreach($options AS $opt)
+        {
+            if($opt->value == 0) $opt->value = $table->access;
+            $tmp_options[] = $opt;
+        }
+
+        $options = $tmp_options;
+        unset($tmp_options);
+
+
         // Find access level children
         $levels = ProjectforkHelper::getChildrenOfAccess($table->access);
 

@@ -27,6 +27,12 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.keepalive');
+
+JFactory::getDocument()->addScriptDeclaration(
+"window.addEvent('domready', function(){
+    var access_idx = $('jform_access').selectedIndex;
+    Joomla.pfSelectAccess(access_idx);
+});");
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task) {
@@ -36,6 +42,17 @@ Joomla.submitbutton = function(task) {
     else {
 	    alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 	}
+}
+Joomla.pfSelectAccess = function(idx) {
+    var access_val = $('jform_access').options[idx].value;
+
+    $$('li.usergroup').hide();
+    $$('input.usergroup_cb').hide();
+
+    $('jform_access_exist-li').show();
+    $$('li.haslvl-'+access_val).show();
+
+    $$('button.usergroup_btn').set('disabled', '');
 }
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=milestone&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
@@ -48,17 +65,6 @@ Joomla.submitbutton = function(task) {
 				<li><?php echo $this->form->getLabel('title').$this->form->getInput('title'); ?></li>
 				<li><?php echo $this->form->getLabel('description').$this->form->getInput('description'); ?></li>
 				<li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
-				<li><?php echo $this->form->getLabel('access').$this->form->getInput('access'); ?></li>
-				<li>
-                    <span class="faux-label"><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></span>
-				    <div class="button2-left">
-                        <div class="blank">
-    					    <button type="button" onclick="document.location.href='#access-rules';">
-                                <?php echo JText::_('JGLOBAL_PERMISSIONS_ANCHOR'); ?>
-                            </button>
-					    </div>
-				    </div>
-				</li>
 			</ul>
 			<div class="clr"></div>
 		</fieldset>
@@ -84,7 +90,18 @@ Joomla.submitbutton = function(task) {
             <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_MILESTONE_FIELDSET_RULES'), 'access-rules'); ?>
             <fieldset class="panelform">
 				<ul class="adminformlist">
-                    <li><?php echo $this->form->getLabel('rules').$this->form->getInput('rules'); ?></li>
+                    <li id="jform_access-li"><?php echo $this->form->getLabel('access').$this->form->getInput('access'); ?></li>
+				    <li id="jform_access_exist-li">
+                        <label id="jform_access_exist-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
+                            <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
+                        </label>
+                    </li>
+                    <li id="jform_access_groups-li">
+                        <div id="jform_access_groups">
+    			            <div class="clr"></div>
+                            <?php echo $this->form->getInput('rules'); ?>
+                        </div>
+                    </li>
                 </ul>
             </fieldset>
 
