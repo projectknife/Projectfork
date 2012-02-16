@@ -92,7 +92,7 @@ class JFormFieldMilestone extends JFormFieldList
 
         // Load milestones of a project
         if($project) {
-            $project_id = (int) $this->form->getValue($parent_field);
+            $project_id = (int) $this->form->getValue($project);
             $data       = JFactory::getApplication()->getUserState('com_projectfork.edit.'.$view.'.data', array());
 
             if(!$project_id) return $options;
