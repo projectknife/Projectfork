@@ -26,14 +26,11 @@
 			<option value="2">JARCHIVED</option>
 			<option value="-2">JTRASHED</option>
 		</field>
-		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"
-			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" 
-        />
-		<field
-			name="buttonspacer"
-			description="JGLOBAL_ACTION_PERMISSIONS_DESCRIPTION"
-			type="spacer" 
-        />
+		<field name="access" type="childaccesslevel" label="JFIELD_ACCESS_LABEL"
+			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" onchange="Joomla.pfSelectAccess(this.selectedIndex);"
+        >
+            <option value="0">COM_PROJECTFORK_OPTION_INHERIT_FROM_PROJECT</option>
+        </field>
         <field name="created_by" type="user"
 			label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_TASKLIST_CREATED_BY_DESC"
         />
@@ -49,11 +46,9 @@
 		/>
 		<field
 			name="rules"
-			type="rules"
+			type="permissions"
 			label="JCONFIG_PERMISSIONS_LABEL"
 			class="inputbox"
-			validate="rules"
-			filter="rules"
 			component="com_projectfork"
 			section="tasklist" 
         />
