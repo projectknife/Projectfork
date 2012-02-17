@@ -97,11 +97,11 @@ $save_order = $list_order == 'a.title';
 		<?php foreach ($this->items as $i => $item) :
             $item->max_ordering = 0; //??
 			$ordering	= ($list_order == 'p.title');
-			$canCreate	= $user->authorise('core.create',		'com_projectfork.milestone.'.$item->id);
-			$canEdit	= $user->authorise('core.edit',			'com_projectfork.milestone.'.$item->id);
+			$canCreate	= $user->authorise('core.create',		'com_projectfork.tasklist.'.$item->id);
+			$canEdit	= $user->authorise('core.edit',			'com_projectfork.tasklist.'.$item->id);
 			$canCheckin	= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0;
-			$canEditOwn	= $user->authorise('core.edit.own',		'com_projectfork.milestone.'.$item->id) && $item->created_by == $uid;
-			$canChange	= $user->authorise('core.edit.state',	'com_projectfork.milestone.'.$item->id) && $canCheckin;
+			$canEditOwn	= $user->authorise('core.edit.own',		'com_projectfork.tasklist.'.$item->id) && $item->created_by == $uid;
+			$canChange	= $user->authorise('core.edit.state',	'com_projectfork.tasklist.'.$item->id) && $canCheckin;
             ?>
             <tr class="row<?php echo $i % 2; ?>">
 				<td class="center">
@@ -109,10 +109,10 @@ $save_order = $list_order == 'a.title';
 				</td>
 				<td>
 					<?php if ($item->checked_out) : ?>
-						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'articles.', $canCheckin); ?>
+						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'tasklists.', $canCheckin); ?>
 					<?php endif; ?>
 					<?php if ($canEdit || $canEditOwn) : ?>
-						<a href="<?php echo JRoute::_('index.php?option=com_projectfork&task=milestone.edit&id='.$item->id);?>">
+						<a href="<?php echo JRoute::_('index.php?option=com_projectfork&task=tasklist.edit&id='.$item->id);?>">
 							<?php echo $this->escape($item->title); ?></a>
 					<?php else : ?>
 						<?php echo $this->escape($item->title); ?>
@@ -121,7 +121,7 @@ $save_order = $list_order == 'a.title';
                 <td><?php echo $this->escape($item->project_title); ?></td>
                 <td><?php echo $this->escape($item->milestone_title); ?></td>
 				<td class="center">
-					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'milestones.', $canChange, 'cb'); ?>
+					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'tasklists.', $canChange, 'cb'); ?>
 				</td>
                 <td class="center">
 					<?php echo $this->escape($item->access_level); ?>
