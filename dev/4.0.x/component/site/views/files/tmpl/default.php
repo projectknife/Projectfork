@@ -24,9 +24,9 @@ defined('_JEXEC') or die;
 ?>
 <div id="projectfork" class="category-list view-files">
     <div class="cat-items">
-    
-        <h2>Files <input type="button" class="button" value="New Files" /></h2>
-        
+    	<div class="page-header">
+        	<h2>Files <input type="button" class="button btn btn-info" value="New File" /></h2>
+        </div>
         <form name="adminForm" id="adminForm" action="index.php">
             
             <fieldset class="filters">
@@ -68,7 +68,7 @@ defined('_JEXEC') or die;
 				<input type="hidden" value="" name="limitstart">
 			</fieldset>
             
-            <table class="category">
+            <table class="category table table-striped">
                <thead>
 	               	<tr>
 	               		<th id="tableOrdering" class="list-select">
@@ -76,18 +76,18 @@ defined('_JEXEC') or die;
 	               		</th>
 	               		<th id="tableOrdering2" class="list-title">
 	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');">Title</a></th>
-	               		
+	               		<th id="tableOrdering3" class="list-actions span1">
+	               			<a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');"></a>			
+	               		</th>
 	               		<th id="tableOrdering3" class="list-tags">
 	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.tags','asc','');">Tags</a></th>
-	               		
 	               		<th id="tableOrdering4" class="list-owner">
 	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.owner','asc','');">Owner</a></th>
-	               		
-	               		<th id="tableOrdering5" class="list-comments">
-	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.comments','asc','');">Comments</a></th>
-	               		
-	               		<th id="tableOrdering6" class="list-tasks">
-	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.tasks','asc','');">Tasks</a></th>
+	               		<th id="tableOrdering5" class="list-files">
+	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.comments','asc','');">Files</a></th>
+	               		<th id="tableOrdering6" class="list-date">
+	               			<a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');">Due</a>
+	               		</th>
 	               	</tr>
                </thead>
                <tbody>
@@ -96,88 +96,354 @@ defined('_JEXEC') or die;
 	               			<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
 	               		</td>
 	               		<td class="list-title">
-	               		<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=8:beginners&amp;catid=19&amp;Itemid=260">
-	               		Joomla Template Design</a>
-	               		<ul class="actions">
-	               			<li class="edit-icon">
-	               				<span title=""><a href="#">Edit</a></span>
-	               			</li>
-	               			<li class="complete-icon">
-	               				<span title=""><a href="#">Complete</a></span>
-	               			</li>
-	               			<li class="delete-icon">
-	               				<span title=""><a href="#">Delete</a></span>
-	               			</li>
-	               		</ul>
+		               		<i class="icon-folder-open"></i> <a href="/projectfork_4/index.php?option=com_projectfork&view=file&Itemid=480">Directory Name</a>
+	               		</td>
+	               		<td class="list-actions">
+	               			<div class="btn-group">
+	               			  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+	               			    <span class="caret"></span>
+	               			  </a>
+	               			  <ul class="dropdown-menu">
+	               			    <li><a href="#">View</a></li>
+	               			    <li><a href="#">Edit</a></li>
+	               			    <li><a href="#">Delete</a></li>
+	               			  </ul>
+	               			</div>
 	               		</td>
 	               		<td class="list-tags">
-	               		<span class="tag"><a href="#">Design</a></span>, <span class="tag"><a href="#">Joomla</a></span>									
+		               		<span class="tag"><a href="#">Design</a></span>, <span class="tag"><a href="#">Joomla</a></span>
 	               		</td>
 	               		
 	               		<td class="list-owner">
-               		Firstname L.											
+               				<small>Firstname L.</small>									
 	               		</td>
 	               		
-	               		<td class="list-comments">
-	               		<span title=""><a href="#">6</a></span>				
+	               		<td class="list-files">
+	               			<a class="btn"><i class="icon-file"></i> 6</a>			
 	               		</td>
-	               		
-	               		<td class="list-tasks">
-	               		<span title=""><a href="#">25</a></span>					
+	               		<td class="list-date">
+	               			<small>12/04/2011</small>					
 	               		</td>
-	               	
 	               	</tr>
 	               	<tr class="cat-list-row1">
-	               		<td class="list-select">
-	               			<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb1">
-	               		</td>
-	               		<td class="list-title">
-	               		<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=21:getting-help&amp;catid=19&amp;Itemid=436">
-	               		Joomla Extension Development</a>
-	               		<ul class="actions">
-	               			<li class="edit-icon">
-	               				<span title=""><a href="#">Edit</a></span>
-	               			</li>
-	               			<li class="complete-icon">
-	               				<span title=""><a href="#">Complete</a></span>
-	               			</li>
-	               			<li class="delete-icon">
-	               				<span title=""><a href="#">Delete</a></span>
-	               			</li>
-	               		</ul>
-	               		</td>
-	               		<td class="list-tags">
-	               		<span class="tag"><a href="#">Programming</a></span>, <span class="tag"><a href="#">Joomla</a></span>									
-	               		</td>
-	               		
-	               		<td class="list-owner">
-	               		
-	               		Firstname L.											</td>
-	               		
-	               		<td class="list-comments">
-	               		<span title=""><a href="#">10</a></span>				
-	               		</td>
-	               		
-	               		<td class="list-tasks">
-	               		<span title=""><a href="#">25</a></span>					
-	               		</td>
-	               	
-	               	</tr>
+               			<td class="list-select">
+               				<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
+               			</td>
+               			<td class="list-title">
+               	   		<i class="icon-folder-open"></i> <a href="/projectfork_4/index.php?option=com_projectfork&view=file&Itemid=480">Directory Name</a>
+               			</td>
+               			<td class="list-actions">
+               				<div class="btn-group">
+               				  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+               				    <span class="caret"></span>
+               				  </a>
+               				  <ul class="dropdown-menu">
+               				    <li><a href="#">View</a></li>
+               				    <li><a href="#">Edit</a></li>
+               				    <li><a href="#">Delete</a></li>
+               				  </ul>
+               				</div>
+               			</td>
+               			<td class="list-tags">
+               	   		<span class="tag"><a href="#">Design</a></span>, <span class="tag"><a href="#">Joomla</a></span>
+               			</td>
+               			
+               			<td class="list-owner">
+               				<small>Firstname L.</small>									
+               			</td>
+               			
+               			<td class="list-files">
+               				<a class="btn"><i class="icon-file"></i> 6</a>			
+               			</td>
+               			<td class="list-date">
+               				<small>12/04/2011</small>					
+               			</td>
+               		</tr>
+               		<tr class="cat-list-row0">
+               				<td class="list-select">
+               					<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
+               				</td>
+               				<td class="list-title">
+               		   		<i class="icon-folder-open"></i> <a href="/projectfork_4/index.php?option=com_projectfork&view=file&Itemid=480">Directory Name</a>
+               				</td>
+               				<td class="list-actions">
+               					<div class="btn-group">
+               					  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+               					    <span class="caret"></span>
+               					  </a>
+               					  <ul class="dropdown-menu">
+               					    <li><a href="#">View</a></li>
+               					    <li><a href="#">Edit</a></li>
+               					    <li><a href="#">Delete</a></li>
+               					  </ul>
+               					</div>
+               				</td>
+               				<td class="list-tags">
+               		   		<span class="tag"><a href="#">Design</a></span>, <span class="tag"><a href="#">Joomla</a></span>
+               				</td>
+               				
+               				<td class="list-owner">
+               					<small>Firstname L.</small>									
+               				</td>
+               				
+               				<td class="list-files">
+               					<a class="btn"><i class="icon-file"></i> 6</a>			
+               				</td>
+               				<td class="list-date">
+               					<small>12/04/2011</small>					
+               				</td>
+               			</tr>
+               			<tr class="cat-list-row1">
+               				<td class="list-select">
+               					<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
+               				</td>
+               				<td class="list-title">
+               		  		<i class="icon-folder-open"></i> <a href="/projectfork_4/index.php?option=com_projectfork&view=file&Itemid=480">Directory Name</a>
+               				</td>
+               				<td class="list-actions">
+               					<div class="btn-group">
+               					  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+               					    <span class="caret"></span>
+               					  </a>
+               					  <ul class="dropdown-menu">
+               					    <li><a href="#">View</a></li>
+               					    <li><a href="#">Edit</a></li>
+               					    <li><a href="#">Delete</a></li>
+               					  </ul>
+               					</div>
+               				</td>
+               				<td class="list-tags">
+               		  		<span class="tag"><a href="#">Design</a></span>, <span class="tag"><a href="#">Joomla</a></span>
+               				</td>
+               				
+               				<td class="list-owner">
+               					<small>Firstname L.</small>									
+               				</td>
+               				
+               				<td class="list-files">
+               					<a class="btn"><i class="icon-file"></i> 6</a>			
+               				</td>
+               				<td class="list-date">
+               					<small>12/04/2011</small>					
+               				</td>
+               			</tr>
+               			<tr class="cat-list-row0">
+           					<td class="list-select">
+           						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
+           					</td>
+           					<td class="list-title">
+           			   		<i class="icon-folder-open"></i> <a href="/projectfork_4/index.php?option=com_projectfork&view=file&Itemid=480">Directory Name</a>
+           					</td>
+           					<td class="list-actions">
+           						<div class="btn-group">
+           						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+           						    <span class="caret"></span>
+           						  </a>
+           						  <ul class="dropdown-menu">
+           						    <li><a href="#">View</a></li>
+           						    <li><a href="#">Edit</a></li>
+           						    <li><a href="#">Delete</a></li>
+           						  </ul>
+           						</div>
+           					</td>
+           					<td class="list-tags">
+           			   		<span class="tag"><a href="#">Design</a></span>, <span class="tag"><a href="#">Joomla</a></span>
+           					</td>
+           					
+           					<td class="list-owner">
+           						<small>Firstname L.</small>									
+           					</td>
+           					
+           					<td class="list-files">
+           						<a class="btn"><i class="icon-file"></i> 6</a>			
+           					</td>
+           					<td class="list-date">
+           						<small>12/04/2011</small>					
+           					</td>
+           				</tr>
+           				<tr class="cat-list-row1">
+           					<td class="list-select">
+           						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
+           					</td>
+           					<td class="list-title">
+           			  		<i class="icon-folder-open"></i> <a href="/projectfork_4/index.php?option=com_projectfork&view=file&Itemid=480">Directory Name</a>
+           					</td>
+           					<td class="list-actions">
+           						<div class="btn-group">
+           						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+           						    <span class="caret"></span>
+           						  </a>
+           						  <ul class="dropdown-menu">
+           						    <li><a href="#">View</a></li>
+           						    <li><a href="#">Edit</a></li>
+           						    <li><a href="#">Delete</a></li>
+           						  </ul>
+           						</div>
+           					</td>
+           					<td class="list-tags">
+           			  		<span class="tag"><a href="#">Design</a></span>, <span class="tag"><a href="#">Joomla</a></span>
+           					</td>
+           					
+           					<td class="list-owner">
+           						<small>Firstname L.</small>									
+           					</td>
+           					
+           					<td class="list-files">
+           						<a class="btn"><i class="icon-file"></i> 6</a>			
+           					</td>
+           					<td class="list-date">
+           						<small>12/04/2011</small>					
+           					</td>
+           				</tr>
+           				<tr class="cat-list-row0">
+           					<td class="list-select">
+           						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
+           					</td>
+           					<td class="list-title">
+           						<i class="icon-folder-open"></i> <a href="/projectfork_4/index.php?option=com_projectfork&view=file&Itemid=480">Directory Name</a>
+           					</td>
+           					<td class="list-actions">
+           						<div class="btn-group">
+           						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+           						    <span class="caret"></span>
+           						  </a>
+           						  <ul class="dropdown-menu">
+           						    <li><a href="#">View</a></li>
+           						    <li><a href="#">Edit</a></li>
+           						    <li><a href="#">Delete</a></li>
+           						  </ul>
+           						</div>
+           					</td>
+           					<td class="list-tags">
+           						<span class="tag"><a href="#">Design</a></span>, <span class="tag"><a href="#">Joomla</a></span>
+           					</td>
+           					
+           					<td class="list-owner">
+           						<small>Firstname L.</small>									
+           					</td>
+           					
+           					<td class="list-files">
+           						<a class="btn"><i class="icon-file"></i> 6</a>			
+           					</td>
+           					<td class="list-date">
+           						<small>12/04/2011</small>					
+           					</td>
+           				</tr>
+           				<tr class="cat-list-row1">
+           					<td class="list-select">
+           						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
+           					</td>
+           					<td class="list-title">
+           						<i class="icon-folder-open"></i> <a href="/projectfork_4/index.php?option=com_projectfork&view=file&Itemid=480">Directory Name</a>
+           					</td>
+           					<td class="list-actions">
+           						<div class="btn-group">
+           						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+           						    <span class="caret"></span>
+           						  </a>
+           						  <ul class="dropdown-menu">
+           						    <li><a href="#">View</a></li>
+           						    <li><a href="#">Edit</a></li>
+           						    <li><a href="#">Delete</a></li>
+           						  </ul>
+           						</div>
+           					</td>
+           					<td class="list-tags">
+           						<span class="tag"><a href="#">Design</a></span>, <span class="tag"><a href="#">Joomla</a></span>
+           					</td>
+           					
+           					<td class="list-owner">
+           						<small>Firstname L.</small>									
+           					</td>
+           					
+           					<td class="list-files">
+           						<a class="btn"><i class="icon-file"></i> 6</a>			
+           					</td>
+           					<td class="list-date">
+           						<small>12/04/2011</small>					
+           					</td>
+           				</tr>
+           				<tr class="cat-list-row0">
+           					<td class="list-select">
+           						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
+           					</td>
+           					<td class="list-title">
+           						<i class="icon-folder-open"></i> <a href="/projectfork_4/index.php?option=com_projectfork&view=file&Itemid=480">Directory Name</a>
+           					</td>
+           					<td class="list-actions">
+           						<div class="btn-group">
+           						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+           						    <span class="caret"></span>
+           						  </a>
+           						  <ul class="dropdown-menu">
+           						    <li><a href="#">View</a></li>
+           						    <li><a href="#">Edit</a></li>
+           						    <li><a href="#">Delete</a></li>
+           						  </ul>
+           						</div>
+           					</td>
+           					<td class="list-tags">
+           						<span class="tag"><a href="#">Design</a></span>, <span class="tag"><a href="#">Joomla</a></span>
+           					</td>
+           					
+           					<td class="list-owner">
+           						<small>Firstname L.</small>									
+           					</td>
+           					
+           					<td class="list-files">
+           						<a class="btn"><i class="icon-file"></i> 6</a>			
+           					</td>
+           					<td class="list-date">
+           						<small>12/04/2011</small>					
+           					</td>
+           				</tr>
+           				<tr class="cat-list-row1">
+           					<td class="list-select">
+           						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
+           					</td>
+           					<td class="list-title">
+           						<i class="icon-folder-open"></i> <a href="/projectfork_4/index.php?option=com_projectfork&view=file&Itemid=480">Directory Name</a>
+           					</td>
+           					<td class="list-actions">
+           						<div class="btn-group">
+           						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+           						    <span class="caret"></span>
+           						  </a>
+           						  <ul class="dropdown-menu">
+           						    <li><a href="#">View</a></li>
+           						    <li><a href="#">Edit</a></li>
+           						    <li><a href="#">Delete</a></li>
+           						  </ul>
+           						</div>
+           					</td>
+           					<td class="list-tags">
+           						<span class="tag"><a href="#">Design</a></span>, <span class="tag"><a href="#">Joomla</a></span>
+           					</td>
+           					
+           					<td class="list-owner">
+           						<small>Firstname L.</small>									
+           					</td>
+           					
+           					<td class="list-files">
+           						<a class="btn"><i class="icon-file"></i> 6</a>			
+           					</td>
+           					<td class="list-date">
+           						<small>12/04/2011</small>					
+           					</td>
+           				</tr>
                 </tbody>
             </table>
-            
             <div class="pagination">
-			    <p class="counter">Page 1 of 2</p>
-		        <ul>
-                    <li class="pagination-start"><span class="pagenav">Start</span></li>
-                    <li class="pagination-prev"><span class="pagenav">Prev</span></li>
-                    <li><span class="pagenav">1</span></li>
+                <ul>
+                    <li class="pagination-start disabled"><a><span class="pagenav">Start</span></a></li>
+                    <li class="pagination-prev disabled"><a><span class="pagenav">Prev</span></a></li>
+                    <li class="disabled"><a><span class="pagenav">1</span></a></li>
                     <li><a title="2" href="index.php?start=10" class="pagenav">2</a></li>
                     <li class="pagination-next"><a title="Next" href="index.php?start=10" class="pagenav">Next</a></li>
                     <li class="pagination-end"><a title="End" href="index.php?start=10" class="pagenav">End</a></li>
                 </ul>	
+                <p class="counter">Page 1 of 2</p>
             </div>
-            
         </form>
     </div>
 </div>

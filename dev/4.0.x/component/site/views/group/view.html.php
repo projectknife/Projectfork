@@ -4,7 +4,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class ProjectforkViewDepartments extends JView
+class ProjectforkViewGroup extends JView
 {
 	/**
 	 * Display the view

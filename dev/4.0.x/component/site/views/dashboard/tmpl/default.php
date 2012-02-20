@@ -24,9 +24,25 @@ defined('_JEXEC') or die;
 ?>
 <div id="projectfork" class="category-list view-dashboard">
     <div class="cat-items">
-        <h2><a href="#">Dashboard</a> > Project 1</h2>
+    	<div class="page-header">
+    		<div class="btn-toolbar">
+	    		<div class="btn-group">
+			       	<h2>Dashboard</h2> 
+		       	</div>
+	       	 	<div class="btn-group">
+	   	           <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Project Number One <span class="caret"></span></a>
+	   	           <ul class="dropdown-menu">
+	   	             <li class="active"><a href="#">Project Number One</a></li>
+	   	             <li><a href="#">Project Number Two</a></li>
+	   	             <li><a href="#">Project Number Three</a></li>
+	   	             <li class="divider"></li>
+	   	             <li><a href="#">All Projects</a></li>
+	   	           </ul>
+	   	         </div>
+   	         </div>
+       	</div>
         <!--Project List Module Begin-->
-        <table class="category project-list">
+        <table class="category project-list table table-striped">
            <thead>
                	<tr>
                		<th id="tableOrdering" class="list-title">
@@ -82,7 +98,7 @@ defined('_JEXEC') or die;
         <!--Project List Module End-->
         
         <!--Mini Calendar Module Begin-->
-        <table class="category mini-calendar">
+        <table class="category mini-calendar table table-striped table-bordered table-condensed">
         	<thead>
         		<tr>
         			<th><span class="calendar-title">Sun</span></th>
@@ -269,7 +285,7 @@ defined('_JEXEC') or die;
         <!--Mini Calendar Module End-->
         
         <!--Due Date Module Begin-->
-        <table class="category due-list">
+        <table class="category due-list table table-striped">
            <thead>
                	<tr>
                		<th id="tableOrdering" class="list-title">
@@ -351,7 +367,7 @@ defined('_JEXEC') or die;
         <!--Due Date Module End-->
         
         <!--Activity Stream Module Begin-->
-        <table class="category activity-list">
+        <table class="category activity-list table table-striped">
            <thead>
                	<tr>
                		<th class="list-title" colspan="5">
@@ -365,8 +381,8 @@ defined('_JEXEC') or die;
            			</td>
            		</tr>
         		<tr class="cat-list-row0">
-               		<td class="list-type">
-	           		<span class="type-file">File</span>
+               		<td class="activity-type">
+	           		<span class="label label-warning label-file">File</span>
                		</td>
                		<td class="list-item">
                			<span title=""><a href="#">image_name.jpg</a></span>				
@@ -382,8 +398,8 @@ defined('_JEXEC') or die;
                		</td>
                	</tr>
                	<tr class="cat-list-row1">
-           			<td class="list-type">
-           	   		<span class="type-milestone">Milestone</span>
+           			<td class="activity-type">
+           	   		<span class="label label-success label-milestone">Milestone</span>
            			</td>
            			<td class="list-item">
            				<span title=""><a href="#">Finish Markup</a></span>				
@@ -399,8 +415,8 @@ defined('_JEXEC') or die;
            			</td>
            		</tr>
            		<tr class="cat-list-row0">
-           			<td class="list-type">
-           				<span class="type-task">Task</span>
+           			<td class="activity-type">
+           				<span class="label label-info label-task">Task</span>
            			</td>
            			<td class="list-item">
            				<span title=""><a href="#">Dashboard Markup</a></span>				
@@ -421,8 +437,8 @@ defined('_JEXEC') or die;
            				</td>
            			</tr>
            		<tr class="cat-list-row0">
-       				<td class="list-type">
-       		   		<span class="type-task-list">Task List</span>
+       				<td class="activity-type">
+       		   		<span class="label label-info label-task-list">Task List</span>
        				</td>
        				<td class="list-item">
        					<span title=""><a href="#">Markup Tasks</a></span>				
@@ -438,8 +454,8 @@ defined('_JEXEC') or die;
        				</td>
        			</tr>
        			<tr class="cat-list-row1">
-       				<td class="list-type">
-       		  		<span class="type-comment">Comment</span>
+       				<td class="activity-type">
+       		  		<span class="label label-comment">Comment</span>
        				</td>
        				<td class="list-item">
        					<span title=""><a href="#">Re: Projects Markup</a></span>				
@@ -455,8 +471,8 @@ defined('_JEXEC') or die;
        				</td>
        			</tr>
        			<tr class="cat-list-row0">
-       				<td class="list-type">
-       					<span class="type-project">Project</span>
+       				<td class="activity-type">
+       					<span class="label label-important label-project">Project</span>
        				</td>
        				<td class="list-item">
        					<span title=""><a href="#">Projectfork 4.0</a></span>				
@@ -477,8 +493,8 @@ defined('_JEXEC') or die;
        					</td>
        				</tr>
        			<tr class="cat-list-row0">
-       				<td class="list-type">
-       					<span class="type-comment">Comment</span>
+       				<td class="activity-type">
+       					<span class="label label-comment">Comment</span>
        				</td>
        				<td class="list-item">
        					<span title=""><a href="#">Re: Projects Markup</a></span>				
@@ -494,8 +510,8 @@ defined('_JEXEC') or die;
        				</td>
        			</tr>
        			<tr class="cat-list-row1">
-       				<td class="list-type">
-       					<span class="type-comment">Comment</span>
+       				<td class="activity-type">
+       					<span class="label label-comment">Comment</span>
        				</td>
        				<td class="list-item">
        					<span title=""><a href="#">Re: file_name.jpg</a></span>				
@@ -511,8 +527,8 @@ defined('_JEXEC') or die;
        				</td>
        			</tr>
        			<tr class="cat-list-row0">
-   					<td class="list-type">
-   			   		<span class="type-file">File</span>
+   					<td class="activity-type">
+   			   		<span class="label label-file">File</span>
    					</td>
    					<td class="list-item">
    						<span title=""><a href="#">file_name.jpg</a></span>				

@@ -22,8 +22,8 @@
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
 ?>
-<div id="projectfork" class="item-page view-department">
-	<h2>Department Name <input type="button" class="button" value="View Dashboard" /></h2>
+<div id="projectfork" class="item-page view-group">
+	<h2>Group Name <input type="button" class="button" value="View Dashboard" /></h2>
 	<ul class="actions">
 						<li class="print-icon">
 			<a rel="nofollow" onclick="window.open(this.href,'win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no'); return false;" title="Print" href="#"><img alt="Print" src="/projectfork_4/media/system/images/printButton.png"></a>			</li>

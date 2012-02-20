@@ -22,10 +22,10 @@
 
 defined('_JEXEC') or die;
 ?>
-<div id="projectfork" class="category-list view-milestones">
+<div id="projectfork" class="category-list view-groups">
     <div class="cat-items">
     	<div class="page-header">
-        	<h2>Milestones <input type="button" class="button btn btn-info" value="New Milestone" /></h2>
+        	<h2>Groups <input type="button" class="button btn btn-info" value="New Group" /></h2>
         </div>
         <form name="adminForm" id="adminForm" action="index.php">
             

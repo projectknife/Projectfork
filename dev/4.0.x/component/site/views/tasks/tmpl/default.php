@@ -25,8 +25,10 @@ defined('_JEXEC') or die;
 
 <div id="projectfork" class="category-list view-tasks">
 	<div class="cat-items">
-		<h2>Tasks <input type="button" class="button" value="New Task" /></h2>
-		<form id="adminForm" name="adminForm" method="post" action="http://localhost:8888/projectfork_4/index.php?option=com_content&amp;view=category&amp;id=19&amp;Itemid=260">
+		<div class="page-header">
+			<h2>Tasks <input type="button" class="button btn btn-info" value="New Task" /></h2>
+		</div>
+		<form id="adminForm" name="adminForm" method="post" action="index.php?option=com_content&amp;view=category&amp;id=19&amp;Itemid=260">
 			<fieldset class="filters">
 				<span class="display-bulk-actions">
 						<select onchange="this.form.submit()" size="1" class="inputbox" name="bulk" id="bulk">
@@ -80,24 +82,30 @@ defined('_JEXEC') or die;
 				<input type="hidden" value="" name="limitstart">
 			</fieldset>
 
-		<table class="category">
+		<table class="category table table-striped">
 			<thead>
 				<tr>
 					<th id="tableOrdering" class="list-select">
 						<input type="checkbox" onclick="checkAll(2);" value="" name="toggle">
 					</th>
 					<th id="tableOrdering2" class="list-title">
-					<a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');">Title</a>				</th>
-					
-					
-					<th id="tableOrdering3" class="list-owner">
-					<a title="Click to sort by this column" href="javascript:tableOrdering('owner','asc','');">Owner</a>				</th>
-					
-					<th id="tableOrdering4" class="list-comments">
-					<a title="Click to sort by this column" href="javascript:tableOrdering('a.comments','asc','');">Comments</a></th>
-					
-					<th id="tableOrdering5" class="list-date">
-					<a title="Click to sort by this column" href="javascript:tableOrdering('a.hits','asc','');">Due</a>				</th>
+						<a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');">Title</a>
+					</th>
+					<th id="tableOrdering3" class="list-actions span1">
+						<a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');"></a>			
+					</th>
+					<th id="tableOrdering4" class="list-priority">
+						<a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');">Priority</a>			
+					</th>
+					<th id="tableOrdering5" class="list-owner">
+						<a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');">Owner</a>
+					</th>
+					<th id="tableOrdering6" class="list-comments">
+						<a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');">Comments</a>
+					</th>
+					<th id="tableOrdering7" class="list-date">
+						<a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');">Due</a>
+					</th>
 				</tr>
 			</thead>
 		
@@ -107,333 +115,362 @@ defined('_JEXEC') or die;
 						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
 					</td>
 					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=8:beginners&amp;catid=19&amp;Itemid=260">
-					Beginners</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
+					<a class="btn active" data-toggle="button"><i class="icon-ok tip" title="Complete?"></i></a>
+					<a href="/projectfork_4/index.php?option=com_projectfork&view=task&Itemid=479">
+					Long and descriptive task name</a>
 					</td>
-					
-					
+					<td class="list-actions">
+						<div class="btn-group">
+						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						    <span class="caret"></span>
+						  </a>
+						  <ul class="dropdown-menu">
+						    <li><a href="#">View</a></li>
+						    <li><a href="#">Edit</a></li>
+						    <li><a href="#">Delete</a></li>
+						  </ul>
+						</div>
+					</td>
+					<td class="list-priority">
+						<span class="label label-important">Important</span>
+					</td>
 					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
+						<small>Firstname L.</small>										
 					</td>
-					
+					<td class="list-comments">
+						<a class="btn"><i class="icon-comment"></i> 6</a>			
+					</td>
 					<td class="list-date">
-					12/04/2011					</td>
+						<small>12/04/2011</small>					
+					</td>
 				
 				</tr>
 				<tr class="cat-list-row1">
 					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb1">
+						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
 					</td>
 					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=21:getting-help&amp;catid=19&amp;Itemid=436">
-					Getting Help</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
+					<a class="btn" data-toggle="button"><i class="icon-ok tip" title="Complete?"></i></a>
+					<a href="/projectfork_4/index.php?option=com_projectfork&view=task&Itemid=479">
+					Long and descriptive task name</a>
 					</td>
-					
-					
+					<td class="list-actions">
+						<div class="btn-group">
+						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						    <span class="caret"></span>
+						  </a>
+						  <ul class="dropdown-menu">
+						    <li><a href="#">View</a></li>
+						    <li><a href="#">Edit</a></li>
+						    <li><a href="#">Delete</a></li>
+						  </ul>
+						</div>
+					</td>
+					<td class="list-priority">
+						<span class="label label-important">Important</span>
+					</td>
 					<td class="list-owner">
-					
-					Firstname L.											</td>
+						<small>Firstname L.</small>										
+					</td>
 					
 					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
+						<a class="btn"><i class="icon-comment"></i> 6</a>			
 					</td>
-					
 					<td class="list-date">
-					12/03/2011					</td>
-				
+						<small>12/04/2011</small>					
+					</td>
 				</tr>
 				<tr class="cat-list-row0">
 					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb2">
+						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
 					</td>
 					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=22:getting-started&amp;catid=19&amp;Itemid=437">
-					Getting Started</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
+					<a class="btn active" data-toggle="button"><i class="icon-ok tip" title="Complete?"></i></a>
+					<a href="/projectfork_4/index.php?option=com_projectfork&view=task&Itemid=479">
+					Long and descriptive task name</a>
 					</td>
-					
-					
+					<td class="list-actions">
+						<div class="btn-group">
+						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						    <span class="caret"></span>
+						  </a>
+						  <ul class="dropdown-menu">
+						    <li><a href="#">View</a></li>
+						    <li><a href="#">Edit</a></li>
+						    <li><a href="#">Delete</a></li>
+						  </ul>
+						</div>
+					</td>
+					<td class="list-priority">
+						<span class="label label-warning">Warning</span>
+					</td>
 					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
+						<small>Firstname L.</small>										
 					</td>
-					
+					<td class="list-comments">
+						<a class="btn"><i class="icon-comment"></i> 6</a>			
+					</td>
 					<td class="list-date">
-					12/02/2011					</td>
+						<small>12/04/2011</small>					
+					</td>
 				
 				</tr>
 				<tr class="cat-list-row1">
 					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb3">
+						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
 					</td>
 					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=24:joomla&amp;catid=19&amp;Itemid=260">
-					Joomla!</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
+					<a class="btn" data-toggle="button"><i class="icon-ok tip" title="Complete?"></i></a>
+					<a href="/projectfork_4/index.php?option=com_projectfork&view=task&Itemid=479">
+					Long and descriptive task name</a>
 					</td>
-					
-					
+					<td class="list-actions">
+						<div class="btn-group">
+						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						    <span class="caret"></span>
+						  </a>
+						  <ul class="dropdown-menu">
+						    <li><a href="#">View</a></li>
+						    <li><a href="#">Edit</a></li>
+						    <li><a href="#">Delete</a></li>
+						  </ul>
+						</div>
+					</td>
+					<td class="list-priority">
+						<span class="label label-warning">Warning</span>
+					</td>
 					<td class="list-owner">
-					
-					Firstname L.											</td>
+						<small>Firstname L.</small>										
+					</td>
 					
 					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
+						<a class="btn"><i class="icon-comment"></i> 6</a>			
 					</td>
-					
 					<td class="list-date">
-					12/01/2011					</td>
-				
+						<small>12/04/2011</small>					
+					</td>
 				</tr>
 				<tr class="cat-list-row0">
 					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb4">
+						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
 					</td>
 					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=32:parameters&amp;catid=19&amp;Itemid=453">
-					Parameters</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
+					<a class="btn active" data-toggle="button"><i class="icon-ok tip" title="Complete?"></i></a>
+					<a href="/projectfork_4/index.php?option=com_projectfork&view=task&Itemid=479">
+					Long and descriptive task name</a>
 					</td>
-					
-					
+					<td class="list-actions">
+						<div class="btn-group">
+						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						    <span class="caret"></span>
+						  </a>
+						  <ul class="dropdown-menu">
+						    <li><a href="#">View</a></li>
+						    <li><a href="#">Edit</a></li>
+						    <li><a href="#">Delete</a></li>
+						  </ul>
+						</div>
+					</td>
+					<td class="list-priority">
+						<span class="label label-info">Medium</span>
+					</td>
 					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
+						<small>Firstname L.</small>										
 					</td>
-					
+					<td class="list-comments">
+						<a class="btn"><i class="icon-comment"></i> 6</a>			
+					</td>
 					<td class="list-date">
-					11/30/2011					</td>
+						<small>12/04/2011</small>					
+					</td>
 				
 				</tr>
 				<tr class="cat-list-row1">
 					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb5">
+						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
 					</td>
 					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=35:professionals&amp;catid=19&amp;Itemid=260">
-					Professionals</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
+					<a class="btn" data-toggle="button"><i class="icon-ok tip" title="Complete?"></i></a>
+					<a href="/projectfork_4/index.php?option=com_projectfork&view=task&Itemid=479">
+					Long and descriptive task name</a>
 					</td>
-					
-					
+					<td class="list-actions">
+						<div class="btn-group">
+						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						    <span class="caret"></span>
+						  </a>
+						  <ul class="dropdown-menu">
+						    <li><a href="#">View</a></li>
+						    <li><a href="#">Edit</a></li>
+						    <li><a href="#">Delete</a></li>
+						  </ul>
+						</div>
+					</td>
+					<td class="list-priority">
+						<span class="label label-info">Medium</span>
+					</td>
 					<td class="list-owner">
-					
-					Firstname L.											</td>
+						<small>Firstname L.</small>										
+					</td>
 					
 					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
+						<a class="btn"><i class="icon-comment"></i> 6</a>			
 					</td>
-					
 					<td class="list-date">
-					11/29/2011					</td>
-				
+						<small>12/04/2011</small>					
+					</td>
 				</tr>
 				<tr class="cat-list-row0">
 					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb6">
+						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
 					</td>
 					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=38:sample-sites&amp;catid=19&amp;Itemid=238">
-					Sample Sites</a>
-					
+					<a class="btn active" data-toggle="button"><i class="icon-ok tip" title="Complete?"></i></a>
+					<a href="/projectfork_4/index.php?option=com_projectfork&view=task&Itemid=479">
+					Long and descriptive task name</a>
 					</td>
-					
-					
+					<td class="list-actions">
+						<div class="btn-group">
+						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						    <span class="caret"></span>
+						  </a>
+						  <ul class="dropdown-menu">
+						    <li><a href="#">View</a></li>
+						    <li><a href="#">Edit</a></li>
+						    <li><a href="#">Delete</a></li>
+						  </ul>
+						</div>
+					</td>
+					<td class="list-priority">
+						<span class="label label-success">Low</span>
+					</td>
 					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
+						<small>Firstname L.</small>										
 					</td>
-					
+					<td class="list-comments">
+						<a class="btn"><i class="icon-comment"></i> 6</a>			
+					</td>
 					<td class="list-date">
-					11/28/2011					</td>
+						<small>12/04/2011</small>					
+					</td>
 				
 				</tr>
 				<tr class="cat-list-row1">
 					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb7">
+						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
 					</td>
 					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=47:the-joomla-community&amp;catid=19&amp;Itemid=279">
-					The Joomla! Community</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
+					<a class="btn" data-toggle="button"><i class="icon-ok tip" title="Complete?"></i></a>
+					<a href="/projectfork_4/index.php?option=com_projectfork&view=task&Itemid=479">
+					Long and descriptive task name</a>
 					</td>
-					
-					
+					<td class="list-actions">
+						<div class="btn-group">
+						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						    <span class="caret"></span>
+						  </a>
+						  <ul class="dropdown-menu">
+						    <li><a href="#">View</a></li>
+						    <li><a href="#">Edit</a></li>
+						    <li><a href="#">Delete</a></li>
+						  </ul>
+						</div>
+					</td>
+					<td class="list-priority">
+						<span class="label label-success">Low</span>
+					</td>
 					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
+						<small>Firstname L.</small>										
 					</td>
-					
+					<td class="list-comments">
+						<a class="btn"><i class="icon-comment"></i> 6</a>			
+					</td>
 					<td class="list-date">
-					11/27/2011					</td>
-				
+						<small>12/04/2011</small>					
+					</td>
 				</tr>
 				<tr class="cat-list-row0">
 					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb8">
+						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
 					</td>
 					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=48:the-joomla-project&amp;catid=19&amp;Itemid=278">
-					The Joomla! Project</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
+					<a class="btn active" data-toggle="button"><i class="icon-ok tip" title="Complete?"></i></a>
+					<a href="/projectfork_4/index.php?option=com_projectfork&view=task&Itemid=479">
+					Long and descriptive task name</a>
 					</td>
-					
-					
+					<td class="list-actions">
+						<div class="btn-group">
+						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						    <span class="caret"></span>
+						  </a>
+						  <ul class="dropdown-menu">
+						    <li><a href="#">View</a></li>
+						    <li><a href="#">Edit</a></li>
+						    <li><a href="#">Delete</a></li>
+						  </ul>
+						</div>
+					</td>
+					<td class="list-priority">
+						<span class="label">Inactive</span>
+					</td>
 					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
+						<small>Firstname L.</small>										
 					</td>
-					
+					<td class="list-comments">
+						<a class="btn"><i class="icon-comment"></i> 6</a>			
+					</td>
 					<td class="list-date">
-					11/26/2011					</td>
+						<small>12/04/2011</small>					
+					</td>
 				
 				</tr>
 				<tr class="cat-list-row1">
 					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb9">
+						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
 					</td>
 					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=50:upgraders&amp;catid=19&amp;Itemid=260">
-					Upgraders</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
+					<a class="btn" data-toggle="button"><i class="icon-ok tip" title="Complete?"></i></a>
+					<a href="/projectfork_4/index.php?option=com_projectfork&view=task&Itemid=479">
+					Long and descriptive task name</a>
 					</td>
-					
-					
+					<td class="list-actions">
+						<div class="btn-group">
+						  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+						    <span class="caret"></span>
+						  </a>
+						  <ul class="dropdown-menu">
+						    <li><a href="#">View</a></li>
+						    <li><a href="#">Edit</a></li>
+						    <li><a href="#">Delete</a></li>
+						  </ul>
+						</div>
+					</td>
+					<td class="list-priority">
+						<span class="label">Inactive</span>
+					</td>
 					<td class="list-owner">
-					
-					Firstname L.											</td>
+						<small>Firstname L.</small>										
+					</td>
 					
 					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
+						<a class="btn"><i class="icon-comment"></i> 6</a>			
 					</td>
-					
 					<td class="list-date">
-					11/25/2011					</td>
-				
+						<small>12/04/2011</small>					
+					</td>
 				</tr>
 			</tbody>
 		</table>
-		
-		
 		<div class="pagination">
-		
-			<p class="counter">
-			Page 1 of 2			
-			</p>
-			
-			<ul><li class="pagination-start"><span class="pagenav">Start</span></li><li class="pagination-prev"><span class="pagenav">Prev</span></li><li><span class="pagenav">1</span></li><li><a class="pagenav" href="/projectfork_4/index.php?option=com_content&amp;view=category&amp;id=19&amp;Itemid=260&amp;limitstart=10" title="2">2</a></li><li class="pagination-next"><a class="pagenav" href="/projectfork_4/index.php?option=com_content&amp;view=category&amp;id=19&amp;Itemid=260&amp;limitstart=10" title="Next">Next</a></li><li class="pagination-end"><a class="pagenav" href="/projectfork_4/index.php?option=com_content&amp;view=category&amp;id=19&amp;Itemid=260&amp;limitstart=10" title="End">End</a></li>
-			</ul>	
+		    <ul>
+		        <li class="pagination-start disabled"><a><span class="pagenav">Start</span></a></li>
+		        <li class="pagination-prev disabled"><a><span class="pagenav">Prev</span></a></li>
+		        <li class="disabled"><a><span class="pagenav">1</span></a></li>
+		        <li><a title="2" href="index.php?start=10" class="pagenav">2</a></li>
+		        <li class="pagination-next"><a title="Next" href="index.php?start=10" class="pagenav">Next</a></li>
+		        <li class="pagination-end"><a title="End" href="index.php?start=10" class="pagenav">End</a></li>
+		    </ul>	
+		    <p class="counter">Page 1 of 2</p>
 		</div>
 	</form>
 </div>

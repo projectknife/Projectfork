@@ -4,7 +4,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
-class ProjectforkViewCompany extends JView
+class ProjectforkViewTasklist extends JView
 {
 	function display($tpl = null)
 	{
