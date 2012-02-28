@@ -14,5 +14,62 @@
 			</field>
 			<field name="page_subheading" type="text" description="JGLOBAL_SUBHEADING_DESC" label="JGLOBAL_SUBHEADING_LABEL" size="20"/>
 	    </fieldset>
+	    
+	    <fieldset name="advanced" label="JGLOBAL_LIST_LAYOUT_OPTIONS">
+	        <field name="show_pagination_limit" type="list" description="JGLOBAL_DISPLAY_SELECT_DESC" label="JGLOBAL_DISPLAY_SELECT_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="filter_field" type="list" description="COM_PROJECTFORK_FILTER_FIELD_DESC" label="JGLOBAL_FILTER_FIELD_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="filter_state" type="list" description="COM_PROJECTFORK_FILTER_STATE_DESC" label="COM_PROJECTFORK_FILTER_STATE_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="date_format" type="text" description="JGLOBAL_DATE_FORMAT_DESC" label="JGLOBAL_DATE_FORMAT_LABEL" size="15"/>
+			
+			<field name="spacer1" type="spacer" hr="true"/>
+			
+			<field name="show_headings" type="list" description="JGLOBAL_SHOW_HEADINGS_DESC" label="JGLOBAL_SHOW_HEADINGS_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="show_manager_col" type="list" description="COM_PROJECTFORK_MANAGER_COL_DESC" label="COM_PROJECTFORK_MANAGER_COL_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="show_mscount_col" type="list" description="COM_PROJECTFORK_MSCOUNT_COL_DESC" label="COM_PROJECTFORK_MSCOUNT_COL_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="show_tcount_col" type="list" description="COM_PROJECTFORK_TCOUNT_COL_DESC" label="COM_PROJECTFORK_TCOUNT_COL_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="show_sdate_col" type="list" description="COM_PROJECTFORK_SDATE_COL_DESC" label="COM_PROJECTFORK_SDATE_COL_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="show_edate_col" type="list" description="COM_PROJECTFORK_EDATE_COL_DESC" label="COM_PROJECTFORK_EDATE_COL_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="show_access_col" type="list" description="COM_PROJECTFORK_ACCESS_COL_DESC" label="COM_PROJECTFORK_ACCESS_COL_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+	    </fieldset>
 	</fields>
 </metadata>

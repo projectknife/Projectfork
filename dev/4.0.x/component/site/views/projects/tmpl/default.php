@@ -28,6 +28,8 @@ JHtml::_('behavior.multiselect');
 
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
+$db         = JFactory::getDbo();
+$null_date  = $db->getNullDate();
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects">
 
@@ -66,22 +68,26 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
         			    <option value="project.delete"><?php echo JText::_('COM_PROJECTFORK_ACTION_DELETE');?></option>
             	    </select>
             	</div>
-                <div class="filter-search">
-			        <label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
-			        <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
-			        <button type="submit" class="btn"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
-			        <button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
-		        </div>
-				<div class="display-published">
-				    <select name="filter_published" class="inputbox" onchange="this.form.submit()">
-				        <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-				        <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'),
-                                            'value', 'text', $this->state->get('filter.published'),
-                                            true
-                                           );
-                        ?>
-				    </select>
-				</div>
+                <?php if($this->params->get('filter_field')) : ?>
+                    <div class="filter-search">
+    			        <label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
+    			        <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
+    			        <button type="submit" class="btn"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
+    			        <button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
+    		        </div>
+                <?php endif; ?>
+                <?php if($this->params->get('filter_state')) : ?>
+    				<div class="display-published">
+    				    <select name="filter_published" class="inputbox" onchange="this.form.submit()">
+    				        <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+    				        <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'),
+                                                'value', 'text', $this->state->get('filter.published'),
+                                                true
+                                               );
+                            ?>
+    				    </select>
+    				</div>
+                <?php endif; ?>
 				<?php if ($this->params->get('show_pagination_limit')) : ?>
 		            <div class="display-limit">
 			            <?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?>&#160;
@@ -91,36 +97,65 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 			</fieldset>
 
             <table class="category table table-striped">
-               <thead>
-	               	<tr>
-	               		<th id="tableOrdering0" class="list-select">
-	               			<input type="checkbox" onclick="checkAll(<?php echo count($this->items);?>);" value="" name="toggle" />
-	               		</th>
-	               		<th id="tableOrdering1" class="list-title">
-	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.title','asc','');">
-                                <?php echo JText::_('COM_PROJECTFORK_TITLE');?>
-                            </a>
-                        </th>
-	               		<th id="tableOrdering2" class="list-actions span1">
-	               			<a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.title','asc','');"></a>
-	               		</th>
-	               		<th id="tableOrdering3" class="list-owner">
-	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('author_name','asc','');">
-                               <?php echo JText::_('COM_PROJECTFORK_MANAGER');?>
-                            </a>
-                        </th>
-	               		<th id="tableOrdering4" class="list-milestones">
-	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.milestones','asc','');">
-                                <?php echo JText::_('COM_PROJECTFORK_MILESTONES');?>
-                            </a>
-                        </th>
-	               		<th id="tableOrdering5" class="list-tasks">
-	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.tasks','asc','');">
-                                <?php echo JText::_('COM_PROJECTFORK_TASKS');?>
-                            </a>
-                        </th>
-	               	</tr>
-               </thead>
+                <?php if ($this->params->get('show_headings')) :?>
+                    <thead>
+    	                <tr>
+    	               	    <th id="tableOrdering0" class="list-select">
+    	               			<input type="checkbox" onclick="checkAll(<?php echo count($this->items);?>);" value="" name="toggle" />
+    	               		</th>
+    	               		<th id="tableOrdering1" class="list-title">
+    	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.title','asc','');">
+                                    <?php echo JText::_('COM_PROJECTFORK_TITLE');?>
+                                </a>
+                            </th>
+    	               		<th id="tableOrdering2" class="list-actions span1">
+    	               			<a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.title','asc','');"></a>
+    	               		</th>
+    	               		<?php if($this->params->get('show_manager_col')) : ?>
+                            <th id="tableOrdering3" class="list-owner">
+    	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('author_name','asc','');">
+                                   <?php echo JText::_('COM_PROJECTFORK_MANAGER');?>
+                                </a>
+                            </th>
+                            <?php endif; ?>
+                            <?php if($this->params->get('show_mscount_col')) : ?>
+    	               		<th id="tableOrdering4" class="list-milestones">
+    	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.milestones','asc','');">
+                                    <?php echo JText::_('COM_PROJECTFORK_MILESTONES');?>
+                                </a>
+                            </th>
+                            <?php endif; ?>
+                            <?php if($this->params->get('show_tcount_col')) : ?>
+    	               		<th id="tableOrdering5" class="list-tasks">
+    	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.tasks','asc','');">
+                                    <?php echo JText::_('COM_PROJECTFORK_TASKS');?>
+                                </a>
+                            </th>
+                            <?php endif; ?>
+                            <?php if($this->params->get('show_sdate_col')) : ?>
+    	               		<th id="tableOrdering6" class="list-tasks">
+    	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.start_date','asc','');">
+                                    <?php echo JText::_('COM_PROJECTFORK_SDATE');?>
+                                </a>
+                            </th>
+                            <?php endif; ?>
+                            <?php if($this->params->get('show_edate_col')) : ?>
+    	               		<th id="tableOrdering6" class="list-tasks">
+    	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.end_date','asc','');">
+                                    <?php echo JText::_('COM_PROJECTFORK_EDATE');?>
+                                </a>
+                            </th>
+                            <?php endif; ?>
+                            <?php if($this->params->get('show_access_col')) : ?>
+    	               		<th id="tableOrdering7" class="list-tasks">
+    	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.access_level','asc','');">
+                                    <?php echo JText::_('COM_PROJECTFORK_ACCESS');?>
+                                </a>
+                            </th>
+                            <?php endif; ?>
+    	               	</tr>
+                   </thead>
+               <?php endif; ?>
                <tbody>
                     <?php
                     $k = 0;
@@ -146,15 +181,50 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
     	               			  </ul>
     	               			</div>
     	               		</td>
-    	               		<td class="list-owner">
-    	               			<small><?php echo $this->escape($item->author_name);?></small>
-    	               		</td>
-    	               		<td class="list-milestones">
-    		               		<a class="btn"><i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?></a>
-    	               		</td>
-    	               		<td class="list-tasks">
-    		               		<a class="btn"><i class="icon-ok"></i> <?php echo (int) $item->tasks;?></a>
-    	               		</td>
+                            <?php if($this->params->get('show_manager_col')) : ?>
+        	               		<td class="list-owner">
+        	               			<small><?php echo $this->escape($item->author_name);?></small>
+        	               		</td>
+                            <?php endif; ?>
+                            <?php if($this->params->get('show_mscount_col')) : ?>
+        	               		<td class="list-milestones">
+        		               		<a class="btn"><i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?></a>
+        	               		</td>
+                            <?php endif; ?>
+                            <?php if($this->params->get('show_mscount_col')) : ?>
+        	               		<td class="list-tasks">
+        		               		<a class="btn"><i class="icon-ok"></i> <?php echo (int) $item->tasks;?></a>
+        	               		</td>
+                            <?php endif; ?>
+
+                            <?php if($this->params->get('show_sdate_col')) : ?>
+    	               		    <td class="list-sdate">
+        		               	    <?php if($item->start_date == $null_date) {
+                                        echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
+                                    }
+                                    else {
+                                        echo JHtml::_('date', $item->start_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC2'))));
+                                    }
+        		               		?>
+        	               		</td>
+                            <?php endif; ?>
+                            <?php if($this->params->get('show_edate_col')) : ?>
+    	               		    <td class="list-edate">
+                                    <?php if($item->end_date == $null_date) {
+                                        echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
+                                    }
+                                    else {
+                                        echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC2'))));
+                                    }
+        		               		?>
+        	               		</td>
+                            <?php endif; ?>
+                            <?php if($this->params->get('show_access_col')) : ?>
+    	               		    <td class="list-access">
+        		               		<?php echo $this->escape($item->access_level);?>
+        	               		</td>
+                            <?php endif; ?>
+
     	               	</tr>
                     <?php
                     $k = 1 - $k;
