@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
 *
 * This file is part of Projectfork.
@@ -29,13 +29,22 @@ class ProjectforkViewProjects extends JView
 {
 	function display($tpl = null)
 	{
-	    $items = $this->get('Items');
-        $page  = $this->get('Pagination');
+	    $items      = $this->get('Items');
+        $pagination = $this->get('Pagination');
+        $state		= $this->get('State');
+		$params		= $state->params;
 
-        $this->assignRef('items', $items);
-        $this->assignRef('page', $page);
+
+        // Escape strings for HTML output
+		$this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
+
+
+        $this->assignRef('items',      $items);
+        $this->assignRef('pagination', $pagination);
+        $this->assignRef('params',     $params);
+        $this->assignRef('state',      $state);
+
 
 		parent::display($tpl);
 	}
 }
-?>

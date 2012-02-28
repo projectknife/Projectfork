@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 *
 * This file is part of Projectfork.
@@ -40,6 +40,25 @@ class ProjectforkModelProjects extends JModelList
 	 */
 	public function __construct($config = array())
 	{
+	    if (empty($config['filter_fields'])) {
+			$config['filter_fields'] = array(
+				'id', 'p.id',
+				'title', 'p.title',
+				'alias', 'p.alias',
+				'created', 'p.created',
+                'created_by', 'p.created_by',
+                'modified', 'p.modified',
+                'modified_by', 'p.modified_by',
+                'checked_out', 'p.checked_out',
+                'checked_out_time', 'p.checked_out_time',
+                'attribs', 'p.attribs',
+                'access', 'p.access', 'access_level',
+                'state', 'p.state',
+                'start_date', 'p.start_date',
+                'end_date', 'p.end_date'
+			);
+		}
+
 		parent::__construct($config);
 	}
 
@@ -52,7 +71,8 @@ class ProjectforkModelProjects extends JModelList
 	 */
 	protected function populateState($ordering = 'title', $direction = 'ASC')
 	{
-		$app = JFactory::getApplication();
+		$app  = JFactory::getApplication();
+        $user = JFactory::getUser();
 
 		// List state information
 		$value = JRequest::getUInt('limit', $app->getCfg('list_limit', 0));
@@ -61,23 +81,26 @@ class ProjectforkModelProjects extends JModelList
 		$value = JRequest::getUInt('limitstart', 0);
 		$this->setState('list.start', $value);
 
-		$order_col = JRequest::getCmd('filter_order', 'p.title');
-		if (!in_array($order_col, $this->filter_fields)) $order_col = 'p.title';
+		$order_col = JRequest::getCmd('filter_order', 'a.title');
+		if(!in_array($order_col, $this->filter_fields)) $order_col = 'a.title';
 
 		$this->setState('list.ordering', $order_col);
 
 		$list_order	= JRequest::getCmd('filter_order_dir', 'ASC');
-		if (!in_array(strtoupper($list_order), array('ASC', 'DESC', ''))) $list_order = 'ASC';
+		if(!in_array(strtoupper($list_order), array('ASC', 'DESC', ''))) $list_order = 'ASC';
 
 		$this->setState('list.direction', $list_order);
 
 		$params = $app->getParams();
 		$this->setState('params', $params);
 
-        $value = JRequest::getUInt('state', 0);
-        $this->setState('filter.state', $value);
+        $value = JRequest::getCmd('filter_published', '');
+        $this->setState('filter.published', $value);
 
 		$this->setState('filter.access', true);
+
+        $value = JRequest::getString('filter_search', '');
+        $this->setState('filter.search', $value);
 
 		$this->setState('layout', JRequest::getCmd('layout'));
 	}
@@ -97,6 +120,7 @@ class ProjectforkModelProjects extends JModelList
 	{
 		// Compile the store id.
 		$id .= ':'.$this->getState('filter.access');
+        $id .= ':'.$this->getState('filter.published');
 
 		return parent::getStoreId($id);
 	}
@@ -112,37 +136,83 @@ class ProjectforkModelProjects extends JModelList
 		// Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
+        $user  = JFactory::getUser();
+
 
 		// Select the required fields from the table.
 		$query->select(
 			$this->getState('list.select',
-			    'p.id, p.asset_id, p.title, p.alias, p.description, p.created,'
-                . 'p.created_by, p.modified, p.modified_by, p.checked_out,'
-                . 'p.checked_out_time, p.attribs, p.access, p.state, p.start_date,'
-                . 'p.end_date'
+			    'a.id, a.asset_id, a.title, a.alias, a.description, a.created,'
+                . 'a.created_by, a.modified, a.modified_by, a.checked_out,'
+                . 'a.checked_out_time, a.attribs, a.access, a.state, a.start_date,'
+                . 'a.end_date'
 			)
 		);
 
-		$query->from('#__pf_projects AS p');
+		$query->from('#__pf_projects AS a');
 
-		// Filter by access level.
-		if ($access = $this->getState('filter.access')) {
-			$user	= JFactory::getUser();
-			$groups	= implode(',', $user->getAuthorisedViewLevels());
+        // Join over the users for the checked out user.
+		$query->select('uc.name AS editor');
+		$query->join('LEFT', '#__users AS uc ON uc.id=a.checked_out');
 
-			$query->where('p.access IN ('.$groups.')');
+        // Join over the asset groups.
+		$query->select('ag.title AS access_level');
+		$query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
+
+        // Join over the users for the owner.
+		$query->select('ua.name AS author_name');
+		$query->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
+
+        // Join over the milestones for milestone count
+        $query->select('COUNT(ma.id) AS milestones');
+        $query->join('LEFT', '#__pf_milestones AS ma ON ma.project_id = a.id');
+
+        // Join over the tasks for task count
+        $query->select('COUNT(ta.id) AS tasks');
+        $query->join('LEFT', '#__pf_tasks AS ta ON ta.project_id = a.id');
+
+        // Implement View Level Access
+		if(!$user->authorise('core.admin') || $this->getState('filter.access')) {
+		    $groups	= implode(',', $user->getAuthorisedViewLevels());
+			$query->where('a.access IN ('.$groups.')');
 		}
 
+        // Filter by published state
+		$published = $this->getState('filter.published');
+
+		if (is_numeric($published)) {
+			$query->where('a.state = ' . (int) $published);
+		}
+		elseif ($published === '') {
+			$query->where('(a.state = 0 OR a.state = 1)');
+		}
+
+        // Filter by search in title.
+		$search = $this->getState('filter.search');
+		if (!empty($search)) {
+			if (stripos($search, 'id:') === 0) {
+				$query->where('a.id = '.(int) substr($search, 4));
+			}
+			elseif (stripos($search, 'manager:') === 0) {
+				$search = $db->Quote('%'.$db->getEscaped(trim(substr($search, 8)), true).'%');
+				$query->where('(ua.name LIKE '.$search.' OR ua.username LIKE '.$search.')');
+			}
+			else {
+				$search = $db->Quote('%'.$db->getEscaped($search, true).'%');
+				$query->where('(a.title LIKE '.$search.' OR a.alias LIKE '.$search.')');
+			}
+		}
+
+
 		// Add the list ordering clause.
-		$query->order($this->getState('list.ordering', 'p.title').' '.$this->getState('list.direction', 'ASC'));
+		$query->order($this->getState('list.ordering', 'a.title').' '.$this->getState('list.direction', 'ASC'));
 
 		return $query;
 	}
 
 
 	/**
-	 * Method to get a list of articles.
-	 *
+	 * Method to get a list of projects.
 	 * Overriden to inject convert the attribs field into a JParameter object.
 	 *
 	 * @return	mixed	An array of objects on success, false on failure.
@@ -157,6 +227,20 @@ class ProjectforkModelProjects extends JModelList
 
 		// Get the global params
 		$global_params = JComponentHelper::getParams('com_projectfork', true);
+
+        // Convert the parameter fields into objects.
+		foreach ($items as $i => &$item)
+		{
+            if($item->id == NULL) {
+                unset($items[$i]);
+                continue;
+            }
+
+            $params = new JRegistry;
+			$params->loadString($item->attribs);
+
+			$item->params = clone $this->getState('params');
+        }
 
 		return $items;
 	}

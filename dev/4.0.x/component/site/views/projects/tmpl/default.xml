@@ -4,4 +4,15 @@
 		<help key = "JHELP_MENUS_MENU_ITEM_PROJECTS_DEFAULT" />
 		<message><![CDATA[com_projectfork_projects_view_default_desc]]></message>
 	</layout>
+	
+	<fields name="params">
+	    <fieldset name="basic" label="COM_PROJECTFORK_PROJECTS_VIEW_DEFAULT_MENU_OPTIONS">
+	        <field name="show_subheading" type="list" label="COM_PROJECTFORK_PROJECTS_VIEW_DEFAULT_SHOW_SUBHEADING_LBL" description="COM_PROJECTFORK_PROJECTS_VIEW_DEFAULT_SHOW_SUBHEADING_DESC">
+			    <option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="page_subheading" type="text" description="JGLOBAL_SUBHEADING_DESC" label="JGLOBAL_SUBHEADING_LABEL" size="20"/>
+	    </fieldset>
+	</fields>
 </metadata>
