@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -112,6 +112,10 @@ class ProjectforkModelProject extends JModelAdmin
 	 */
 	public function save($data)
 	{
+	    // Get the users helper class
+	    require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_users'.DS.'helpers'.DS.'users.php');
+
+
 		// Alter the title for save as copy
 		if (JRequest::getVar('task') == 'save2copy') {
 			list($title,$alias) = $this->generateNewTitle($data['alias'], $data['title']);
@@ -125,9 +129,10 @@ class ProjectforkModelProject extends JModelAdmin
 
         // Create new access level?
         $new_access = trim($data['access_new']);
+        $can_do     = UsersHelper::getActions();
 
         if(!array_key_exists('rules', $data)) $data['rules']  = array();
-        if(strlen($new_access))               $data['access'] = $this->saveAccessLevel($new_access, $data['rules']);
+        if(strlen($new_access) && $canDo->get('core.create')) $data['access'] = $this->saveAccessLevel($new_access, $data['rules']);
         if($data['access'] <= 0)              $data['access'] = 1;
 
 
@@ -147,6 +152,7 @@ class ProjectforkModelProject extends JModelAdmin
 				}
 			}
 		}
+        $data['rules'] = $rules;
 
 
         // Store the record

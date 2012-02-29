@@ -98,8 +98,7 @@ class JFormFieldPermissions extends JFormField
 			if($error = $db->getErrorMsg()) JError::raiseNotice(500, $error);
 		}
 		else {
-			// Find the asset id of the content.
-			// Note that for global configuration, com_config injects asset_id = 1 into the form.
+			// Find the asset id of the item.
 			$assetId = $this->form->getValue($assetField);
 
             if(!$assetId) {
