@@ -154,10 +154,27 @@ class ProjectforkModelProject extends JModelAdmin
 		}
         $data['rules'] = $rules;
 
+        $id = (int) $data['id'];
+
 
         // Store the record
 		if(parent::save($data)) {
 		    $this->setActive(array('id' => $this->getState('project.id')));
+
+            // To keep data integrity, update deadlines and access of all other project related items
+            if($id) {
+                $milestones = JTable::getInstance('Milestone', 'JTable');
+                $tasklists  = JTable::getInstance('Tasklist', 'JTable');
+
+                $parent_data = array('access'     => $data['access'],
+                                     'start_date' => $data['start_date'],
+                                     'end_date'   => $data['end_date']
+                                    );
+
+                $milestones->updateByReference($id, 'project_id', $parent_data);
+                $tasklists->updateByReference($id, 'project_id', $parent_data);
+            }
+
 		    return true;
 		}
 
