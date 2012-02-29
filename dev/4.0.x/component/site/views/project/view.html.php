@@ -33,53 +33,27 @@ class ProjectforkViewProject extends JView
     protected $user;
     protected $state;
     protected $form;
-    
+
 	function display($tpl = null)
 	{
-	    switch($this->getLayout())
-        {
-            default:
-                $this->item($tpl);
-                break;
-                
-            case 'edit':
-                $this->edit($tpl);
-                break;    
-        }
-	}
-    
-    
-    public function item($tpl = null)
-    {
-        // Initialise variables.
+	    // Initialise variables.
 		$this->user	 = JFactory::getUser();
         $this->state = $this->get('State');
-        //$this->item  = $this->get('Item');
-        
+        $this->item  = $this->get('Item');
+
         // Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseWarning(500, implode("\n", $errors));
 			return false;
 		}
-        
+
         // Create a shortcut for $item.
 		$item = &$this->item;
-        
+
         // Add router helpers.
 		$item->slug = $item->alias ? ($item->id.':'.$item->alias) : $item->id;
-        
-		parent::display($tpl);
-    } 
-    
-    
-    public function edit($tpl = null)
-    {
-        // Initialise variables.
-        $this->form	 = $this->get('Form');
-		$this->item	 = $this->get('Item');
-		$this->state = $this->get('State');
 
-        parent::display($tpl);
-    }
+		parent::display($tpl);
+	}
 }
 ?>

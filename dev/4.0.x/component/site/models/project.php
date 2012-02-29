@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 *
 * This file is part of Projectfork.
@@ -54,9 +54,6 @@ class ProjectforkModelProject extends JModelItem
 		$pk = JRequest::getInt('id');
 		$this->setState('project.id', $pk);
 
-        $state = JRequest::getInt('state');
-        $this->setState('filter.state', $state);
-
         $offset = JRequest::getUInt('limitstart');
 		$this->setState('list.offset', $offset);
 
@@ -87,34 +84,67 @@ class ProjectforkModelProject extends JModelItem
 
             $query->select(
                 $this->getState('item.select',
-                    'p.id, p.asset_id, p.title, p.alias, p.description,'
-                    . 'p.created, p.created_by, p.modified, p.modified_by, p.checked_out,'
-                    . 'p.checked_out_time, p.attribs, p.access, p.state,'
-                    . 'p.start_date, p.end_date'
+                    'a.id, a.asset_id, a.title, a.alias, a.description,'
+                    . 'a.created, a.created_by, a.modified, a.modified_by, a.checked_out,'
+                    . 'a.checked_out_time, a.attribs, a.access, a.state,'
+                    . 'a.start_date, a.end_date'
                 )
             );
-			$query->from('#__pf_projects AS p');
+			$query->from('#__pf_projects AS a');
 
             // Join on user table.
 			$query->select('u.name AS author');
-			$query->join('LEFT', '#__users AS u on u.id = p.created_by');
+			$query->join('LEFT', '#__users AS u on u.id = a.created_by');
 
-            // Filter by state.
-			$state = $this->getState('filter.state');
-
-            $query->where('(p.state = '.intval($state).')');
+            $query->where('a.id = ' . (int) $pk);
 
             $db->setQuery($query);
 			$data = $db->loadObject();
 
+
 			if($error = $db->getErrorMsg()) throw new Exception($error);
 			if(empty($data)) return JError::raiseError(404,JText::_('COM_PROJECTFORK_ERROR_PROJECT_NOT_FOUND'));
+
 
             // Convert parameter fields to objects.
 			$registry = new JRegistry;
 			$registry->loadString($data->attribs);
 			$data->params = clone $this->getState('params');
 			$data->params->merge($registry);
+
+
+            // Calculate permission to edit
+            $user = JFactory::getUser();
+
+			if (!$user->get('guest')) {
+				$userId	= $user->get('id');
+				$asset	= 'com_projectfork.project.'.$data->id;
+
+				// Check general edit permission first.
+				if ($user->authorise('core.edit', $asset) || $user->authorise('project.edit', $asset)) {
+					$data->params->set('access-edit', true);
+				}
+				// Now check if edit.own is available.
+				elseif (!empty($userId) && ($user->authorise('core.edit.own', $asset) || $user->authorise('project.edit.own', $asset))) {
+					// Check for a valid user and that they are the owner.
+					if ($userId == $data->created_by) {
+						$data->params->set('access-edit', true);
+					}
+				}
+			}
+
+			// Compute view access permissions.
+			if ($access = $this->getState('filter.access')) {
+				// If the access filter has been set, we already know this user can view.
+				$data->params->set('access-view', true);
+			}
+			else {
+				// If no access filter is set, the layout takes some responsibility for display of limited information.
+				$user   = JFactory::getUser();
+				$groups = $user->getAuthorisedViewLevels();
+
+				$data->params->set('access-view', in_array($data->access, $groups));
+			}
 
             $this->_item[$pk] = $data;
         }
@@ -133,4 +163,3 @@ class ProjectforkModelProject extends JModelItem
 	    return $this->_item[$pk];
     }
 }
-?>

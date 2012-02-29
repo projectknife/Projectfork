@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 *
 * This file is part of Projectfork.
@@ -21,36 +21,57 @@
 **/
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
+
+$item      = $this->item;
+$db        = JFactory::getDbo();
+$null_date = $db->getNullDate();
 ?>
 <div id="projectfork" class="item-page view-project">
-	<h2>Project Name <input type="button" class="button" value="View Dashboard" /></h2>
+
+	<h2><?php echo $this->escape($item->title);?></h2>
+
+    <input type="button" class="button" value="View Dashboard" />
+
 	<ul class="actions">
-						<li class="print-icon">
-			<a rel="nofollow" onclick="window.open(this.href,'win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no'); return false;" title="Print" href="#"><img alt="Print" src="/projectfork_4/media/system/images/printButton.png"></a>			</li>
-		
-					<li class="email-icon">
-			<a onclick="window.open(this.href,'win2','width=400,height=350,menubar=yes,resizable=yes'); return false;" title="Email" href="#"><img alt="Email" src="/projectfork_4/media/system/images/emailButton.png"></a>			</li>
-		
-					<li class="edit-icon">
-			<span title="" class="hasTip"><a href="#"><img alt="Edit" src="/projectfork_4/media/system/images/edit.png"></a></span>			</li>
-		
-	
+	    <li class="print-icon">
+		    <a rel="nofollow" onclick="window.open(this.href,'win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no'); return false;" title="Print" href="#">
+                <img alt="Print" src="/projectfork_4/media/system/images/printButton.png"/>
+            </a>
+        </li>
+        <li class="email-icon">
+		    <a onclick="window.open(this.href,'win2','width=400,height=350,menubar=yes,resizable=yes'); return false;" title="Email" href="#">
+                <img alt="Email" src="/projectfork_4/media/system/images/emailButton.png"/>
+            </a>
+        </li>
+		<li class="edit-icon">
+		    <span title="" class="hasTip"><a href="#"><img alt="Edit" src="/projectfork_4/media/system/images/edit.png"/></a></span>
+        </li>
 	</ul>
+
 	<dl class="article-info">
 		<dt class="article-info-term">Details</dt>
-		<dd class="category-name">
-			Company: <a href="#">Company Name</a>		
-		</dd>
 		<dd class="start-date">
-			Started on Saturday, 01 January 2011 00:00	
+			<?php echo JText::_('COM_PROJECTFORK_DATE_STARTED_ON');?>&nbsp;
+            <?php
+            if($item->start_date == $null_date) {
+                echo JHtml::_('date', $item->created, $this->escape(JText::_('DATE_FORMAT_LC2')));
+            }
+            else {
+                echo JHtml::_('date', $item->start_date, $this->escape(JText::_('DATE_FORMAT_LC2')));
+            }
+            ?>
 		</dd>
-		<dd class="due-date">
-			Due by Saturday, 01 January 2011 00:00	
-		</dd>
+        <?php if($item->end_date != $null_date) : ?>
+    		<dd class="due-date">
+    			<?php echo JText::_('COM_PROJECTFORK_DATE_DUE_BY');?>&nbsp;
+                <?php echo JHtml::_('date', $item->end_date, $this->escape(JText::_('DATE_FORMAT_LC2'))); ?>
+    		</dd>
+        <?php endif; ?>
 		<dd class="createdby">
-			Created by <a href="#">Firstname Lastname</a>		
+			<?php echo JText::_('COM_PROJECTFORK_PROJECT_MANAGER');?>: <?php echo htmlspecialchars($item->author);?>
 		</dd>
 	</dl>
+
 	<div id="article-index" class="project-stats">
 		<ul>
 			<li class="milestone-stats">
@@ -76,14 +97,11 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			</li>
 		</ul>
 	</div>
+
 	<div class="item-description">
-		<p>
-		Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-		</p>
-		<p>
-		Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos qui ratione voluptatem sequi nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt ut labore et dolore magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut aliquid ex ea commodi consequatur? Quis autem vel eum iure reprehenderit qui in ea voluptate velit esse quam nihil molestiae consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla pariatur.
-		</p>
+		<?php echo $item->description;?>
 	</div>
+
 	<div class="items-more">
 		<h3>Project Milestones</h3>
 		<ol>
@@ -101,4 +119,5 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			</li>
 		</ol>
 	</div>
+
 </div>
