@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -36,12 +36,6 @@ class ProjectforkHelper
 	 */
 	public static function addSubmenu($vName)
 	{
-        /*JSubMenuHelper::addEntry(
-			JHtml::_('projectfork.activeproject'),
-			NULL,
-			false
-		);*/
-
         JSubMenuHelper::addEntry(
 			JText::_('COM_PROJECTFORK_SUBMENU_DASHBOARD'),
 			'index.php?option=com_projectfork&view=dashboard',
@@ -61,6 +55,11 @@ class ProjectforkHelper
 			JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS'),
 			'index.php?option=com_projectfork&view=tasklists',
 			($vName == 'tasklists')
+        );
+        JSubMenuHelper::addEntry(
+			JText::_('COM_PROJECTFORK_SUBMENU_TASKS'),
+			'index.php?option=com_projectfork&view=tasks',
+			($vName == 'tasks')
         );
 	}
 
