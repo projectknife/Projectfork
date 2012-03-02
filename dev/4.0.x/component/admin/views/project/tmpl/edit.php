@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -79,16 +79,6 @@ Joomla.pfSelectAccess = function(idx) {
 			<ul class="adminformlist">
 				<li><?php echo $this->form->getLabel('title').$this->form->getInput('title'); ?></li>
 				<li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
-				<li>
-                    <span class="faux-label"><?php echo JText::_('JGLOBAL_ACTION_PERMISSIONS_LABEL'); ?></span>
-				    <div class="button2-left">
-                        <div class="blank">
-    					    <button type="button" onclick="document.location.href='#access-rules';">
-                                <?php echo JText::_('JGLOBAL_PERMISSIONS_ANCHOR'); ?>
-                            </button>
-					    </div>
-				    </div>
-				</li>
 			</ul>
 			<div class="clr"></div>
 			<?php echo $this->form->getLabel('description'); ?>
@@ -104,7 +94,6 @@ Joomla.pfSelectAccess = function(idx) {
             <fieldset class="panelform">
 				<ul class="adminformlist">
                     <li><?php echo $this->form->getLabel('created_by').$this->form->getInput('created_by'); ?></li>
-                    <li><?php echo $this->form->getLabel('has_deadline').$this->form->getInput('has_deadline'); ?></li>
                     <li><?php echo $this->form->getLabel('start_date').$this->form->getInput('start_date'); ?></li>
                     <li><?php echo $this->form->getLabel('end_date').$this->form->getInput('end_date'); ?></li>
                     <?php if ($this->item->modified_by) : ?>

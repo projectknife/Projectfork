@@ -19,14 +19,14 @@
 			<option value="-2">JTRASHED</option>
 		</field>
         <field name="created_by" type="user"
-			label="COM_PROJECTFORK_FIELD_PROJECT_MANAGER_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_MANAGER_DESC"
+			label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_CREATED_BY_DESC"
         />
 		<field name="start_date" type="calendar" class="inputbox"
-			label="COM_PROJECTFORK_FIELD_PROJECT_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_START_DATE_DESC"
+			label="COM_PROJECTFORK_FIELD_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_START_DATE_OPTIONAL_DESC"
 			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
         />
         <field name="end_date" type="calendar" class="inputbox"
-			label="COM_PROJECTFORK_FIELD_DEADLINE_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_END_DATE_DESC"
+			label="COM_PROJECTFORK_FIELD_DEADLINE_LABEL" description="COM_PROJECTFORK_FIELD_DEADLINE_OPTIONAL_LABEL"
 			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
         />
 		<field name="modified" type="calendar" class="readonly"

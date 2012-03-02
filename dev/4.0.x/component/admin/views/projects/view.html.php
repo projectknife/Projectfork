@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -24,17 +24,18 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
+
 class ProjectforkViewProjects extends JView
 {
     protected $items;
 	protected $pagination;
 	protected $state;
-	protected $managers;
+	protected $authors;
     protected $nulldate;
 
 
 	/**
-	 * Display the view
+	 * Displays the view.
 	 */
 	public function display($tpl = null)
 	{
@@ -42,10 +43,8 @@ class ProjectforkViewProjects extends JView
 	    $this->items	  = $this->get('Items');
 		$this->pagination = $this->get('Pagination');
 		$this->state	  = $this->get('State');
-		$this->managers	  = $this->get('Managers');
-
-        // Get database null date
-        $this->nulldate = JFactory::getDbo()->getNullDate();
+		$this->authors	  = $this->get('Authors');
+        $this->nulldate   = JFactory::getDbo()->getNullDate();
 
 	    // Check for errors
 		if (count($errors = $this->get('Errors'))) {
@@ -60,7 +59,7 @@ class ProjectforkViewProjects extends JView
 
 
 	/**
-	 * Add the page title and toolbar.
+	 * Adds the page title and toolbar.
 	 *
 	 */
 	protected function addToolbar()
@@ -84,4 +83,3 @@ class ProjectforkViewProjects extends JView
 		JToolBarHelper::divider();
 	}
 }
-?>

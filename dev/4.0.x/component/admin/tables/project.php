@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -29,7 +29,7 @@ jimport('joomla.database.tableasset');
  * Project table
  *
  */
-class JTableProject extends JTable
+class PFTableProject extends JTable
 {
 	/**
 	 * Constructor
@@ -214,7 +214,7 @@ class JTableProject extends JTable
 		}
 
 		// Verify that the alias is unique
-		$table = JTable::getInstance('Project','JTable');
+		$table = JTable::getInstance('Project', 'PFTable');
 		if ($table->load(array('alias'=>$this->alias)) && ($table->id != $this->id || $this->id==0)) {
 			$this->setError(JText::_('JLIB_DATABASE_ERROR_PROJECT_UNIQUE_ALIAS'));
 			return false;
@@ -326,4 +326,3 @@ class JTableProject extends JTable
 		return parent::toXML($mapKeysToText);
 	}
 }
-?>
