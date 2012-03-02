@@ -64,22 +64,40 @@ class ProjectforkViewProjects extends JView
 	 */
 	protected function addToolbar()
 	{
-		$acl  = ProjectforkHelper::getActions();
-		$user = JFactory::getUser();
+		$canDo = ProjectforkHelper::getActions();
+		$user  = JFactory::getUser();
 
 		JToolBarHelper::title(JText::_('COM_PROJECTFORK_PROJECTS_TITLE'), 'article.png');
 
-        JToolBarHelper::addNew('project.add');
-        JToolBarHelper::editList('project.edit');
-        JToolBarHelper::divider();
-        JToolBarHelper::publish('projects.publish', 'JTOOLBAR_PUBLISH', true);
-		JToolBarHelper::unpublish('projects.unpublish', 'JTOOLBAR_UNPUBLISH', true);
-		JToolBarHelper::divider();
-		JToolBarHelper::archiveList('projects.archive');
-		JToolBarHelper::checkin('projects.checkin');
-        JToolBarHelper::deleteList('', 'projects.delete','JTOOLBAR_EMPTY_TRASH');
-		JToolBarHelper::divider();
-        JToolBarHelper::trash('projects.trash');
-		JToolBarHelper::divider();
+
+        if($canDo->get('core.create') || $canDo->get('project.create')) {
+            JToolBarHelper::addNew('project.add');
+        }
+
+        if($canDo->get('core.edit') || $canDo->get('core.edit.own') ||
+           $canDo->get('project.edit') || $canDo->get('project.edit.own')
+          ) {
+            JToolBarHelper::editList('project.edit');
+        }
+
+        if($canDo->get('core.edit.state') || $canDo->get('project.edit.state')) {
+            JToolBarHelper::divider();
+            JToolBarHelper::publish('projects.publish', 'JTOOLBAR_PUBLISH', true);
+		    JToolBarHelper::unpublish('projects.unpublish', 'JTOOLBAR_UNPUBLISH', true);
+		    JToolBarHelper::divider();
+		    JToolBarHelper::archiveList('projects.archive');
+		    JToolBarHelper::checkin('projects.checkin');
+        }
+
+        if($this->state->get('filter.published') == -2 &&
+            ($canDo->get('core.delete') || $canDo->get('project.delete'))
+          ) {
+            JToolBarHelper::deleteList('', 'projects.delete','JTOOLBAR_EMPTY_TRASH');
+            JToolBarHelper::divider();
+        }
+        elseif ($canDo->get('core.edit.state') || $canDo->get('project.edit.state')) {
+			JToolBarHelper::trash('articles.trash');
+			JToolBarHelper::divider();
+		}
 	}
 }

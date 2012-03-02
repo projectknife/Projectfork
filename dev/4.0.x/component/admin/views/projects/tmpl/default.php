@@ -96,13 +96,14 @@ $save_order = $list_order == 'p.title';
 		</thead>
         <tbody>
 		<?php foreach ($this->items as $i => $item) :
-            $item->max_ordering = 0; //??
 			$ordering	= ($list_order == 'p.title');
-			$canCreate	= $user->authorise('core.create',		'com_projectfork.project.'.$item->id);
-			$canEdit	= $user->authorise('core.edit',			'com_projectfork.project.'.$item->id);
-			$canCheckin	= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0;
-			$canEditOwn	= $user->authorise('core.edit.own',		'com_projectfork.project.'.$item->id) && $item->created_by == $uid;
-			$canChange	= $user->authorise('core.edit.state',	'com_projectfork.project.'.$item->id) && $canCheckin;
+            $asset_name = 'com_projectfork.project.'.$item->id;
+
+			$canCreate	= ($user->authorise('core.create', $asset_name) || $user->authorise('project.create', $asset_name));
+			$canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('project.edit', $asset_name));
+			$canCheckin	= ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
+			$canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('project.edit.own', $asset_name)) && $item->created_by == $uid);
+			$canChange	= (($user->authorise('core.edit.state',	$asset_name) || $user->authorise('project.edit.state', $asset_name)) && $canCheckin);
             ?>
             <tr class="row<?php echo $i % 2; ?>">
 				<td class="center">
@@ -143,6 +144,13 @@ $save_order = $list_order == 'p.title';
 			</tr>
 			<?php endforeach; ?>
 		</tbody>
+        <tfoot>
+			<tr>
+				<td colspan="9">
+					<?php echo $this->pagination->getListFooter(); ?>
+				</td>
+			</tr>
+		</tfoot>
     </table>
 
 

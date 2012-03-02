@@ -28,6 +28,7 @@ class ProjectforkHelper
 {
 	public static $extension = 'com_projectfork';
 
+
 	/**
 	 * Configure the Linkbar.
 	 *
@@ -65,30 +66,32 @@ class ProjectforkHelper
 
 
     /**
-	 * Returns all available actions?
+	 * Returns all available actions
 	 *
 	 * @return	object
 	 */
-    public static function getActions()
+    public static function getActions($asset_name = NULL, $asset_id = 0)
 	{
 		$user	= JFactory::getUser();
 		$result	= new JObject;
 		$asset  = 'com_projectfork';
 
-		$actions = array(
-		    'core.admin',
-            'core.manage',
-            'core.create',
-            'core.edit',
-            'core.edit.own',
-            'core.edit.state',
-            'core.delete'
-		);
+        if($asset_name) $asset .= '.'.$asset_name;
+        if($asset_id)   $asset .= '.'.$asset_id;
 
-		foreach ($actions as $action)
+		$actions = array('create', 'edit', 'edit.own', 'edit.state', 'delete');
+        $assets  = array('core', 'project', 'milestone', 'tasklist', 'task');
+
+        $result->set('core.admin',  $user->authorise('core.admin',  $asset));
+        $result->set('core.manage', $user->authorise('core.manage', $asset));
+
+        foreach($assets AS $name)
         {
-			$result->set($action, $user->authorise($action, $asset));
-		}
+            foreach($actions AS $action)
+            {
+                $result->set($name.'.'.$action, $user->authorise($name.'.'.$action, $asset));
+            }
+        }
 
 		return $result;
 	}
