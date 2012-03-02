@@ -54,7 +54,7 @@ $save_order = $list_order == 'p.title';
 				<?php echo JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'));?>
 			</select>
 
-			<select name="filter_manager_id" class="inputbox" onchange="this.form.submit()">
+			<select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
 				<option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
 				<?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
 			</select>
