@@ -96,7 +96,7 @@ class ProjectforkViewProjects extends JView
             JToolBarHelper::divider();
         }
         elseif ($canDo->get('core.edit.state') || $canDo->get('project.edit.state')) {
-			JToolBarHelper::trash('articles.trash');
+			JToolBarHelper::trash('projects.trash');
 			JToolBarHelper::divider();
 		}
 	}

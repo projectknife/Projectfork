@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -65,29 +65,29 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 				<th width="1%">
 					<input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
 				</th>
+                <th width="5%">
+					<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $list_dir, $list_order); ?>
+				</th>
 				<th>
 					<?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
 				</th>
-                <th width="25%">
+                <th width="15%">
 					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'p.title', $list_dir, $list_order); ?>
 				</th>
-				<th width="5%">
-					<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $list_dir, $list_order); ?>
+				<th width="15%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
+				</th>
+				<th width="10%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_ON', 'a.created', $list_dir, $list_order); ?>
+				</th>
+                <th width="10%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_START_DATE', 'a.start_date', $list_dir, $list_order); ?>
+				</th>
+                <th width="10%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
 				</th>
                 <th width="10%">
 					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access', $list_dir, $list_order); ?>
-				</th>
-				<th width="10%">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
-				</th>
-				<th width="5%">
-					<?php echo JHtml::_('grid.sort', 'JDATE', 'a.created', $list_dir, $list_order); ?>
-				</th>
-                <th width="5%">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_STARTDATE', 'a.start_date', $list_dir, $list_order); ?>
-				</th>
-                <th width="5%">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ENDDATE', 'a.end_date', $list_dir, $list_order); ?>
 				</th>
 				<th width="1%" class="nowrap">
 					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $list_dir, $list_order); ?>
@@ -109,6 +109,9 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 				<td class="center">
 					<?php echo JHtml::_('grid.id', $i, $item->id); ?>
 				</td>
+                <td class="center">
+					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'milestones.', $canChange, 'cb'); ?>
+				</td>
 				<td>
 					<?php if ($item->checked_out) : ?>
 						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'articles.', $canCheckin); ?>
@@ -122,12 +125,7 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                     <?php echo ($item->description) ? '<p class="smallsub">'.$item->description.'</p>' : '<p class="smallsub">'.JText::_('COM_PROJECTFORK_NO_DESC').'</p>' ?>
 				</td>
                 <td><?php echo $this->escape($item->project_title); ?></td>
-				<td class="center">
-					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'milestones.', $canChange, 'cb'); ?>
-				</td>
-                <td class="center">
-					<?php echo $this->escape($item->access_level); ?>
-				</td>
+
 				<td class="center">
 					<?php echo $this->escape($item->author_name); ?>
 				</td>
@@ -139,6 +137,9 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 				</td>
                 <td class="center nowrap">
 					<?php echo (($item->end_date == $this->nulldate) ? JText::_('DATE_NOT_SET') : JHtml::_('date',$item->end_date, JText::_('DATE_FORMAT_LC4'))); ?>
+				</td>
+                <td class="center">
+					<?php echo $this->escape($item->access_level); ?>
 				</td>
 				<td class="center">
 					<?php echo (int) $item->id; ?>

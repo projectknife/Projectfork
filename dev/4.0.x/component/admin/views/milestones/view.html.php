@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -24,6 +24,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
+
 class ProjectforkViewMilestones extends JView
 {
     protected $items;
@@ -34,7 +35,8 @@ class ProjectforkViewMilestones extends JView
 
 
 	/**
-	 * Display the view
+	 * Displays the view.
+     *
 	 */
 	public function display($tpl = null)
 	{
@@ -61,28 +63,45 @@ class ProjectforkViewMilestones extends JView
 
 
 	/**
-	 * Add the page title and toolbar.
+	 * Adds the page title and toolbar.
 	 *
 	 */
 	protected function addToolbar()
 	{
-		$acl  = ProjectforkHelper::getActions();
-		$user = JFactory::getUser();
+		$canDo = ProjectforkHelper::getActions();
+		$user  = JFactory::getUser();
 
 		JToolBarHelper::title(JText::_('COM_PROJECTFORK_MILESTONES_TITLE'), 'article.png');
 
-        JToolBarHelper::addNew('milestone.add');
-        JToolBarHelper::editList('milestone.edit');
-        JToolBarHelper::divider();
-        JToolBarHelper::publish('milestones.publish', 'JTOOLBAR_PUBLISH', true);
-		JToolBarHelper::unpublish('milestones.unpublish', 'JTOOLBAR_UNPUBLISH', true);
-		JToolBarHelper::divider();
-		JToolBarHelper::archiveList('milestones.archive');
-		JToolBarHelper::checkin('milestones.checkin');
-        JToolBarHelper::deleteList('', 'milestones.delete','JTOOLBAR_EMPTY_TRASH');
-		JToolBarHelper::divider();
-        JToolBarHelper::trash('milestones.trash');
-		JToolBarHelper::divider();
+
+        if($canDo->get('core.create') || $canDo->get('milestone.create')) {
+            JToolBarHelper::addNew('milestone.add');
+        }
+
+        if($canDo->get('core.edit') || $canDo->get('core.edit.own') ||
+           $canDo->get('milestone.edit') || $canDo->get('milestone.edit.own')
+          ) {
+            JToolBarHelper::editList('milestone.edit');
+        }
+
+        if($canDo->get('core.edit.state') || $canDo->get('milestone.edit.state')) {
+            JToolBarHelper::divider();
+            JToolBarHelper::publish('milestones.publish', 'JTOOLBAR_PUBLISH', true);
+		    JToolBarHelper::unpublish('milestones.unpublish', 'JTOOLBAR_UNPUBLISH', true);
+		    JToolBarHelper::divider();
+		    JToolBarHelper::archiveList('milestones.archive');
+		    JToolBarHelper::checkin('milestones.checkin');
+        }
+
+        if($this->state->get('filter.published') == -2 &&
+            ($canDo->get('core.delete') || $canDo->get('milestone.delete'))
+          ) {
+            JToolBarHelper::deleteList('', 'milestones.delete','JTOOLBAR_EMPTY_TRASH');
+            JToolBarHelper::divider();
+        }
+        elseif ($canDo->get('core.edit.state') || $canDo->get('milestone.edit.state')) {
+			JToolBarHelper::trash('milestones.trash');
+			JToolBarHelper::divider();
+		}
 	}
 }
-?>
