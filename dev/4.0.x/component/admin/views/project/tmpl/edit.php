@@ -78,7 +78,6 @@ Joomla.pfSelectAccess = function(idx) {
 			<legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_PROJECT') : JText::_('COM_PROJECTFORK_EDIT_PROJECT'); ?></legend>
 			<ul class="adminformlist">
 				<li><?php echo $this->form->getLabel('title').$this->form->getInput('title'); ?></li>
-				<li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
 			</ul>
 			<div class="clr"></div>
 			<?php echo $this->form->getLabel('description'); ?>
@@ -94,6 +93,7 @@ Joomla.pfSelectAccess = function(idx) {
             <fieldset class="panelform">
 				<ul class="adminformlist">
                     <li><?php echo $this->form->getLabel('created_by').$this->form->getInput('created_by'); ?></li>
+                    <li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
                     <li><?php echo $this->form->getLabel('start_date').$this->form->getInput('start_date'); ?></li>
                     <li><?php echo $this->form->getLabel('end_date').$this->form->getInput('end_date'); ?></li>
                     <?php if ($this->item->modified_by) : ?>

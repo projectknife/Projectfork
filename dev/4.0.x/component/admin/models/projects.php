@@ -74,6 +74,7 @@ class ProjectforkModelProjects extends JModelList
 		// Initialise variables.
 		$app = JFactory::getApplication();
 
+
 		// Adjust the context to support modal layouts.
 		if ($layout = JRequest::getVar('layout')) $this->context .= '.'.$layout;
 
@@ -88,6 +89,7 @@ class ProjectforkModelProjects extends JModelList
 
         $access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', '');
 		$this->setState('filter.access', $access);
+
 
 		// List state information.
 		parent::populateState('a.title', 'asc');
@@ -107,7 +109,7 @@ class ProjectforkModelProjects extends JModelList
 	protected function getStoreId($id = '')
 	{
 		// Compile the store id.
-		$id	.= ':'.$this->getState('filter.search');
+        $id	.= ':'.$this->getState('filter.search');
 		$id	.= ':'.$this->getState('filter.published');
 		$id	.= ':'.$this->getState('filter.access');
 		$id	.= ':'.$this->getState('filter.author_id');
@@ -169,6 +171,12 @@ class ProjectforkModelProjects extends JModelList
         // Filter by access level.
 		if ($access = $this->getState('filter.access')) {
 			$query->where('a.access = ' . (int) $access);
+		}
+
+        // Implement View Level Access
+		if (!$user->authorise('core.admin')) {
+		    $groups	= implode(',', $user->getAuthorisedViewLevels());
+			$query->where('a.access IN ('.$groups.')');
 		}
 
 		// Filter by author
@@ -239,17 +247,22 @@ class ProjectforkModelProjects extends JModelList
 	{
 		$items	= parent::getItems();
 		$app	= JFactory::getApplication();
-		if ($app->isSite()) {
+
+
+		if($app->isSite()) {
 			$user	= JFactory::getUser();
 			$groups	= $user->getAuthorisedViewLevels();
 
-			for ($x = 0, $count = count($items); $x < $count; $x++) {
+			for ($x = 0, $count = count($items); $x < $count; $x++)
+            {
 				//Check the access level. Remove articles the user shouldn't see
 				if (!in_array($items[$x]->access, $groups)) {
 					unset($items[$x]);
 				}
 			}
 		}
+
+
 		return $items;
 	}
 }

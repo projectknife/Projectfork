@@ -84,7 +84,68 @@ class ProjectforkModelProject extends JModelAdmin
 		$form = $this->loadForm('com_projectfork.project', 'project', array('control' => 'jform', 'load_data' => $loadData));
 		if (empty($form)) return false;
 
+        $jinput = JFactory::getApplication()->input;
+        $user   = JFactory::getUser();
+        $id     =  $jinput->get('id', 0);
+
+
+        // Check for existing item.
+		// Modify the form based on Edit State access controls.
+		if ($id != 0 && (!$user->authorise('core.edit.state', 'com_projectfork.project.'.(int) $id) && !$user->authorise('project.edit.state', 'com_projectfork.project.'.(int) $id))
+		|| ($id == 0 && (!$user->authorise('core.edit.state', 'com_projectfork') && !$user->authorise('project.edit.state', 'com_projectfork')))
+		)
+		{
+			// Disable fields for display.
+			$form->setFieldAttribute('state', 'disabled', 'true');
+
+			// Disable fields while saving.
+			// The controller has already verified this is an article you can edit.
+			$form->setFieldAttribute('state', 'filter', 'unset');
+		}
+
 		return $form;
+	}
+
+
+    /**
+	 * Method to test whether a record can be deleted.
+	 *
+	 * @param	  object     $record    A record object.
+	 * @return    boolean	            True if allowed to delete the record.
+     *                                  Defaults to the permission set in the component.
+	 */
+	protected function canDelete($record)
+	{
+	    $asset = 'com_projectfork.project';
+
+		if (!empty($record->id)) {
+			if ($record->state != -2) return ;
+
+			$user = JFactory::getUser();
+			return ($user->authorise('core.delete', $asset.'.'.(int) $record->id) || $user->authorise('project.delete', $asset.'.'.(int) $record->id));
+		}
+	}
+
+
+	/**
+	 * Method to test whether a record can have its state edited.
+	 *
+	 * @param	  object     $record    A record object.
+	 * @return    boolean	            True if allowed to delete the record.
+     *                                  Defaults to the permission set in the component.
+	 */
+	protected function canEditState($record)
+	{
+		$user  = JFactory::getUser();
+        $asset = 'com_projectfork.project';
+
+		// Check for existing item.
+		if (!empty($record->id)) {
+			return ($user->authorise('core.edit.state', $asset.'.'.(int) $record->id) || $user->authorise('project.edit.state', $asset.'.'.(int) $record->id));
+		}
+		else {
+			return parent::canEditState('com_projectfork');
+		}
 	}
 
 
@@ -133,7 +194,7 @@ class ProjectforkModelProject extends JModelAdmin
 
         if(!array_key_exists('rules', $data)) $data['rules']  = array();
         if(strlen($new_access) && $canDo->get('core.create')) $data['access'] = $this->saveAccessLevel($new_access, $data['rules']);
-        if($data['access'] <= 0)              $data['access'] = 1;
+        if($data['access'] <= 0) $data['access'] = 1;
 
 
         // Filter the rules
