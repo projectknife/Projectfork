@@ -147,6 +147,13 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 			</tr>
 			<?php endforeach; ?>
 		</tbody>
+        <tfoot>
+			<tr>
+				<td colspan="10">
+					<?php echo $this->pagination->getListFooter(); ?>
+				</td>
+			</tr>
+		</tfoot>
     </table>
 
 
