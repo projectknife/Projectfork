@@ -30,7 +30,7 @@ jimport('joomla.database.tableasset');
  * Milestone table
  *
  */
-class JTableMilestone extends JTable
+class PFTableMilestone extends JTable
 {
 	/**
 	 * Constructor
@@ -197,7 +197,7 @@ class JTableMilestone extends JTable
 
 
         // Check if the start and end dates are in bounds of the parent dates
-        $project = JTable::getInstance('project');
+        $project = JTable::getInstance('project', 'PFTable');
         $project->load((int)$this->project_id);
 
         $a_start = strtotime($project->start_date);
@@ -207,6 +207,8 @@ class JTableMilestone extends JTable
 
         if($a_start > $b_start) $this->start_date = $project->start_date;
         if($a_end < $b_end)     $this->end_date   = $project->end_date;
+
+
 
 
 		return true;
@@ -238,7 +240,7 @@ class JTableMilestone extends JTable
 		}
 
 		// Verify that the alias is unique
-		$table = JTable::getInstance('Milestone','JTable');
+		$table = JTable::getInstance('Milestone','PFTable');
 		if ($table->load(array('alias'=>$this->alias)) && ($table->id != $this->id || $this->id==0)) {
 			$this->setError(JText::_('JLIB_DATABASE_ERROR_PROJECT_UNIQUE_ALIAS'));
 			return false;

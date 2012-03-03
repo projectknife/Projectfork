@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -25,6 +25,7 @@ defined('JPATH_PLATFORM') or die;
 jimport('joomla.html.html');
 jimport('joomla.access.access');
 jimport('joomla.form.formfield');
+
 
 /**
  * Form Field class for selecting a project.
@@ -84,7 +85,7 @@ class JFormFieldProject extends JFormField
 
 
 		// Load the current project title if available.
-		$table = JTable::getInstance('project');
+		$table = JTable::getInstance('project', 'PFtable');
 
 		if($this->value) {
 			$table->load($this->value);

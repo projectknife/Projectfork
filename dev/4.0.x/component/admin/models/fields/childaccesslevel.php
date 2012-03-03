@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -27,6 +27,7 @@ jimport('joomla.html.html');
 jimport('joomla.form.formfield');
 jimport('joomla.form.helper');
 JFormHelper::loadFieldClass('list');
+
 
 require_once(JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/projectfork.php');
 
@@ -88,7 +89,7 @@ class JFormFieldChildAccessLevel extends JFormFieldList
         // Find the access level of the parent item
 	    $parent_field  = $this->element['parent_field']     ? (string) $this->element['parent_field']     : 'project_id';
 	    $parent_type   = $this->element['parent_type']      ? (string) $this->element['parent_type']      : 'project';
-	    $parent_prefix = $this->element['parent_prefix']    ? (string) $this->element['parent_prefix']    : 'JTable';
+	    $parent_prefix = $this->element['parent_prefix']    ? (string) $this->element['parent_prefix']    : 'PFTable';
 	    $parent_com    = $this->element['parent_component'] ? (string) $this->element['parent_component'] : 'com_projectfork';
 	    $view          = $this->element['view']             ? (string) $this->element['view'] : (string) JRequest::getCmd('view');
 

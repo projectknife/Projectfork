@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -23,10 +23,12 @@
 // No direct access
 defined('_JEXEC') or die;
 
+
 // Load the tooltip behavior.
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.keepalive');
+
 
 JFactory::getDocument()->addScriptDeclaration(
 "window.addEvent('domready', function(){
@@ -64,7 +66,6 @@ Joomla.pfSelectAccess = function(idx) {
 				<li><?php echo $this->form->getLabel('project_id').$this->form->getInput('project_id'); ?></li>
 				<li><?php echo $this->form->getLabel('title').$this->form->getInput('title'); ?></li>
 				<li><?php echo $this->form->getLabel('description').$this->form->getInput('description'); ?></li>
-				<li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
 			</ul>
 			<div class="clr"></div>
 		</fieldset>
@@ -77,7 +78,7 @@ Joomla.pfSelectAccess = function(idx) {
             <fieldset class="panelform">
 				<ul class="adminformlist">
                     <li><?php echo $this->form->getLabel('created_by').$this->form->getInput('created_by'); ?></li>
-                    <li><?php echo $this->form->getLabel('has_deadline').$this->form->getInput('has_deadline'); ?></li>
+                    <li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
                     <li><?php echo $this->form->getLabel('start_date').$this->form->getInput('start_date'); ?></li>
                     <li><?php echo $this->form->getLabel('end_date').$this->form->getInput('end_date'); ?></li>
                     <?php if ($this->item->modified_by) : ?>
