@@ -56,7 +56,8 @@ class ProjectforkModelMilestones extends JModelList
                 'access', 'a.access', 'access_level',
                 'state', 'a.state',
                 'start_date', 'a.start_date',
-                'end_date', 'a.end_date'
+                'end_date', 'a.end_date',
+                'project_title', 'p.title'
 			);
 		}
 

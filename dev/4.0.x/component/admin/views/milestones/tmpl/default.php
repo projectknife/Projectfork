@@ -72,7 +72,7 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 					<?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
 				</th>
                 <th width="15%">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'p.title', $list_dir, $list_order); ?>
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'project_title', $list_dir, $list_order); ?>
 				</th>
 				<th width="15%">
 					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
@@ -96,14 +96,13 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 		</thead>
         <tbody>
 		<?php foreach ($this->items as $i => $item) :
-            $item->max_ordering = 0;
+            $asset_name = 'com_projectfork.milestone.'.$item->id;
 
-			$ordering	= ($list_order == 'p.title');
-			$canCreate	= $user->authorise('core.create',	  'com_projectfork.milestone.'.$item->id);
-			$canEdit	= $user->authorise('core.edit',		  'com_projectfork.milestone.'.$item->id);
-			$canCheckin	= $user->authorise('core.manage',	  'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0;
-			$canEditOwn	= $user->authorise('core.edit.own',	  'com_projectfork.milestone.'.$item->id) && $item->created_by == $uid;
-			$canChange	= $user->authorise('core.edit.state', 'com_projectfork.milestone.'.$item->id) && $canCheckin;
+			$canCreate	= ($user->authorise('core.create', $asset_name) || $user->authorise('milestone.create', $asset_name));
+			$canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('milestone.edit', $asset_name));
+			$canCheckin	= ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
+			$canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('milestone.edit.own', $asset_name)) && $item->created_by == $uid);
+			$canChange	= (($user->authorise('core.edit.state',	$asset_name) || $user->authorise('milestone.edit.state', $asset_name)) && $canCheckin);
             ?>
             <tr class="row<?php echo $i % 2; ?>">
 				<td class="center">
