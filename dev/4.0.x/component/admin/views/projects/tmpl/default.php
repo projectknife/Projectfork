@@ -31,7 +31,6 @@ $user	    = JFactory::getUser();
 $uid	    = $user->get('id');
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
-$save_order = $list_order == 'p.title';
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=projects'); ?>" method="post" name="adminForm" id="adminForm">
 
@@ -69,34 +68,33 @@ $save_order = $list_order == 'p.title';
 					<input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
 				</th>
                 <th width="5%">
-					<?php echo JHtml::_('grid.sort', 'JSTATUS', 'p.state', $list_dir, $list_order); ?>
+					<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $list_dir, $list_order); ?>
 				</th>
 				<th>
-					<?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'p.title', $list_dir, $list_order); ?>
+					<?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
 				</th>
 				<th width="15%">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'p.created_by', $list_dir, $list_order); ?>
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
 				</th>
 				<th width="10%">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_ON', 'p.created', $list_dir, $list_order); ?>
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_ON', 'a.created', $list_dir, $list_order); ?>
 				</th>
                 <th width="10%">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_START_DATE', 'p.start_date', $list_dir, $list_order); ?>
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_START_DATE', 'a.start_date', $list_dir, $list_order); ?>
 				</th>
                 <th width="10%">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'p.end_date', $list_dir, $list_order); ?>
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
 				</th>
                 <th width="10%">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'p.access', $list_dir, $list_order); ?>
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access', $list_dir, $list_order); ?>
 				</th>
 				<th width="1%" class="nowrap">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'p.id', $list_dir, $list_order); ?>
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $list_dir, $list_order); ?>
 				</th>
 			</tr>
 		</thead>
         <tbody>
 		<?php foreach ($this->items as $i => $item) :
-			$ordering	= ($list_order == 'p.title');
             $asset_name = 'com_projectfork.project.'.$item->id;
 
 			$canCreate	= ($user->authorise('core.create', $asset_name) || $user->authorise('project.create', $asset_name));
