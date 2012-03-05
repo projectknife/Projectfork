@@ -50,9 +50,9 @@ class JFormFieldProject extends JFormField
 		// Initialize variables.
         $app      = JFactory::getApplication();
 		$html     = array();
-		$groups   = $this->getGroups();
-		$excluded = $this->getExcluded();
-		$link     = 'index.php?option=com_projectfork&amp;view=projects&amp;layout=modal&amp;tmpl=component&amp;function=pfSelectProject_'.$this->id;
+		$link     = 'index.php?option=com_projectfork&amp;view=projects'
+                  . '&amp;layout=modal&amp;tmpl=component'
+                  . '&amp;function=pfSelectProject_'.$this->id;
 
 
 		// Initialize some field attributes.
@@ -60,7 +60,7 @@ class JFormFieldProject extends JFormField
 		$attr .= $this->element['size']  ? ' size="'.(int) $this->element['size'].'"'      : '';
 
         // Get the view
-		$view = $this->element['view'] ? ((string) $this->element['view']).'.' : ((string) JRequest::getCmd('view'));
+		$view = (string) JRequest::getCmd('view');
 
 		// Initialize JavaScript field attributes.
 		$onchange = (string) $this->element['onchange'];
@@ -126,27 +126,5 @@ class JFormFieldProject extends JFormField
 		$html[] = '<input type="hidden" id="'.$this->id.'_id" name="'.$this->name.'" value="'.(int) $this->value.'" />';
 
 		return implode("\n", $html);
-	}
-
-
-	/**
-	 * Method to get the filtering groups (null means no filtering)
-	 *
-	 * @return    mixed    array of filtering groups or null.
-	 */
-	protected function getGroups()
-	{
-		return null;
-	}
-
-
-	/**
-	 * Method to get the projects to exclude from the list of projects
-	 *
-	 * @return    mixed    Array of users to exclude or null to to not exclude them
-	 */
-	protected function getExcluded()
-	{
-		return null;
 	}
 }
