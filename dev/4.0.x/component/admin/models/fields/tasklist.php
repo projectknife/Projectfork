@@ -66,8 +66,8 @@ class JFormFieldTasklist extends JFormFieldList
         if((string) $this->element['submit'] == 'true') {
             $view = JRequest::getCmd('view');
             $attr = ' onchange="';
+            if($this->element['onchange']) $attr .= (string) $this->element['onchange'].';';
             $attr .= "Joomla.submitbutton('".$view.".setTasklist');";
-            if($this->element['onchange']) $attr .= (string) $this->element['onchange'];
             $attr .= '"';
         }
         else {
@@ -117,7 +117,7 @@ class JFormFieldTasklist extends JFormFieldList
         $query = $db->getQuery(true);
 
         $query->select('a.id AS value, a.title AS text');
-        $query->from('#__pf_milestones AS a');
+        $query->from('#__pf_task_lists AS a');
         $query->where('a.project_id = '.(int) $project_id);
 
         // Filter by milestone.
