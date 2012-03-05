@@ -46,7 +46,7 @@ class ProjectforkModelTask extends JModelAdmin
 	 * @param	 array	   Configuration array for model. Optional.
 	 * @return	 JTable	   A database object
 	 */
-	public function getTable($type = 'Task', $prefix = 'JTable', $config = array())
+	public function getTable($type = 'Task', $prefix = 'PFTable', $config = array())
 	{
 		return JTable::getInstance($type, $prefix, $config);
 	}

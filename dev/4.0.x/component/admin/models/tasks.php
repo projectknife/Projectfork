@@ -27,7 +27,7 @@ jimport('joomla.application.component.modellist');
 
 
 /**
- * Methods supporting a list of milestone records.
+ * Methods supporting a list of task records.
  *
  */
 class ProjectforkModelTasks extends JModelList

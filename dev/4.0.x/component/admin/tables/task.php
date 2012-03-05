@@ -25,11 +25,12 @@ defined('_JEXEC') or die;
 
 jimport('joomla.database.tableasset');
 
+
 /**
  * Task List table
  *
  */
-class JTableTask extends JTable
+class PFTableTask extends JTable
 {
 	/**
 	 * Constructor
@@ -203,7 +204,7 @@ class JTableTask extends JTable
 		}
 
 		// Verify that the alias is unique
-		$table = JTable::getInstance('Tasklist','JTable');
+		$table = JTable::getInstance('Task','PFTable');
 		if ($table->load(array('alias'=>$this->alias)) && ($table->id != $this->id || $this->id==0)) {
 			$this->setError(JText::_('JLIB_DATABASE_ERROR_PROJECT_UNIQUE_ALIAS'));
 			return false;

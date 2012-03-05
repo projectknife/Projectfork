@@ -25,6 +25,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
+
 class ProjectforkViewTasks extends JView
 {
     protected $items;
@@ -68,23 +69,40 @@ class ProjectforkViewTasks extends JView
 	 */
 	protected function addToolbar()
 	{
-		$acl  = ProjectforkHelper::getActions();
-		$user = JFactory::getUser();
+		$canDo = ProjectforkHelper::getActions();
+		$user  = JFactory::getUser();
 
 		JToolBarHelper::title(JText::_('COM_PROJECTFORK_TASKS_TITLE'), 'article.png');
 
-        JToolBarHelper::addNew('task.add');
-        JToolBarHelper::editList('task.edit');
-        JToolBarHelper::divider();
-        JToolBarHelper::publish('tasks.publish', 'JTOOLBAR_PUBLISH', true);
-		JToolBarHelper::unpublish('tasks.unpublish', 'JTOOLBAR_UNPUBLISH', true);
-		JToolBarHelper::divider();
-		JToolBarHelper::archiveList('tasks.archive');
-		JToolBarHelper::checkin('tasks.checkin');
-        JToolBarHelper::deleteList('', 'tasks.delete','JTOOLBAR_EMPTY_TRASH');
-		JToolBarHelper::divider();
-        JToolBarHelper::trash('tasks.trash');
-		JToolBarHelper::divider();
+
+        if($canDo->get('core.create') || $canDo->get('task.create')) {
+            JToolBarHelper::addNew('task.add');
+        }
+
+        if($canDo->get('core.edit') || $canDo->get('core.edit.own') ||
+           $canDo->get('task.edit') || $canDo->get('task.edit.own')
+          ) {
+            JToolBarHelper::editList('task.edit');
+        }
+
+        if($canDo->get('core.edit.state') || $canDo->get('task.edit.state')) {
+            JToolBarHelper::divider();
+            JToolBarHelper::publish('tasks.publish', 'JTOOLBAR_PUBLISH', true);
+		    JToolBarHelper::unpublish('tasks.unpublish', 'JTOOLBAR_UNPUBLISH', true);
+		    JToolBarHelper::divider();
+		    JToolBarHelper::archiveList('tasks.archive');
+		    JToolBarHelper::checkin('tasks.checkin');
+        }
+
+        if($this->state->get('filter.published') == -2 &&
+            ($canDo->get('core.delete') || $canDo->get('task.delete'))
+          ) {
+            JToolBarHelper::deleteList('', 'tasks.delete','JTOOLBAR_EMPTY_TRASH');
+            JToolBarHelper::divider();
+        }
+        elseif ($canDo->get('core.edit.state') || $canDo->get('task.edit.state')) {
+			JToolBarHelper::trash('tasks.trash');
+			JToolBarHelper::divider();
+		}
 	}
 }
-?>
