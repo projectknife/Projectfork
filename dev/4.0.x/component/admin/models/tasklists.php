@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -57,7 +57,9 @@ class ProjectforkModelTasklists extends JModelList
                 'attribs', 'a.attribs',
                 'access', 'a.access', 'access_level',
                 'state', 'a.state',
-                'ordering', 'a.ordering'
+                'ordering', 'a.ordering',
+                'project_title', 'p.title',
+                'milestone_title', 'm.title'
 			);
 		}
 
@@ -99,7 +101,7 @@ class ProjectforkModelTasklists extends JModelList
         ProjectforkHelper::setActiveProject($project);
 
 		// List state information.
-		parent::populateState('a.ordering', 'asc');
+		parent::populateState('a.title', 'asc');
 	}
 
 
@@ -182,9 +184,9 @@ class ProjectforkModelTasklists extends JModelList
         }
 
         // Filter by milestone
-        $project = $this->getState('filter.milestone');
-        if(is_numeric($project)) {
-            $query->where('a.milestone_id = ' . (int) $project);
+        $milestone = $this->getState('filter.milestone');
+        if(is_numeric($milestone)) {
+            $query->where('a.milestone_id = ' . (int) $milestone);
         }
 
 		// Filter by published state

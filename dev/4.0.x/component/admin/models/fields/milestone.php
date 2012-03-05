@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -21,6 +21,7 @@
 **/
 
 defined('JPATH_PLATFORM') or die;
+
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
@@ -101,7 +102,7 @@ class JFormFieldMilestone extends JFormFieldList
             // Get the project table and load the project
             JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'projectfork'.DS.'tables');
 
-            $table = JTable::getInstance('Project', 'JTable');
+            $table = JTable::getInstance('Project', 'PFTable');
 
             if(!$table) return $options;
             if(!$table->load($project_id)) return $options;

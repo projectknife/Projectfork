@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -46,7 +46,7 @@ class ProjectforkModelTasklist extends JModelAdmin
 	 * @param	 array	   Configuration array for model. Optional.
 	 * @return	 JTable	   A database object
 	 */
-	public function getTable($type = 'Tasklist', $prefix = 'JTable', $config = array())
+	public function getTable($type = 'Tasklist', $prefix = 'PFTable', $config = array())
 	{
 		return JTable::getInstance($type, $prefix, $config);
 	}

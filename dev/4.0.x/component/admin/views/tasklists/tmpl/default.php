@@ -25,13 +25,13 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.multiselect');
 
+
 $user	    = JFactory::getUser();
 $uid	    = $user->get('id');
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
-$save_order = $list_order == 'a.title';
 ?>
-<form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=milestones'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=tasklists'); ?>" method="post" name="adminForm" id="adminForm">
 
     <fieldset id="filter-bar">
 		<div class="filter-search fltlft">
@@ -67,26 +67,26 @@ $save_order = $list_order == 'a.title';
 				<th width="1%">
 					<input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
 				</th>
+                <th width="5%">
+					<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $list_dir, $list_order); ?>
+				</th>
 				<th>
 					<?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
 				</th>
-                <th width="20%">
+                <th width="15%">
 					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'p.title', $list_dir, $list_order); ?>
 				</th>
-                <th width="20%">
+                <th width="15%">
 					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONE', 'm.title', $list_dir, $list_order); ?>
 				</th>
-				<th width="5%">
-					<?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $list_dir, $list_order); ?>
+				<th width="15%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
+				</th>
+				<th width="10%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_ON', 'a.created', $list_dir, $list_order); ?>
 				</th>
                 <th width="10%">
 					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access', $list_dir, $list_order); ?>
-				</th>
-				<th width="10%">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
-				</th>
-				<th width="5%">
-					<?php echo JHtml::_('grid.sort', 'JDATE', 'a.created', $list_dir, $list_order); ?>
 				</th>
 				<th width="1%" class="nowrap">
 					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $list_dir, $list_order); ?>
@@ -95,17 +95,20 @@ $save_order = $list_order == 'a.title';
 		</thead>
         <tbody>
 		<?php foreach ($this->items as $i => $item) :
-            $item->max_ordering = 0; //??
-			$ordering	= ($list_order == 'p.title');
-			$canCreate	= $user->authorise('core.create',		'com_projectfork.tasklist.'.$item->id);
-			$canEdit	= $user->authorise('core.edit',			'com_projectfork.tasklist.'.$item->id);
-			$canCheckin	= $user->authorise('core.manage',		'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0;
-			$canEditOwn	= $user->authorise('core.edit.own',		'com_projectfork.tasklist.'.$item->id) && $item->created_by == $uid;
-			$canChange	= $user->authorise('core.edit.state',	'com_projectfork.tasklist.'.$item->id) && $canCheckin;
+			$asset_name = 'com_projectfork.tasklist.'.$item->id;
+
+			$canCreate	= ($user->authorise('core.create', $asset_name) || $user->authorise('tasklist.create', $asset_name));
+			$canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('tasklist.edit', $asset_name));
+			$canCheckin	= ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
+			$canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('tasklist.edit.own', $asset_name)) && $item->created_by == $uid);
+			$canChange	= (($user->authorise('core.edit.state',	$asset_name) || $user->authorise('tasklist.edit.state', $asset_name)) && $canCheckin);
             ?>
             <tr class="row<?php echo $i % 2; ?>">
 				<td class="center">
 					<?php echo JHtml::_('grid.id', $i, $item->id); ?>
+				</td>
+                <td class="center">
+					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'tasklists.', $canChange, 'cb'); ?>
 				</td>
 				<td>
 					<?php if ($item->checked_out) : ?>
@@ -121,16 +124,13 @@ $save_order = $list_order == 'a.title';
                 <td><?php echo $this->escape($item->project_title); ?></td>
                 <td><?php echo $this->escape($item->milestone_title); ?></td>
 				<td class="center">
-					<?php echo JHtml::_('jgrid.published', $item->state, $i, 'tasklists.', $canChange, 'cb'); ?>
-				</td>
-                <td class="center">
-					<?php echo $this->escape($item->access_level); ?>
-				</td>
-				<td class="center">
 					<?php echo $this->escape($item->author_name); ?>
 				</td>
 				<td class="center nowrap">
 					<?php echo JHtml::_('date',$item->created, JText::_('DATE_FORMAT_LC4')); ?>
+				</td>
+                <td class="center">
+					<?php echo $this->escape($item->access_level); ?>
 				</td>
 				<td class="center">
 					<?php echo (int) $item->id; ?>
@@ -138,6 +138,13 @@ $save_order = $list_order == 'a.title';
 			</tr>
 			<?php endforeach; ?>
 		</tbody>
+        <tfoot>
+			<tr>
+				<td colspan="9">
+					<?php echo $this->pagination->getListFooter(); ?>
+				</td>
+			</tr>
+		</tfoot>
     </table>
 
 

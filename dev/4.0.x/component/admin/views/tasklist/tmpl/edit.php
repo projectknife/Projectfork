@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -23,10 +23,12 @@
 // No direct access
 defined('_JEXEC') or die;
 
+
 // Load the tooltip behavior.
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.keepalive');
+
 
 JFactory::getDocument()->addScriptDeclaration(
 "window.addEvent('domready', function(){
@@ -65,7 +67,6 @@ Joomla.pfSelectAccess = function(idx) {
 				<li><?php echo $this->form->getLabel('milestone_id').$this->form->getInput('milestone_id'); ?></li>
 				<li><?php echo $this->form->getLabel('title').$this->form->getInput('title'); ?></li>
 				<li><?php echo $this->form->getLabel('description').$this->form->getInput('description'); ?></li>
-				<li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
 			</ul>
 			<div class="clr"></div>
 		</fieldset>
@@ -78,6 +79,7 @@ Joomla.pfSelectAccess = function(idx) {
             <fieldset class="panelform">
 				<ul class="adminformlist">
                     <li><?php echo $this->form->getLabel('created_by').$this->form->getInput('created_by'); ?></li>
+                    <li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
                     <?php if ($this->item->modified_by) : ?>
 						<li><?php echo $this->form->getLabel('modified_by').$this->form->getInput('modified_by'); ?></li>
 						<li><?php echo $this->form->getLabel('modified').$this->form->getInput('modified'); ?></li>
@@ -103,6 +105,7 @@ Joomla.pfSelectAccess = function(idx) {
                 </ul>
             </fieldset>
 
+            <!-- TODO
             <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
 			<?php foreach ($fieldSets as $name => $fieldSet) : ?>
 				<?php echo JHtml::_('sliders.panel',JText::_($fieldSet->label), $name.'-options'); ?>
@@ -117,6 +120,7 @@ Joomla.pfSelectAccess = function(idx) {
 					</ul>
 				</fieldset>
 			<?php endforeach; ?>
+            -->
 
        <?php echo JHtml::_('sliders.end'); ?>
        <div class="clr"></div>
