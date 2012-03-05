@@ -29,7 +29,7 @@ $user	    = JFactory::getUser();
 $uid	    = $user->get('id');
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
-$save_order = $list_order == 'a.ordering';
+$save_order = ($list_order == 'a.ordering');
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=tasks'); ?>" method="post" name="adminForm" id="adminForm">
 
@@ -73,16 +73,22 @@ $save_order = $list_order == 'a.ordering';
                 <th>
 					<?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
 				</th>
-                <th width="15%">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'p.title', $list_dir, $list_order); ?>
+                <th width="12%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'project_title', $list_dir, $list_order); ?>
 				</th>
-                <th width="15%">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONE', 'm.title', $list_dir, $list_order); ?>
+                <th width="12%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONE', 'milestone_title', $list_dir, $list_order); ?>
 				</th>
-                <th width="15%">
-					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKLIST', 'tl.title', $list_dir, $list_order); ?>
+                <th width="12%">
+					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKLIST', 'tasklist_title', $list_dir, $list_order); ?>
 				</th>
-				<th width="15%">
+                <th width="10%">
+					<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ORDERING', 'a.ordering', $list_dir, $list_order); ?>
+					<?php if ($save_order) :?>
+						<?php echo JHtml::_('grid.order',  $this->items, 'filesave.png', 'tasks.saveorder'); ?>
+					<?php endif; ?>
+				</th>
+				<th width="10%">
 					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
 				</th>
 				<th width="5%">
@@ -99,6 +105,7 @@ $save_order = $list_order == 'a.ordering';
         <tbody>
 		<?php foreach ($this->items as $i => $item) :
 			$asset_name = 'com_projectfork.task.'.$item->id;
+            $ordering	= ($list_order == 'a.ordering');
 
 			$canCreate	= ($user->authorise('core.create', $asset_name) || $user->authorise('task.create', $asset_name));
 			$canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('task.edit', $asset_name));
@@ -127,7 +134,23 @@ $save_order = $list_order == 'a.ordering';
                 <td><?php echo $this->escape($item->project_title); ?></td>
                 <td><?php echo $this->escape($item->milestone_title); ?></td>
                 <td><?php echo $this->escape($item->tasklist_title); ?></td>
-
+                <td class="order">
+					<?php if ($canChange) : ?>
+						<?php if ($save_order) :?>
+							<?php if ($list_dir == 'asc') : ?>
+								<span><?php echo $this->pagination->orderUpIcon($i, ($item->catid == @$this->items[$i-1]->catid), 'tasks.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
+								<span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, ($item->catid == @$this->items[$i+1]->catid), 'tasks.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
+							<?php elseif ($list_dir == 'desc') : ?>
+								<span><?php echo $this->pagination->orderUpIcon($i, ($item->catid == @$this->items[$i-1]->catid), 'tasks.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
+								<span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, ($item->catid == @$this->items[$i+1]->catid), 'tasks.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
+							<?php endif; ?>
+						<?php endif; ?>
+						<?php $disabled = ($save_order ?  '' : 'disabled="disabled"'); ?>
+						<input type="text" name="order[]" size="5" value="<?php echo $item->ordering;?>" <?php echo $disabled ?> class="text-area-order" />
+					<?php else : ?>
+						<?php echo $item->ordering; ?>
+					<?php endif; ?>
+				</td>
 				<td class="center">
 					<?php echo $this->escape($item->author_name); ?>
 				</td>
@@ -145,7 +168,7 @@ $save_order = $list_order == 'a.ordering';
 		</tbody>
         <tfoot>
 			<tr>
-				<td colspan="10">
+				<td colspan="11">
 					<?php echo $this->pagination->getListFooter(); ?>
 				</td>
 			</tr>

@@ -42,9 +42,9 @@ class ProjectforkModelTasks extends JModelList
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
 				'id', 'a.id',
-                'project_id', 'a.project_id',
-                'list_id', 'a.list_id',
-                'milestone_id', 'a.milestone_id',
+                'project_id', 'a.project_id', 'project_title',
+                'list_id', 'a.list_id', 'tasklist_title',
+                'milestone_id', 'a.milestone_id', 'milestone_title',
 				'title', 'a.title',
 				'description', 'a.description',
 				'alias', 'a.alias',
@@ -61,7 +61,8 @@ class ProjectforkModelTasks extends JModelList
                 'complete', 'a.complete',
                 'start_date', 'a.start_date',
                 'end_date', 'a.end_date',
-                'ordering', 'a.ordering'
+                'ordering', 'a.ordering',
+                'parentid', 'a.parentid'
 			);
 		}
 
@@ -151,7 +152,7 @@ class ProjectforkModelTasks extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'a.id, a.project_id, a.list_id, a.milestone_id, a.title, '
+				'a.id, a.project_id, a.list_id, a.milestone_id, a.catid, a.title, '
                 . 'a.description, a.alias, a.checked_out, '
 				. 'a.checked_out_time, a.state, a.access, a.created, a.created_by, '
 				. 'a.start_date, a.end_date, a.ordering'
@@ -244,9 +245,22 @@ class ProjectforkModelTasks extends JModelList
 			}
 		}
 
-		// Add the list ordering clause.
-		$orderCol  = $this->state->get('list.ordering');
-		$orderDirn = $this->state->get('list.direction');
+        // Add the list ordering clause.
+		$orderCol	= $this->state->get('list.ordering', 'a.title');
+		$orderDirn	= $this->state->get('list.direction', 'asc');
+
+		if ($orderCol == 'a.ordering') {
+			$orderCol = 'p.title, m.title, tl.title '.$orderDirn.', '.$orderCol;
+		}
+        if($orderCol == 'project_title') {
+            $orderCol = 'm.title, tl.title, a.title '.$orderDirn.', p.title';
+        }
+        if($orderCol == 'milestone_title') {
+            $orderCol = 'p.title '.$orderDirn.', m.title';
+        }
+        if($orderCol == 'tasklist_title') {
+            $orderCol = 'p.title, m.title '.$orderDirn.', tl.title';
+        }
 
 		$query->order($db->getEscaped($orderCol.' '.$orderDirn));
 

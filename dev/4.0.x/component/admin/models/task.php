@@ -114,6 +114,41 @@ class ProjectforkModelTask extends JModelAdmin
 	}
 
 
+    /**
+	 * A protected method to get a set of ordering conditions.
+	 *
+	 * @param	object	A record object.
+	 * @return	array	An array of conditions to add to add to ordering queries.
+	 */
+	protected function getReorderConditions($table)
+	{
+	    $catid = intval($table->project_id).''.intval($table->milestone_id).''.intval($table->list_id);
+
+		$condition = array();
+		$condition[] = 'catid = '.(int) $catid;
+
+		return $condition;
+	}
+
+
+    /**
+	 * Prepare and sanitise the table data prior to saving.
+	 *
+	 * @param	JTable	A JTable object.
+	 * @return	void
+	 */
+	protected function prepareTable(&$table)
+	{
+	    // Generate catid
+        $catid = intval($table->project_id).''.intval($table->milestone_id).''.intval($table->list_id);
+
+		// Reorder the items within the category so the new item is first
+		if (empty($table->id)) {
+			$table->reorder('catid = '.(int) $catid.' AND state >= 0');
+		}
+	}
+
+
 	/**
 	 * Method to save the form data.
 	 *
