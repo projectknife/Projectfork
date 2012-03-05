@@ -51,7 +51,8 @@ class JFormFieldMilestone extends JFormFieldList
 	protected function getInput()
 	{
 		// Initialize variables.
-		$attr = '';
+		$attr   = '';
+        $hidden = '<input type="hidden" id="'.$this->id.'_id" name="'.$this->name.'" value="0" />';
 
 
 		// Initialize some field attributes.
@@ -59,15 +60,38 @@ class JFormFieldMilestone extends JFormFieldList
 		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"'                                : '';
 		$attr .= $this->element['size']                          ? ' size="'.(int) $this->element['size'].'"'            : '';
 		$attr .= $this->multiple                                 ? ' multiple="multiple"'                                : '';
-		$attr .= $this->element['onchange']                      ? ' onchange="'.(string) $this->element['onchange'].'"' : '';
+
+        // Handle onchange event attribute.
+        if((string) $this->element['submit'] == 'true') {
+            $view = JRequest::getCmd('view');
+            $attr = ' onchange="';
+            if($this->element['onchange']) $attr .= (string) $this->element['onchange'].';';
+            $attr .= " Joomla.submitbutton('".$view.".setMilestone');";
+            $attr .= '"';
+        }
+        else {
+            $attr .= $this->element['onchange'] ? ' onchange="'.(string) $this->element['onchange'].'"' : '';
+        }
+
+        // Get parent item field values.
+        $project_id = (int) $this->form->getValue('project_id');
+
+        if(!$project_id) {
+            // Cant get milestone list without a project id.
+            return '<span class="readonly">'.JText::_('COM_PROJECTFORK_FIELD_PROJECT_REQ').'</span>'.$hidden;
+        }
+
+        // Get the field options.
+        $options = $this->getOptions($project_id);
+
+        // Return if no options are available.
+        if(count($options) == 0) {
+            return '<span class="readonly">'.JText::_('COM_PROJECTFORK_FIELD_MILESTONE_EMPTY').'</span>'.$hidden;
+        }
 
 
-		// Get the field options and generate the list
-        $options = $this->getOptions();
-		$html    = JHtml::_('select.genericlist', $options, $this->name, trim($attr), 'value', 'text', $this->value, $this->id);
-
-
-        return $html;
+		// Generate the list.
+		return JHtml::_('select.genericlist', $options, $this->name, trim($attr), 'value', 'text', $this->value, $this->id);
 	}
 
 
@@ -76,73 +100,65 @@ class JFormFieldMilestone extends JFormFieldList
 	 *
 	 * @return    array    The list options markup.
 	 */
-	protected function getOptions()
+	protected function getOptions($project_id)
 	{
 	    // Get custom options
-        $options = parent::getOptions();
+        $options = array();
 
 
         // Get field attributes for the database query
         $query_state = ($this->element['state']) ? (int) $this->element['state'] : NULL;
 
 
-        // Find the current project id
-	    $project = $this->element['project'] ? (string) $this->element['project'] : NULL;
-        $view    = $this->element['view']    ? (string) $this->element['view']    : (string) JRequest::getCmd('view');
+        // Find all project milestones
+        $user  = JFactory::getUser();
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('a.id AS value, a.title AS text');
+        $query->from('#__pf_milestones AS a');
+        $query->where('a.project_id = '.(int) $project_id);
+
+        // Filter state
+        if(!is_null($query_state)) $query->where('a.state = '.$query_state);
+
+        // Implement View Level Access.
+		if(!$user->authorise('core.admin')) {
+		    $groups	= implode(',', $user->getAuthorisedViewLevels());
+			$query->where('a.access IN ('.$groups.')');
+		}
+
+        $query->order('a.title');
+
+        $db->setQuery($query->__toString());
+        $list = (array) $db->loadObjectList();
 
 
-        // Load milestones of a project
-        if($project) {
-            $project_id = (int) $this->form->getValue($project);
-            $data       = JFactory::getApplication()->getUserState('com_projectfork.edit.'.$view.'.data', array());
-
-            if(!$project_id) return $options;
-
-
-            // Get the project table and load the project
-            JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'projectfork'.DS.'tables');
-
-            $table = JTable::getInstance('Project', 'PFTable');
-
-            if(!$table) return $options;
-            if(!$table->load($project_id)) return $options;
-
-
-            // Find all project milestones
-            $db    = JFactory::getDbo();
-            $query = $db->getQuery(true);
-
-            $query->select('a.id AS value, a.title AS text');
-            $query->from('#__pf_milestones AS a');
-            $query->where('a.project_id = '.(int) $project_id);
-            if(!is_null($query_state)) $query->where('a.state = '.$query_state);
-            $query->order('a.title');
-
-            $db->setQuery($query->__toString());
-            $list = (array) $db->loadObjectList();
-
-
-            // Generate the options
-            foreach($list AS $item)
-            {
-                // Create a new option object based on the <option /> element.
-    			$tmp = JHtml::_('select.option',
-                                (string) $item->value,
-                                JText::alt(trim((string) $item->text),
-                                preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname)),
-                                'value',
-                                'text'
-                               );
-
-    			// Add the option object to the result set.
-    			$options[] = $tmp;
-            }
-
-    		reset($options);
+        // Generate the options
+        if(count($list) > 0) {
+            $options[] = JHtml::_('select.option',
+                                  '0',
+                                  JText::alt('COM_PROJECTFORK_OPTION_SELECT_MILESTONE',
+                                  preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname)),
+                                  'value',
+                                  'text'
+                                 );
         }
-        else {
-            // No parent project configured, load all milestones
-            // TODO
+
+
+        foreach($list AS $item)
+        {
+            // Create a new option object based on the <option /> element.
+			$tmp = JHtml::_('select.option',
+                            (string) $item->value,
+                            JText::alt(trim((string) $item->text),
+                            preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname)),
+                            'value',
+                            'text'
+                           );
+
+			// Add the option object to the result set.
+			$options[] = $tmp;
         }
 
 		return $options;
