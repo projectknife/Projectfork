@@ -68,15 +68,47 @@ class ProjectforkControllerTask extends JControllerForm
 	}
 
 
-    public function setTasklist()
+    /**
+	 * Sets the selected milestone of the task form
+	 *
+	 * @return	void
+	 */
+    public function setMilestone()
     {
-        // Initialise variables.
-		$app      = JFactory::getApplication();
-		$data     = JRequest::getVar('jform', array(), 'post', 'array');
-		$recordId = JRequest::getInt('id');
+        $recordId = JRequest::getInt('id');
 
-		$app->setUserState('com_projectfork.edit.task.data', $data);
-
+        $this->setFormData();
 		$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId), false));
     }
+
+
+    /**
+	 * Sets the selected task list of the task form
+	 *
+	 * @return	void
+	 */
+    public function setTasklist()
+    {
+        $recordId = JRequest::getInt('id');
+
+        $this->setFormData();
+		$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId), false));
+    }
+
+
+    /**
+	 * Stores the form data
+	 *
+	 * @return	void
+	 */
+    protected function setFormData()
+    {
+        // Initialise variables.
+		$app  = JFactory::getApplication();
+		$data = JRequest::getVar('jform', array(), 'post', 'array');
+
+		$app->setUserState('com_projectfork.edit.task.data', $data);
+    }
+
+
 }

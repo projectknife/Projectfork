@@ -6,13 +6,11 @@
 			required="true" view="task"
         />
         <field name="milestone_id" type="milestone" label="COM_PROJECTFORK_FIELD_MILESTONE_LABEL"
-			description="COM_PROJECTFORK_FIELD_MILESTONE_DESC" class="inputbox" project="project_id"
-        >
-            <option value="0">COM_PROJECTFORK_OPTION_SELECT_MILESTONE</option>
-        </field>
+			description="COM_PROJECTFORK_FIELD_MILESTONE_DESC" class="inputbox" submit="true"
+        />
         <field name="list_id" type="tasklist" label="COM_PROJECTFORK_FIELD_TASKLIST_LABEL"
 			description="COM_PROJECTFORK_FIELD_TASKLIST_DESC" class="inputbox" submit="true"
-            />
+        />
         <field name="title" type="text" label="JGLOBAL_TITLE"
 			description="JFIELD_TITLE_DESC" class="inputbox" size="30"
 			required="true" 
