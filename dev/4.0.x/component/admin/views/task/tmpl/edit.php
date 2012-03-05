@@ -36,7 +36,12 @@ JFactory::getDocument()->addScriptDeclaration(
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task) {
-    if (task == 'task.cancel' || document.formvalidator.isValid(document.id('item-form')) || task == 'task.setProject') {
+    if (task == 'task.cancel' ||
+        task == 'task.setProject' ||
+        task == 'task.setMilestone' ||
+        task == 'task.setTasklist' ||
+        document.formvalidator.isValid(document.id('item-form'))
+       ) {
         Joomla.submitform(task, document.getElementById('item-form'));
 	}
     else {
@@ -63,6 +68,7 @@ Joomla.pfSelectAccess = function(idx) {
 			<ul class="adminformlist">
 				<li><?php echo $this->form->getLabel('project_id').$this->form->getInput('project_id'); ?></li>
 				<li><?php echo $this->form->getLabel('milestone_id').$this->form->getInput('milestone_id'); ?></li>
+				<li><?php echo $this->form->getLabel('list_id').$this->form->getInput('list_id'); ?></li>
 				<li><?php echo $this->form->getLabel('title').$this->form->getInput('title'); ?></li>
 				<li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
 			</ul>

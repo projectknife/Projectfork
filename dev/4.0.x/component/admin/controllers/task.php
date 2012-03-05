@@ -45,7 +45,7 @@ class ProjectforkControllerTask extends JControllerForm
 	 *
 	 * @return	void
 	 */
-	function setProject()
+	public function setProject()
 	{
 		// Initialise variables.
 		$app      = JFactory::getApplication();
@@ -66,4 +66,17 @@ class ProjectforkControllerTask extends JControllerForm
 
 		$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId), false));
 	}
+
+
+    public function setTasklist()
+    {
+        // Initialise variables.
+		$app      = JFactory::getApplication();
+		$data     = JRequest::getVar('jform', array(), 'post', 'array');
+		$recordId = JRequest::getInt('id');
+
+		$app->setUserState('com_projectfork.edit.task.data', $data);
+
+		$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId), false));
+    }
 }
