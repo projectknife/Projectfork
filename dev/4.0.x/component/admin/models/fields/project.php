@@ -76,7 +76,7 @@ class JFormFieldProject extends JFormField
 		$script[] = '		if (old_id != id) {';
 		$script[] = '			document.getElementById("'.$this->id.'_id").value = id;';
 		$script[] = '			document.getElementById("'.$this->id.'_name").value = title;';
-		$script[] = '			Joomla.submitbutton("'.$view.'setProject");';
+		$script[] = '			Joomla.submitbutton("'.$view.'.setProject");';
 		$script[] = '		}';
 		$script[] = '	}';
 
