@@ -180,6 +180,7 @@ class JFormFieldPFaccesslevel extends JFormFieldList
 
             $query->select('a.title');
             $query->from('#__viewlevels AS a');
+            $query->where('a.id = '.(int) $table->access);
 
             $db->setQuery($query->__toString());
             $access_title = $db->loadResult();
