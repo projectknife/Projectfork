@@ -39,11 +39,9 @@
 		    readonly="true"
 		    filter="unset"
 		/>
-		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"
-			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" onchange="Joomla.pfSelectAccess(this.selectedIndex);" 
-        >
-            <option value="0">COM_PROJECTFORK_OPT_NEW_ACCESS</option>
-        </field>
+		<field name="access" type="pfaccesslevel" label="JFIELD_ACCESS_LABEL"
+			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" permissions="true" create="true"
+        />
         <field name="access_new" type="text" class="inputbox" size="30" 
 			label="COM_PROJECTFORK_FIELD_ACCESS_NEW_LABEL" description="COM_PROJECTFORK_FIELD_ACCESS_NEW_DESC"
 			buttons="true" 

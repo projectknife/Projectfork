@@ -55,8 +55,7 @@ class JFormFieldPFaccesslevel extends JFormFieldList
 	protected function getInput()
 	{
 		// Initialize variables.
-		$attr   = '';
-        $hidden = '<input type="hidden" id="'.$this->id.'_id" name="'.$this->name.'" value="1" />';
+		$attr = '';
 
 
         // Get possible parent field values
@@ -70,12 +69,6 @@ class JFormFieldPFaccesslevel extends JFormFieldList
 		$attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"'                                : '';
 		$attr .= $this->element['size']                          ? ' size="'.(int) $this->element['size'].'"'            : '';
         $attr .= $this->multiple                                 ? ' multiple="multiple"'                                : '';
-
-
-        if(!$project_id) {
-            // Cant get task list without at least a project id.
-            return '<span class="readonly">'.JText::_('COM_PROJECTFORK_FIELD_PROJECT_REQ').'</span>'.$hidden;
-        }
 
 
         // Build the javascript
@@ -135,12 +128,8 @@ class JFormFieldPFaccesslevel extends JFormFieldList
         $options = $this->getOptions($project_id, $milestone_id, $tasklist_id);
 
 
-		// Get the field options and generate the list
-
+		// Generate the list
 		return JHtml::_('select.genericlist', $options, $this->name, trim($attr), 'value', 'text', $this->value, $this->id);
-
-
-        return $html;
 	}
 
 
@@ -152,7 +141,7 @@ class JFormFieldPFaccesslevel extends JFormFieldList
      * @param     int    $tasklist_id     The parent tasklist id
 	 * @return    array    The list options markup.
 	 */
-    protected function getOptions($project_id, $milestone_id = 0, $tasklist_id = 0)
+    protected function getOptions($project_id = 0, $milestone_id = 0, $tasklist_id = 0)
 	{
 	    // Setup vars
         $user      = JFactory::getUser();
@@ -176,26 +165,25 @@ class JFormFieldPFaccesslevel extends JFormFieldList
 
 
         // Get the table of the parent element
-        JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'tables');
+        if($parent_id) {
+            JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'tables');
 
-        $table = JTable::getInstance($parent_el, 'PFTable');
-        if(!$table) return $options;
+            $table = JTable::getInstance($parent_el, 'PFTable');
+            if(!$table) return $options;
 
+            // Load the parent item
+            if(!$table->load($parent_id)) return $options;
 
-        // Load the parent item
-        if(!$table->load($parent_id)) return $options;
+            // Load access level title
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
+            $query->select('a.title');
+            $query->from('#__viewlevels AS a');
 
-        // Load access level title
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query->select('a.title');
-        $query->from('#__viewlevels AS a');
-        $query->where('a.id = '.(int) $table->access);
-
-        $db->setQuery($query->__toString());
-        $access_title = $db->loadResult();
+            $db->setQuery($query->__toString());
+            $access_title = $db->loadResult();
+        }
 
 
         // Add option to create new access level
@@ -211,19 +199,33 @@ class JFormFieldPFaccesslevel extends JFormFieldList
 
 
         // Add option to inherit access from parent element
-        $text = 'COM_PROJECTFORK_OPTION_INHERIT_FROM_'.strtoupper($parent_el);
+        if($parent_id) {
+            $text = 'COM_PROJECTFORK_OPTION_INHERIT_FROM_'.strtoupper($parent_el);
 
-        $options[] = JHtml::_('select.option',
-                              (int) $table->access,
-                              sprintf(JText::alt($text,
-                              preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname)), $access_title),
-                              'value',
-                              'text'
-                             );
+            $options[] = JHtml::_('select.option',
+                                  (int) $table->access,
+                                  sprintf(JText::alt($text,
+                                  preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname)), $access_title),
+                                  'value',
+                                  'text'
+                                 );
 
 
-        // Find access level children
-        $levels = ProjectforkHelper::getChildrenOfAccess($table->access);
+            // Find access level children
+            $levels = ProjectforkHelper::getChildrenOfAccess($table->access);
+        }
+        else {
+            // Load access levels
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('a.id AS value, a.title AS text');
+            $query->from('#__viewlevels AS a');
+
+            $db->setQuery($query->__toString());
+            $levels = (array) $db->loadObjectList();
+        }
+
 
 
         foreach($levels AS $level)
