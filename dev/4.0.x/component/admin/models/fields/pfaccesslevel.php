@@ -117,10 +117,24 @@ class JFormFieldPFaccesslevel extends JFormFieldList
             $attr .= ' onchange="';
             $attr .= "pfSelectAccess_".$this->id."(this.options[this.selectedIndex].value);";
             if($this->element['onchange']) $attr .= (string) $this->element['onchange'].';';
+
+            if((string) $this->element['submit'] == 'true') {
+                $view  = JRequest::getCmd('view');
+                $attr .= " Joomla.submitbutton('".$view.".setAccess');";
+            }
+
             $attr .= '"';
         }
         else {
-            $attr .= $this->element['onchange'] ? ' onchange="'.(string) $this->element['onchange'].'"' : '';
+            $attr .= ' onchange="';
+            if($this->element['onchange']) $attr .= (string) $this->element['onchange'].';';
+
+            if((string) $this->element['submit'] == 'true') {
+                $view  = JRequest::getCmd('view');
+                $attr .= " Joomla.submitbutton('".$view.".setAccess');";
+            }
+
+            $attr .= '"';
         }
 
 

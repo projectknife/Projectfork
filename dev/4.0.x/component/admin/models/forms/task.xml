@@ -29,6 +29,7 @@
 		</field>
 		<field name="access" type="pfaccesslevel" label="JFIELD_ACCESS_LABEL"
 			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" permissions="true"
+			submit="true"
         />
         <field name="created_by" type="user"
 			label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_CREATED_BY_DESC"
@@ -59,6 +60,7 @@
 			component="com_projectfork"
 			section="task" 
         />
+        
 		<field name="id" type="hidden" readonly="true"/>
 		<field name="asset_id" type="hidden" filter="unset"/>
 		<field name="alias" type="hidden" readonly="true"/>
@@ -66,6 +68,20 @@
 		<field name="checked_out" type="hidden" filter="unset" />
 		<field name="checked_out_time" type="hidden" filter="unset" />
 	</fieldset>
+	<fields name="users">
+	    <fieldset name="users" label="COM_PROJECTFORK_FIELDSET_ASSIGNED_USERS">
+	        <field name="user0" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
+            <field name="user1" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
+            <field name="user2" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
+            <field name="user3" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
+            <field name="user4" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
+            <field name="user5" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
+            <field name="user6" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
+            <field name="user7" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
+            <field name="user8" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
+            <field name="user9" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
+        </fieldset>
+	</fields>
 	<fields name="attribs">
 	    <fieldset name="basic" label="COM_PROJECTFORK_TASK_ATTRIBS_FIELDSET_LABEL">
 	        

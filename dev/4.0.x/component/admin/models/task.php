@@ -65,10 +65,44 @@ class ProjectforkModelTask extends JModelAdmin
 			$registry = new JRegistry;
 			$registry->loadString($item->attribs);
 			$item->attribs = $registry->toArray();
+
+            $item->users = $this->getUsers($pk);
 		}
 
 		return $item;
 	}
+
+
+    /**
+	 * Method to get assigned users of a task
+	 *
+	 * @param	  integer	The id of the primary key.
+	 * @return    array     The assigned users
+	 */
+    public function getUsers($pk = NULL)
+    {
+        if(!$pk) $pk = $this->getState('task.id');
+        if(!$pk) return array();
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('user_id')
+              ->from('#__pf_ref_users')
+              ->where('item_type = '.$db->quote('task'))
+              ->where('item_id = '.$db->quote($pk));
+
+        $db->setQuery($query->__toString());
+        $data = (array) $db->loadResultArray();
+        $list = array();
+
+        foreach($data AS $i => $uid)
+        {
+            $list['user'.$i] = $uid;
+        }
+
+        return $list;
+    }
 
 
 	/**
@@ -168,10 +202,9 @@ class ProjectforkModelTask extends JModelAdmin
             $data['alias'] = '';
         }
 
-        // Store the record
-		if (parent::save($data)) return true;
 
-		return false;
+        // Store the record
+		return parent::save($data);
 	}
 
 

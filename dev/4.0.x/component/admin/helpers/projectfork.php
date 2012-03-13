@@ -112,12 +112,23 @@ class ProjectforkHelper
         $groups = array();
 
         // Get the rule of the access level
-        $query->select('a.rules');
-        $query->from('#__viewlevels AS a');
-        $query->where('a.id = '.(int) $access);
+        if($access != 1) {
+            $query->select('a.rules');
+            $query->from('#__viewlevels AS a');
+            $query->where('a.id = '.(int) $access);
 
-        $db->setQuery((string) $query);
-		$rules = json_decode($db->loadResult());
+            $db->setQuery((string) $query);
+    		$rules = json_decode($db->loadResult());
+        }
+        else {
+            $query->select('id')
+                  ->from('#__usergroups');
+
+            $db->setQuery((string) $query);
+            $rules = $db->loadResultArray();
+            $children = false;
+        }
+
 
         if(!count($rules)) return $groups;
 

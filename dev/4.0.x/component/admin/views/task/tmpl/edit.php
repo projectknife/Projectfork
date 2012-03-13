@@ -35,6 +35,7 @@ Joomla.submitbutton = function(task) {
         task == 'task.setProject' ||
         task == 'task.setMilestone' ||
         task == 'task.setTasklist' ||
+        task == 'task.setAccess' ||
         document.formvalidator.isValid(document.id('item-form'))
        ) {
         Joomla.submitform(task, document.getElementById('item-form'));
@@ -97,6 +98,21 @@ Joomla.submitbutton = function(task) {
                     </li>
                 </ul>
             </fieldset>
+
+            <?php $fieldSets = $this->form->getFieldsets('users'); ?>
+			<?php foreach ($fieldSets as $name => $fieldSet) : ?>
+				<?php echo JHtml::_('sliders.panel',JText::_($fieldSet->label), $name.'-options'); ?>
+				<?php if (isset($fieldSet->description) && trim($fieldSet->description)) : ?>
+					<p class="tip"><?php echo $this->escape(JText::_($fieldSet->description));?></p>
+				<?php endif; ?>
+				<fieldset class="panelform">
+					<ul class="adminformlist">
+					    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
+						    <li><?php echo $field->label. $field->input; ?></li>
+					    <?php endforeach; ?>
+					</ul>
+				</fieldset>
+			<?php endforeach; ?>
 
             <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
 			<?php foreach ($fieldSets as $name => $fieldSet) : ?>

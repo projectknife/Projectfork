@@ -97,6 +97,20 @@ class ProjectforkControllerTask extends JControllerForm
 
 
     /**
+	 * Sets the selected access leve of the task form
+	 *
+	 * @return	void
+	 */
+    public function setAccess()
+    {
+        $recordId = JRequest::getInt('id');
+
+        $this->setFormData();
+		$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId), false));
+    }
+
+
+    /**
 	 * Stores the form data
 	 *
 	 * @return	void
