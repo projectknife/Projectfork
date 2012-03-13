@@ -309,12 +309,21 @@ class ProjectforkModelTasks extends JModelList
 			$user	= JFactory::getUser();
 			$groups	= $user->getAuthorisedViewLevels();
 
-			for ($x = 0, $count = count($items); $x < $count; $x++) {
+			for ($x = 0, $count = count($items); $x < $count; $x++)
+            {
 				//Check the access level. Remove articles the user shouldn't see
 				if (!in_array($items[$x]->access, $groups)) {
 					unset($items[$x]);
 				}
 			}
+		}
+
+        // Get the assigned users for each item
+        $ref = JModel::getInstance('UserRefs', 'ProjectforkModel');
+
+        for ($x = 0, $count = count($items); $x < $count; $x++)
+        {
+            $items[$x]->users = $ref->getItems('task', $items[$x]->id);
 		}
 
 		return $items;

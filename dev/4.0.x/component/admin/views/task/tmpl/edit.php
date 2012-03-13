@@ -55,7 +55,6 @@ Joomla.submitbutton = function(task) {
 				<li><?php echo $this->form->getLabel('milestone_id').$this->form->getInput('milestone_id'); ?></li>
 				<li><?php echo $this->form->getLabel('list_id').$this->form->getInput('list_id'); ?></li>
 				<li><?php echo $this->form->getLabel('title').$this->form->getInput('title'); ?></li>
-				<li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
 			</ul>
             <div class="clr"></div>
 			<?php echo $this->form->getLabel('description'); ?>
@@ -72,6 +71,9 @@ Joomla.submitbutton = function(task) {
             <fieldset class="panelform">
 				<ul class="adminformlist">
                     <li><?php echo $this->form->getLabel('created_by').$this->form->getInput('created_by'); ?></li>
+                    <li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
+                    <li><?php echo $this->form->getLabel('priority').$this->form->getInput('priority'); ?></li>
+                    <li><?php echo $this->form->getLabel('complete').$this->form->getInput('complete'); ?></li>
                     <li><?php echo $this->form->getLabel('start_date').$this->form->getInput('start_date'); ?></li>
                     <li><?php echo $this->form->getLabel('end_date').$this->form->getInput('end_date'); ?></li>
                     <?php if ($this->item->modified_by) : ?>
@@ -100,21 +102,6 @@ Joomla.submitbutton = function(task) {
             </fieldset>
 
             <?php $fieldSets = $this->form->getFieldsets('users'); ?>
-			<?php foreach ($fieldSets as $name => $fieldSet) : ?>
-				<?php echo JHtml::_('sliders.panel',JText::_($fieldSet->label), $name.'-options'); ?>
-				<?php if (isset($fieldSet->description) && trim($fieldSet->description)) : ?>
-					<p class="tip"><?php echo $this->escape(JText::_($fieldSet->description));?></p>
-				<?php endif; ?>
-				<fieldset class="panelform">
-					<ul class="adminformlist">
-					    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
-						    <li><?php echo $field->label. $field->input; ?></li>
-					    <?php endforeach; ?>
-					</ul>
-				</fieldset>
-			<?php endforeach; ?>
-
-            <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
 			<?php foreach ($fieldSets as $name => $fieldSet) : ?>
 				<?php echo JHtml::_('sliders.panel',JText::_($fieldSet->label), $name.'-options'); ?>
 				<?php if (isset($fieldSet->description) && trim($fieldSet->description)) : ?>

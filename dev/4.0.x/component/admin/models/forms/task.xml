@@ -60,7 +60,23 @@
 			component="com_projectfork"
 			section="task" 
         />
-        
+        <field name="priority" type="list" label="COM_PROJECTFORK_FIELD_PRIORITY_LABEL"
+			description="COM_PROJECTFORK_FIELD_PRIORITY_DESC" class="inputbox"
+			filter="intval" size="1" default="1"
+		>
+			<option value="1">COM_PROJECTFORK_PRIORITY_VERY_LOW</option>
+			<option value="2">COM_PROJECTFORK_PRIORITY_LOW</option>
+			<option value="3">COM_PROJECTFORK_PRIORITY_MEDIUM</option>
+			<option value="4">COM_PROJECTFORK_PRIORITY_HIGH</option>
+			<option value="5">COM_PROJECTFORK_PRIORITY_VERY_HIGH</option>
+		</field>
+		<field name="complete" type="radio" label="COM_PROJECTFORK_FIELD_COMPLETE_LABEL"
+			description="COM_PROJECTFORK_FIELD_TASK_COMPLETE_DESC" class="inputbox"
+			filter="intval" default="0"
+		>
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 		<field name="id" type="hidden" readonly="true"/>
 		<field name="asset_id" type="hidden" filter="unset"/>
 		<field name="alias" type="hidden" readonly="true"/>

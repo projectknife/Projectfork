@@ -130,6 +130,19 @@ $save_order = ($list_order == 'a.ordering');
 					<?php else : ?>
 						<?php echo $this->escape($item->title); ?>
 					<?php endif; ?>
+                    <p class="smallsub">
+                    <?php echo JText::_('COM_PROJECTFORK_ASSIGNED_TO').': ';?>
+                    <?php
+                    $users = array();
+                    foreach($item->users AS $usr)
+                    {
+                        $users[] = $this->escape($usr->name);
+                    }
+                    $users = implode(', ', $users);
+
+                    echo ($users) ? $users : JText::_('COM_PROJECTFORK_ASSIGNED_TO_NOBODY');
+                    ?>
+                    </p>
 				</td>
                 <td><?php echo $this->escape($item->project_title); ?></td>
                 <td><?php echo $this->escape($item->milestone_title); ?></td>
