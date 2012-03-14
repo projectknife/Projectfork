@@ -48,6 +48,8 @@ abstract class JHtmlProjectfork
         $active_id    = (int) $app->getUserState('com_projectfork.project.active.id', 0);
         $active_title = $app->getUserState('com_projectfork.project.active.title', '');
 
+        if(!$active_title) $active_title = JText::_('COM_PROJECTFORK_SELECT_PROJECT');
+
 
         // Set the JS functions
         $link = 'index.php?option=com_projectfork&amp;view=projects&amp;layout=modal&amp;tmpl=component&amp;function=pfSelectActiveProject';
@@ -82,8 +84,7 @@ abstract class JHtmlProjectfork
 
 
         // HTML output
-	    $html = '<label class="filter-project-lbl" for="filter_project_title">'.JText::_('COM_PROJECTFORK_FIELD_PROJECT_LABEL').':</label>'
-              . '<input type="text" name="filter_project_title" id="filter_project_title" readonly="readonly" value="'.$active_title.'" />'
+	    $html = '<input type="text" name="filter_project_title" id="filter_project_title" readonly="readonly" value="'.$active_title.'" />'
               . '<input type="hidden" name="filter_project" id="filter_project" value="'.$active_id.'" />'
               . $btn_select
               . $btn_clear;
