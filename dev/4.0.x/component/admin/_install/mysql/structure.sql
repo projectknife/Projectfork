@@ -203,7 +203,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   KEY `idx_projectid` (`project_id`),
   KEY `idx_listid` (`list_id`),
   KEY `idx_milestone` (`milestone_id`),
-  KEY `idx_catid` (`catid_id`),
+  KEY `idx_catid` (`catid`),
   KEY `idx_access` (`access`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`),
