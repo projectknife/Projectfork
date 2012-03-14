@@ -56,6 +56,21 @@ $save_order = ($list_order == 'a.ordering');
 				<option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
 				<?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
 			</select>
+
+            <select name="filter_assigned_id" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('JOPTION_SELECT_ASSIGNED_USER');?></option>
+				<?php echo JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned_id'));?>
+			</select>
+
+            <select name="filter_milestone" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('JOPTION_SELECT_MILESTONE');?></option>
+				<?php echo JHtml::_('select.options', $this->milestones, 'value', 'text', $this->state->get('filter.milestone'));?>
+			</select>
+
+            <select name="filter_tasklist" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('JOPTION_SELECT_TASKLIST');?></option>
+				<?php echo JHtml::_('select.options', $this->tasklists, 'value', 'text', $this->state->get('filter.tasklist'));?>
+			</select>
             <?php echo JHtml::_('projectfork.filterProject');?>
 		</div>
 	</fieldset>

@@ -43,7 +43,7 @@ class ProjectforkModelTasks extends JModelList
 			$config['filter_fields'] = array(
 				'id', 'a.id',
                 'project_id', 'a.project_id', 'project_title',
-                'list_id', 'a.list_id', 'tasklist_title',
+                'list_id', 'a.list_id', 'tasklist_title', 'tasklist',
                 'milestone_id', 'a.milestone_id', 'milestone_title',
 				'title', 'a.title',
 				'description', 'a.description',
@@ -62,7 +62,8 @@ class ProjectforkModelTasks extends JModelList
                 'start_date', 'a.start_date',
                 'end_date', 'a.end_date',
                 'ordering', 'a.ordering',
-                'parentid', 'a.parentid'
+                'parentid', 'a.parentid',
+                'assigned_id'
 			);
 		}
 
@@ -89,6 +90,9 @@ class ProjectforkModelTasks extends JModelList
 
 		$author_id = $app->getUserStateFromRequest($this->context.'.filter.author_id', 'filter_author_id');
 		$this->setState('filter.author_id', $author_id);
+
+        $assigned = $this->getUserStateFromRequest($this->context.'.filter.assigned_id', 'filter_assigned_id', '');
+        $this->setState('filter.assigned_id', $assigned);
 
 		$published = $this->getUserStateFromRequest($this->context.'.filter.published', 'filter_published', '');
 		$this->setState('filter.published', $published);
@@ -128,6 +132,7 @@ class ProjectforkModelTasks extends JModelList
 		$id	.= ':'.$this->getState('filter.published');
 		$id	.= ':'.$this->getState('filter.access');
 		$id	.= ':'.$this->getState('filter.author_id');
+		$id	.= ':'.$this->getState('filter.assigned_id');
 		$id	.= ':'.$this->getState('filter.project');
 		$id	.= ':'.$this->getState('filter.tasklist');
 		$id	.= ':'.$this->getState('filter.milestone');
@@ -229,6 +234,14 @@ class ProjectforkModelTasks extends JModelList
 			$query->where('a.created_by '.$type.(int) $author_id);
 		}
 
+        // Filter by assigned user
+        $assigned = $this->getState('filter.assigned_id');
+        if(is_numeric($assigned)) {
+            $query->join('INNER', '#__pf_ref_users AS ru ON (ru.item_type = '.
+                                   $db->quote('task').' AND ru.item_id = a.id)');
+            $query->where('ru.user_id = '.(int)$assigned);
+        }
+
 		// Filter by search in title.
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
@@ -274,7 +287,8 @@ class ProjectforkModelTasks extends JModelList
 	 *
 	 * @return	JDatabaseQuery
 	 */
-	public function getAuthors() {
+	public function getAuthors()
+    {
 		// Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -292,6 +306,85 @@ class ProjectforkModelTasks extends JModelList
 		// Return the result
 		return $db->loadObjectList();
 	}
+
+
+    /**
+	 * Build a list of milestones
+	 *
+	 * @return	JDatabaseQuery
+	 */
+    public function getMilestones()
+    {
+        // Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		// Construct the query
+		$query->select('m.id AS value, m.title AS text');
+		$query->from('#__pf_milestones AS m');
+		$query->join('INNER', '#__pf_tasks AS a ON a.milestone_id = m.id');
+		$query->group('m.id');
+		$query->order('m.title');
+
+		// Setup the query
+		$db->setQuery($query->__toString());
+
+		// Return the result
+		return $db->loadObjectList();
+    }
+
+
+    /**
+	 * Build a list of task lists
+	 *
+	 * @return	JDatabaseQuery
+	 */
+    public function getTaskLists()
+    {
+        // Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		// Construct the query
+		$query->select('t.id AS value, t.title AS text');
+		$query->from('#__pf_task_lists AS t');
+		$query->join('INNER', '#__pf_tasks AS a ON a.list_id = t.id');
+		$query->group('t.id');
+		$query->order('t.title');
+
+		// Setup the query
+		$db->setQuery($query->__toString());
+
+		// Return the result
+		return $db->loadObjectList();
+    }
+
+
+    /**
+	 * Build a list of assigned users
+	 *
+	 * @return	JDatabaseQuery
+	 */
+    public function getAssignedUsers()
+    {
+        // Create a new query object.
+		$db    = $this->getDbo();
+		$query = $db->getQuery(true);
+
+		// Construct the query
+		$query->select('u.id AS value, u.name AS text');
+		$query->from('#__users AS u');
+		$query->join('INNER', '#__pf_ref_users AS a ON a.user_id = u.id');
+		$query->where('a.item_type = '.$db->quote('task'));
+		$query->group('u.id');
+		$query->order('u.name');
+
+		// Setup the query
+		$db->setQuery($query->__toString());
+
+		// Return the result
+		return $db->loadObjectList();
+    }
 
 
 	/**

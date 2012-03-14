@@ -32,6 +32,9 @@ class ProjectforkViewTasks extends JView
 	protected $pagination;
 	protected $state;
 	protected $authors;
+    protected $assigned;
+    protected $tasklists;
+    protected $milestones;
     protected $nulldate;
 
 
@@ -46,6 +49,9 @@ class ProjectforkViewTasks extends JView
 		$this->pagination = $this->get('Pagination');
 		$this->state	  = $this->get('State');
 		$this->authors	  = $this->get('Authors');
+		$this->assigned	  = $this->get('AssignedUsers');
+		$this->tasklists  = $this->get('Tasklists');
+		$this->milestones = $this->get('Milestones');
 
         // Get database null date
         $this->nulldate = JFactory::getDbo()->getNullDate();
