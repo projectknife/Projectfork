@@ -224,8 +224,8 @@ class ProjectforkModelProject extends JModelAdmin
 
             // To keep data integrity, update deadlines and access of all other project related items
             if($id) {
-                $milestones = JTable::getInstance('Milestone', 'JTable');
-                $tasklists  = JTable::getInstance('Tasklist', 'JTable');
+                $milestones = JTable::getInstance('Milestone', 'PFTable');
+                $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
 
                 $parent_data = array('access'     => $data['access'],
                                      'start_date' => $data['start_date'],
