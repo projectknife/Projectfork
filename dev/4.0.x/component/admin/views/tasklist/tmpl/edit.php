@@ -69,7 +69,7 @@ Joomla.submitbutton = function(task) {
                 </ul>
             </fieldset>
 
-            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_MILESTONE_FIELDSET_RULES'), 'access-rules'); ?>
+            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_TASKLIST_FIELDSET_RULES'), 'access-rules'); ?>
             <fieldset class="panelform">
 				<ul class="adminformlist">
                     <li id="jform_access-li"><?php echo $this->form->getLabel('access').$this->form->getInput('access'); ?></li>
