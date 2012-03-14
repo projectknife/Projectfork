@@ -364,8 +364,8 @@ class ProjectforkModelProject extends JModelAdmin
         $success = parent::delete($pks);
         $app     = JFactory::getApplication();
 
-        $milestones = JTable::getInstance('Milestone', 'JTable');
-        $tasklists  = JTable::getInstance('Tasklist', 'JTable');
+        $milestones = JTable::getInstance('Milestone', 'PFTable');
+        $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
 
         $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
 
