@@ -27,24 +27,64 @@ jimport('joomla.application.component.view');
 
 class ProjectforkViewProjects extends JView
 {
-	function display($tpl = null)
+    /**
+	 * Display the view
+     *
+	 */
+	public function display($tpl = null)
 	{
 	    $items      = $this->get('Items');
         $pagination = $this->get('Pagination');
         $state		= $this->get('State');
 		$params		= $state->params;
+        $null_date  = JFactory::getDbo()->getNullDate();
+        $actions    = $this->getActions();
 
 
         // Escape strings for HTML output
 		$this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
+
+        // Check for errors.
+		if (count($errors = $this->get('Errors'))) {
+			JError::raiseError(500, implode("\n", $errors));
+			return false;
+		}
 
 
         $this->assignRef('items',      $items);
         $this->assignRef('pagination', $pagination);
         $this->assignRef('params',     $params);
         $this->assignRef('state',      $state);
+        $this->assignRef('nulldate',   $null_date);
+        $this->assignRef('actions',    $actions);
 
 
 		parent::display($tpl);
 	}
+
+
+    public function getActions()
+    {
+        $canDo   = ProjectforkHelper::getActions();
+		$user    = JFactory::getUser();
+        $state	 = $this->get('State');
+        $options = array();
+
+        if($canDo->get('core.edit.state') || $canDo->get('project.edit.state')) {
+            $options[] = JHtml::_('select.option', 'projects.publish', JText::_('COM_PROJECTFORK_ACTION_PUBLISH'));
+            $options[] = JHtml::_('select.option', 'projects.unpublish', JText::_('COM_PROJECTFORK_ACTION_UNPUBLISH'));
+            $options[] = JHtml::_('select.option', 'projects.archive', JText::_('COM_PROJECTFORK_ACTION_ARCHIVE'));
+            $options[] = JHtml::_('select.option', 'projects.checkin', JText::_('COM_PROJECTFORK_ACTION_CHECKIN'));
+        }
+        if($state->get('filter.published') == -2 &&
+           ($canDo->get('core.delete') || $canDo->get('project.delete'))
+          ) {
+            $options[] = JHtml::_('select.option', 'projects.delete', JText::_('COM_PROJECTFORK_ACTION_DELETE'));
+        }
+        elseif ($canDo->get('core.edit.state') || $canDo->get('project.edit.state')) {
+			$options[] = JHtml::_('select.option', 'projects.trash', JText::_('COM_PROJECTFORK_ACTION_TRASH'));
+		}
+
+        return $options;
+    }
 }

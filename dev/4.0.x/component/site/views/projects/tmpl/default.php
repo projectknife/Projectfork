@@ -28,8 +28,6 @@ JHtml::_('behavior.multiselect');
 
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
-$db         = JFactory::getDbo();
-$null_date  = $db->getNullDate();
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects">
 
@@ -59,13 +57,15 @@ $null_date  = $db->getNullDate();
 
             <fieldset class="filters">
             	<div class="display-bulk-actions">
-            	    <select onchange="Projectfork.bulkAction(this);" size="1" class="inputbox" name="bulk" id="bulk">
+            	    <select onchange="Joomla.submitbutton(this.options[this.selectedIndex].value);" size="1" class="inputbox" name="bulk" id="bulk">
             		    <option selected="selected" value=""><?php echo JText::_('COM_PROJECTFORK_BULK_ACTIONS');?></option>
+                        <?php echo JHtml::_('select.options', $this->actions);?>
+                        <!--
             			<option value="project.publish"><?php echo JText::_('COM_PROJECTFORK_ACTION_PUBLISH');?></option>
         			    <option value="project.unpublish"><?php echo JText::_('COM_PROJECTFORK_ACTION_UNPUBLISH');?></option>
         			    <option value="project.archive"><?php echo JText::_('COM_PROJECTFORK_ACTION_ARCHIVE');?></option>
         			    <option value="project.copy"><?php echo JText::_('COM_PROJECTFORK_ACTION_COPY');?></option>
-        			    <option value="project.delete"><?php echo JText::_('COM_PROJECTFORK_ACTION_DELETE');?></option>
+        			    <option value="project.delete"><?php echo JText::_('COM_PROJECTFORK_ACTION_DELETE');?></option>-->
             	    </select>
             	</div>
                 <?php if($this->params->get('filter_field')) : ?>
@@ -199,7 +199,7 @@ $null_date  = $db->getNullDate();
 
                             <?php if($this->params->get('show_sdate_col')) : ?>
     	               		    <td class="list-sdate">
-        		               	    <?php if($item->start_date == $null_date) {
+        		               	    <?php if($item->start_date == $this->nulldate) {
                                         echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
                                     }
                                     else {
@@ -210,7 +210,7 @@ $null_date  = $db->getNullDate();
                             <?php endif; ?>
                             <?php if($this->params->get('show_edate_col')) : ?>
     	               		    <td class="list-edate">
-                                    <?php if($item->end_date == $null_date) {
+                                    <?php if($item->end_date == $this->nulldate) {
                                         echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
                                     }
                                     else {
@@ -224,7 +224,6 @@ $null_date  = $db->getNullDate();
         		               		<?php echo $this->escape($item->access_level);?>
         	               		</td>
                             <?php endif; ?>
-
     	               	</tr>
                     <?php
                     $k = 1 - $k;
