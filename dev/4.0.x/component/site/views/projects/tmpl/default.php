@@ -28,7 +28,11 @@ JHtml::_('behavior.multiselect');
 
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
+$user	    = JFactory::getUser();
+$uid	    = $user->get('id');
 $message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));
+
+$action_count = count($this->actions);
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects">
 
@@ -57,9 +61,12 @@ $message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LI
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=projects'); ?>" method="post">
 
             <fieldset class="filters">
-           	    <?php if(count($this->actions)) : ?>
+           	    <?php if($action_count) : ?>
                     <div class="display-bulk-actions">
-                        <select onchange="Joomla.submitbutton(this.options[this.selectedIndex].value);" size="1" class="inputbox" name="bulk" id="bulk">
+                        <select onchange="if(document.adminForm.boxchecked.value==0){alert('<?php echo $message;?>');}
+                                          else{Joomla.submitbutton(this.options[this.selectedIndex].value)}"
+                                size="1" class="inputbox" name="bulk" id="bulk"
+                        >
             		        <option selected="selected" value=""><?php echo JText::_('COM_PROJECTFORK_BULK_ACTIONS');?></option>
                             <?php echo JHtml::_('select.options', $this->actions);?>
             	        </select>
@@ -97,9 +104,11 @@ $message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LI
                 <?php if ($this->params->get('show_headings')) :?>
                     <thead>
     	                <tr>
+                            <?php if($action_count) : ?>
     	               	    <th id="tableOrdering0" class="list-select">
     	               			<input type="checkbox" onclick="checkAll(<?php echo count($this->items);?>);" value="" name="toggle" />
     	               		</th>
+                            <?php endif; ?>
     	               		<th id="tableOrdering1" class="list-title">
                                 <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                             </th>
@@ -143,13 +152,25 @@ $message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LI
                     <?php
                     $k = 0;
                     foreach($this->items AS $i => $item) :
+                        $asset_name = 'com_projectfork.project.'.$item->id;
+
+			            $canCreate	= ($user->authorise('core.create', $asset_name) || $user->authorise('project.create', $asset_name));
+			            $canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('project.edit', $asset_name));
+			            $canCheckin	= ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
+			            $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('project.edit.own', $asset_name)) && $item->created_by == $uid);
+			            $canChange	= (($user->authorise('core.edit.state',	$asset_name) || $user->authorise('project.edit.state', $asset_name)) && $canCheckin);
                     ?>
                         <tr class="cat-list-row<?php echo $k;?>">
-    	               		<td class="list-select">
-    	               			<input type="checkbox" onclick="isChecked(this.checked);" value="<?php echo intval($item->id);?>" name="cid[]" id="cb<?php echo $i;?>"/>
-    	               		</td>
+    	               		<?php if($action_count) : ?>
+                               <td class="list-select">
+                                    <?php echo JHtml::_('grid.id', $i, $item->id); ?>
+    	               		    </td>
+                            <?php endif; ?>
     	               		<td class="list-title">
-    	               		    <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=project&id='.intval($item->id));?>">
+    	               		    <?php if ($item->checked_out) : ?>
+            						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'projects.', $canCheckin); ?>
+            					<?php endif; ?>
+                                <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=project&id='.intval($item->id));?>">
                                     <?php echo $this->escape($item->title);?>
                                 </a>
     	               		</td>
@@ -186,7 +207,7 @@ $message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LI
                                         echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
                                     }
                                     else {
-                                        echo JHtml::_('date', $item->start_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC2'))));
+                                        echo JHtml::_('date', $item->start_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC4'))));
                                     }
         		               		?>
         	               		</td>
@@ -197,7 +218,7 @@ $message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LI
                                         echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
                                     }
                                     else {
-                                        echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC2'))));
+                                        echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC4'))));
                                     }
         		               		?>
         	               		</td>
