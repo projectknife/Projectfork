@@ -38,7 +38,10 @@ class ProjectforkViewProjects extends JView
         $state		= $this->get('State');
 		$params		= $state->params;
         $null_date  = JFactory::getDbo()->getNullDate();
+        $user       = JFactory::getUser();
         $actions    = $this->getActions();
+        $toolbar    = $this->getToolbar();
+        $canDo      = ProjectforkHelper::getActions();
 
 
         // Escape strings for HTML output
@@ -57,10 +60,27 @@ class ProjectforkViewProjects extends JView
         $this->assignRef('state',      $state);
         $this->assignRef('nulldate',   $null_date);
         $this->assignRef('actions',    $actions);
+        $this->assignRef('toolbar',    $toolbar);
+        $this->assignRef('user',       $user);
+        $this->assignRef('canDo',      $canDo);
 
 
 		parent::display($tpl);
 	}
+
+
+    public function getToolbar()
+    {
+        $canDo = ProjectforkHelper::getActions();
+		$user  = JFactory::getUser();
+        $tb    = new ProjectforkHelperToolbar();
+
+        if($canDo->get('core.create') || $canDo->get('project.create')) {
+            $tb->button('COM_PROJECTFORK_ACTION_NEW', 'project.add');
+        }
+
+        return $tb->__toString();
+    }
 
 
     public function getActions()

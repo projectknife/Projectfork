@@ -28,6 +28,7 @@ JHtml::_('behavior.multiselect');
 
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
+$message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects">
 
@@ -48,7 +49,7 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 	</h2>
 	<?php endif; ?>
 
-	<input type="button" class="button btn btn-info" value="<?php echo JText::_('COM_PROJECTFORK_NEW_PROJECT');?>" />
+    <?php echo $this->toolbar;?>
 
 
     <div class="cat-items">
@@ -56,18 +57,14 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=projects'); ?>" method="post">
 
             <fieldset class="filters">
-            	<div class="display-bulk-actions">
-            	    <select onchange="Joomla.submitbutton(this.options[this.selectedIndex].value);" size="1" class="inputbox" name="bulk" id="bulk">
-            		    <option selected="selected" value=""><?php echo JText::_('COM_PROJECTFORK_BULK_ACTIONS');?></option>
-                        <?php echo JHtml::_('select.options', $this->actions);?>
-                        <!--
-            			<option value="project.publish"><?php echo JText::_('COM_PROJECTFORK_ACTION_PUBLISH');?></option>
-        			    <option value="project.unpublish"><?php echo JText::_('COM_PROJECTFORK_ACTION_UNPUBLISH');?></option>
-        			    <option value="project.archive"><?php echo JText::_('COM_PROJECTFORK_ACTION_ARCHIVE');?></option>
-        			    <option value="project.copy"><?php echo JText::_('COM_PROJECTFORK_ACTION_COPY');?></option>
-        			    <option value="project.delete"><?php echo JText::_('COM_PROJECTFORK_ACTION_DELETE');?></option>-->
-            	    </select>
-            	</div>
+           	    <?php if(count($this->actions)) : ?>
+                    <div class="display-bulk-actions">
+                        <select onchange="Joomla.submitbutton(this.options[this.selectedIndex].value);" size="1" class="inputbox" name="bulk" id="bulk">
+            		        <option selected="selected" value=""><?php echo JText::_('COM_PROJECTFORK_BULK_ACTIONS');?></option>
+                            <?php echo JHtml::_('select.options', $this->actions);?>
+            	        </select>
+            	    </div>
+                <?php endif;?>
                 <?php if($this->params->get('filter_field')) : ?>
                     <div class="filter-search">
     			        <label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
@@ -76,7 +73,7 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
     			        <button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
     		        </div>
                 <?php endif; ?>
-                <?php if($this->params->get('filter_state')) : ?>
+                <?php if($this->params->get('filter_state') && $this->user->get('id')) : ?>
     				<div class="display-published">
     				    <select name="filter_published" class="inputbox" onchange="this.form.submit()">
     				        <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
@@ -104,53 +101,39 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
     	               			<input type="checkbox" onclick="checkAll(<?php echo count($this->items);?>);" value="" name="toggle" />
     	               		</th>
     	               		<th id="tableOrdering1" class="list-title">
-    	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.title','asc','');">
-                                    <?php echo JText::_('COM_PROJECTFORK_TITLE');?>
-                                </a>
+                                <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                             </th>
     	               		<th id="tableOrdering2" class="list-actions span1">
-    	               			<a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.title','asc','');"></a>
+    	               			&nbsp;
     	               		</th>
     	               		<?php if($this->params->get('show_manager_col')) : ?>
                             <th id="tableOrdering3" class="list-owner">
-    	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('author_name','asc','');">
-                                   <?php echo JText::_('COM_PROJECTFORK_MANAGER');?>
-                                </a>
+    	               		    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
                             </th>
                             <?php endif; ?>
                             <?php if($this->params->get('show_mscount_col')) : ?>
     	               		<th id="tableOrdering4" class="list-milestones">
-    	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.milestones','asc','');">
-                                    <?php echo JText::_('COM_PROJECTFORK_MILESTONES');?>
-                                </a>
+                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONES', 'a.milestones', $list_dir, $list_order); ?>
                             </th>
                             <?php endif; ?>
                             <?php if($this->params->get('show_tcount_col')) : ?>
     	               		<th id="tableOrdering5" class="list-tasks">
-    	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.tasks','asc','');">
-                                    <?php echo JText::_('COM_PROJECTFORK_TASKS');?>
-                                </a>
+                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKS', 'a.tasks', $list_dir, $list_order); ?>
                             </th>
                             <?php endif; ?>
                             <?php if($this->params->get('show_sdate_col')) : ?>
     	               		<th id="tableOrdering6" class="list-tasks">
-    	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.start_date','asc','');">
-                                    <?php echo JText::_('COM_PROJECTFORK_SDATE');?>
-                                </a>
+                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_START_DATE', 'a.start_date', $list_dir, $list_order); ?>
                             </th>
                             <?php endif; ?>
                             <?php if($this->params->get('show_edate_col')) : ?>
     	               		<th id="tableOrdering6" class="list-tasks">
-    	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.end_date','asc','');">
-                                    <?php echo JText::_('COM_PROJECTFORK_EDATE');?>
-                                </a>
+                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
                             </th>
                             <?php endif; ?>
                             <?php if($this->params->get('show_access_col')) : ?>
     	               		<th id="tableOrdering7" class="list-tasks">
-    	               		    <a title="<?php echo JText::_('COM_PROJECTFORK_SORT_COL_DESC');?>" href="javascript:tableOrdering('a.access_level','asc','');">
-                                    <?php echo JText::_('COM_PROJECTFORK_ACCESS');?>
-                                </a>
+                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access_level', $list_dir, $list_order); ?>
                             </th>
                             <?php endif; ?>
     	               	</tr>
