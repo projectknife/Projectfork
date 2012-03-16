@@ -112,7 +112,7 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 				</td>
 				<td>
 					<?php if ($item->checked_out) : ?>
-						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'articles.', $canCheckin); ?>
+						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'projects.', $canCheckin); ?>
 					<?php endif; ?>
 					<?php if ($canEdit || $canEditOwn) : ?>
 						<a href="<?php echo JRoute::_('index.php?option=com_projectfork&task=project.edit&id='.$item->id);?>">
