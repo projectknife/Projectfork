@@ -42,20 +42,21 @@ class ProjectforkModelProjects extends JModelList
 	{
 	    if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
-				'id', 'p.id',
-				'title', 'p.title',
-				'alias', 'p.alias',
-				'created', 'p.created',
-                'created_by', 'p.created_by',
-                'modified', 'p.modified',
-                'modified_by', 'p.modified_by',
-                'checked_out', 'p.checked_out',
-                'checked_out_time', 'p.checked_out_time',
-                'attribs', 'p.attribs',
-                'access', 'p.access', 'access_level',
-                'state', 'p.state',
-                'start_date', 'p.start_date',
-                'end_date', 'p.end_date'
+				'id', 'a.id',
+				'title', 'a.title',
+				'alias', 'a.alias',
+				'created', 'a.created',
+                'created_by', 'a.created_by', 'author_name',
+                'modified', 'a.modified',
+                'modified_by', 'a.modified_by',
+                'checked_out', 'a.checked_out',
+                'checked_out_time', 'a.checked_out_time',
+                'attribs', 'a.attribs',
+                'access', 'a.access', 'access_level',
+                'state', 'a.state',
+                'start_date', 'a.start_date',
+                'end_date', 'a.end_date',
+                'milestones', 'tasks'
 			);
 		}
 
@@ -86,7 +87,7 @@ class ProjectforkModelProjects extends JModelList
 
 		$this->setState('list.ordering', $order_col);
 
-		$list_order	= JRequest::getCmd('filter_order_dir', 'ASC');
+		$list_order	= JRequest::getCmd('filter_order_Dir', 'ASC');
 		if(!in_array(strtoupper($list_order), array('ASC', 'DESC', ''))) $list_order = 'ASC';
 
 		$this->setState('list.direction', $list_order);
@@ -96,6 +97,12 @@ class ProjectforkModelProjects extends JModelList
 
         $value = JRequest::getCmd('filter_published', '');
         $this->setState('filter.published', $value);
+
+        if ((!$user->authorise('core.edit.state', 'com_projectfork') && !$user->authorize('project.edit.state', 'com_projectfork')) &&
+            (!$user->authorise('core.edit', 'com_projectfork') && !$user->authorize('project.edit', 'com_projectfork'))){
+			// filter on published for those who do not have edit or edit.state rights.
+			$this->setState('filter.published', 1);
+		}
 
 		$this->setState('filter.access', true);
 
@@ -172,7 +179,7 @@ class ProjectforkModelProjects extends JModelList
         $query->join('LEFT', '#__pf_tasks AS ta ON ta.project_id = a.id');
 
         // Implement View Level Access
-		if(!$user->authorise('core.admin') || $this->getState('filter.access')) {
+		if(!$user->authorise('core.admin')) {
 		    $groups	= implode(',', $user->getAuthorisedViewLevels());
 			$query->where('a.access IN ('.$groups.')');
 		}
@@ -193,7 +200,7 @@ class ProjectforkModelProjects extends JModelList
 			if (stripos($search, 'id:') === 0) {
 				$query->where('a.id = '.(int) substr($search, 4));
 			}
-			elseif (stripos($search, 'manager:') === 0) {
+			elseif (stripos($search, 'author:') === 0) {
 				$search = $db->Quote('%'.$db->getEscaped(trim(substr($search, 8)), true).'%');
 				$query->where('(ua.name LIKE '.$search.' OR ua.username LIKE '.$search.')');
 			}
@@ -205,6 +212,7 @@ class ProjectforkModelProjects extends JModelList
 
 
 		// Add the list ordering clause.
+        $query->group('a.id');
 		$query->order($this->getState('list.ordering', 'a.title').' '.$this->getState('list.direction', 'ASC'));
 
 		return $query;
@@ -231,15 +239,15 @@ class ProjectforkModelProjects extends JModelList
         // Convert the parameter fields into objects.
 		foreach ($items as $i => &$item)
 		{
-            if($item->id == NULL) {
+            /*if($item->id == NULL) {
                 unset($items[$i]);
                 continue;
-            }
+            }*/
 
             $params = new JRegistry;
 			$params->loadString($item->attribs);
 
-			$item->params = clone $this->getState('params');
+			$items[$i]->params = clone $this->getState('params');
         }
 
 		return $items;

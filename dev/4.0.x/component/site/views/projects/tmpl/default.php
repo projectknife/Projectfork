@@ -108,17 +108,17 @@ $message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LI
     	               		</th>
     	               		<?php if($this->params->get('show_manager_col')) : ?>
                             <th id="tableOrdering3" class="list-owner">
-    	               		    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
+    	               		    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'author_name', $list_dir, $list_order); ?>
                             </th>
                             <?php endif; ?>
                             <?php if($this->params->get('show_mscount_col')) : ?>
     	               		<th id="tableOrdering4" class="list-milestones">
-                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONES', 'a.milestones', $list_dir, $list_order); ?>
+                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONES', 'milestones', $list_dir, $list_order); ?>
                             </th>
                             <?php endif; ?>
                             <?php if($this->params->get('show_tcount_col')) : ?>
     	               		<th id="tableOrdering5" class="list-tasks">
-                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKS', 'a.tasks', $list_dir, $list_order); ?>
+                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKS', 'tasks', $list_dir, $list_order); ?>
                             </th>
                             <?php endif; ?>
                             <?php if($this->params->get('show_sdate_col')) : ?>
@@ -133,7 +133,7 @@ $message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LI
                             <?php endif; ?>
                             <?php if($this->params->get('show_access_col')) : ?>
     	               		<th id="tableOrdering7" class="list-tasks">
-                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access_level', $list_dir, $list_order); ?>
+                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'access_level', $list_dir, $list_order); ?>
                             </th>
                             <?php endif; ?>
     	               	</tr>
@@ -227,7 +227,6 @@ $message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LI
             <input type="hidden" name="boxchecked" value="0" />
             <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
 	        <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
-            <input type="hidden" name="limitstart" value=""/>
             <input type="hidden" name="task" value="" />
 	        <?php echo JHtml::_('form.token'); ?>
         </form>
