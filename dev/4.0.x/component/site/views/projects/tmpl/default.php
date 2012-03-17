@@ -63,11 +63,11 @@ $action_count = count($this->actions);
             <fieldset class="filters">
            	    <?php if($action_count) : ?>
                     <div class="display-bulk-actions">
-                        <select onchange="if(document.adminForm.boxchecked.value==0){alert('<?php echo $message;?>');}
+                        <select onchange="if(document.adminForm.boxchecked.value==0 & this.selectedIndex > 0){alert('<?php echo $message;?>');}
                                           else{Joomla.submitbutton(this.options[this.selectedIndex].value)}"
                                 size="1" class="inputbox" name="bulk" id="bulk"
                         >
-            		        <option selected="selected" value=""><?php echo JText::_('COM_PROJECTFORK_BULK_ACTIONS');?></option>
+            		        <option value=""><?php echo JText::_('COM_PROJECTFORK_BULK_ACTIONS');?></option>
                             <?php echo JHtml::_('select.options', $this->actions);?>
             	        </select>
             	    </div>
