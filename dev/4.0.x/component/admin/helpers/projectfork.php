@@ -254,6 +254,49 @@ class ProjectforkHelper
     }
 
 
+    public function getGroupPath($id)
+    {
+        static $groups;
+        static $path;
+
+        // Preload all groups
+		if (empty($groups)) {
+			$db = JFactory::getDbo();
+
+			$query = $db->getQuery(true)
+				   ->select('parent.id, parent.lft, parent.rgt')
+				   ->from('#__usergroups AS parent')
+				   ->order('parent.lft');
+
+			$db->setQuery($query);
+			$groups = (array) $db->loadObjectList('id');
+		}
+
+        if(empty($path)) $path = array();
+
+
+		// Make sure groupId is valid
+		if(!array_key_exists($id, $groups)) return array();
+
+
+		// Get parent groups and leaf group
+		if (!isset($path[$id]))
+		{
+			$path[$id] = array();
+
+			foreach ($groups as $group)
+			{
+				if ($group->lft <= $groups[$id]->lft && $group->rgt >= $groups[$id]->rgt)
+				{
+					$path[$id][] = $group->id;
+				}
+			}
+		}
+
+		return $path[$id];
+    }
+
+
     /**
 	 * Sets the currently active project for the user.
      * The active project serves as a global data filter.

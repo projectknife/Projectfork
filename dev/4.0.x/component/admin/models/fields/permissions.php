@@ -177,7 +177,7 @@ class JFormFieldPermissions extends JFormField
 				$eid      = $count . 'group_' . $item->value;
 				$btn_id   = $count . 'group_' . $item->value.'_btn';
 				$div_id   = $count . 'group_' . $item->value.'_rules';
-                $li_class = $this->getGroupClasses($item->value, $item->level);
+                $li_class = $this->getGroupClasses($item->value);
                 $checked  = '';
                 $cb_js    = '';
 
@@ -397,54 +397,39 @@ class JFormFieldPermissions extends JFormField
      * the group ($id).
 	 *
      * @param   int    $id          The group id
-     * @param   int    $tree_lvl    The nested tree level of the group
 	 * @return  string
 	 */
-    protected function getGroupClasses($id, $tree_lvl = 0)
+    protected function getGroupClasses($id)
     {
-        // Initialize variables
-        static $list     = NULL;
-        static $classes  = array();
-        static $prev_lvl = 0;
+        static $levels;
 
-        if(is_null($list)) $list = $this->getAccessGroups();
+        $parents = ProjectforkHelper::getGroupPath($id);
+        $groups  = array();
+        $classes = array();
 
-        if($tree_lvl == 0 || $tree_lvl == 1) {
-            $classes = array();
-            $classes[0] = array('haslvl-1');
-        }
-        if(!array_key_exists($tree_lvl, $classes)) $classes[$tree_lvl] = array();
+        if(empty($levels)) $levels = $this->getAccessGroups();
 
-        $prev_lvl = $tree_lvl;
-
-
-        // Iterate through the access levels to see if the group is in there
-        foreach($list AS $lvl => $groups)
+        // Get parent groups
+        foreach($parents AS $parent)
         {
-            if(in_array($id, $groups) && !in_array("haslvl-".$lvl, $classes[$tree_lvl])) {
-                // Add to the classes
-                $classes[$tree_lvl][] = "haslvl-".$lvl;
-            }
+            $groups[] = $parent;
         }
 
-        // Append access level classes from the parent groups
-        $k = 0;
-        while($k < $tree_lvl)
+        foreach($levels AS $lvl => $lvl_groups)
         {
-            if(array_key_exists($k, $classes)) {
-                foreach($classes[$k] AS $class)
-                {
-                    if(!in_array($class, $classes[$tree_lvl])) $classes[$tree_lvl][] = $class;
+            foreach($groups AS $group)
+            {
+                if(in_array($group, $lvl_groups) && !in_array('haslvl-'.$lvl, $classes)) {
+                    $classes[] = 'haslvl-'.$lvl;
                 }
             }
-
-            $k++;
         }
 
-        // Classes array to string
-        $css = implode(' ', $classes[$tree_lvl]);
+        if(!in_array('haslvl-1', $classes)) {
+            $classes[] = 'haslvl-1';
+        }
 
-        return $css;
+        return implode(' ', $classes);
     }
 
 
