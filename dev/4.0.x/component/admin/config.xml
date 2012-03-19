@@ -1,5 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
+    
+    <fieldset name="project_list" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_LABEL" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_DESC">
+        <field name="project_list_col_author" type="radio" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_AUTHOR_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_AUTHOR_LABEL" default="1">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+		<field name="project_list_col_milestones" type="radio" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_MILESTONES_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_MILESTONES_LABEL" default="1">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+		<field name="project_list_col_tasks" type="radio" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_TASKS_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_TASKS_LABEL" default="1">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+		<field name="project_list_col_created" type="radio" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_CREATED_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_CREATED_LABEL" default="1">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+		<field name="project_list_col_sdate" type="radio" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_SDATE_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_SDATE_LABEL" default="1">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+		<field name="project_list_col_deadline" type="radio" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_DEADLINE_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_DEADLINE_LABEL" default="1">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+		<field name="project_list_col_access" type="radio" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_ACCESS_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_ACCESS_LABEL" default="1">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+    </fieldset>
+    
+    <fieldset name="list_default_parameters" label="COM_PROJECTFORK_CONFIG_SHARED_LIST_LABEL" description="COM_PROJECTFORK_CONFIG_SHARED_LIST_LABEL_DESC">
+		<field name="show_pagination" type="list" default="2" label="JGLOBAL_Pagination_Label" description="JGLOBAL_Pagination_Desc">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+			<option value="2">JGLOBAL_AUTO</option>
+		</field>
+        <field name="show_pagination_limit" type="radio" default="1" label="JGLOBAL_DISPLAY_SELECT_LABEL" description="JGLOBAL_DISPLAY_SELECT_DESC">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+		<field name="show_pagination_results" type="radio" default="1" label="JGLOBAL_PAGINATION_RESULTS_LABEL" description="JGLOBAL_PAGINATION_RESULTS_DESC">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+		<field name="date_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_CREATION_DATE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
+		<field name="sdate_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_SDATE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
+		<field name="deadline_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_DEADLINE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
+	</fieldset>
+	
     <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field
 			name="rules"
@@ -12,4 +63,5 @@
 			section="component" 
         />
 	</fieldset>
+	
 </config>
