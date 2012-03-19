@@ -6,66 +6,59 @@
 	</layout>
 	
 	<fields name="params">
-	    <fieldset name="basic" label="COM_PROJECTFORK_PROJECTS_VIEW_DEFAULT_MENU_OPTIONS">
-	        <field name="show_subheading" type="list" label="COM_PROJECTFORK_PROJECTS_VIEW_DEFAULT_SHOW_SUBHEADING_LBL" description="COM_PROJECTFORK_PROJECTS_VIEW_DEFAULT_SHOW_SUBHEADING_DESC">
-			    <option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="0">JHIDE</option>
-				<option value="1">JSHOW</option>
-			</field>
-			<field name="page_subheading" type="text" description="JGLOBAL_SUBHEADING_DESC" label="JGLOBAL_SUBHEADING_LABEL" size="20"/>
-	    </fieldset>
-	    
 	    <fieldset name="advanced" label="JGLOBAL_LIST_LAYOUT_OPTIONS">
-	        <field name="show_pagination_limit" type="list" description="JGLOBAL_DISPLAY_SELECT_DESC" label="JGLOBAL_DISPLAY_SELECT_LABEL">
+	        <field name="show_pagination" type="list" label="JGLOBAL_Pagination_Label" description="JGLOBAL_Pagination_Desc">
+		        <option value="">JGLOBAL_USE_GLOBAL</option>
+		        <option value="0">JHIDE</option>
+			    <option value="1">JSHOW</option>
+		    </field>
+		    <field name="show_pagination_results" type="list" label="JGLOBAL_PAGINATION_RESULTS_LABEL" description="JGLOBAL_PAGINATION_RESULTS_DESC">
+		        <option value="">JGLOBAL_USE_GLOBAL</option>
+                <option value="0">JHIDE</option>
+			    <option value="1">JSHOW</option>
+		    </field>
+            <field name="show_pagination_limit" type="list" description="JGLOBAL_DISPLAY_SELECT_DESC" label="JGLOBAL_DISPLAY_SELECT_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
-			<field name="filter_field" type="list" description="COM_PROJECTFORK_FILTER_FIELD_DESC" label="JGLOBAL_FILTER_FIELD_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="0">JHIDE</option>
-				<option value="1">JSHOW</option>
-			</field>
-			<field name="filter_state" type="list" description="COM_PROJECTFORK_FILTER_STATE_DESC" label="COM_PROJECTFORK_FILTER_STATE_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="0">JHIDE</option>
-				<option value="1">JSHOW</option>
-			</field>
-			<field name="date_format" type="text" description="JGLOBAL_DATE_FORMAT_DESC" label="JGLOBAL_DATE_FORMAT_LABEL" size="15"/>
+			<field name="date_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_CREATION_DATE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
+		    <field name="sdate_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_SDATE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
+		    <field name="deadline_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_DEADLINE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
 			
 			<field name="spacer1" type="spacer" hr="true"/>
 			
-			<field name="show_headings" type="list" description="JGLOBAL_SHOW_HEADINGS_DESC" label="JGLOBAL_SHOW_HEADINGS_LABEL">
+			<field name="project_list_col_author" type="list" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_AUTHOR_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_AUTHOR_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
-			<field name="show_manager_col" type="list" description="COM_PROJECTFORK_MANAGER_COL_DESC" label="COM_PROJECTFORK_MANAGER_COL_LABEL">
+			<field name="project_list_col_milestones" type="list" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_MILESTONES_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_MILESTONES_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
-			<field name="show_mscount_col" type="list" description="COM_PROJECTFORK_MSCOUNT_COL_DESC" label="COM_PROJECTFORK_MSCOUNT_COL_LABEL">
+			<field name="project_list_col_tasks" type="list" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_TASKS_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_TASKS_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
-			<field name="show_tcount_col" type="list" description="COM_PROJECTFORK_TCOUNT_COL_DESC" label="COM_PROJECTFORK_TCOUNT_COL_LABEL">
+			<field name="project_list_col_created" type="list" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_CREATED_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_CREATED_LABEL" default="1">
+		        <option value="">JGLOBAL_USE_GLOBAL</option>
+                <option value="0">JHIDE</option>
+			    <option value="1">JSHOW</option>
+		    </field>
+			<field name="project_list_col_sdate" type="list" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_SDATE_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_SDATE_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
-			<field name="show_sdate_col" type="list" description="COM_PROJECTFORK_SDATE_COL_DESC" label="COM_PROJECTFORK_SDATE_COL_LABEL">
+			<field name="project_list_col_deadline" type="list" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_DEADLINE_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_DEADLINE_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
-			<field name="show_edate_col" type="list" description="COM_PROJECTFORK_EDATE_COL_DESC" label="COM_PROJECTFORK_EDATE_COL_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="0">JHIDE</option>
-				<option value="1">JSHOW</option>
-			</field>
-			<field name="show_access_col" type="list" description="COM_PROJECTFORK_ACCESS_COL_DESC" label="COM_PROJECTFORK_ACCESS_COL_LABEL">
+			<field name="project_list_col_access" type="list" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_ACCESS_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_ACCESS_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>

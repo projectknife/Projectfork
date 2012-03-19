@@ -47,6 +47,7 @@ class ProjectforkViewProjects extends JView
         // Escape strings for HTML output
 		$this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
 
+
         // Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseError(500, implode("\n", $errors));
@@ -54,6 +55,7 @@ class ProjectforkViewProjects extends JView
 		}
 
 
+        // Assign references
         $this->assignRef('items',      $items);
         $this->assignRef('pagination', $pagination);
         $this->assignRef('params',     $params);
@@ -65,30 +67,116 @@ class ProjectforkViewProjects extends JView
         $this->assignRef('canDo',      $canDo);
 
 
+        // Prepare the document
+        $this->prepareDocument();
+
+
+        // Display the view
 		parent::display($tpl);
 	}
 
 
-    public function getToolbar()
+    /**
+	 * Prepares the document
+     *
+	 */
+	protected function prepareDocument()
+	{
+		$app		= JFactory::getApplication();
+		$menus		= $app->getMenu();
+		$pathway	= $app->getPathway();
+		$title		= null;
+
+		// Because the application sets a default page title,
+		// we need to get it from the menu item itself
+		$menu = $menus->getActive();
+
+		if ($menu) {
+			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
+		}
+		else {
+			$this->params->def('page_heading', JText::_('COM_PROJECTFORK_PROJECTS'));
+		}
+
+
+        // Set the page title
+		$title = $this->params->get('page_title', '');
+
+		if (empty($title)) {
+			$title = $app->getCfg('sitename');
+		}
+		elseif ($app->getCfg('sitename_pagetitles', 0) == 1) {
+			$title = JText::sprintf('JPAGETITLE', $app->getCfg('sitename'), $title);
+		}
+		elseif ($app->getCfg('sitename_pagetitles', 0) == 2) {
+			$title = JText::sprintf('JPAGETITLE', $title, $app->getCfg('sitename'));
+		}
+
+		$this->document->setTitle($title);
+
+
+        // Set crawler behavior info
+		if ($this->params->get('robots')) {
+			$this->document->setMetadata('robots', $this->params->get('robots'));
+		}
+
+
+        // Set page description
+        if($this->params->get('menu-meta_description')) {
+            $this->document->setDescription($desc);
+        }
+
+
+        // Set page keywords
+        if($this->params->get('menu-meta_keywords')) {
+            $this->document->setMetadata('keywords', $keywords);
+        }
+
+
+		// Add feed links
+		if ($this->params->get('show_feed_link', 1)) {
+			$link = '&format=feed&limitstart=';
+			$attribs = array('type' => 'application/rss+xml', 'title' => 'RSS 2.0');
+			$this->document->addHeadLink(JRoute::_($link . '&type=rss'), 'alternate', 'rel', $attribs);
+			$attribs = array('type' => 'application/atom+xml', 'title' => 'Atom 1.0');
+			$this->document->addHeadLink(JRoute::_($link . '&type=atom'), 'alternate', 'rel', $attribs);
+		}
+	}
+
+
+    /**
+	 * Generates the toolbar for the top of the view
+     *
+     * @return    string    Toolbar with buttons
+	 */
+    protected function getToolbar()
     {
         $canDo = ProjectforkHelper::getActions();
 		$user  = JFactory::getUser();
         $tb    = new ProjectforkHelperToolbar();
 
+
         if($canDo->get('core.create') || $canDo->get('project.create')) {
             $tb->button('COM_PROJECTFORK_ACTION_NEW', 'project.add');
         }
+
 
         return $tb->__toString();
     }
 
 
-    public function getActions()
+    /**
+	 * Generates select options for the bulk action menu
+     *
+     * @return    array    The available options
+	 */
+    protected function getActions()
     {
         $canDo   = ProjectforkHelper::getActions();
 		$user    = JFactory::getUser();
         $state	 = $this->get('State');
         $options = array();
+
 
         if($canDo->get('core.edit.state') || $canDo->get('project.edit.state')) {
             $options[] = JHtml::_('select.option', 'projects.publish', JText::_('COM_PROJECTFORK_ACTION_PUBLISH'));
@@ -104,6 +192,7 @@ class ProjectforkViewProjects extends JView
         elseif ($canDo->get('core.edit.state') || $canDo->get('project.edit.state')) {
 			$options[] = JHtml::_('select.option', 'projects.trash', JText::_('COM_PROJECTFORK_ACTION_TRASH'));
 		}
+
 
         return $options;
     }

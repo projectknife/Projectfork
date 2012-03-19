@@ -40,19 +40,6 @@ $action_count = count($this->actions);
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
 
-    <?php if($this->params->get('show_subheading', 1) or $this->params->get('page_subheading')) : ?>
-	<h2>
-        <?php
-        if($this->params->get('page_subheading')) {
-            echo $this->escape($this->params->get('page_subheading'));
-        }
-        else {
-            echo $this->escape($this->params->get('page_title'));
-        }
-        ?>
-	</h2>
-	<?php endif; ?>
-
     <?php echo $this->toolbar;?>
 
 
@@ -101,53 +88,56 @@ $action_count = count($this->actions);
 			</fieldset>
 
             <table class="category table table-striped">
-                <?php if ($this->params->get('show_headings')) :?>
-                    <thead>
-    	                <tr>
-                            <?php if($action_count) : ?>
-    	               	    <th id="tableOrdering0" class="list-select">
-    	               			<input type="checkbox" onclick="checkAll(<?php echo count($this->items);?>);" value="" name="toggle" />
-    	               		</th>
-                            <?php endif; ?>
-    	               		<th id="tableOrdering1" class="list-title">
-                                <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
-                            </th>
-    	               		<th id="tableOrdering2" class="list-actions span1">
-    	               			&nbsp;
-    	               		</th>
-    	               		<?php if($this->params->get('show_manager_col')) : ?>
-                            <th id="tableOrdering3" class="list-owner">
-    	               		    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'author_name', $list_dir, $list_order); ?>
-                            </th>
-                            <?php endif; ?>
-                            <?php if($this->params->get('show_mscount_col')) : ?>
-    	               		<th id="tableOrdering4" class="list-milestones">
-                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONES', 'milestones', $list_dir, $list_order); ?>
-                            </th>
-                            <?php endif; ?>
-                            <?php if($this->params->get('show_tcount_col')) : ?>
-    	               		<th id="tableOrdering5" class="list-tasks">
-                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKS', 'tasks', $list_dir, $list_order); ?>
-                            </th>
-                            <?php endif; ?>
-                            <?php if($this->params->get('show_sdate_col')) : ?>
-    	               		<th id="tableOrdering6" class="list-tasks">
-                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_START_DATE', 'a.start_date', $list_dir, $list_order); ?>
-                            </th>
-                            <?php endif; ?>
-                            <?php if($this->params->get('show_edate_col')) : ?>
-    	               		<th id="tableOrdering6" class="list-tasks">
-                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
-                            </th>
-                            <?php endif; ?>
-                            <?php if($this->params->get('show_access_col')) : ?>
-    	               		<th id="tableOrdering7" class="list-tasks">
-                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'access_level', $list_dir, $list_order); ?>
-                            </th>
-                            <?php endif; ?>
-    	               	</tr>
-                   </thead>
-               <?php endif; ?>
+                <thead>
+	                <tr>
+                        <?php if($action_count) : ?>
+	               	    <th id="tableOrdering0" class="list-select">
+	               			<input type="checkbox" onclick="checkAll(<?php echo count($this->items);?>);" value="" name="toggle" />
+	               		</th>
+                        <?php endif; ?>
+	               		<th id="tableOrdering1" class="list-title">
+                            <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
+                        </th>
+	               		<th id="tableOrdering2" class="list-actions span1">
+	               			&nbsp;
+	               		</th>
+                        <?php if($this->params->get('project_list_col_milestones')) : ?>
+	               		<th id="tableOrdering3" class="list-milestones">
+                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONES', 'milestones', $list_dir, $list_order); ?>
+                        </th>
+                        <?php endif; ?>
+                        <?php if($this->params->get('project_list_col_tasks')) : ?>
+	               		<th id="tableOrdering4" class="list-tasks">
+                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKS', 'tasks', $list_dir, $list_order); ?>
+                        </th>
+                        <?php endif; ?>
+                        <?php if($this->params->get('project_list_col_author')) : ?>
+                        <th id="tableOrdering5" class="list-author" nowrap="nowrap">
+	               		    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'author_name', $list_dir, $list_order); ?>
+                        </th>
+                        <?php endif; ?>
+                        <?php if($this->params->get('project_list_col_created')) : ?>
+                        <th id="tableOrdering6" class="list-created" nowrap="nowrap">
+                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_ON', 'a.created', $list_dir, $list_order); ?>
+                        </th>
+                        <?php endif;?>
+                        <?php if($this->params->get('project_list_col_sdate')) : ?>
+	               		<th id="tableOrdering7" class="list-sdate" nowrap="nowrap">
+                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_START_DATE', 'a.start_date', $list_dir, $list_order); ?>
+                        </th>
+                        <?php endif; ?>
+                        <?php if($this->params->get('project_list_col_deadline')) : ?>
+	               		<th id="tableOrdering8" class="list-deadline">
+                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
+                        </th>
+                        <?php endif; ?>
+                        <?php if($this->params->get('project_list_col_access')) : ?>
+	               		<th id="tableOrdering9" class="list-access">
+                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'access_level', $list_dir, $list_order); ?>
+                        </th>
+                        <?php endif; ?>
+	               	</tr>
+               </thead>
                <tbody>
                     <?php
                     $k = 0;
@@ -185,45 +175,49 @@ $action_count = count($this->actions);
     	               			  </ul>
     	               			</div>
     	               		</td>
-                            <?php if($this->params->get('show_manager_col')) : ?>
-        	               		<td class="list-owner">
-        	               			<small><?php echo $this->escape($item->author_name);?></small>
-        	               		</td>
-                            <?php endif; ?>
-                            <?php if($this->params->get('show_mscount_col')) : ?>
+                            <?php if($this->params->get('project_list_col_milestones')) : ?>
         	               		<td class="list-milestones">
         		               		<a class="btn"><i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?></a>
         	               		</td>
                             <?php endif; ?>
-                            <?php if($this->params->get('show_mscount_col')) : ?>
+                            <?php if($this->params->get('project_list_col_tasks')) : ?>
         	               		<td class="list-tasks">
         		               		<a class="btn"><i class="icon-ok"></i> <?php echo (int) $item->tasks;?></a>
         	               		</td>
                             <?php endif; ?>
-
-                            <?php if($this->params->get('show_sdate_col')) : ?>
+                            <?php if($this->params->get('project_list_col_author')) : ?>
+        	               		<td class="list-author">
+        	               			<small><?php echo $this->escape($item->author_name);?></small>
+        	               		</td>
+                            <?php endif; ?>
+                            <?php if($this->params->get('project_list_col_created')) : ?>
+    	               		    <td class="list-created">
+        		               	    <?php echo JHtml::_('date', $item->created, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC4')))); ?>
+        	               		</td>
+                            <?php endif; ?>
+                            <?php if($this->params->get('project_list_col_sdate')) : ?>
     	               		    <td class="list-sdate">
         		               	    <?php if($item->start_date == $this->nulldate) {
                                         echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
                                     }
                                     else {
-                                        echo JHtml::_('date', $item->start_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC4'))));
+                                        echo JHtml::_('date', $item->start_date, $this->escape( $this->params->get('sdate_format', JText::_('DATE_FORMAT_LC4'))));
                                     }
         		               		?>
         	               		</td>
                             <?php endif; ?>
-                            <?php if($this->params->get('show_edate_col')) : ?>
-    	               		    <td class="list-edate">
+                            <?php if($this->params->get('project_list_col_deadline')) : ?>
+    	               		    <td class="list-deadline">
                                     <?php if($item->end_date == $this->nulldate) {
                                         echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
                                     }
                                     else {
-                                        echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC4'))));
+                                        echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('deadline_format', JText::_('DATE_FORMAT_LC4'))));
                                     }
         		               		?>
         	               		</td>
                             <?php endif; ?>
-                            <?php if($this->params->get('show_access_col')) : ?>
+                            <?php if($this->params->get('project_list_col_access')) : ?>
     	               		    <td class="list-access">
         		               		<?php echo $this->escape($item->access_level);?>
         	               		</td>
@@ -236,9 +230,9 @@ $action_count = count($this->actions);
                 </tbody>
             </table>
 
-            <?php if($this->pagination->get('pages.total') > 1) : ?>
+            <?php if($this->pagination->get('pages.total') > 1 && $this->params->get('show_pagination')) : ?>
                 <div class="pagination">
-                    <?php if ($this->params->def('show_pagination_results', 1)) : ?>
+                    <?php if ($this->params->get('show_pagination_results')) : ?>
     				    <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
     				<?php endif; ?>
     		        <?php echo $this->pagination->getPagesLinks(); ?>
