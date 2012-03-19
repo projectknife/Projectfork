@@ -171,11 +171,11 @@ class ProjectforkModelProjects extends JModelList
 		$query->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
         // Join over the milestones for milestone count
-        $query->select('COUNT(ma.id) AS milestones');
+        $query->select('COUNT(DISTINCT ma.id) AS milestones');
         $query->join('LEFT', '#__pf_milestones AS ma ON ma.project_id = a.id');
 
         // Join over the tasks for task count
-        $query->select('COUNT(ta.id) AS tasks');
+        $query->select('COUNT(DISTINCT ta.id) AS tasks');
         $query->join('LEFT', '#__pf_tasks AS ta ON ta.project_id = a.id');
 
         // Implement View Level Access
