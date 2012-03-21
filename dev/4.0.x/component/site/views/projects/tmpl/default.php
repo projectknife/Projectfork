@@ -29,6 +29,7 @@ JHtml::_('behavior.multiselect');
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user	    = JFactory::getUser();
+$uri	    = JFactory::getURI();
 $uid	    = $user->get('id');
 $message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));
 
@@ -166,13 +167,21 @@ $action_count = count($this->actions);
     	               		</td>
     	               		<td class="list-actions">
     	               			<div class="btn-group">
-    	               			  <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-    	               			    <span class="caret"></span>
-    	               			  </a>
-    	               			  <ul class="dropdown-menu">
-    	               			    <li><a href="#">Edit</a></li>
-    	               			    <li><a href="#">Delete</a></li>
-    	               			  </ul>
+    	               			    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
+    	               			    <ul class="dropdown-menu">
+    	               			        <?php if($canEdit || $canEditOwn) : ?>
+                                        <li>
+                                           <a href="<?php echo JRoute::_('index.php?option=com_projectfork&task=projectform.edit&id='.$item->id.'&return='.base64_encode($uri));?>">
+                                               <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
+                                           </a>
+                                        </li>
+                                        <?php endif; ?>
+    	               			        <li>
+                                           <a href="#">
+                                               <?php echo JText::_('COM_PROJECTFORK_ACTION_TRASH');?>
+                                           </a>
+                                        </li>
+    	               			    </ul>
     	               			</div>
     	               		</td>
                             <?php if($this->params->get('project_list_col_milestones')) : ?>
