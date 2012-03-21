@@ -183,7 +183,7 @@ class ProjectforkControllerProjectform extends JControllerForm
 		$return = JRequest::getVar('return', null, 'default', 'base64');
 
 		if (empty($return) || !JUri::isInternal(base64_decode($return))) {
-			return JURI::base();
+			return JRoute::_('index.php?option=com_projectfork&view='.$this->view_list, false);
 		}
 		else {
 			return base64_decode($return);
@@ -203,7 +203,7 @@ class ProjectforkControllerProjectform extends JControllerForm
 		$task = $this->getTask();
 
 		if ($task == 'save') {
-			$this->setRedirect(JRoute::_('index.php?option=com_projectfork&view=projects', false));
+			$this->setRedirect(JRoute::_('index.php?option=com_projectfork&view='.$this->view_list, false));
 		}
 	}
 

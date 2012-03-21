@@ -29,7 +29,6 @@ JHtml::_('behavior.multiselect');
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user	    = JFactory::getUser();
-$uri	    = JFactory::getURI();
 $uid	    = $user->get('id');
 $message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));
 
@@ -171,7 +170,7 @@ $action_count = count($this->actions);
     	               			    <ul class="dropdown-menu">
     	               			        <?php if($canEdit || $canEditOwn) : ?>
                                         <li>
-                                           <a href="<?php echo JRoute::_('index.php?option=com_projectfork&task=projectform.edit&id='.$item->id.'&return='.base64_encode($uri));?>">
+                                           <a href="<?php echo JRoute::_('index.php?option=com_projectfork&task=projectform.edit&id='.$item->id);?>">
                                                <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
                                            </a>
                                         </li>

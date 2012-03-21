@@ -157,7 +157,7 @@ class ProjectforkViewProjects extends JView
 
 
         if($canDo->get('core.create') || $canDo->get('project.create')) {
-            $tb->button('COM_PROJECTFORK_ACTION_NEW', 'project.add');
+            $tb->button('COM_PROJECTFORK_ACTION_NEW', 'projectform.add');
         }
 
 
