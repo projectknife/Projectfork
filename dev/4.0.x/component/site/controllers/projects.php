@@ -25,9 +25,10 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.controlleradmin');
 
+
 /**
- * @package		Joomla.Site
- * @subpackage	com_content
+ * Projectfork Project List Controller
+ *
  */
 class ProjectforkControllerProjects extends JControllerAdmin
 {
