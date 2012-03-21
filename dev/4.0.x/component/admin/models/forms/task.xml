@@ -3,7 +3,7 @@
 	<fieldset>
 		<field name="project_id" type="project" label="COM_PROJECTFORK_FIELD_PROJECT_LABEL"
 			description="COM_PROJECTFORK_FIELD_PROJECT_DESC" class="inputbox" size="30"
-			required="true" view="task"
+			required="true" view="task" submit="true" session="true"
         />
         <field name="milestone_id" type="milestone" label="COM_PROJECTFORK_FIELD_MILESTONE_LABEL"
 			description="COM_PROJECTFORK_FIELD_MILESTONE_DESC" class="inputbox" submit="true"

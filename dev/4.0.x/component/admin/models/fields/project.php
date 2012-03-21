@@ -59,6 +59,9 @@ class JFormFieldProject extends JFormField
 		$attr  = $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
 		$attr .= $this->element['size']  ? ' size="'.(int) $this->element['size'].'"'      : '';
 
+        $doSubmit = ($this->element['submit'] === 'true') ? true : false;
+        $session  = ($this->element['session'] === 'true') ? true : false;
+
         // Get the view
 		$view = (string) JRequest::getCmd('view');
 
@@ -76,7 +79,12 @@ class JFormFieldProject extends JFormField
 		$script[] = '		if (old_id != id) {';
 		$script[] = '			document.getElementById("'.$this->id.'_id").value = id;';
 		$script[] = '			document.getElementById("'.$this->id.'_name").value = title;';
-		$script[] = '			Joomla.submitbutton("'.$view.'.setProject");';
+		if($doSubmit) {
+		    $script[] = '			Joomla.submitbutton("'.$view.'.setProject");';
+		}
+        else {
+            $script[] = '		SqueezeBox.close();';
+        }
 		$script[] = '		}';
 		$script[] = '	}';
 
@@ -85,6 +93,7 @@ class JFormFieldProject extends JFormField
 
 
 		// Load the current project title if available.
+        JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'tables');
 		$table = JTable::getInstance('project', 'PFtable');
 
 		if($this->value) {
@@ -93,7 +102,7 @@ class JFormFieldProject extends JFormField
         else {
 		    $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
 
-            if($active_id) {
+            if($active_id && $session) {
                 $table->load($active_id);
                 $this->value = $active_id;
             }
