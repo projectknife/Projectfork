@@ -160,7 +160,7 @@ $action_count = count($this->actions);
     	               		    <?php if ($item->checked_out) : ?>
             						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'projects.', $canCheckin); ?>
             					<?php endif; ?>
-                                <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=project&id='.intval($item->id));?>">
+                                <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=dashboard&id='.intval($item->id).':'.$item->alias);?>">
                                     <?php echo $this->escape($item->title);?>
                                 </a>
     	               		</td>
@@ -170,7 +170,7 @@ $action_count = count($this->actions);
     	               			    <ul class="dropdown-menu">
     	               			        <?php if($canEdit || $canEditOwn) : ?>
                                         <li>
-                                           <a href="<?php echo JRoute::_('index.php?option=com_projectfork&task=projectform.edit&id='.$item->id);?>">
+                                           <a href="<?php echo JRoute::_('index.php?option=com_projectfork&task=projectform.edit&id='.intval($item->id).':'.$item->alias);?>">
                                                <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
                                            </a>
                                         </li>
