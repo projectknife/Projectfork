@@ -108,8 +108,6 @@ $action_count = count($this->actions);
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKS', 'tasks', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
-                        <!--<th id="tableOrdering5" class="list-comments">
-	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.comments','asc','');">Comments</a></th>-->
                         <?php if($this->params->get('milestone_list_col_author')) : ?>
                         <th id="tableOrdering5" class="list-author" nowrap="nowrap">
 	               		    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'author_name', $list_dir, $list_order); ?>
@@ -120,6 +118,11 @@ $action_count = count($this->actions);
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_START_DATE', 'a.start_date', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
+                        <?php if($this->params->get('project_list_col_created')) : ?>
+                        <th id="tableOrdering6" class="list-created" nowrap="nowrap">
+                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_ON', 'a.created', $list_dir, $list_order); ?>
+                        </th>
+                        <?php endif;?>
                         <?php if($this->params->get('milestone_list_col_deadline')) : ?>
 	               		<th id="tableOrdering7" class="list-deadline">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
