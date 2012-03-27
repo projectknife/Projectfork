@@ -28,37 +28,37 @@
 			
 			<field name="spacer1" type="spacer" hr="true"/>
 			
-			<field name="project_list_col_author" type="list" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_AUTHOR_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_AUTHOR_LABEL">
+			<field name="project_list_col_author" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
-			<field name="project_list_col_milestones" type="list" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_MILESTONES_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_MILESTONES_LABEL">
+			<field name="project_list_col_milestones" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_MILESTONES_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_MILESTONES_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
-			<field name="project_list_col_tasks" type="list" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_TASKS_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_TASKS_LABEL">
+			<field name="project_list_col_tasks" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_TASKS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_TASKS_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
-			<field name="project_list_col_created" type="list" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_CREATED_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_CREATED_LABEL" default="1">
+			<field name="project_list_col_created" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_LABEL">
 		        <option value="">JGLOBAL_USE_GLOBAL</option>
                 <option value="0">JHIDE</option>
 			    <option value="1">JSHOW</option>
 		    </field>
-			<field name="project_list_col_sdate" type="list" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_SDATE_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_SDATE_LABEL">
+			<field name="project_list_col_sdate" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
-			<field name="project_list_col_deadline" type="list" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_DEADLINE_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_DEADLINE_LABEL">
+			<field name="project_list_col_deadline" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
-			<field name="project_list_col_access" type="list" description="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_ACCESS_DESC" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_COL_ACCESS_LABEL">
+			<field name="project_list_col_access" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
