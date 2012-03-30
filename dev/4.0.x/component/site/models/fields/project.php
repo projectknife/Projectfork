@@ -59,8 +59,8 @@ class JFormFieldProject extends JFormField
 		$attr  = $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
 		$attr .= $this->element['size']  ? ' size="'.(int) $this->element['size'].'"'      : '';
 
-        $doSubmit = ($this->element['submit'] === 'true') ? true : false;
-        $session  = ($this->element['session'] === 'true') ? true : false;
+        $doSubmit = ($this->element['submit'] == 'true');
+        $session  = ($this->element['session'] == 'true');
 
         // Get the view
 		$view = (string) JRequest::getCmd('view');
