@@ -306,6 +306,12 @@ class ProjectforkHelper
 	 **/
     public function setActiveProject($id = 0)
     {
+        $app = JFactory::getApplication();
+
+        if($app->isSite()) {
+            JModel::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'models');
+        }
+
         $model = JModel::getInstance('Project', 'ProjectforkModel');
         $data  = array('id' => (int) $id);
 
