@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 *
 * This file is part of Projectfork.
@@ -21,36 +21,47 @@
 **/
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
+
+// Create shortcuts to some parameters.
+$params	 = $this->item->params;
+$canEdit = $this->item->params->get('access-edit');
+$user	 = JFactory::getUser();
 ?>
-<div id="projectfork" class="item-page view-milestone">
-	<h2>Milestone Name <input type="button" class="button" value="View Dashboard" /></h2>
-	<ul class="actions">
-						<li class="print-icon">
-			<a rel="nofollow" onclick="window.open(this.href,'win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no'); return false;" title="Print" href="#"><img alt="Print" src="/projectfork_4/media/system/images/printButton.png"></a>			</li>
-		
-					<li class="email-icon">
-			<a onclick="window.open(this.href,'win2','width=400,height=350,menubar=yes,resizable=yes'); return false;" title="Email" href="#"><img alt="Email" src="/projectfork_4/media/system/images/emailButton.png"></a>			</li>
-		
-					<li class="edit-icon">
-			<span title="" class="hasTip"><a href="#"><img alt="Edit" src="/projectfork_4/media/system/images/edit.png"></a></span>			</li>
-		
-	
-	</ul>
+<div id="projectfork" class="item-page<?php echo $this->pageclass_sfx?> view-milestone">
+
+    <?php if ($this->params->get('show_page_heading', 1)) : ?>
+	    <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
+    <?php endif; ?>
+
+    <?php if ($params->get('show_title')) : ?>
+    	<h2><?php echo $this->escape($this->item->title); ?></h2>
+    <?php endif; ?>
+
+
 	<dl class="article-info">
 		<dt class="article-info-term">Details</dt>
-		<dd class="milestone-name">
-			Milestone: <a href="#">Milestone Name</a>		
-		</dd>
-		<dd class="start-date">
-			Started on Saturday, 01 January 2011 00:00	
-		</dd>
-		<dd class="due-date">
-			Due by Saturday, 01 January 2011 00:00	
-		</dd>
-		<dd class="owner">
-			Assigned to <a href="#">Firstname Lastname</a>		
-		</dd>
+        <dd class="created-by">
+            <?php echo JText::_('JGRID_HEADING_CREATED_BY');?>:
+            <?php echo $this->escape($this->item->author);?>
+        </dd>
+		<dd class="created-on">
+            <?php echo JText::_('JGRID_HEADING_CREATED_ON');?>:
+            <?php echo JHtml::_('date', $this->item->created, JText::_('DATE_FORMAT_LC2'));?>
+        </dd>
+        <?php if($this->item->start_date != JFactory::getDBO()->getNullDate()): ?>
+            <dd class="start-date">
+                <?php echo JText::_('JGRID_HEADING_START_DATE');?>:
+    			<?php echo JHtml::_('date', $this->item->start_date, JText::_('DATE_FORMAT_LC2'));?>
+    		</dd>
+        <?php endif; ?>
+        <?php if($this->item->end_date != JFactory::getDBO()->getNullDate()): ?>
+    		<dd class="due-date">
+    			<?php echo JText::_('JGRID_HEADING_DEADLINE');?>:
+                <?php echo JHtml::_('date', $this->item->end_date, JText::_('DATE_FORMAT_LC2'));?>
+    		</dd>
+        <?php endif;?>
 	</dl>
+    <!--
 	<div id="article-index" class="project-stats">
 		<ul>
 			<li class="comment-stats">
@@ -67,11 +78,13 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 			</li>
 		</ul>
 	</div>
+    -->
 	<div class="item-description">
 		<p>
-		Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+		<?php echo $this->item->description; ?>
 		</p>
 	</div>
+    <!--
 	<div class="items-more">
 		<h3>Comments</h3>
 		<div class="contact-form" class="comment-form">
@@ -125,7 +138,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 								</li>
 							</ul>
 						</div>
-						<!-- Inline Replies -->
+						<!-- Inline Replies --><!--
 							<ul>
 								<li class="first">
 									<div class="cat-list-row1 comment-info">
@@ -178,7 +191,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									</div>
 								</li>
 							</ul>
-						<!-- Inline Replies -->
+						<!-- Inline Replies --><!--
 					</li>
 					<li class="last">
 						<div class="cat-list-row1 comment-info">
@@ -204,7 +217,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 								</li>
 							</ul>
 						</div>
-						<!-- Inline Replies -->
+						<!-- Inline Replies --><!--
 							<ul>
 								<li class="first">
 									<div class="cat-list-row1 comment-info">
@@ -257,10 +270,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 									</div>
 								</li>
 							</ul>
-						<!-- Inline Replies -->
+						<!-- Inline Replies --><!--
 					</li>
 				</ul>
 			</div>
 		</div>
-	</div>
+	</div>-->
 </div>
