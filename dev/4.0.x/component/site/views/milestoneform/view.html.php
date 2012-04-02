@@ -68,7 +68,7 @@ class ProjectforkViewMilestoneForm extends JView
 
 
         // Bind form data.
-		if (!empty($this->item)) $this->form->bind($this->item);
+		// if (!empty($this->item)) $this->form->bind($this->item);
 
 
 		// Check for errors.
