@@ -76,7 +76,7 @@ class ProjectforkControllerMilestones extends JControllerAdmin
 
 		// Setup redirect info.
 		if ($tmpl)     $append .= '&tmpl='.$tmpl;
-        if($layout)    $append .= '&layout='.$layout;
+        if ($layout)   $append .= '&layout='.$layout;
 		if ($recordId) $append .= '&'.$urlVar.'='.$recordId;
 		if ($itemId)   $append .= '&Itemid='.$itemId;
 		if ($return)   $append .= '&return='.base64_encode($return);

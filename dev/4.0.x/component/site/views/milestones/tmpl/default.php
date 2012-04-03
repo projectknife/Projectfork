@@ -37,6 +37,7 @@ $action_count = count($this->actions);
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
 
+
     <?php echo $this->toolbar;?>
 
 
@@ -118,7 +119,7 @@ $action_count = count($this->actions);
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_START_DATE', 'a.start_date', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
-                        <?php if($this->params->get('project_list_col_created')) : ?>
+                        <?php if($this->params->get('milestone_list_col_created')) : ?>
                         <th id="tableOrdering6" class="list-created" nowrap="nowrap">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_ON', 'a.created', $list_dir, $list_order); ?>
                         </th>

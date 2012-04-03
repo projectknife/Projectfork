@@ -100,7 +100,7 @@ class ProjectforkControllerMilestoneform extends JControllerForm
 	 * @param	string	$key	The name of the primary key of the URL variable.
 	 * @return	Boolean	True if access level checks pass, false otherwise.
 	 */
-	public function cancel($key = 'a_id')
+	public function cancel($key = 'id')
 	{
 		parent::cancel($key);
 
@@ -220,9 +220,8 @@ class ProjectforkControllerMilestoneform extends JControllerForm
 		$result = parent::save($key, $urlVar);
 
 		// If ok, redirect to the return page.
-		if ($result) {
-			$this->setRedirect($this->getReturnPage());
-		}
+		if ($result) $this->setRedirect($this->getReturnPage());
+
 
 		return $result;
 	}
@@ -247,8 +246,8 @@ class ProjectforkControllerMilestoneform extends JControllerForm
 
 
         //Save the data in the session.
-		$app->setUserState('com_projectfork.edit.milestone.project',	$project);
-		$app->setUserState('com_projectfork.edit.milestone.data', $data);
+		$app->setUserState('com_projectfork.edit.milestoneform.id', $recordId);
+		$app->setUserState('com_projectfork.edit.milestoneform.data', $data);
 
 		$this->project_id = $project;
 

@@ -118,6 +118,22 @@ class ProjectforkModelMilestoneForm extends ProjectforkModelMilestone
 	}
 
 
+    /**
+	 * Method to get the data that should be injected in the form.
+	 *
+	 * @return    mixed    The data for the form.
+	 */
+	protected function loadFormData()
+	{
+		// Check the session for previously entered form data.
+		$data = JFactory::getApplication()->getUserState('com_projectfork.edit.milestoneform.data', array());
+
+		if(empty($data)) $data = $this->getItem();
+
+		return $data;
+	}
+
+
 	/**
 	 * Get the return URL.
 	 *
