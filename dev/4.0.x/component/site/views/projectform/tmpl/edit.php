@@ -62,10 +62,10 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
 			    <?php echo $this->form->getInput('title'); ?>
 			</div>
 			<div class="formelm-buttons">
-			    <button type="button" onclick="Joomla.submitbutton('projectform.save')">
+			    <button class="btn btn-primary" type="button" onclick="Joomla.submitbutton('projectform.save')">
 				    <?php echo JText::_('JSAVE') ?>
 			    </button>
-			    <button type="button" onclick="Joomla.submitbutton('projectform.cancel')">
+			    <button class="btn" type="button" onclick="Joomla.submitbutton('projectform.cancel')">
 				    <?php echo JText::_('JCANCEL') ?>
 			    </button>
 			</div>
