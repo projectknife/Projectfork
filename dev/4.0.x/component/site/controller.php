@@ -41,23 +41,25 @@ class ProjectforkController extends JController
         $uri    = JFactory::getURI();
 
 
-        // Load Projectfork CSS
-        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_icons.css');
-        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_layout.css');
-        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_theme.css');
-
-
-        // Load Projectfork JS
-        $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/com_projectfork.js');
-
-
         // Load bootstrap if enabled
-        if($params->get('bootstrap') == '1') {
+        if($params->get('bootstrap', '1') == '1') {
             $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap.min.css');
             $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap-responsive.min.css');
 
+            $doc->addScript('https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
             $doc->addScript($uri->base(true).'/components/com_projectfork/assets/bootstrap/js/bootstrap.min.js');
+
         }
+
+        // Load Projectfork CSS if enabled
+        if($params->get('css', '1') == '1') {
+            $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_icons.css');
+            $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_layout.css');
+            $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_theme.css');
+        }
+
+        // Load Projectfork JS
+        $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/com_projectfork.js');
 
 
         $cachable = true;

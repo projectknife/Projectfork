@@ -95,6 +95,10 @@
 		    <option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+		<field name="css" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_CSS_LABEL" description="COM_PROJECTFORK_CONFIG_CSS_DESC">
+		    <option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
 	</fieldset>
 	
     <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
