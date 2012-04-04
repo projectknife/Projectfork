@@ -56,7 +56,7 @@ class ProjectforkModelProjects extends JModelList
                 'state', 'a.state',
                 'start_date', 'a.start_date',
                 'end_date', 'a.end_date',
-                'milestones', 'tasks'
+                'milestones', 'tasks', 'tasklists'
 			);
 		}
 
@@ -173,6 +173,10 @@ class ProjectforkModelProjects extends JModelList
         // Join over the milestones for milestone count
         $query->select('COUNT(DISTINCT ma.id) AS milestones');
         $query->join('LEFT', '#__pf_milestones AS ma ON ma.project_id = a.id');
+
+        // Join over the task lists for list count
+        $query->select('COUNT(DISTINCT tl.id) AS tasklists');
+        $query->join('LEFT', '#__pf_task_lists AS tl ON tl.project_id = a.id');
 
         // Join over the tasks for task count
         $query->select('COUNT(DISTINCT ta.id) AS tasks');
