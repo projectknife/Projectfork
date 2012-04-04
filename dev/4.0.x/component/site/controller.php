@@ -34,8 +34,11 @@ class ProjectforkController extends JController
 
 	public function display($cachable = false, $urlparams = false)
 	{
-		$doc = JFactory::getDocument();
-        $uri = JFactory::getURI();
+	    jimport( 'joomla.application.component.helper' );
+
+        $params = JComponentHelper::getParams('com_projectfork');
+		$doc    = JFactory::getDocument();
+        $uri    = JFactory::getURI();
 
 
         // Load Projectfork CSS
@@ -46,6 +49,16 @@ class ProjectforkController extends JController
 
         // Load Projectfork JS
         $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/com_projectfork.js');
+
+
+        // Load bootstrap if enabled
+        if($params->get('bootstrap') == '1') {
+            $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap.min.css');
+            $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap-responsive.min.css');
+
+            $doc->addScript($uri->base(true).'/components/com_projectfork/assets/bootstrap/js/bootstrap.min.js');
+        }
+
 
         $cachable = true;
         $safeurlparams = array('id' => 'INT',

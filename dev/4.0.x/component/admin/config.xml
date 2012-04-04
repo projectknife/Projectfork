@@ -90,6 +90,13 @@
 		<field name="deadline_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_DEADLINE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
 	</fieldset>
 	
+	<fieldset name="compat_parameters" label="COM_PROJECTFORK_CONFIG_COMPAT_LABEL" description="COM_PROJECTFORK_CONFIG_COMPAT_DESC">
+		<field name="bootstrap" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_BOOTSTRAP_LABEL" description="COM_PROJECTFORK_CONFIG_BOOTSTRAP_DESC">
+		    <option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+	</fieldset>
+	
     <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field
 			name="rules"
