@@ -104,33 +104,38 @@ $action_count = count($this->actions);
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'project_title', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
+                        <?php if($this->params->get('milestone_list_col_tasklists')) : ?>
+	               		<th id="tableOrdering4" class="list-tasklists">
+                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKLISTS', 'tasklists', $list_dir, $list_order); ?>
+                        </th>
+                        <?php endif; ?>
                         <?php if($this->params->get('milestone_list_col_tasks')) : ?>
-	               		<th id="tableOrdering4" class="list-tasks">
+	               		<th id="tableOrdering5" class="list-tasks">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKS', 'tasks', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
                         <?php if($this->params->get('milestone_list_col_author')) : ?>
-                        <th id="tableOrdering5" class="list-author" nowrap="nowrap">
+                        <th id="tableOrdering6" class="list-author" nowrap="nowrap">
 	               		    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'author_name', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
 	               		<?php if($this->params->get('milestone_list_col_sdate')) : ?>
-	               		<th id="tableOrdering6" class="list-sdate" nowrap="nowrap">
+	               		<th id="tableOrdering7" class="list-sdate" nowrap="nowrap">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_START_DATE', 'a.start_date', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
                         <?php if($this->params->get('milestone_list_col_created')) : ?>
-                        <th id="tableOrdering6" class="list-created" nowrap="nowrap">
+                        <th id="tableOrdering8" class="list-created" nowrap="nowrap">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_ON', 'a.created', $list_dir, $list_order); ?>
                         </th>
                         <?php endif;?>
                         <?php if($this->params->get('milestone_list_col_deadline')) : ?>
-	               		<th id="tableOrdering7" class="list-deadline">
+	               		<th id="tableOrdering9" class="list-deadline">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
                         <?php if($this->params->get('milestone_list_col_access')) : ?>
-	               		<th id="tableOrdering8" class="list-access">
+	               		<th id="tableOrdering10" class="list-access">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'access_level', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
@@ -186,6 +191,11 @@ $action_count = count($this->actions);
                             <?php if($this->params->get('milestone_list_col_project')) : ?>
         	               		<td class="list-project">
         		               		<a class="btn"><i class="icon-map-marker"></i> <?php echo $this->escape($item->project_title);?></a>
+        	               		</td>
+                            <?php endif; ?>
+                            <?php if($this->params->get('milestone_list_col_tasklists')) : ?>
+        	               		<td class="list-tasks">
+        		               		<a class="btn"><i class="icon-ok"></i> <?php echo (int) $item->tasklists;?></a>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('milestone_list_col_tasks')) : ?>
