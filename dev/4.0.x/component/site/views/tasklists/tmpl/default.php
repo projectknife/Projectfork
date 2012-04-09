@@ -88,11 +88,11 @@ $action_count = count($this->actions);
                 <thead>
 	                <tr>
 	               		<?php if($action_count) : ?>
-	               	    <th id="tableOrdering0" class="list-select">
+	               	    <th id="tableOrdering0" class="list-select" width="1%">
 	               			<input type="checkbox" onclick="checkAll(<?php echo count($this->items);?>);" value="" name="toggle" />
 	               		</th>
                         <?php endif; ?>
-	               		<th id="tableOrdering1" class="list-title">
+	               		<th id="tableOrdering1" class="list-title" width="25%">
 	               		    <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                         </th>
 	               		<th id="tableOrdering2" class="list-actions span1">
