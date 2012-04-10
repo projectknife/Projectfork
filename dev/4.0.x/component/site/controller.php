@@ -48,7 +48,6 @@ class ProjectforkController extends JController
 
             $doc->addScript('https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
             $doc->addScript($uri->base(true).'/components/com_projectfork/assets/bootstrap/js/bootstrap.min.js');
-
         }
 
         // Load Projectfork CSS if enabled
