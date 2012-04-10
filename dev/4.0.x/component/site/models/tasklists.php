@@ -59,7 +59,8 @@ class ProjectforkModelTasklists extends JModelList
                 'state', 'a.state',
                 'ordering', 'a.ordering',
                 'project_title', 'p.title',
-                'milestone_title', 'm.title'
+                'milestone_title', 'm.title'.
+                'tasks', 'ta.tasks'
 			);
 		}
 
@@ -179,6 +180,10 @@ class ProjectforkModelTasklists extends JModelList
         // Join over the milestones for the milestone title.
 		$query->select('m.title AS milestone_title');
 		$query->join('LEFT', '#__pf_milestones AS m ON m.id = a.milestone_id');
+
+        // Join over the tasks for the task count.
+		$query->select('COUNT(DISTINCT ta.id) AS tasks');
+        $query->join('LEFT', '#__pf_tasks AS ta ON ta.list_id = a.id');
 
         // Implement View Level Access
 		if(!$user->authorise('core.admin')) {

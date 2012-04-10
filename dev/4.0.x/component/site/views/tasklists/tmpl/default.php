@@ -103,6 +103,11 @@ $action_count = count($this->actions);
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'project_title', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
+                        <?php if($this->params->get('tasklist_list_col_project')) : ?>
+	               		<th id="tableOrdering3" class="list-milestone">
+                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONE', 'milestone_title', $list_dir, $list_order); ?>
+                        </th>
+                        <?php endif; ?>
                         <?php if($this->params->get('tasklist_list_col_tasks')) : ?>
 	               		<th id="tableOrdering4" class="list-tasks">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKS', 'tasks', $list_dir, $list_order); ?>
@@ -111,11 +116,6 @@ $action_count = count($this->actions);
                         <?php if($this->params->get('tasklist_list_col_author')) : ?>
                         <th id="tableOrdering5" class="list-author" nowrap="nowrap">
 	               		    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'author_name', $list_dir, $list_order); ?>
-                        </th>
-                        <?php endif; ?>
-	               		<?php if($this->params->get('tasklist_list_col_sdate')) : ?>
-	               		<th id="tableOrdering6" class="list-sdate" nowrap="nowrap">
-                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_START_DATE', 'a.start_date', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
                         <?php if($this->params->get('tasklist_list_col_created')) : ?>
@@ -180,6 +180,11 @@ $action_count = count($this->actions);
                             <?php if($this->params->get('tasklist_list_col_project')) : ?>
         	               		<td class="list-project">
         		               		<a class="btn"><i class="icon-map-marker"></i> <?php echo $this->escape($item->project_title);?></a>
+        	               		</td>
+                            <?php endif; ?>
+                            <?php if($this->params->get('tasklist_list_col_milestone')) : ?>
+        	               		<td class="list-milestone">
+        		               		<a class="btn"><i class="icon-map-marker"></i> <?php echo $this->escape($item->milestone_title);?></a>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('tasklist_list_col_tasks')) : ?>

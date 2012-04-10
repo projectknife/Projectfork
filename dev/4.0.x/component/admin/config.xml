@@ -71,6 +71,33 @@
 		</field>
     </fieldset>
     
+    <fieldset name="tasklist_list" label="COM_PROJECTFORK_CONFIG_TASKLIST_LIST_LABEL" description="COM_PROJECTFORK_CONFIG_TASKLIST_LIST_DESC">
+        <field name="tasklist_list_col_author" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_LABEL" default="1">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+		<field name="tasklist_list_col_project" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_PROJECT_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_PROJECT_LABEL" default="1">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+		<field name="tasklist_list_col_milestone" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_MILESTONE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_MILESTONE_LABEL" default="1">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+		<field name="tasklist_list_col_tasks" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_TASKS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_TASKS_LABEL" default="1">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+		<field name="tasklist_list_col_created" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_LABEL" default="1">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+		<field name="tasklist_list_col_access" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_LABEL" default="1">
+		    <option value="0">JHIDE</option>
+			<option value="1">JSHOW</option>
+		</field>
+    </fieldset>
+    
     <fieldset name="list_default_parameters" label="COM_PROJECTFORK_CONFIG_SHARED_LIST_LABEL" description="COM_PROJECTFORK_CONFIG_SHARED_LIST_LABEL_DESC">
 		<field name="show_pagination" type="list" default="2" label="JGLOBAL_Pagination_Label" description="JGLOBAL_Pagination_Desc">
 		    <option value="0">JHIDE</option>
