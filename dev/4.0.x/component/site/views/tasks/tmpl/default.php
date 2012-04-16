@@ -27,7 +27,6 @@ $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user	    = JFactory::getUser();
 $uid	    = $user->get('id');
-$message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));
 
 $action_count = count($this->actions);
 ?>
@@ -46,17 +45,6 @@ $action_count = count($this->actions);
 		<form id="adminForm" name="adminForm" method="post" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=tasks'); ?>">
 
 			<fieldset class="filters">
-				<?php if($action_count) : ?>
-                    <span class="display-bulk-actions">
-                        <select onchange="if(document.adminForm.boxchecked.value==0 & this.selectedIndex > 0){alert('<?php echo $message;?>');}
-                                          else{Joomla.submitbutton(this.options[this.selectedIndex].value)}"
-                                size="1" class="inputbox" name="bulk" id="bulk"
-                        >
-            		        <option value=""><?php echo JText::_('COM_PROJECTFORK_BULK_ACTIONS');?></option>
-                            <?php echo JHtml::_('select.options', $this->actions);?>
-            	        </select>
-            	    </span>
-                <?php endif;?>
 				<span class="display-milestone">
 						<select onchange="this.form.submit()" size="1" class="inputbox" name="milestone" id="milestone">
 						<option selected="selected" value="">Select Milestone</option>
@@ -101,12 +89,12 @@ $action_count = count($this->actions);
                        			<input type="checkbox" onclick="checkAll(<?php echo count($this->items);?>);" value="" name="toggle" />
                        		</th>
                         <?php endif; ?>
-    					<th id="tableOrdering1" class="list-title">
+                        <th id="tableOrdering1" class="list-actions" width="1%">
+    	               	    <?php echo $this->menu->bulkItems($this->actions); ?>
+    	               	</th>
+    					<th id="tableOrdering2" class="list-title">
     	               		<?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                         </th>
-    					<th id="tableOrdering2" class="list-actions span1">
-    	               	    &nbsp;
-    	               	</th>
                         <?php if($this->params->get('task_list_col_project')) : ?>
     	               		<th id="tableOrdering3" class="list-project">
                                 <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'project_title', $list_dir, $list_order); ?>
@@ -173,30 +161,19 @@ $action_count = count($this->actions);
                                     <?php echo JHtml::_('grid.id', $i, $item->id); ?>
     	               		    </td>
                             <?php endif; ?>
+                            <td class="list-actions">
+                                <?php
+                                echo $this->menu->start()
+                                   . $this->menu->itemEdit('taskform', $item->id, ($canEdit || $canEditOwn))
+                                   . $this->menu->itemTrash('tasks', $i, ($canEdit || $canEditOwn))
+                                   . $this->menu->end();
+                                ?>
+    	               		</td>
     	               		<td class="list-title">
-    	               		    <?php if ($item->checked_out) : ?><i class="icon-lock"></i><?php endif; ?>
+    	               		    <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                                 <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=task&id='.intval($item->id).':'.$item->alias);?>">
                                     <?php echo $this->escape($item->title);?>
                                 </a>
-    	               		</td>
-    	               		<td class="list-actions">
-    	               			<div class="btn-group">
-    	               			    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
-    	               			    <ul class="dropdown-menu">
-    	               			        <?php if($canEdit || $canEditOwn) : ?>
-                                        <li>
-                                           <a href="<?php echo JRoute::_('index.php?option=com_projectfork&task=taskform.edit&id='.intval($item->id).':'.$item->alias);?>">
-                                               <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
-                                           </a>
-                                        </li>
-                                        <?php endif; ?>
-    	               			        <li>
-                                           <a href="#">
-                                               <?php echo JText::_('COM_PROJECTFORK_ACTION_TRASH');?>
-                                           </a>
-                                        </li>
-    	               			    </ul>
-    	               			</div>
     	               		</td>
                             <?php if($this->params->get('task_list_col_project')) : ?>
         	               		<td class="list-project">
@@ -250,7 +227,7 @@ $action_count = count($this->actions);
         		               		?>
         	               		</td>
                             <?php endif; ?>
-                            <?php if($this->params->get('tasklist_list_col_access')) : ?>
+                            <?php if($this->params->get('task_list_col_access')) : ?>
     	               		    <td class="list-access">
         		               		<?php echo $this->escape($item->access_level);?>
         	               		</td>

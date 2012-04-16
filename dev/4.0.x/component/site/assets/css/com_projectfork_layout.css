@@ -1,5 +1,11 @@
 /* Projectfork Layout CSS */
 
+/* Basic HTML */
+#projectfork ul li
+{
+    list-style: none;
+}
+
 /* Recent Activity Module (Activity Stream) */
 .activity-list .list-type,
 .activity-list .list-action,

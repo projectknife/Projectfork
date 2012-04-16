@@ -62,6 +62,9 @@ class ProjectforkController extends JController
         $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/com_projectfork.js');
 
 
+        JHTML::_('behavior.tooltip');
+
+
         $cachable = true;
         $safeurlparams = array('id' => 'INT',
                                'cid' => 'ARRAY',

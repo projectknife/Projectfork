@@ -28,6 +28,7 @@ jimport('joomla.application.component.controller');
 
 require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'helpers'.DS.'projectfork.php');
 require_once(JPATH_COMPONENT.DS.'helpers'.DS.'toolbar.php');
+require_once(JPATH_COMPONENT.DS.'helpers'.DS.'contextmenu.php');
 
 
 // Add include paths
