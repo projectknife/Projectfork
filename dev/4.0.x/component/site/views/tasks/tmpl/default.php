@@ -39,12 +39,12 @@ $action_count = count($this->actions);
     <?php endif; ?>
 
     <?php echo $this->toolbar;?>
-    
-    
+
+
 	<div class="cat-items">
-    
+
 		<form id="adminForm" name="adminForm" method="post" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=tasks'); ?>">
-        
+
 			<fieldset class="filters">
 				<?php if($action_count) : ?>
                     <span class="display-bulk-actions">
@@ -129,7 +129,7 @@ $action_count = count($this->actions);
                         <?php endif; ?>
                         <?php if($this->params->get('task_list_col_author')) : ?>
         					<th id="tableOrdering7" class="list-author">
-        						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PRIORITY', 'author_name', $list_dir, $list_order); ?>
+        						<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'author_name', $list_dir, $list_order); ?>
         					</th>
                         <?php endif; ?>
                         <?php if($this->params->get('task_list_col_created')) : ?>
@@ -154,7 +154,7 @@ $action_count = count($this->actions);
                         <?php endif; ?>
     				</tr>
     			</thead>
-		
+
     			<tbody>
                     <?php
                     $k = 0;
@@ -174,9 +174,7 @@ $action_count = count($this->actions);
     	               		    </td>
                             <?php endif; ?>
     	               		<td class="list-title">
-    	               		    <?php if ($item->checked_out) : ?>
-            						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'milestones.', $canCheckin); ?>
-            					<?php endif; ?>
+    	               		    <?php if ($item->checked_out) : ?><i class="icon-lock"></i><?php endif; ?>
                                 <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=task&id='.intval($item->id).':'.$item->alias);?>">
                                     <?php echo $this->escape($item->title);?>
                                 </a>

@@ -158,7 +158,7 @@ class ProjectforkModelTasks extends JModelList
 			$this->getState(
 				'list.select',
 				'a.id, a.project_id, a.list_id, a.milestone_id, a.catid, a.title, '
-                . 'a.description, a.alias, a.checked_out, '
+                . 'a.description, a.alias, a.checked_out, a.attribs, a.priority, '
 				. 'a.checked_out_time, a.state, a.access, a.created, a.created_by, '
 				. 'a.start_date, a.end_date, a.ordering'
 			)
@@ -208,11 +208,6 @@ class ProjectforkModelTasks extends JModelList
 		}
 		elseif ($published === '') {
 			$query->where('(a.state = 0 OR a.state = 1)');
-		}
-
-        // Filter by access level.
-		if ($access = $this->getState('filter.access')) {
-			$query->where('a.access = ' . (int) $access);
 		}
 
         // Filter by task list
