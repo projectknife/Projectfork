@@ -46,7 +46,8 @@ class ProjectforkController extends JController
             $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap.min.css');
             $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap-responsive.min.css');
 
-            $doc->addScript('https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js');
+            $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/jquery.min.js');
+            $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/jquery.noconflict.js');
             $doc->addScript($uri->base(true).'/components/com_projectfork/assets/bootstrap/js/bootstrap.min.js');
         }
 
