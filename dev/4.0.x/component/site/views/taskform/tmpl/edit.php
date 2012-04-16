@@ -74,18 +74,17 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
 			    <?php echo $this->form->getLabel('title'); ?>
 			    <?php echo $this->form->getInput('title'); ?>
 			</div>
-            <div class="formelm">
-		        <?php echo $this->form->getLabel('description'); ?>
-			    <?php echo $this->form->getInput('description'); ?>
-		    </div>
 			<div class="formelm-buttons">
-			    <button type="button" onclick="Joomla.submitbutton('taskform.save')">
+			    <button class="btn btn-primary" type="button" onclick="Joomla.submitbutton('taskform.save')">
 				    <?php echo JText::_('JSAVE') ?>
 			    </button>
-			    <button type="button" onclick="Joomla.submitbutton('taskform.cancel')">
+			    <button class="btn" type="button" onclick="Joomla.submitbutton('taskform.cancel')">
 				    <?php echo JText::_('JCANCEL') ?>
 			    </button>
 			</div>
+
+            <?php echo $this->form->getInput('description'); ?>
+
 	</fieldset>
 
     <?php echo JHtml::_('tabs.start', 'taskform', array('useCookie' => 'true')) ;?>

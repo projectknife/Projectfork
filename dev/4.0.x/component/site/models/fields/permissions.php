@@ -211,7 +211,7 @@ class JFormFieldPermissions extends JFormField
 				// Build the HTML for the item.
 				$html[] = '	<li class="usergroup '.$li_class.'">';
                 $html[] = '     <div style="float:left">';
-                $html[] = '         <button id="'.$btn_id.'" type="button" '.$btn_disabled.' onclick="'.$btn_js.'" class="usergroup_btn">Set Permissions</button>';
+                $html[] = '         <button id="'.$btn_id.'" type="button" '.$btn_disabled.' onclick="'.$btn_js.'" class="usergroup_btn btn">Set Permissions</button>';
                 $html[] = '     </div>';
                 $html[] = '     <div style="float:left">';
 				$html[] = '		    '.$cb;
@@ -219,7 +219,7 @@ class JFormFieldPermissions extends JFormField
 				$html[] = '		        '.str_repeat('<span class="gi">|&mdash;</span>', $item->level).$item->text;
 				$html[] = '		    </label>';
                 $html[] = '     </div>';
-                $html[] = '		<div class="clr"></div>';
+                $html[] = '		<div class="clr" style="clear:both;"></div>';
 				$html[] = '		<div id="'.$div_id.'"'.$div_style.'>';
 				$html[] = '		<table class="group-rules">';
                 $html[] = '         <thead>';

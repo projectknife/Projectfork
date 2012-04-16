@@ -113,23 +113,17 @@ class JFormFieldProject extends JFormField
 
 
 		// Create a dummy text field with the project title.
-		$html[] = '<div class="fltlft">';
 		$html[] = '	<input type="text" id="'.$this->id.'_name"'
                 . ' value="'.htmlspecialchars($table->title, ENT_COMPAT, 'UTF-8').'"'
                 . ' disabled="disabled"'.$attr.' />';
-		$html[] = '</div>';
 
 		// Create the project select button.
-		$html[] = '<div class="button2-left">';
-		$html[] = '  <div class="blank">';
 		if ($this->element['readonly'] != 'true') {
-			$html[] = '		<a class="modal_'.$this->id.'" title="'.JText::_('COM_PROJECTFORK_SELECT_PROJECT').'"'
+			$html[] = '		<a class="modal_'.$this->id.' btn" title="'.JText::_('COM_PROJECTFORK_SELECT_PROJECT').'"'
                     . ' href="'.$link.'"'
                     . ' rel="{handler: \'iframe\', size: {x: 800, y: 500}}">';
 			$html[] = '			'.JText::_('COM_PROJECTFORK_SELECT_PROJECT').'</a>';
 		}
-		$html[] = '  </div>';
-		$html[] = '</div>';
 
 		// Create the real field, hidden, that stored the project id.
 		$html[] = '<input type="hidden" id="'.$this->id.'_id" name="'.$this->name.'" value="'.(int) $this->value.'" />';

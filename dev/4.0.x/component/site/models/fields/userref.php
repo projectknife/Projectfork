@@ -105,22 +105,17 @@ class JFormFieldUserRef extends JFormFieldUser
 		}
 
 		// Create a dummy text field with the user name.
-		$html[] = '<div class="fltlft">';
 		$html[] = '	<input type="text" id="' . $this->id . '_name"' . ' value="' . htmlspecialchars($table->name, ENT_COMPAT, 'UTF-8') . '"'
-			. ' disabled="disabled"' . $attr . ' />';
-		$html[] = '</div>';
+			    . ' disabled="disabled"' . $attr . ' />';
+
 
 		// Create the user select button.
-		$html[] = '<div class="button2-left">';
-		$html[] = '  <div class="blank">';
 		if ($this->element['readonly'] != 'true')
 		{
-			$html[] = '		<a class="modal_' . $this->id . '" title="' . JText::_('JLIB_FORM_CHANGE_USER') . '"' . ' href="' . $link . '"'
+			$html[] = '		<a class="modal_' . $this->id . ' btn" title="' . JText::_('JLIB_FORM_CHANGE_USER') . '"' . ' href="' . $link . '"'
 				. ' rel="{handler: \'iframe\', size: {x: 800, y: 500}}">';
 			$html[] = '			' . JText::_('JLIB_FORM_CHANGE_USER') . '</a>';
 		}
-		$html[] = '  </div>';
-		$html[] = '</div>';
 
 		// Create the real field, hidden, that stored the user id.
 		$html[] = '<input type="hidden" id="' . $this->id . '_id" name="' . $this->name . '" value="' . (int) $this->value . '" />';
@@ -129,15 +124,11 @@ class JFormFieldUserRef extends JFormFieldUser
         $js_clear = 'document.id(\''.$this->id.'_name\').value = \'\';'
               . 'document.id(\''.$this->id.'_id\').value = \'0\';';
 
-        $html[] = '<div class="button2-left">';
-		$html[] = '  <div class="blank">';
 		if ($this->element['readonly'] != 'true')
 		{
-			$html[] = '		<a onclick="'.$js_clear.'">';
+			$html[] = '		<a onclick="'.$js_clear.'" class="btn">';
 			$html[] = '		' . JText::_('COM_PROJECTFORK_FIELD_CLEAR_LABEL') . '</a>';
 		}
-		$html[] = '  </div>';
-		$html[] = '</div>';
 
 
 		return implode("\n", $html);
