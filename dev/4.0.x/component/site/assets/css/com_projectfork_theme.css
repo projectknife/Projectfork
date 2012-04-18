@@ -1,14 +1,26 @@
 /* Projectfork Theme CSS */
 
 /* Due Date Module */
-.overdue {
+#projectfork .overdue {
 	color: red;
 }
 
 /* Calendar Module */
-.today{
+#projectfork .today{
 	background: #FFFFCC;
 }
-.calendar-weekend{
+#projectfork .calendar-weekend{
 	background: #EEE;
+}
+
+/* Context and Bulk action menu */
+#projectfork .btn-group ul li a,
+#projectfork .btn-group ul li a:link,
+#projectfork .btn-group ul li a:visited
+{
+    color:#000;
+}
+#projectfork .btn-group ul li a:hover
+{
+    background-color:#ccc;
 }

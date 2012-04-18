@@ -7,29 +7,29 @@
 }
 
 /* Recent Activity Module (Activity Stream) */
-.activity-list .list-type,
-.activity-list .list-action,
-.activity-list .list-owner,
-.activity-list .list-time{
+#projectfork .activity-list .list-type,
+#projectfork .activity-list .list-action,
+#projectfork .activity-list .list-owner,
+#projectfork .activity-list .list-time{
 	width: 15%;
 }
 
 /* Current Projects Module */
-.project-list .list-milestones,
-.project-list .list-tasks{
+#projectfork .project-list .list-milestones,
+#projectfork .project-list .list-tasks{
 	width: 5%;
 }
 
 /* Calendar Module */
-.calendar-weekday,
-.calendar-weekend{
+#projectfork .calendar-weekday,
+#projectfork .calendar-weekend{
 	width: 14.3%;
 	padding: 5px;
 }
-.calendar-day{
+#projectfork .calendar-day{
 	height: 80px;
 }
-.calendar-item{
+#projectfork .calendar-item{
 	white-space: nowrap;
 	font-size: 10px;
 	letter-spacing: -0.02em;

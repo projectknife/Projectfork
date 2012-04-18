@@ -1,7 +1,7 @@
 /* Projectfork Icons CSS */
 
 /* Recent Activity (Activity Stream) */
-.list-type span{
+#projectfork .list-type span{
 	display: block;
 	padding: 4px 10px;
 	margin: 0 auto;
@@ -13,21 +13,21 @@
 	font-weight: bold;
 	text-shadow: 0 1px 1px #000;
 }
-.type-comment{
+#projectfork .type-comment{
 	background: blue;
 }
-.type-file{
+#projectfork .type-file{
 	background: green;
 }
-.type-milestone{
+#projectfork .type-milestone{
 	background: purple;
 }
-.type-project{
+#projectfork .type-project{
 	background: black;
 }
-.type-task{
+#projectfork .type-task{
 	background: red;
 }
-.type-task-list{
+#projectfork .type-task-list{
 	background: orange;
 }
