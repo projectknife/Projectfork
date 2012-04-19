@@ -42,6 +42,7 @@ class ProjectforkViewTasklists extends JView
         $actions    = $this->getActions();
         $toolbar    = $this->getToolbar();
         $canDo      = ProjectforkHelper::getActions();
+        $menu       = new ProjectforkHelperContextMenu();
 
 
         // Escape strings for HTML output
@@ -65,6 +66,7 @@ class ProjectforkViewTasklists extends JView
         $this->assignRef('toolbar',    $toolbar);
         $this->assignRef('user',       $user);
         $this->assignRef('canDo',      $canDo);
+        $this->assignRef('menu',       $menu);
 
 
         // Prepare the document
