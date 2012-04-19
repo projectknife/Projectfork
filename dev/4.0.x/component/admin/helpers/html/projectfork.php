@@ -139,4 +139,23 @@ abstract class JHtmlProjectfork
 
         return $html;
     }
+
+
+    /**
+     * Returns priority select list option objects
+     *
+     * @return   array   $options    The object list
+	 */
+    static function priorityOptions()
+    {
+        $options = array();
+
+        $options[] =  JHtml::_('select.option', '0', JText::_('COM_PROJECTFORK_PRIORITY_VERY_LOW'));
+        $options[] =  JHtml::_('select.option', '1', JText::_('COM_PROJECTFORK_PRIORITY_LOW'));
+        $options[] =  JHtml::_('select.option', '2', JText::_('COM_PROJECTFORK_PRIORITY_MEDIUM'));
+        $options[] =  JHtml::_('select.option', '3', JText::_('COM_PROJECTFORK_PRIORITY_HIGH'));
+        $options[] =  JHtml::_('select.option', '4', JText::_('COM_PROJECTFORK_PRIORITY_VERY_HIGH'));
+
+        return $options;
+    }
 }

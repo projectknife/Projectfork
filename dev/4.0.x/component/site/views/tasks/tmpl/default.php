@@ -70,9 +70,9 @@ $action_count = count($this->actions);
 					</select>
 				</span>
 				<span class="display-priority">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="priority" id="priority">
-						<option selected="selected" value="">Select Priority</option>
-						<option value="0">All</option>
+						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_priority" id="filter_priority">
+						<option selected="selected" value=""><?php echo JText::_('JOPTION_SELECT_PRIORITY');?></option>
+						<?php echo JHtml::_('select.options', JHtml::_('projectfork.priorityOptions'), 'value', 'text', $this->state->get('filter.priority'));?>
 					</select>
 				</span>
                 <?php if ($this->params->get('show_pagination_limit')) : ?>

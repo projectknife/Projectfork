@@ -131,6 +131,9 @@ class ProjectforkModelTasks extends JModelList
         $milestone = $this->getUserStateFromRequest('task.filter.milestone', 'filter_milestone', '');
         $this->setState('filter.milestone', $milestone);
 
+        $priority = $this->getUserStateFromRequest('task.filter.priority', 'filter_priority', '');
+        $this->setState('filter.priority', $priority);
+
 		$this->setState('filter.access', true);
 
         $value = JRequest::getString('filter_search', '');
@@ -251,6 +254,12 @@ class ProjectforkModelTasks extends JModelList
 		if (is_numeric($author_id)) {
 			$type = $this->getState('filter.author_id.include', true) ? '= ' : '<>';
 			$query->where('a.created_by '.$type.(int) $author_id);
+		}
+
+        // Filter by priority
+		$priority = $this->getState('filter.priority');
+		if (is_numeric($priority)) {
+			$query->where('a.priority = '.(int) $priority);
 		}
 
         // Filter by assigned user
