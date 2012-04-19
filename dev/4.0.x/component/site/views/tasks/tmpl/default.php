@@ -165,10 +165,12 @@ $action_count = count($this->actions);
                             <?php endif; ?>
                             <td class="list-actions">
                                 <?php
-                                echo $this->menu->start()
-                                   . $this->menu->itemEdit('taskform', $item->id, ($canEdit || $canEditOwn))
-                                   . $this->menu->itemTrash('tasks', $i, ($canEdit || $canEditOwn))
-                                   . $this->menu->end();
+                                    $this->menu->start();
+                                    $this->menu->itemEdit('taskform', $item->id, ($canEdit || $canEditOwn));
+                                    $this->menu->itemTrash('tasks', $i, ($canEdit || $canEditOwn));
+                                    $this->menu->end();
+
+                                    echo $this->menu->render();
                                 ?>
     	               		</td>
     	               		<td class="list-title">
