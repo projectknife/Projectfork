@@ -26,6 +26,43 @@ defined('_JEXEC') or die;
 
 class ProjectforkHelperContextMenu
 {
+    protected $items;
+
+
+    public function __construct()
+    {
+        $this->items = array();
+    }
+
+
+    protected function addItem($html)
+    {
+        $this->items[] = $html;
+    }
+
+
+    public function render()
+    {
+        if(count($this->items) <= 2) {
+            $this->items = array();
+
+            $html = array();
+            $html[] = '<div class="btn-group">';
+            $html[] = '    <a class="btn disabled" href="javascript: void(0);"><span class="caret"></span></a>';
+            $html[] = '</div>';
+
+            return implode("\n", $html);
+        }
+        else {
+            $html = implode("\n", $this->items);
+
+            $this->items = array();
+
+            return $html;
+        }
+    }
+
+
     public function start()
     {
         $html = array();
@@ -34,11 +71,11 @@ class ProjectforkHelperContextMenu
         $html[] = '    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>';
         $html[] = '    <ul class="dropdown-menu">';
 
-        return implode("\n", $html);
+        $this->addItem(implode("\n", $html));
     }
 
 
-    public function itemLink($icon, $title, $action)
+    public function itemLink($icon, $title, $action, $return = false)
     {
         $html = array();
 
@@ -46,11 +83,13 @@ class ProjectforkHelperContextMenu
         $html[] = '            <a href="'.$action.'"><i class="'.$icon.'"></i> '.JText::_($title).'</a>';
         $html[] = '        </li>';
 
-        return implode("\n", $html);
+        if($return) return implode("\n", $html);
+
+        $this->addItem(implode("\n", $html));
     }
 
 
-    public function itemJavaScript($icon, $title, $action)
+    public function itemJavaScript($icon, $title, $action, $return = false)
     {
         $html = array();
 
@@ -58,13 +97,15 @@ class ProjectforkHelperContextMenu
         $html[] = '            <a onclick="'.$action.'" href="javascript:void(0);"><i class="'.$icon.'"></i> '.JText::_($title).'</a>';
         $html[] = '        </li>';
 
-        return implode("\n", $html);
+        if($return) return implode("\n", $html);
+
+        $this->addItem(implode("\n", $html));
     }
 
 
     public function itemDivider()
     {
-        return '        <li class="divider"></li>';
+        $this->addItem('        <li class="divider"></li>');
     }
 
 
@@ -97,6 +138,16 @@ class ProjectforkHelperContextMenu
         $message = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));
         $html    = array();
 
+
+        if(count($actions) == 0) {
+            $html[] = '<div class="btn-group" id="bulk-action-menu">';
+            $html[] = '    <a class="btn btn-primary disabled" href="javascript: void(0);"><span class="caret"></span></a>';
+            $html[] = '</div>';
+
+            return implode("\n", $html);
+        }
+
+
         $html[] = '<div class="btn-group" id="bulk-action-menu">';
         $html[] = '    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>';
         $html[] = '    <ul class="dropdown-menu">';
@@ -117,7 +168,7 @@ class ProjectforkHelperContextMenu
             if(strpos($action->value, '.delete') !== false)    $icon = 'icon-remove';
             if(strpos($action->value, '.checkin') !== false)   $icon = 'icon-ok-sign';
 
-            $html[] = $this->itemJavaScript($icon, $action->text, $js);
+            $html[] = $this->itemJavaScript($icon, $action->text, $js, true);
         }
 
         $html[] = '    </ul>';
