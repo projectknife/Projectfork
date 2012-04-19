@@ -20,35 +20,27 @@
 * along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
 **/
 
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die;
+
+jimport('joomla.application.component.controller');
 
 
-jimport('joomla.application.component.view');
-
-
-class ProjectforkViewUsers extends JView
+class ProjectforkControllerUsers extends JController
 {
-    protected $items;
-    protected $pagination;
-    protected $state;
-
-
-	/**
-	 * Display the view
-     *
+    /**
+	 * Method to get a model object, loading it if required.
+	 *
+	 * @param	string	$name	The model name. Optional.
+	 * @param	string	$prefix	The class prefix. Optional.
+	 * @param	array	$config	Configuration array for model. Optional.
+	 *
+	 * @return	object	The model.
 	 */
-	public function display($tpl = null)
+	public function &getModel($name = 'Users', $prefix = 'ProjectforkModel', $config = array('ignore_request' => true))
 	{
-        $this->items	  = $this->get('Items');
-		$this->pagination = $this->get('Pagination');
-		$this->state	  = $this->get('State');
+		$model = parent::getModel($name, $prefix, $config);
 
-        // Check for errors.
-		if (count($errors = $this->get('Errors'))) {
-			JError::raiseError(500, implode("\n", $errors));
-			return false;
-		}
-
-        parent::display($tpl);
+		return $model;
 	}
+
 }

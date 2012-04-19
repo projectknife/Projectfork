@@ -2,7 +2,7 @@
 /**
 * @package   Projectfork
 * @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
+* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 *
 * This file is part of Projectfork.
 *
@@ -23,32 +23,15 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 
-jimport('joomla.application.component.view');
+require_once(JPATH_ADMINISTRATOR.'/components/com_users/models/users.php');
 
 
-class ProjectforkViewUsers extends JView
+/**
+ * This models supports retrieving lists of users.
+ * Extends on the backend version of com_users
+ *
+ */
+class ProjectforkModelUsers extends UsersModelUsers
 {
-    protected $items;
-    protected $pagination;
-    protected $state;
 
-
-	/**
-	 * Display the view
-     *
-	 */
-	public function display($tpl = null)
-	{
-        $this->items	  = $this->get('Items');
-		$this->pagination = $this->get('Pagination');
-		$this->state	  = $this->get('State');
-
-        // Check for errors.
-		if (count($errors = $this->get('Errors'))) {
-			JError::raiseError(500, implode("\n", $errors));
-			return false;
-		}
-
-        parent::display($tpl);
-	}
 }
