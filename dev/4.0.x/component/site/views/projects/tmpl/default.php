@@ -30,7 +30,6 @@ $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user	    = JFactory::getUser();
 $uid	    = $user->get('id');
-$message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));
 
 $action_count = count($this->actions);
 ?>
@@ -48,42 +47,30 @@ $action_count = count($this->actions);
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=projects'); ?>" method="post">
 
             <fieldset class="filters">
-           	    <?php if($action_count) : ?>
-                    <div class="display-bulk-actions">
-                        <select onchange="if(document.adminForm.boxchecked.value==0 & this.selectedIndex > 0){alert('<?php echo $message;?>');}
-                                          else{Joomla.submitbutton(this.options[this.selectedIndex].value)}"
-                                size="1" class="inputbox" name="bulk" id="bulk"
-                        >
-            		        <option value=""><?php echo JText::_('COM_PROJECTFORK_BULK_ACTIONS');?></option>
-                            <?php echo JHtml::_('select.options', $this->actions);?>
-            	        </select>
-            	    </div>
-                <?php endif;?>
-                <?php if($this->params->get('filter_field')) : ?>
-                    <div class="filter-search">
-    			        <label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
+                <?php if($this->params->get('filter_fields')) : ?>
+                    <span class="filter-search">
     			        <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
     			        <button type="submit" class="btn"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
-    			        <button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
-    		        </div>
-                <?php endif; ?>
-                <?php if($this->params->get('filter_state') && $this->user->get('id')) : ?>
-    				<div class="display-published">
-    				    <select name="filter_published" class="inputbox" onchange="this.form.submit()">
-    				        <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-    				        <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'),
-                                                'value', 'text', $this->state->get('filter.published'),
-                                                true
-                                               );
-                            ?>
-    				    </select>
-    				</div>
+    			        <button type="button" class="btn" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
+    		        </span>
+                    <?php if ($this->user->authorise('core.edit.state', 'com_projectfork') || $this->user->authorize('project.edit.state', 'com_projectfork')
+                          ||  $this->user->authorise('core.edit', 'com_projectfork') || $this->user->authorize('project.edit', 'com_projectfork')) : ?>
+        				<span class="filter-published">
+        				    <select name="filter_published" class="inputbox" onchange="this.form.submit()">
+        				        <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+        				        <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'),
+                                                    'value', 'text', $this->state->get('filter.published'),
+                                                    true
+                                                   );
+                                ?>
+        				    </select>
+        				</span>
+                    <?php endif; ?>
                 <?php endif; ?>
 				<?php if ($this->params->get('show_pagination_limit')) : ?>
-		            <div class="display-limit">
-			            <?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?>&#160;
+		            <span class="filter-limit">
 			            <?php echo $this->pagination->getLimitBox(); ?>
-		            </div>
+		            </span>
 		        <?php endif; ?>
 			</fieldset>
 
@@ -91,16 +78,16 @@ $action_count = count($this->actions);
                 <thead>
 	                <tr>
                         <?php if($action_count) : ?>
-	               	    <th id="tableOrdering0" class="list-select">
-	               			<input type="checkbox" onclick="checkAll(<?php echo count($this->items);?>);" value="" name="toggle" />
-	               		</th>
+    	               	    <th id="tableOrdering0" class="list-select">
+    	               			<input type="checkbox" onclick="checkAll(<?php echo count($this->items);?>);" value="" name="toggle" />
+    	               		</th>
                         <?php endif; ?>
-	               		<th id="tableOrdering1" class="list-title">
+                        <th id="tableOrdering1" class="list-actions" width="1%">
+    	               	    <?php echo $this->menu->bulkItems($this->actions); ?>
+    	               	</th>
+	               		<th id="tableOrdering2" class="list-title">
                             <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                         </th>
-	               		<th id="tableOrdering2" class="list-actions span1">
-	               			&nbsp;
-	               		</th>
                         <?php if($this->params->get('project_list_col_milestones')) : ?>
 	               		<th id="tableOrdering3" class="list-milestones">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONES', 'milestones', $list_dir, $list_order); ?>
@@ -161,51 +148,46 @@ $action_count = count($this->actions);
                                     <?php echo JHtml::_('grid.id', $i, $item->id); ?>
     	               		    </td>
                             <?php endif; ?>
+                            <td class="list-actions">
+                                <?php
+                                    $this->menu->start();
+                                    $this->menu->itemEdit('projectform', $item->id, ($canEdit || $canEditOwn));
+                                    $this->menu->itemTrash('projects', $i, ($canEdit || $canEditOwn));
+                                    $this->menu->end();
+
+                                    echo $this->menu->render();
+                                ?>
+    	               		</td>
     	               		<td class="list-title">
-    	               		    <?php if ($item->checked_out) : ?>
-            						<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'projects.', $canCheckin); ?>
-            					<?php endif; ?>
                                 <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=dashboard&id='.intval($item->id).':'.$item->alias);?>">
+                                    <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                                     <?php echo $this->escape($item->title);?>
                                 </a>
     	               		</td>
-    	               		<td class="list-actions">
-    	               			<div class="btn-group">
-    	               			    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>
-    	               			    <ul class="dropdown-menu">
-    	               			        <?php if($canEdit || $canEditOwn) : ?>
-                                        <li>
-                                           <a href="<?php echo JRoute::_('index.php?option=com_projectfork&task=projectform.edit&id='.intval($item->id).':'.$item->alias);?>">
-                                               <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
-                                           </a>
-                                        </li>
-                                        <?php endif; ?>
-    	               			        <li>
-                                           <a href="#">
-                                               <?php echo JText::_('COM_PROJECTFORK_ACTION_TRASH');?>
-                                           </a>
-                                        </li>
-    	               			    </ul>
-    	               			</div>
-    	               		</td>
                             <?php if($this->params->get('project_list_col_milestones')) : ?>
         	               		<td class="list-milestones">
-        		               		<a class="btn"><i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?></a>
+        		               		<a class="btn" href="<?php echo JRoute::_('index.php?option=com_projectfork&view=milestones&filter_project='.intval($item->id));?>">
+                                       <i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?>
+                                    </a>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('project_list_col_tasklists')) : ?>
         	               		<td class="list-tasklists">
-        		               		<a class="btn"><i class="icon-ok"></i> <?php echo (int) $item->tasklists;?></a>
+        		               		<a class="btn" href="<?php echo JRoute::_('index.php?option=com_projectfork&view=tasklists&filter_project='.intval($item->id));?>">
+                                       <i class="icon-ok"></i> <?php echo (int) $item->tasklists;?>
+                                    </a>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('project_list_col_tasks')) : ?>
         	               		<td class="list-tasks">
-        		               		<a class="btn"><i class="icon-ok"></i> <?php echo (int) $item->tasks;?></a>
+        		               		<a class="btn" href="<?php echo JRoute::_('index.php?option=com_projectfork&view=tasks&filter_project='.intval($item->id));?>">
+                                       <i class="icon-ok"></i> <?php echo (int) $item->tasks;?>
+                                    </a>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('project_list_col_author')) : ?>
         	               		<td class="list-author">
-        	               			<small><?php echo $this->escape($item->author_name);?></small>
+        	               			<?php echo $this->escape($item->author_name);?>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('project_list_col_created')) : ?>
