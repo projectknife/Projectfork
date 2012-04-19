@@ -36,6 +36,10 @@ class ProjectforkViewTasks extends JView
 	    $items      = $this->get('Items');
         $pagination = $this->get('Pagination');
         $state		= $this->get('State');
+        $milestones = $this->get('Milestones');
+        $lists      = $this->get('TaskLists');
+        $authors    = $this->get('Authors');
+        $assigned   = $this->get('AssignedUsers');
 		$params		= $state->params;
         $null_date  = JFactory::getDbo()->getNullDate();
         $user       = JFactory::getUser();
@@ -67,6 +71,10 @@ class ProjectforkViewTasks extends JView
         $this->assignRef('user',       $user);
         $this->assignRef('canDo',      $canDo);
         $this->assignRef('menu',       $menu);
+        $this->assignRef('milestones', $milestones);
+        $this->assignRef('tasklists',  $lists);
+        $this->assignRef('authors',    $authors);
+        $this->assignRef('assigned',   $assigned);
 
 
         // Prepare the document

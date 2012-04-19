@@ -36,6 +36,8 @@ class ProjectforkController extends JController
 	{
 	    jimport( 'joomla.application.component.helper' );
 
+        JHtml::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/html');
+
         $params = JComponentHelper::getParams('com_projectfork');
 		$doc    = JFactory::getDocument();
         $uri    = JFactory::getURI();

@@ -46,21 +46,27 @@ $action_count = count($this->actions);
 
 			<fieldset class="filters">
 				<span class="display-milestone">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="milestone" id="milestone">
-						<option selected="selected" value="">Select Milestone</option>
-						<option value="0">All</option>
+						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_milestone" id="milestone">
+						    <option value=""><?php echo JText::_('JOPTION_SELECT_MILESTONE');?></option>
+				            <?php echo JHtml::_('select.options', $this->milestones, 'value', 'text', $this->state->get('filter.milestone'));?>
 					</select>
+                    <span class="display-tasklist">
+                        <select name="filter_tasklist" class="inputbox" onchange="this.form.submit()">
+            				<option value=""><?php echo JText::_('JOPTION_SELECT_TASKLIST');?></option>
+            				<?php echo JHtml::_('select.options', $this->tasklists, 'value', 'text', $this->state->get('filter.tasklist'));?>
+            			</select>
+                    </span>
 				</span>
 				<span class="display-user">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="user" id="user">
-						<option selected="selected" value="">Select User</option>
-						<option value="0">All</option>
+						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_assigned_id" id="filter_assigned_id">
+						    <option value=""><?php echo JText::_('JOPTION_SELECT_ASSIGNED_USER');?></option>
+				            <?php echo JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned_id'));?>
 					</select>
 				</span>
 				<span class="display-status">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="status" id="status">
-						<option selected="selected" value="">Select Status</option>
-						<option value="0">All</option>
+						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_published" id="filter_published">
+						    <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+				            <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
 					</select>
 				</span>
 				<span class="display-priority">
@@ -71,14 +77,10 @@ $action_count = count($this->actions);
 				</span>
                 <?php if ($this->params->get('show_pagination_limit')) : ?>
 		            <span class="display-limit">
-			            <?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?>&#160;
+			            <!--<?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?>&#160;-->
 			            <?php echo $this->pagination->getLimitBox(); ?>
 		            </span>
 		        <?php endif; ?>
-
-				<input type="hidden" value="" name="filter_order">
-				<input type="hidden" value="" name="filter_order_Dir">
-				<input type="hidden" value="" name="limitstart">
 			</fieldset>
 
 			<table class="category table table-striped">
@@ -191,8 +193,8 @@ $action_count = count($this->actions);
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('task_list_col_priority')) : ?>
-        	               		<td class="list-tasklist">
-        		               		<a class="btn"><i class="icon-ok"></i> <?php echo (int) $item->priority;?></a>
+        	               		<td class="list-priority">
+        		               		<?php echo JHtml::_('projectfork.priorityToString', $item->priority);?>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('task_list_col_author')) : ?>

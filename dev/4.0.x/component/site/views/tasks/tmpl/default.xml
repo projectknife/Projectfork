@@ -58,12 +58,12 @@
                 <option value="0">JHIDE</option>
 			    <option value="1">JSHOW</option>
 		    </field>
-            <field name="milestone_list_col_sdate" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_LABEL">
+            <field name="task_list_col_sdate" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
 			</field>
-			<field name="milestone_list_col_deadline" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_LABEL">
+			<field name="task_list_col_deadline" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_LABEL">
 				<option value="">JGLOBAL_USE_GLOBAL</option>
 				<option value="0">JHIDE</option>
 				<option value="1">JSHOW</option>
