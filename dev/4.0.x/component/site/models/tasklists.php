@@ -113,6 +113,10 @@ class ProjectforkModelTasklists extends JModelList
         $value = JRequest::getString('filter_search', '');
         $this->setState('filter.search', $value);
 
+        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $this->setState('filter.project', $project);
+        ProjectforkHelper::setActiveProject($project);
+
 		$this->setState('layout', JRequest::getCmd('layout'));
 	}
 
@@ -190,6 +194,12 @@ class ProjectforkModelTasklists extends JModelList
 		    $groups	= implode(',', $user->getAuthorisedViewLevels());
 			$query->where('a.access IN ('.$groups.')');
 		}
+
+        // Filter by project
+        $project = $this->getState('filter.project');
+        if(is_numeric($project) && $project != 0) {
+            $query->where('a.project_id = ' . (int) $project);
+        }
 
         // Filter by published state
 		$published = $this->getState('filter.published');

@@ -63,6 +63,9 @@ $action_count = count($this->actions);
         				    </select>
         				</span>
                     <?php endif; ?>
+                    <span class="filter-project">
+                        <?php echo JHtml::_('projectfork.filterProject');?>
+                    </span>
                 <?php endif; ?>
 				<?php if ($this->params->get('show_pagination_limit')) : ?>
 		            <span class="filter-limit">

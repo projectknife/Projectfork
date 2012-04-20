@@ -139,6 +139,10 @@ class ProjectforkModelTasks extends JModelList
         $value = JRequest::getString('filter_search', '');
         $this->setState('filter.search', $value);
 
+        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $this->setState('filter.project', $project);
+        ProjectforkHelper::setActiveProject($project);
+
 		$this->setState('layout', JRequest::getCmd('layout'));
 	}
 
@@ -345,6 +349,8 @@ class ProjectforkModelTasks extends JModelList
 	 */
 	public function getAuthors()
     {
+        $project = $this->getState('filter.project');
+
 		// Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -353,6 +359,7 @@ class ProjectforkModelTasks extends JModelList
 		$query->select('u.id AS value, u.name AS text');
 		$query->from('#__users AS u');
 		$query->join('INNER', '#__pf_tasks AS a ON a.created_by = u.id');
+        $query->where('a.project_id = ' . (int) $project);
 		$query->group('u.id');
 		$query->order('u.name');
 
@@ -371,6 +378,8 @@ class ProjectforkModelTasks extends JModelList
 	 */
     public function getMilestones()
     {
+        $project = $this->getState('filter.project');
+
         // Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -379,6 +388,7 @@ class ProjectforkModelTasks extends JModelList
 		$query->select('m.id AS value, m.title AS text');
 		$query->from('#__pf_milestones AS m');
 		$query->join('INNER', '#__pf_tasks AS a ON a.milestone_id = m.id');
+        $query->where('a.project_id = ' . (int) $project);
 		$query->group('m.id');
 		$query->order('m.title');
 
@@ -397,6 +407,8 @@ class ProjectforkModelTasks extends JModelList
 	 */
     public function getTaskLists()
     {
+        $project = $this->getState('filter.project');
+
         // Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -405,6 +417,7 @@ class ProjectforkModelTasks extends JModelList
 		$query->select('t.id AS value, t.title AS text');
 		$query->from('#__pf_task_lists AS t');
 		$query->join('INNER', '#__pf_tasks AS a ON a.list_id = t.id');
+        $query->where('a.project_id = ' . (int) $project);
 		$query->group('t.id');
 		$query->order('t.title');
 
@@ -423,6 +436,8 @@ class ProjectforkModelTasks extends JModelList
 	 */
     public function getAssignedUsers()
     {
+        $project = $this->getState('filter.project');
+
         // Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -431,7 +446,9 @@ class ProjectforkModelTasks extends JModelList
 		$query->select('u.id AS value, u.name AS text');
 		$query->from('#__users AS u');
 		$query->join('INNER', '#__pf_ref_users AS a ON a.user_id = u.id');
+		$query->join('INNER', '#__pf_tasks AS a ON t.id = a.item_id');
 		$query->where('a.item_type = '.$db->quote('task'));
+        $query->where('t.project_id = ' . (int) $project);
 		$query->group('u.id');
 		$query->order('u.name');
 

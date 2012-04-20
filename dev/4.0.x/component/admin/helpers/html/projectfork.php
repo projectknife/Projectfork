@@ -79,7 +79,7 @@ abstract class JHtmlProjectfork
 
         $btn_select = '';
         if($can_change) {
-            $btn_select = '<button type="button" class="btn modal" onclick="'.$js_select.'">'.JText::_('JSELECT').'</button>';
+            $btn_select = '<button type="button" class="btn" onclick="'.$js_select.'">'.JText::_('JSELECT').'</button>';
         }
 
 

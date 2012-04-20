@@ -45,36 +45,43 @@ $action_count = count($this->actions);
 		<form id="adminForm" name="adminForm" method="post" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=tasks'); ?>">
 
 			<fieldset class="filters">
-				<span class="display-milestone">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_milestone" id="milestone">
-						    <option value=""><?php echo JText::_('JOPTION_SELECT_MILESTONE');?></option>
-				            <?php echo JHtml::_('select.options', $this->milestones, 'value', 'text', $this->state->get('filter.milestone'));?>
-					</select>
-                    <span class="display-tasklist">
-                        <select name="filter_tasklist" class="inputbox" onchange="this.form.submit()">
-            				<option value=""><?php echo JText::_('JOPTION_SELECT_TASKLIST');?></option>
-            				<?php echo JHtml::_('select.options', $this->tasklists, 'value', 'text', $this->state->get('filter.tasklist'));?>
-            			</select>
+				<?php if($this->params->get('filter_fields')) : ?>
+                    <?php if($this->state->get('filter.project')) : ?>
+                        <span class="display-milestone">
+        						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_milestone" id="milestone">
+        						    <option value=""><?php echo JText::_('JOPTION_SELECT_MILESTONE');?></option>
+        				            <?php echo JHtml::_('select.options', $this->milestones, 'value', 'text', $this->state->get('filter.milestone'));?>
+        					</select>
+                            <span class="display-tasklist">
+                                <select name="filter_tasklist" class="inputbox" onchange="this.form.submit()">
+                    				<option value=""><?php echo JText::_('JOPTION_SELECT_TASKLIST');?></option>
+                    				<?php echo JHtml::_('select.options', $this->tasklists, 'value', 'text', $this->state->get('filter.tasklist'));?>
+                    			</select>
+                            </span>
+        				</span>
+        				<span class="display-user">
+        						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_assigned_id" id="filter_assigned_id">
+        						    <option value=""><?php echo JText::_('JOPTION_SELECT_ASSIGNED_USER');?></option>
+        				            <?php echo JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned_id'));?>
+        					</select>
+        				</span>
+                    <?php endif; ?>
+    				<span class="display-status">
+    						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_published" id="filter_published">
+    						    <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+    				            <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
+    					</select>
+    				</span>
+    				<span class="display-priority">
+    						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_priority" id="filter_priority">
+    						<option selected="selected" value=""><?php echo JText::_('JOPTION_SELECT_PRIORITY');?></option>
+    						<?php echo JHtml::_('select.options', JHtml::_('projectfork.priorityOptions'), 'value', 'text', $this->state->get('filter.priority'));?>
+    					</select>
+    				</span>
+                    <span class="filter-project">
+                        <?php echo JHtml::_('projectfork.filterProject');?>
                     </span>
-				</span>
-				<span class="display-user">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_assigned_id" id="filter_assigned_id">
-						    <option value=""><?php echo JText::_('JOPTION_SELECT_ASSIGNED_USER');?></option>
-				            <?php echo JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned_id'));?>
-					</select>
-				</span>
-				<span class="display-status">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_published" id="filter_published">
-						    <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-				            <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
-					</select>
-				</span>
-				<span class="display-priority">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_priority" id="filter_priority">
-						<option selected="selected" value=""><?php echo JText::_('JOPTION_SELECT_PRIORITY');?></option>
-						<?php echo JHtml::_('select.options', JHtml::_('projectfork.priorityOptions'), 'value', 'text', $this->state->get('filter.priority'));?>
-					</select>
-				</span>
+                <?php endif; ?>
                 <?php if ($this->params->get('show_pagination_limit')) : ?>
 		            <span class="display-limit">
 			            <!--<?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?>&#160;-->
