@@ -25,12 +25,12 @@ defined('_JEXEC') or die;
 
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
+$save_order = ($list_order == 'a.ordering');
 $user	    = JFactory::getUser();
 $uid	    = $user->get('id');
 
 $action_count = count($this->actions);
 ?>
-
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-tasks">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -142,6 +142,12 @@ $action_count = count($this->actions);
                                 <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'access_level', $list_dir, $list_order); ?>
                             </th>
                         <?php endif; ?>
+                        <th width="10%">
+        					<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ORDERING', 'a.ordering', $list_dir, $list_order); ?>
+        					<?php if ($save_order) :?>
+        						<?php echo JHtml::_('grid.order',  $this->items, 'filesave.png', 'tasks.saveorder'); ?>
+        					<?php endif; ?>
+        				</th>
     				</tr>
     			</thead>
 
@@ -150,6 +156,7 @@ $action_count = count($this->actions);
                     $k = 0;
                     foreach($this->items AS $i => $item) :
                         $asset_name = 'com_projectfork.task.'.$item->id;
+                        $ordering	= ($list_order == 'a.ordering');
 
 			            $canCreate	= ($user->authorise('core.create', $asset_name) || $user->authorise('task.create', $asset_name));
 			            $canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('task.edit', $asset_name));
@@ -236,6 +243,23 @@ $action_count = count($this->actions);
         		               		<?php echo $this->escape($item->access_level);?>
         	               		</td>
                             <?php endif; ?>
+                            <td class="list-order">
+            					<?php if ($canChange) : ?>
+            						<?php if ($save_order) :?>
+            							<?php if ($list_dir == 'asc') : ?>
+            								<span><?php echo $this->pagination->orderUpIcon($i, ($item->catid == @$this->items[$i-1]->catid), 'tasks.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
+            								<span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, ($item->catid == @$this->items[$i+1]->catid), 'tasks.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
+            							<?php elseif ($list_dir == 'desc') : ?>
+            								<span><?php echo $this->pagination->orderUpIcon($i, ($item->catid == @$this->items[$i-1]->catid), 'tasks.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
+            								<span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, ($item->catid == @$this->items[$i+1]->catid), 'tasks.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
+            							<?php endif; ?>
+            						<?php endif; ?>
+            						<?php $disabled = ($save_order ?  '' : 'disabled="disabled"'); ?>
+            						<input type="text" name="order[]" size="5" value="<?php echo $item->ordering;?>" <?php echo $disabled ?> class="text-area-order" />
+            					<?php else : ?>
+            						<?php echo $item->ordering; ?>
+            					<?php endif; ?>
+            				</td>
     	               	</tr>
                     <?php
                     $k = 1 - $k;
