@@ -24,9 +24,6 @@
 		<field name="access" type="pfaccesslevel" label="JFIELD_ACCESS_LABEL"
 			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" permissions="true"
         />
-        <field name="created_by" type="user"
-			label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_CREATED_BY_DESC"
-        />
 		<field name="start_date" type="calendar" class="inputbox"
 			label="COM_PROJECTFORK_FIELD_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_START_DATE_OPTIONAL_DESC"
 			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 

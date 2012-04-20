@@ -82,10 +82,6 @@ $params = $this->state->get('params');
     <?php echo JHtml::_('tabs.panel', 'Publishing', 'tasklist-publishing') ;?>
     <fieldset>
         <div class="formelm">
-		    <?php echo $this->form->getLabel('created_by'); ?>
-			<?php echo $this->form->getInput('created_by'); ?>
-		</div>
-        <div class="formelm">
 		    <?php echo $this->form->getLabel('state'); ?>
 			<?php echo $this->form->getInput('state'); ?>
 		</div>

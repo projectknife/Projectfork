@@ -29,9 +29,6 @@
 		<field name="access" type="pfaccesslevel" label="JFIELD_ACCESS_LABEL"
 			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" permissions="true" 
         />
-        <field name="created_by" type="user"
-			label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_CREATED_BY_DESC"
-        />
 		<field name="modified" type="calendar" class="readonly"
 			label="JGLOBAL_FIELD_MODIFIED_LABEL" 
 			size="22" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 

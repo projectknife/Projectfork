@@ -78,10 +78,6 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
     <?php echo JHtml::_('tabs.panel', 'Publishing', 'project-publishing') ;?>
     <fieldset>
         <div class="formelm">
-		    <?php echo $this->form->getLabel('created_by'); ?>
-			<?php echo $this->form->getInput('created_by'); ?>
-		</div>
-        <div class="formelm">
 		    <?php echo $this->form->getLabel('state'); ?>
 			<?php echo $this->form->getInput('state'); ?>
 		</div>

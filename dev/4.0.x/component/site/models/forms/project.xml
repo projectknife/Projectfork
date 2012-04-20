@@ -18,9 +18,6 @@
 			<option value="2">JARCHIVED</option>
 			<option value="-2">JTRASHED</option>
 		</field>
-        <field name="created_by" type="user"
-			label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_CREATED_BY_DESC"
-        />
 		<field name="start_date" type="calendar" class="inputbox"
 			label="COM_PROJECTFORK_FIELD_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_START_DATE_OPTIONAL_DESC"
 			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
