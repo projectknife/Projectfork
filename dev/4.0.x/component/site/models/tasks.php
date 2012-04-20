@@ -446,14 +446,11 @@ class ProjectforkModelTasks extends JModelList
 		$query->select('u.id AS value, u.name AS text');
 		$query->from('#__users AS u');
 		$query->join('INNER', '#__pf_ref_users AS a ON a.user_id = u.id');
-		$query->join('INNER', '#__pf_tasks AS a ON t.id = a.item_id');
+		$query->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id');
 		$query->where('a.item_type = '.$db->quote('task'));
         $query->where('t.project_id = ' . (int) $project);
 		$query->group('u.id');
 		$query->order('u.name');
-
-		// Setup the query
-		$db->setQuery($query->__toString());
 
 		// Return the result
 		return $db->loadObjectList();
