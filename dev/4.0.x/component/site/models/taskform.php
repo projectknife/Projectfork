@@ -86,6 +86,9 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
 		$value->params = new JRegistry;
 		$value->params->loadString($value->attribs);
 
+        // Get assigned users
+        $value->users = $this->getUsers($itemId);
+
 		// Compute selected asset permissions.
 		$user	= JFactory::getUser();
 		$userId	= $user->get('id');

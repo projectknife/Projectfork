@@ -452,6 +452,9 @@ class ProjectforkModelTasks extends JModelList
 		$query->group('u.id');
 		$query->order('u.name');
 
+		// Setup the query
+		$db->setQuery($query->__toString());
+
 		// Return the result
 		return $db->loadObjectList();
     }
