@@ -47,32 +47,38 @@ $action_count = count($this->actions);
 			<fieldset class="filters">
 				<?php if($this->params->get('filter_fields')) : ?>
                     <?php if($this->state->get('filter.project')) : ?>
-                        <span class="display-milestone">
+                        <span class="filter-milestone">
         						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_milestone" id="milestone">
         						    <option value=""><?php echo JText::_('JOPTION_SELECT_MILESTONE');?></option>
         				            <?php echo JHtml::_('select.options', $this->milestones, 'value', 'text', $this->state->get('filter.milestone'));?>
         					</select>
-                            <span class="display-tasklist">
+                            <span class="filter-tasklist">
                                 <select name="filter_tasklist" class="inputbox" onchange="this.form.submit()">
                     				<option value=""><?php echo JText::_('JOPTION_SELECT_TASKLIST');?></option>
                     				<?php echo JHtml::_('select.options', $this->tasklists, 'value', 'text', $this->state->get('filter.tasklist'));?>
                     			</select>
                             </span>
         				</span>
-        				<span class="display-user">
+        				<span class="filter-user">
         						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_assigned_id" id="filter_assigned_id">
         						    <option value=""><?php echo JText::_('JOPTION_SELECT_ASSIGNED_USER');?></option>
         				            <?php echo JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned_id'));?>
         					</select>
         				</span>
+                        <span class="filter-author">
+                            <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
+                				<option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+                				<?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
+                			</select>
+                        </span>
                     <?php endif; ?>
-    				<span class="display-status">
+    				<span class="filter-status">
     						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_published" id="filter_published">
     						    <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
     				            <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
     					</select>
     				</span>
-    				<span class="display-priority">
+    				<span class="filter-priority">
     						<select onchange="this.form.submit()" size="1" class="inputbox" name="filter_priority" id="filter_priority">
     						<option selected="selected" value=""><?php echo JText::_('JOPTION_SELECT_PRIORITY');?></option>
     						<?php echo JHtml::_('select.options', JHtml::_('projectfork.priorityOptions'), 'value', 'text', $this->state->get('filter.priority'));?>
