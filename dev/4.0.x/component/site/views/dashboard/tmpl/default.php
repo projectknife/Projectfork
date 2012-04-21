@@ -1,8 +1,8 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
 *
@@ -22,26 +22,26 @@
 
 defined('_JEXEC') or die;
 ?>
-<div id="projectfork" class="category-list view-dashboard">
+<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-dashboard">
+
+    <?php if ($this->params->get('show_page_heading', 1)) : ?>
+        <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
+    <?php endif; ?>
+
+
     <div class="cat-items">
-    	<div class="page-header">
-    		<div class="btn-toolbar">
-	    		<div class="btn-group">
-			       	<h2>Dashboard</h2> 
-		       	</div>
-	       	 	<div class="btn-group">
-	   	           <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">Project Number One <span class="caret"></span></a>
-	   	           <ul class="dropdown-menu">
-	   	             <li class="active"><a href="#">Project Number One</a></li>
-	   	             <li><a href="#">Project Number Two</a></li>
-	   	             <li><a href="#">Project Number Three</a></li>
-	   	             <li class="divider"></li>
-	   	             <li><a href="#">All Projects</a></li>
-	   	           </ul>
-	   	         </div>
-   	         </div>
-       	</div>
-        <!--Project List Module Begin-->
+
+        <fieldset class="filters">
+            <?php if($this->params->get('filter_fields')) : ?>
+                <span class="filter-project">
+                    <?php echo JHtml::_('projectfork.filterProject');?>
+                </span>
+            <?php endif; ?>
+        </fieldset>
+
+        <?php echo $this->modules->render('pf-dasboard-top', array('style' => 'rounded'), null); ?>
+
+        <!--Project List Module Begin
         <table class="category project-list table table-striped">
            <thead>
                	<tr>
@@ -60,11 +60,11 @@ defined('_JEXEC') or die;
                		Project Number One</a>
                		</td>
                		<td class="list-milestones">
-               		<span title=""><a href="#">5</a></span>				
+               		<span title=""><a href="#">5</a></span>
                		</td>
-               		
+
                		<td class="list-tasks">
-               		<span title=""><a href="#">25</a></span>					
+               		<span title=""><a href="#">25</a></span>
                		</td>
                	</tr>
                <tr class="cat-list-row1">
@@ -73,11 +73,11 @@ defined('_JEXEC') or die;
                		Project Number Two</a>
                		</td>
                		<td class="list-milestones">
-               		<span title=""><a href="#">4</a></span>				
+               		<span title=""><a href="#">4</a></span>
                		</td>
-               		
+
                		<td class="list-tasks">
-               		<span title=""><a href="#">12</a></span>					
+               		<span title=""><a href="#">12</a></span>
                		</td>
                	</tr>
                	<tr class="cat-list-row0">
@@ -86,18 +86,19 @@ defined('_JEXEC') or die;
                			Project Number Three</a>
                			</td>
                			<td class="list-milestones">
-               			<span title=""><a href="#">7</a></span>				
+               			<span title=""><a href="#">7</a></span>
                			</td>
-               			
+
                			<td class="list-tasks">
-               			<span title=""><a href="#">42</a></span>					
+               			<span title=""><a href="#">42</a></span>
                			</td>
                		</tr>
             </tbody>
         </table>
+        -->
         <!--Project List Module End-->
-        
-        <!--Mini Calendar Module Begin-->
+
+        <!--Mini Calendar Module Begin
         <table class="category mini-calendar table table-striped table-bordered table-condensed">
         	<thead>
         		<tr>
@@ -118,7 +119,7 @@ defined('_JEXEC') or die;
         						<span class="date small">18</span>
         					</div>
         					<div class="calendar-events">
-        					
+
         					</div>
         				</div>
         			</td>
@@ -128,7 +129,7 @@ defined('_JEXEC') or die;
         						<span class="date small">19</span>
         					</div>
         					<div class="calendar-events">
-        					
+
         					</div>
         				</div>
         			</td>
@@ -152,7 +153,7 @@ defined('_JEXEC') or die;
         						<span class="date small">21</span>
         					</div>
         					<div class="calendar-events">
-        					
+
         					</div>
         				</div>
         			</td>
@@ -162,7 +163,7 @@ defined('_JEXEC') or die;
         						<span class="date small">22</span>
         					</div>
         					<div class="calendar-events">
-        					
+
         					</div>
         				</div>
         			</td>
@@ -216,7 +217,7 @@ defined('_JEXEC') or die;
         						<span class="date small">26</span>
         					</div>
         					<div class="calendar-events">
-        					
+
         					</div>
         				</div>
         			</td>
@@ -226,7 +227,7 @@ defined('_JEXEC') or die;
         						<span class="date small">27</span>
         					</div>
         					<div class="calendar-events">
-        					
+
         					</div>
         				</div>
         			</td>
@@ -255,7 +256,7 @@ defined('_JEXEC') or die;
         						<span class="date small">29</span>
         					</div>
         					<div class="calendar-events">
-        					
+
         					</div>
         				</div>
         			</td>
@@ -265,7 +266,7 @@ defined('_JEXEC') or die;
         						<span class="date small">30</span>
         					</div>
         					<div class="calendar-events">
-        					
+
         					</div>
         				</div>
         			</td>
@@ -275,16 +276,17 @@ defined('_JEXEC') or die;
         						<span class="date small">1</span>
         					</div>
         					<div class="calendar-events">
-        					
+
         					</div>
         				</div>
         			</td>
         		</tr>
         	</tbody>
         </table>
+        -->
         <!--Mini Calendar Module End-->
-        
-        <!--Due Date Module Begin-->
+
+        <!--Due Date Module Begin
         <table class="category due-list table table-striped">
            <thead>
                	<tr>
@@ -303,11 +305,11 @@ defined('_JEXEC') or die;
                		3 days overdue</span>
                		</td>
                		<td class="list-milestones">
-               		<span title=""><a href="#">Deliver Design</a></span>				
+               		<span title=""><a href="#">Deliver Design</a></span>
                		</td>
-               		
+
                		<td class="list-owner">
-               		<span title=""><a href="#">Kyle Ledbetter</a></span>					
+               		<span title=""><a href="#">Kyle Ledbetter</a></span>
                		</td>
                	</tr>
                <tr class="cat-list-row1">
@@ -316,11 +318,11 @@ defined('_JEXEC') or die;
                		Today</span>
                		</td>
                		<td class="list-milestones">
-               		<span title=""><a href="#">Chop Up HTML/CSS</a></span>				
+               		<span title=""><a href="#">Chop Up HTML/CSS</a></span>
                		</td>
-               		
+
                		<td class="list-owner">
-               		<span title=""><a href="#">Kyle Ledbetter</a></span>					
+               		<span title=""><a href="#">Kyle Ledbetter</a></span>
                		</td>
                	</tr>
                	<tr class="cat-list-row0">
@@ -329,11 +331,11 @@ defined('_JEXEC') or die;
            			Tomorrow</span>
            			</td>
            			<td class="list-milestones">
-           			<span title=""><a href="#">Develop Template</a></span>				
+           			<span title=""><a href="#">Develop Template</a></span>
            			</td>
-           			
+
            			<td class="list-owner">
-           			<span title=""><a href="#">Kyle Ledbetter</a></span>					
+           			<span title=""><a href="#">Kyle Ledbetter</a></span>
            			</td>
            		</tr>
            		<tr class="cat-list-row1">
@@ -342,11 +344,11 @@ defined('_JEXEC') or die;
            			2 days</span>
            			</td>
            			<td class="list-milestones">
-           			<span title=""><a href="#">Program Tasks</a></span>				
+           			<span title=""><a href="#">Program Tasks</a></span>
            			</td>
-           			
+
            			<td class="list-owner">
-           			<span title=""><a href="#">Tobias Kuhn</a></span>					
+           			<span title=""><a href="#">Tobias Kuhn</a></span>
            			</td>
            		</tr>
            		<tr class="cat-list-row0">
@@ -355,18 +357,19 @@ defined('_JEXEC') or die;
            			Next week</span>
            			</td>
            			<td class="list-milestones">
-           			<span title=""><a href="#">Program User Groups</a></span>				
+           			<span title=""><a href="#">Program User Groups</a></span>
            			</td>
-           			
+
            			<td class="list-owner">
-           			<span title=""><a href="#">Tobias Kuhn</a></span>					
+           			<span title=""><a href="#">Tobias Kuhn</a></span>
            			</td>
            		</tr>
             </tbody>
         </table>
+        -->
         <!--Due Date Module End-->
-        
-        <!--Activity Stream Module Begin-->
+
+        <!--Activity Stream Module Begin
         <table class="category activity-list table table-striped">
            <thead>
                	<tr>
@@ -385,16 +388,16 @@ defined('_JEXEC') or die;
 	           		<span class="label label-warning label-file">File</span>
                		</td>
                		<td class="list-item">
-               			<span title=""><a href="#">image_name.jpg</a></span>				
+               			<span title=""><a href="#">image_name.jpg</a></span>
                		</td>
                		<td class="list-action">
-               			<span class="">uploaded by</span>					
+               			<span class="">uploaded by</span>
                		</td>
                		<td class="list-owner">
-               			<span class="">Kyle L.</span>					
+               			<span class="">Kyle L.</span>
                		</td>
                		<td class="list-time">
-               			<span class="">11:55AM</span>					
+               			<span class="">11:55AM</span>
                		</td>
                	</tr>
                	<tr class="cat-list-row1">
@@ -402,16 +405,16 @@ defined('_JEXEC') or die;
            	   		<span class="label label-success label-milestone">Milestone</span>
            			</td>
            			<td class="list-item">
-           				<span title=""><a href="#">Finish Markup</a></span>				
+           				<span title=""><a href="#">Finish Markup</a></span>
            			</td>
            			<td class="list-action">
-           				<span class="">Assigned to</span>					
+           				<span class="">Assigned to</span>
            			</td>
            			<td class="list-owner">
-           				<span class="">Kyle L.</span>					
+           				<span class="">Kyle L.</span>
            			</td>
            			<td class="list-time">
-           				<span class="">10:25AM</span>					
+           				<span class="">10:25AM</span>
            			</td>
            		</tr>
            		<tr class="cat-list-row0">
@@ -419,16 +422,16 @@ defined('_JEXEC') or die;
            				<span class="label label-info label-task">Task</span>
            			</td>
            			<td class="list-item">
-           				<span title=""><a href="#">Dashboard Markup</a></span>				
+           				<span title=""><a href="#">Dashboard Markup</a></span>
            			</td>
            			<td class="list-action">
-           				<span class="">Assigned to</span>					
+           				<span class="">Assigned to</span>
            			</td>
            			<td class="list-owner">
-           				<span class="">Kyle L.</span>					
+           				<span class="">Kyle L.</span>
            			</td>
            			<td class="list-time">
-           				<span class="">9:22AM</span>					
+           				<span class="">9:22AM</span>
            			</td>
            		</tr>
            		<tr class="activity-date cat-list-row1">
@@ -441,16 +444,16 @@ defined('_JEXEC') or die;
        		   		<span class="label label-info label-task-list">Task List</span>
        				</td>
        				<td class="list-item">
-       					<span title=""><a href="#">Markup Tasks</a></span>				
+       					<span title=""><a href="#">Markup Tasks</a></span>
        				</td>
        				<td class="list-action">
-       					<span class="">created by</span>					
+       					<span class="">created by</span>
        				</td>
        				<td class="list-owner">
-       					<span class="">Kyle L.</span>					
+       					<span class="">Kyle L.</span>
        				</td>
        				<td class="list-time">
-       					<span class="">8:52PM</span>					
+       					<span class="">8:52PM</span>
        				</td>
        			</tr>
        			<tr class="cat-list-row1">
@@ -458,16 +461,16 @@ defined('_JEXEC') or die;
        		  		<span class="label label-comment">Comment</span>
        				</td>
        				<td class="list-item">
-       					<span title=""><a href="#">Re: Projects Markup</a></span>				
+       					<span title=""><a href="#">Re: Projects Markup</a></span>
        				</td>
        				<td class="list-action">
-       					<span class="">Posted by</span>					
+       					<span class="">Posted by</span>
        				</td>
        				<td class="list-owner">
-       					<span class="">Tobias K.</span>					
+       					<span class="">Tobias K.</span>
        				</td>
        				<td class="list-time">
-       					<span class="">7:02PM</span>					
+       					<span class="">7:02PM</span>
        				</td>
        			</tr>
        			<tr class="cat-list-row0">
@@ -475,16 +478,16 @@ defined('_JEXEC') or die;
        					<span class="label label-important label-project">Project</span>
        				</td>
        				<td class="list-item">
-       					<span title=""><a href="#">Projectfork 4.0</a></span>				
+       					<span title=""><a href="#">Projectfork 4.0</a></span>
        				</td>
        				<td class="list-action">
-       					<span class="">Created by</span>					
+       					<span class="">Created by</span>
        				</td>
        				<td class="list-owner">
-       					<span class="">Tobias K.</span>					
+       					<span class="">Tobias K.</span>
        				</td>
        				<td class="list-time">
-       					<span class="">9:29AM</span>					
+       					<span class="">9:29AM</span>
        				</td>
        			</tr>
        			<tr class="activity-date cat-list-row1">
@@ -497,16 +500,16 @@ defined('_JEXEC') or die;
        					<span class="label label-comment">Comment</span>
        				</td>
        				<td class="list-item">
-       					<span title=""><a href="#">Re: Projects Markup</a></span>				
+       					<span title=""><a href="#">Re: Projects Markup</a></span>
        				</td>
        				<td class="list-action">
-       					<span class="">Posted by</span>					
+       					<span class="">Posted by</span>
        				</td>
        				<td class="list-owner">
-       					<span class="">Tobias K.</span>					
+       					<span class="">Tobias K.</span>
        				</td>
        				<td class="list-time">
-       					<span class="">7:02PM</span>					
+       					<span class="">7:02PM</span>
        				</td>
        			</tr>
        			<tr class="cat-list-row1">
@@ -514,16 +517,16 @@ defined('_JEXEC') or die;
        					<span class="label label-comment">Comment</span>
        				</td>
        				<td class="list-item">
-       					<span title=""><a href="#">Re: file_name.jpg</a></span>				
+       					<span title=""><a href="#">Re: file_name.jpg</a></span>
        				</td>
        				<td class="list-action">
-       					<span class="">Posted by</span>					
+       					<span class="">Posted by</span>
        				</td>
        				<td class="list-owner">
-       					<span class="">Tobias K.</span>					
+       					<span class="">Tobias K.</span>
        				</td>
        				<td class="list-time">
-       					<span class="">7:00PM</span>					
+       					<span class="">7:00PM</span>
        				</td>
        			</tr>
        			<tr class="cat-list-row0">
@@ -531,20 +534,21 @@ defined('_JEXEC') or die;
    			   		<span class="label label-file">File</span>
    					</td>
    					<td class="list-item">
-   						<span title=""><a href="#">file_name.jpg</a></span>				
+   						<span title=""><a href="#">file_name.jpg</a></span>
    					</td>
    					<td class="list-action">
-   						<span class="">uploaded by</span>					
+   						<span class="">uploaded by</span>
    					</td>
    					<td class="list-owner">
-   						<span class="">Kyle L.</span>					
+   						<span class="">Kyle L.</span>
    					</td>
    					<td class="list-time">
-   						<span class="">11:55AM</span>					
+   						<span class="">11:55AM</span>
    					</td>
    				</tr>
             </tbody>
         </table>
+        -->
         <!--Activity Stream Module End-->
 	</div>
 </div>
