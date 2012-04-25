@@ -75,6 +75,23 @@ abstract class ProjectforkHelperRoute
     }
 
 
+    public static function getMilestoneRoute($id, $project = '')
+    {
+        $link = 'index.php?option=com_projectfork&view=milestone&filter_project='.$project.'&id='.$id;
+
+        $needles = array('id' => array((int) $id));
+
+        if ($item = self::_findItem($needles, 'milestone')) {
+			$link .= '&Itemid='.$item;
+		}
+		elseif ($item = self::_findItem(null, 'milestones')) {
+			$link .= '&Itemid='.$item;
+		}
+
+		return $link;
+    }
+
+
     public static function getTaskListsRoute($project = '', $milestone = '')
     {
         $link  = 'index.php?option=com_projectfork&view=tasklists';
@@ -109,6 +126,27 @@ abstract class ProjectforkHelperRoute
                         );
 
         if ($item = self::_findItem($needles, 'tasks')) {
+			$link .= '&Itemid='.$item;
+		}
+		elseif ($item = self::_findItem(null, 'tasks')) {
+			$link .= '&Itemid='.$item;
+		}
+
+		return $link;
+    }
+
+
+    public static function getTaskRoute($id, $project = '', $milestone = '', $list = '')
+    {
+        $link  = 'index.php?option=com_projectfork&view=task';
+        $link .= '&filter_project='.$project;
+        $link .= '&filter_milestone='.$milestone;
+        $link .= '&filter_tasklist='.$list;
+        $link .= '&id='.$id;
+
+        $needles = array('id' => array((int) $id));
+
+        if ($item = self::_findItem($needles, 'task')) {
 			$link .= '&Itemid='.$item;
 		}
 		elseif ($item = self::_findItem(null, 'tasks')) {

@@ -61,26 +61,21 @@ function ProjectforkBuildRoute(&$query)
         if (!$menuItemGiven) $segments[] = $view;
         unset($query['view']);
 
+        // Get project filter
         if (isset($query['id'])) {
             if (strpos($query['id'], ':') === false) {
-				$db = JFactory::getDbo();
-
-				$aquery = $db->setQuery($db->getQuery(true)
-					         ->select('alias')
-					         ->from('#__pf_projects')
-					         ->where('id='.(int)$query['id'])
-				          );
-
-				$alias = $db->loadResult();
-				$query['id'] = $query['id'].':'.$alias;
+				$query['id'] = ProjectforkMakeSlug($query['id'], '#__pf_projects');
 			}
-
-            $segments[] = $query['id'];
-            unset($query['id']);
         }
         else {
-			return $segments;
+            $query['id'] = ProjectforkMakeSlug('0', '#__pf_projects');
         }
+
+        $segments[] = $query['id'];
+        unset($query['id']);
+
+
+        return $segments;
     }
 
 
@@ -92,7 +87,7 @@ function ProjectforkBuildRoute(&$query)
 
 
     // Milestones
-    if($view == 'milestones') {
+    if($view == 'milestones' || $view == 'milestone') {
         if (!$menuItemGiven) $segments[] = $view;
         unset($query['view']);
 
@@ -108,6 +103,17 @@ function ProjectforkBuildRoute(&$query)
 
         $segments[] = $query['filter_project'];
         unset($query['filter_project']);
+
+
+        // Get milestone id
+        if ($view == 'milestone' && isset($query['id'])) {
+            if (strpos($query['id'], ':') === false) {
+				$query['id'] = ProjectforkMakeSlug($query['id'], '#__pf_milestones');
+			}
+
+            $segments[] = $query['id'];
+            unset($query['id']);
+        }
 
 
         return $segments;
@@ -153,7 +159,7 @@ function ProjectforkBuildRoute(&$query)
 
 
     // Tasks
-    if($view == 'tasks') {
+    if($view == 'tasks' || $view == 'task') {
         if (!$menuItemGiven) $segments[] = $view;
         unset($query['view']);
 
@@ -198,6 +204,15 @@ function ProjectforkBuildRoute(&$query)
         $segments[] = $query['filter_tasklist'];
         unset($query['filter_tasklist']);
 
+
+        if($view == 'task' && isset($query['id'])) {
+            if (strpos($query['id'], ':') === false) {
+				$query['id'] = ProjectforkMakeSlug($query['id'], '#__pf_tasks');
+			}
+
+            $segments[] = $query['id'];
+            unset($query['id']);
+        }
 
         return $segments;
     }
@@ -272,6 +287,23 @@ function ProjectforkParseRoute($segments)
         if($count >= 1) {
             $vars['filter_project'] = ProjectforkParseSlug($segments[0]);
         }
+        if($count >= 2) {
+            $vars['view'] = 'milestone';
+            $vars['id']   = ProjectforkParseSlug($segments[1]);
+        }
+
+        return $vars;
+    }
+
+
+    // Milestone details
+    if($vars['view'] == 'milestone') {
+        if($count >= 1) {
+            $vars['filter_project'] = ProjectforkParseSlug($segments[0]);
+        }
+        if($count >= 2) {
+            $vars['id'] = ProjectforkParseSlug($segments[1]);
+        }
 
         return $vars;
     }
@@ -300,6 +332,29 @@ function ProjectforkParseRoute($segments)
         }
         if($count >= 3) {
             $vars['filter_tasklist'] = ProjectforkParseSlug($segments[2]);
+        }
+        if($count >= 4) {
+            $vars['view'] = 'task';
+            $vars['id']   = ProjectforkParseSlug($segments[3]);
+        }
+
+        return $vars;
+    }
+
+
+    // Task details
+    if($vars['view'] == 'task') {
+        if($count >= 1) {
+            $vars['filter_project'] = ProjectforkParseSlug($segments[0]);
+        }
+        if($count >= 2) {
+            $vars['filter_milestone'] = ProjectforkParseSlug($segments[1]);
+        }
+        if($count >= 3) {
+            $vars['filter_tasklist'] = ProjectforkParseSlug($segments[2]);
+        }
+        if($count >= 4) {
+            $vars['id'] = ProjectforkParseSlug($segments[3]);
         }
 
         return $vars;

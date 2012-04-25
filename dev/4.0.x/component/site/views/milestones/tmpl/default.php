@@ -160,7 +160,7 @@ $action_count = count($this->actions);
                                 ?>
     	               		</td>
     	               		<td class="list-title">
-                                <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=milestone&id='.intval($item->id).':'.$item->alias);?>">
+                                <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestoneRoute($item->id.':'.$item->alias, $item->project_id.':'.$item->project_alias));?>">
                                     <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                                     <?php echo $this->escape($item->title);?>
                                 </a>
