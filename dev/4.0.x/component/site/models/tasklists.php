@@ -160,7 +160,7 @@ class ProjectforkModelTasklists extends JModelList
 				'list.select',
 				'a.id, a.project_id, a.milestone_id, a.title, a.alias, a.description, '
 				. 'a.checked_out, a.checked_out_time, a.state, a.access, a.created, '
-                . 'a.created_by, a.ordering, a.attribs'
+                . 'a.created_by, a.ordering, a.attribs, p.alias as project_alias, m.alias AS milestone_alias'
 			)
 		);
 		$query->from('#__pf_task_lists AS a');

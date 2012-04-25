@@ -157,7 +157,7 @@ class ProjectforkModelMilestones extends JModelList
 			    'a.id, a.asset_id, a.project_id, a.title, a.alias, a.description, a.created,'
                 . 'a.created_by, a.modified, a.modified_by, a.checked_out,'
                 . 'a.checked_out_time, a.attribs, a.access, a.state, a.start_date,'
-                . 'a.end_date'
+                . 'a.end_date, p.alias AS project_alias'
 			)
 		);
 

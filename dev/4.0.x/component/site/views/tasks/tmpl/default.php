@@ -201,17 +201,27 @@ $action_count = count($this->actions);
     	               		</td>
                             <?php if($this->params->get('task_list_col_project')) : ?>
         	               		<td class="list-project">
-        		               		<a class="btn"><i class="icon-map-marker"></i> <?php echo $this->escape($item->project_title);?></a>
+        		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->project_id.':'.$item->project_alias));?>">
+                                       <i class="icon-map-marker"></i> <?php echo $this->escape($item->project_title);?>
+                                    </a>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('task_list_col_milestone')) : ?>
         	               		<td class="list-milestone">
-        		               		<a class="btn"><i class="icon-map-marker"></i> <?php echo $this->escape($item->milestone_title);?></a>
+                                    <?php if($item->milestone_id) : ?>
+                                        <a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute($item->project_id.':'.$item->project_alias));?>">
+                                           <i class="icon-map-marker"></i> <?php echo $this->escape($item->milestone_title);?>
+                                        </a>
+                                    <?php endif; ?>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('task_list_col_tasklist')) : ?>
         	               		<td class="list-tasklist">
-        		               		<a class="btn"><i class="icon-ok"></i> <?php echo $this->escape($item->tasklist_title);?></a>
+                                    <?php if($item->list_id) : ?>
+            		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_id.':'.$item->project_alias, $item->milestone_id.':'.$item->milestone_alias, $item->list_id.':'.$item->tasklist_alias));?>">
+                                           <i class="icon-ok"></i> <?php echo $this->escape($item->tasklist_title);?>
+                                        </a>
+                                    <?php endif; ?>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('task_list_col_priority')) : ?>

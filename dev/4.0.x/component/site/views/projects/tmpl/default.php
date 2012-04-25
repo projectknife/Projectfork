@@ -159,28 +159,28 @@ $action_count = count($this->actions);
                                 ?>
     	               		</td>
     	               		<td class="list-title">
-                                <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=dashboard&id='.intval($item->id).':'.$item->alias);?>">
+                                <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->id.':'.$item->alias)); ?>">
                                     <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                                     <?php echo $this->escape($item->title);?>
                                 </a>
     	               		</td>
                             <?php if($this->params->get('project_list_col_milestones')) : ?>
         	               		<td class="list-milestones">
-        		               		<a class="btn" href="<?php echo JRoute::_('index.php?option=com_projectfork&view=milestones&filter_project='.intval($item->id));?>">
+        		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute($item->id.':'.$item->alias));?>">
                                        <i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?>
                                     </a>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('project_list_col_tasklists')) : ?>
         	               		<td class="list-tasklists">
-        		               		<a class="btn" href="<?php echo JRoute::_('index.php?option=com_projectfork&view=tasklists&filter_project='.intval($item->id));?>">
+        		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskListsRoute($item->id.':'.$item->alias));?>">
                                        <i class="icon-ok"></i> <?php echo (int) $item->tasklists;?>
                                     </a>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('project_list_col_tasks')) : ?>
         	               		<td class="list-tasks">
-        		               		<a class="btn" href="<?php echo JRoute::_('index.php?option=com_projectfork&view=tasks&filter_project='.intval($item->id));?>">
+        		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->id.':'.$item->alias));?>">
                                        <i class="icon-ok"></i> <?php echo (int) $item->tasks;?>
                                     </a>
         	               		</td>
