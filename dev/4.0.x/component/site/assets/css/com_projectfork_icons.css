@@ -45,7 +45,7 @@
 #projectfork a.saveorder.inactive {
     background-position: 0 -16px;
 }
-#projectfork td.list-order span {
+#projectfork td.list-ordering span {
     background-repeat: no-repeat;
     float: left;
     height: 13px;
@@ -53,8 +53,8 @@
     width: 20px;
 }
 #projectfork .jgrid span.uparrow {
-    background-image: url("../images/uparrow.png");
+    background-image: url("../images/uparrow.png") no-repeat scroll 0 0 transparent;
 }
 #projectfork .jgrid span.downarrow {
-    background-image: url("../images/downarrow.png");
+    background-image: url("../images/downarrow.png") no-repeat scroll 0 0 transparent;
 }

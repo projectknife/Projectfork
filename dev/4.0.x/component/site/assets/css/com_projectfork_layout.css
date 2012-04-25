@@ -36,3 +36,11 @@
 	max-width: 100px;
 	overflow: hidden;
 }
+
+/* Table layout */
+#projectfork td.list-ordering input
+{
+    text-align: center;
+    width: 20px;
+    margin-right: 5px;
+}

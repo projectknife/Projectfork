@@ -155,7 +155,7 @@ $action_count = count($this->actions);
                                 <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'access_level', $list_dir, $list_order); ?>
                             </th>
                         <?php endif; ?>
-                        <th width="10%">
+                        <th id="tableOrdering12" class="list-ordering">
         					<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ORDERING', 'a.ordering', $list_dir, $list_order); ?>
         					<?php if ($save_order) :?>
         						<?php echo JHtml::_('grid.order',  $this->items, 'filesave.png', 'tasks.saveorder'); ?>
@@ -266,7 +266,7 @@ $action_count = count($this->actions);
         		               		<?php echo $this->escape($item->access_level);?>
         	               		</td>
                             <?php endif; ?>
-                            <td class="list-order">
+                            <td class="list-ordering">
             					<?php if ($canChange) : ?>
             						<?php if ($save_order) :?>
             							<?php if ($list_dir == 'asc') : ?>
