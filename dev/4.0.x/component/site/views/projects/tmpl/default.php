@@ -37,14 +37,13 @@ $action_count = count($this->actions);
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
-        <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
+        <h1 class="pull-left"><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
+    <?php echo $this->toolbar;?>
+    <div class="clearfix"></div>
     <div class="grid">
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=projects'); ?>" method="post">
             <div class="filters btn-toolbar">
-            	<div class="btn-group">
-            		<?php echo $this->toolbar;?>
-            	</div>
             	<?php if($this->params->get('filter_field')) : ?>
             	    <div class="btn-group filter-search">
             	        <label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
@@ -70,7 +69,9 @@ $action_count = count($this->actions);
                     
                         <li class="span3">
                           <div class="thumbnail">
-                            <img src="http://placehold.it/260x180" alt="">
+                            <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=dashboard&id='.intval($item->id).':'.$item->alias);?>">
+                            	<img src="http://placehold.it/260x180" alt="">
+                            </a>
                             <div class="caption">
                               <h5>
                               	<?php if ($item->checked_out) : ?>
