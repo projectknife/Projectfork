@@ -74,20 +74,24 @@ abstract class JHtmlProjectfork
         // Setup the buttons
         $btn_clear = '';
         if($active_id && $can_change) {
-            $btn_clear = '<button type="button" class="btn" onclick="'.$js_clear.'">'.JText::_('JSEARCH_FILTER_CLEAR').'</button>';
+            $btn_clear = '<button type="button" class="btn" onclick="'.$js_clear.'"><i class="icon-remove"></i> '.JText::_('JSEARCH_FILTER_CLEAR').'</button>';
         }
 
         $btn_select = '';
         if($can_change) {
-            $btn_select = '<button type="button" class="btn" onclick="'.$js_select.'">'.JText::_('JSELECT').'</button>';
+            $btn_select = '<button type="button" class="btn" onclick="'.$js_select.'" title="'.JText::_('JSELECT').'"><i class="icon-briefcase"></i> '.$active_title.'</button>';
         }
 
 
         // HTML output
-	    $html = '<input type="text" name="filter_project_title" id="filter_project_title" readonly="readonly" value="'.$active_title.'" />'
-              . '<input type="hidden" name="filter_project" id="filter_project" value="'.$active_id.'" />'
-              . $btn_select
-              . $btn_clear;
+	    $html = '<span class="btn-group">'
+				. $btn_select
+				. $btn_clear
+				. '</span>'
+				.'<span class="btn-group">'
+				. '<input type="hidden" name="filter_project_title" id="filter_project_title" class="btn disabled input-small" readonly="readonly" value="'.$active_title.'" />'
+				. '<input type="hidden" name="filter_project" id="filter_project" value="'.$active_id.'" />'
+				. '</span>';
 
 		return $html;
     }
