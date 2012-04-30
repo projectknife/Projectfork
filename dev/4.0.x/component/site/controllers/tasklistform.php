@@ -33,7 +33,7 @@ jimport('joomla.application.component.controllerform');
 class ProjectforkControllerTasklistForm extends JControllerForm
 {
 	protected $view_item = 'tasklistform';
-	protected $view_list = 'tasklists';
+	protected $view_list = 'tasks';
 
 
 	/**
@@ -246,10 +246,8 @@ class ProjectforkControllerTasklistForm extends JControllerForm
         ProjectforkHelper::setActiveProject($project);
 
 
-        //Save the data in the session.
-		//$app->setUserState('com_projectfork.edit.tasklist.project',	$project);
+        // Save the data in the session.
 		$app->setUserState('com_projectfork.edit.tasklist.data', $data);
-
 		$this->project_id = $project;
 
 		$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId), false));

@@ -36,7 +36,7 @@ class ProjectforkControllerTasklists extends JControllerAdmin
 	 * The default view
      *
 	 */
-	protected $view_list = 'tasklists';
+	protected $view_list = 'tasks';
 
 
 	/**
