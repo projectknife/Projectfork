@@ -31,12 +31,11 @@ jimport('joomla.application.component.modellist');
  */
 class ProjectforkModelProjects extends JModelList
 {
-
 	/**
 	 * Constructor.
 	 *
 	 * @param	array	An optional associative array of configuration settings.
-	 * @see		JController
+	 * @see		        JController
 	 */
 	public function __construct($config = array())
 	{
@@ -44,19 +43,17 @@ class ProjectforkModelProjects extends JModelList
 			$config['filter_fields'] = array(
 				'id', 'a.id',
 				'title', 'a.title',
-				'alias', 'a.alias',
 				'created', 'a.created',
-                'created_by', 'a.created_by', 'author_name',
                 'modified', 'a.modified',
-                'modified_by', 'a.modified_by',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
-                'attribs', 'a.attribs',
-                'access', 'a.access', 'access_level',
                 'state', 'a.state',
                 'start_date', 'a.start_date',
                 'end_date', 'a.end_date',
-                'milestones', 'tasks', 'tasklists'
+                'author_name',
+                'editor',
+                'access_level',
+                'milestones',
+                'tasks',
+                'tasklists'
 			);
 		}
 
@@ -75,40 +72,43 @@ class ProjectforkModelProjects extends JModelList
 		$app  = JFactory::getApplication();
         $user = JFactory::getUser();
 
-		// List state information
+		// Query limit
 		$value = JRequest::getUInt('limit', $app->getCfg('list_limit', 0));
 		$this->setState('list.limit', $value);
 
+        // Query limit start
 		$value = JRequest::getUInt('limitstart', 0);
 		$this->setState('list.start', $value);
 
-		$order_col = JRequest::getCmd('filter_order', 'a.title');
-		if(!in_array($order_col, $this->filter_fields)) $order_col = 'a.title';
+        // Query order field
+		$value = JRequest::getCmd('filter_order', 'a.title');
+		if(!in_array($value, $this->filter_fields)) $order_col = 'a.title';
+		$this->setState('list.ordering', $value);
 
-		$this->setState('list.ordering', $order_col);
+        // Query order direction
+		$value = JRequest::getCmd('filter_order_Dir', 'ASC');
+		if(!in_array(strtoupper($value), array('ASC', 'DESC', ''))) $value = 'ASC';
+		$this->setState('list.direction', $value);
 
-		$list_order	= JRequest::getCmd('filter_order_Dir', 'ASC');
-		if(!in_array(strtoupper($list_order), array('ASC', 'DESC', ''))) $list_order = 'ASC';
+        // Params
+		$value = $app->getParams();
+		$this->setState('params', $value);
 
-		$this->setState('list.direction', $list_order);
-
-		$params = $app->getParams();
-		$this->setState('params', $params);
-
+        // State
         $value = JRequest::getCmd('filter_published', '');
         $this->setState('filter.published', $value);
 
         if ((!$user->authorise('core.edit.state', 'com_projectfork') && !$user->authorize('project.edit.state', 'com_projectfork')) &&
             (!$user->authorise('core.edit', 'com_projectfork') && !$user->authorize('project.edit', 'com_projectfork'))){
-			// filter on published for those who do not have edit or edit.state rights.
+			// Filter on published for those who do not have edit or edit.state rights.
 			$this->setState('filter.published', 1);
 		}
 
-		$this->setState('filter.access', true);
-
+        // Filter - Search
         $value = JRequest::getString('filter_search', '');
         $this->setState('filter.search', $value);
 
+        // View Layout
 		$this->setState('layout', JRequest::getCmd('layout'));
 	}
 
@@ -125,8 +125,7 @@ class ProjectforkModelProjects extends JModelList
 	 */
 	protected function getStoreId($id = '')
 	{
-		// Compile the store id.
-		$id .= ':'.$this->getState('filter.access');
+		// Compile the store id
         $id .= ':'.$this->getState('filter.published');
 
 		return parent::getStoreId($id);
@@ -134,7 +133,7 @@ class ProjectforkModelProjects extends JModelList
 
 
 	/**
-	 * Get the master query for retrieving a list of projects subject to the model state.
+	 * Get the master query for retrieving a list of items subject to the model state.
 	 *
 	 * @return	JDatabaseQuery
 	 */
@@ -190,7 +189,6 @@ class ProjectforkModelProjects extends JModelList
 
         // Filter by published state
 		$published = $this->getState('filter.published');
-
 		if (is_numeric($published)) {
 			$query->where('a.state = ' . (int) $published);
 		}
@@ -214,7 +212,6 @@ class ProjectforkModelProjects extends JModelList
 			}
 		}
 
-
 		// Add the list ordering clause.
         $query->group('a.id');
 		$query->order($this->getState('list.ordering', 'a.title').' '.$this->getState('list.direction', 'ASC'));
@@ -224,18 +221,14 @@ class ProjectforkModelProjects extends JModelList
 
 
 	/**
-	 * Method to get a list of projects.
+	 * Method to get a list of items.
 	 * Overriden to inject convert the attribs field into a JParameter object.
 	 *
 	 * @return	mixed	An array of objects on success, false on failure.
 	 */
 	public function getItems()
 	{
-		$items	= parent::getItems();
-		$user	= JFactory::getUser();
-		$userId	= $user->get('id');
-		$guest	= $user->get('guest');
-		$groups	= $user->getAuthorisedViewLevels();
+		$items = parent::getItems();
 
 		// Get the global params
 		$global_params = JComponentHelper::getParams('com_projectfork', true);
@@ -243,11 +236,6 @@ class ProjectforkModelProjects extends JModelList
         // Convert the parameter fields into objects.
 		foreach ($items as $i => &$item)
 		{
-            /*if($item->id == NULL) {
-                unset($items[$i]);
-                continue;
-            }*/
-
             $params = new JRegistry;
 			$params->loadString($item->attribs);
 

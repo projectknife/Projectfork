@@ -77,10 +77,12 @@ class ProjectforkController extends JController
                                'filter' => 'STRING',
                                'filter_order' => 'CMD',
                                'filter_order_Dir' => 'CMD',
-                               'filter-search' => 'STRING',
+                               'filter_search' => 'STRING',
                                'filter_published' => 'CMD',
-                               'print'=>'BOOLEAN',
-                               'lang'=>'CMD'
+                               'filter_project' => 'CMD',
+                               'filter_milestone' => 'CMD',
+                               'filter_tasklist' => 'CMD',
+                               'filter_priority' => 'CMD'
                               );
 
 
