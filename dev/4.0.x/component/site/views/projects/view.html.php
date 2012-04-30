@@ -36,6 +36,8 @@ class ProjectforkViewProjects extends JView
 	    $items      = $this->get('Items');
         $pagination = $this->get('Pagination');
         $state		= $this->get('State');
+        $authors    = $this->get('Authors');
+        $states     = $this->get('PublishedStates');
 		$params		= $state->params;
         $null_date  = JFactory::getDbo()->getNullDate();
         $user       = JFactory::getUser();
@@ -73,6 +75,8 @@ class ProjectforkViewProjects extends JView
         $this->assignRef('actions',    $actions);
         $this->assignRef('toolbar',    $toolbar);
         $this->assignRef('user',       $user);
+        $this->assignRef('authors',    $authors);
+        $this->assignRef('states',     $states);
         $this->assignRef('canDo',      $canDo);
         $this->assignRef('menu',       $menu);
 

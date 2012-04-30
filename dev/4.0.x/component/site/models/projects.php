@@ -108,6 +108,10 @@ class ProjectforkModelProjects extends JModelList
         $value = JRequest::getString('filter_search', '');
         $this->setState('filter.search', $value);
 
+        // Filter - Author
+        $value = JRequest::getCmd('filter_author', '');
+        $this->setState('filter.author', $value);
+
         // View Layout
 		$this->setState('layout', JRequest::getCmd('layout'));
 	}
@@ -196,6 +200,13 @@ class ProjectforkModelProjects extends JModelList
 			$query->where('(a.state = 0 OR a.state = 1)');
 		}
 
+        // Filter by author
+		$author_id = $this->getState('filter.author');
+		if (is_numeric($author_id)) {
+			$type = $this->getState('filter.author_id.include', true) ? '= ' : '<>';
+			$query->where('a.created_by '.$type.(int) $author_id);
+		}
+
         // Filter by search in title.
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
@@ -244,6 +255,142 @@ class ProjectforkModelProjects extends JModelList
 
 		return $items;
 	}
+
+
+    /**
+	 * Build a list of authors
+	 *
+	 * @return	JDatabaseQuery
+	 */
+	public function getAuthors()
+    {
+        $db        = $this->getDbo();
+		$query     = $db->getQuery(true);
+        $user      = $user = JFactory::getUser();
+
+		// Construct the query
+		$query->select('u.id AS value, u.name AS text, COUNT(DISTINCT a.id) AS count');
+		$query->from('#__users AS u');
+		$query->join('INNER', '#__pf_projects AS a ON a.created_by = u.id');
+
+        // Implement View Level Access
+		if(!$user->authorise('core.admin')) {
+		    $groups	= implode(',', $user->getAuthorisedViewLevels());
+			$query->where('a.access IN ('.$groups.')');
+		}
+
+        // Filter by published state
+		$published = $this->getState('filter.published');
+		if (is_numeric($published)) {
+			$query->where('a.state = ' . (int) $published);
+		}
+		elseif ($published === '') {
+			$query->where('(a.state = 0 OR a.state = 1)');
+		}
+
+        // Filter by search in title.
+		$search = $this->getState('filter.search');
+		if (!empty($search)) {
+			if (stripos($search, 'id:') === 0) {
+				$query->where('a.id = '.(int) substr($search, 4));
+			}
+			elseif (stripos($search, 'author:') === 0) {
+				$search = $db->Quote('%'.$db->getEscaped(trim(substr($search, 8)), true).'%');
+				$query->where('(u.name LIKE '.$search.' OR u.username LIKE '.$search.')');
+			}
+			else {
+				$search = $db->Quote('%'.$db->getEscaped($search, true).'%');
+				$query->where('(a.title LIKE '.$search.' OR a.alias LIKE '.$search.')');
+			}
+		}
+
+        // Group and order
+		$query->group('u.id');
+		$query->order('u.name, count');
+
+		$db->setQuery($query->__toString());
+
+        $items = (array) $db->loadObjectList();
+        $count = count($items);
+
+        for($i = 0; $i < $count; $i++)
+        {
+            $items[$i]->text .= ' ('.$items[$i]->count.')';
+            unset($items[$i]->count);
+        }
+
+
+		// Return the items
+		return $items;
+	}
+
+
+    public function getPublishedStates()
+    {
+        $db     = $this->getDbo();
+        $user   = $user = JFactory::getUser();
+        $states = JHtml::_('jgrid.publishedOptions');
+        $count  = count($states);
+
+        for($i = 0; $i < $count; $i++)
+        {
+            if($states[$i]->disable == true) {
+                $states[$i]->text = JText::_($states[$i]->text).' (0)';
+                continue;
+            }
+            if($states[$i]->value == '*') {
+                unset($states[$i]);
+                continue;
+            }
+
+            $query = $db->getQuery(true);
+
+            // Construct the query
+    		$query->select('COUNT(DISTINCT a.id)');
+    		$query->from('#__pf_projects AS a');
+            $query->join('LEFT', '#__users AS u ON u.id = a.created_by');
+
+            // Implement View Level Access
+    		if(!$user->authorise('core.admin')) {
+    		    $groups	= implode(',', $user->getAuthorisedViewLevels());
+    			$query->where('a.access IN ('.$groups.')');
+    		}
+
+            // Filter by current state
+            $query->where('a.state = ' . (int) $states[$i]->value);
+
+
+    		// Filter by author
+    		$author_id = $this->getState('filter.author');
+    		if (is_numeric($author_id)) {
+    			$type = $this->getState('filter.author_id.include', true) ? '= ' : '<>';
+    			$query->where('a.created_by '.$type.(int) $author_id);
+    		}
+
+            // Filter by search in title.
+    		$search = $this->getState('filter.search');
+    		if (!empty($search)) {
+    			if (stripos($search, 'id:') === 0) {
+    				$query->where('a.id = '.(int) substr($search, 4));
+    			}
+    			elseif (stripos($search, 'author:') === 0) {
+    				$search = $db->Quote('%'.$db->getEscaped(trim(substr($search, 8)), true).'%');
+    				$query->where('(u.name LIKE '.$search.' OR u.username LIKE '.$search.')');
+    			}
+    			else {
+    				$search = $db->Quote('%'.$db->getEscaped($search, true).'%');
+    				$query->where('(a.title LIKE '.$search.' OR a.alias LIKE '.$search.')');
+    			}
+    		}
+
+    		$db->setQuery($query->__toString());
+            $found = (int) $db->loadResult();
+
+            $states[$i]->text = JText::_($states[$i]->text).' ('.$found.')';
+        }
+
+        return $states;
+    }
 
 
 	public function getStart()
