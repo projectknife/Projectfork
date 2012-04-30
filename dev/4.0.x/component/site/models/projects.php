@@ -244,13 +244,17 @@ class ProjectforkModelProjects extends JModelList
 		// Get the global params
 		$global_params = JComponentHelper::getParams('com_projectfork', true);
 
-        // Convert the parameter fields into objects.
+
 		foreach ($items as $i => &$item)
 		{
             $params = new JRegistry;
 			$params->loadString($item->attribs);
 
+            // Convert the parameter fields into objects.
 			$items[$i]->params = clone $this->getState('params');
+
+            // Create slug
+            $items[$i]->slug  = $items[$i]->alias ? ($items[$i]->id . ':' . $items[$i]->alias) : $items[$i]->id;
         }
 
 		return $items;

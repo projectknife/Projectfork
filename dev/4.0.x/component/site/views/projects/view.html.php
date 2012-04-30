@@ -58,14 +58,6 @@ class ProjectforkViewProjects extends JView
 		}
 
 
-        // Compute the item slugs.
-		for ($i = 0, $n = count($items); $i < $n; $i++)
-		{
-			$item = &$items[$i];
-			$item->slug = $item->alias ? ($item->id . ':' . $item->alias) : $item->id;
-        }
-
-
         // Assign references
         $this->assignRef('items',      $items);
         $this->assignRef('pagination', $pagination);

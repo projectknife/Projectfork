@@ -105,18 +105,13 @@ $action_count = count($this->actions);
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONES', 'milestones', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
-                        <?php if($this->params->get('project_list_col_tasklists')) : ?>
-	               		<th id="tableOrdering4" class="list-tasklists">
-                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKLISTS', 'tasklists', $list_dir, $list_order); ?>
-                        </th>
-                        <?php endif; ?>
                         <?php if($this->params->get('project_list_col_tasks')) : ?>
-	               		<th id="tableOrdering5" class="list-tasks">
-                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKS', 'tasks', $list_dir, $list_order); ?>
+	               		<th id="tableOrdering4" class="list-tasks">
+                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKLISTS_AND_TASKS', 'tasks', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
                         <?php if($this->params->get('project_list_col_deadline')) : ?>
-	               		<th id="tableOrdering6" class="list-deadline">
+	               		<th id="tableOrdering5" class="list-deadline">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
@@ -163,17 +158,10 @@ $action_count = count($this->actions);
                                     </a>
         	               		</td>
                             <?php endif; ?>
-                            <?php if($this->params->get('project_list_col_tasklists')) : ?>
-        	               		<td class="list-tasklists">
-        		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskListsRoute($item->slug));?>">
-                                       <i class="icon-ok"></i> <?php echo (int) $item->tasklists;?>
-                                    </a>
-        	               		</td>
-                            <?php endif; ?>
                             <?php if($this->params->get('project_list_col_tasks')) : ?>
         	               		<td class="list-tasks">
         		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->slug));?>">
-                                       <i class="icon-ok"></i> <?php echo (int) $item->tasks;?>
+                                       <i class="icon-ok"></i> <?php echo intval($item->tasklists).' / '.intval($item->tasks);?>
                                     </a>
         	               		</td>
                             <?php endif; ?>
