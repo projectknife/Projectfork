@@ -192,7 +192,7 @@ class ProjectforkModelTasks extends JModelList
                 . 'a.description, a.alias, a.checked_out, a.attribs, a.priority, '
 				. 'a.checked_out_time, a.state, a.access, a.created, a.created_by, '
 				. 'a.start_date, a.end_date, a.ordering, p.alias AS project_alias, '
-                . 'tl.alias AS tasklist_alias, m.alias AS milestone_alias'
+                . 'tl.alias AS list_alias, m.alias AS milestone_alias'
 			)
 		);
 		$query->from('#__pf_tasks AS a');

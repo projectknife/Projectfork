@@ -149,7 +149,7 @@ $action_count = count($this->actions);
                                 ?>
     	               		</td>
     	               		<td class="list-title">
-                                <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_id.':'.$item->project_alias, $item->milestone_id.':'.$item->milestone_alias, $item->id.':'.$item->alias));?>">
+                                <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_slug, $item->milestone_slug, $item->slug));?>">
                                     <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                                     <?php echo $this->escape($item->title);?>
                                 </a>
@@ -158,21 +158,21 @@ $action_count = count($this->actions);
     	               		</td>
                             <?php if($this->params->get('tasklist_list_col_project')) : ?>
         	               		<td class="list-project">
-        		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->project_id.':'.$item->project_alias));?>">
+        		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->project_slug));?>">
                                        <i class="icon-map-marker"></i> <?php echo $this->escape($item->project_title);?>
                                     </a>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('tasklist_list_col_milestone')) : ?>
         	               		<td class="list-milestone">
-        		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute($item->project_id.':'.$item->project_alias));?>">
+        		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute($item->project_slug));?>">
                                        <i class="icon-map-marker"></i> <?php echo $this->escape($item->milestone_title);?>
                                     </a>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('tasklist_list_col_tasks')) : ?>
         	               		<td class="list-tasks">
-        		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_id.':'.$item->project_alias, $item->milestone_id.':'.$item->milestone_alias, $item->id.':'.$item->alias));?>">
+        		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_slug, $item->milestone_slug, $item->slug));?>">
                                        <i class="icon-ok"></i> <?php echo (int) $item->tasks;?>
                                     </a>
         	               		</td>

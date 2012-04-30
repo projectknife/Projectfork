@@ -77,6 +77,17 @@ class ProjectforkViewTasks extends JView
         $this->assignRef('assigned',   $assigned);
 
 
+        // Compute the item slugs.
+		for ($i = 0, $n = count($items); $i < $n; $i++)
+		{
+			$item = &$items[$i];
+			$item->slug = $item->alias ? ($item->id.':'.$item->alias) : $item->id;
+            $item->project_slug   = $item->project_alias ? ($item->project_id.':'.$item->project_alias) : $item->project_id;
+            $item->milestone_slug = $item->milestone_alias ? ($item->milestone_id.':'.$item->milestone_alias) : $item->milestone_id;
+            $item->list_slug      = $item->list_alias ? ($item->list_id.':'.$item->list_alias) : $item->list_id;
+        }
+
+
         // Prepare the document
         $this->prepareDocument();
 

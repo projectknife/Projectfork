@@ -56,6 +56,15 @@ class ProjectforkViewMilestones extends JView
 		}
 
 
+        // Compute the item slugs.
+		for ($i = 0, $n = count($items); $i < $n; $i++)
+		{
+			$item = &$items[$i];
+			$item->slug = $item->alias ? ($item->id.':'.$item->alias) : $item->id;
+            $item->project_slug = $item->project_alias ? ($item->project_id.':'.$item->project_alias) : $item->project_id;
+        }
+
+
         // Assign references
         $this->assignRef('items',      $items);
         $this->assignRef('pagination', $pagination);
