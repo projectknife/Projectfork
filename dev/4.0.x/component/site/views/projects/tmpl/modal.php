@@ -36,63 +36,64 @@ $uid	    = $user->get('id');
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=projects&layout=modal&tmpl=component&function='.$function);?>" method="post">
 
             <fieldset class="filters">
-                <?php if($this->params->get('filter_field')) : ?>
-                    <div class="filter-search">
-    			        <label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
+                <?php if($this->params->get('filter_fields')) : ?>
+                    <span class="filter-search">
     			        <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
     			        <button type="submit" class="btn"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
-    			        <button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
-    		        </div>
-                <?php endif; ?>
-                <?php if($this->params->get('filter_state') && $this->user->get('id')) : ?>
-    				<div class="display-published">
-    				    <select name="filter_published" class="inputbox" onchange="this.form.submit()">
-    				        <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-    				        <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'),
-                                                'value', 'text', $this->state->get('filter.published'),
-                                                true
-                                               );
-                            ?>
-    				    </select>
-    				</div>
+    			        <button type="button" class="btn" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
+    		        </span>
+                    <?php if ($this->user->authorise('core.edit.state', 'com_projectfork') || $this->user->authorize('project.edit.state', 'com_projectfork')
+                          ||  $this->user->authorise('core.edit', 'com_projectfork') || $this->user->authorize('project.edit', 'com_projectfork')) : ?>
+        				<span class="filter-published">
+        				    <select id="filter_published" name="filter_published" class="inputbox" onchange="this.form.submit()">
+        				        <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+        				        <?php echo JHtml::_('select.options', $this->states,
+                                                    'value', 'text', $this->state->get('filter.published'),
+                                                    true
+                                                   );
+                                ?>
+        				    </select>
+        				</span>
+                    <?php endif; ?>
+                    <?php if($user->authorise('core.admin') && count($this->authors)) : ?>
+                        <span class="filter-author">
+                            <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
+        				        <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+        				        <?php echo JHtml::_('select.options', $this->authors,
+                                                    'value', 'text', $this->state->get('filter.author'),
+                                                    true
+                                                   );
+                                ?>
+        				    </select>
+                        </span>
+                    <?php endif; ?>
                 <?php endif; ?>
 				<?php if ($this->params->get('show_pagination_limit')) : ?>
-		            <div class="display-limit">
-			            <?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?>&#160;
+		            <span class="filter-limit">
 			            <?php echo $this->pagination->getLimitBox(); ?>
-		            </div>
+		            </span>
 		        <?php endif; ?>
 			</fieldset>
 
             <table class="category table table-striped">
                 <thead>
 	                <tr>
-	               		<th id="tableOrdering1" class="list-title">
+	               		<th id="tableOrdering0" class="list-title">
                             <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                         </th>
-                        <?php if($this->params->get('project_list_col_author')) : ?>
-                        <th id="tableOrdering5" class="list-author" nowrap="nowrap">
-	               		    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'author_name', $list_dir, $list_order); ?>
+                        <?php if($this->params->get('project_list_col_milestones')) : ?>
+	               		<th id="tableOrdering1" class="list-milestones">
+                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONES', 'milestones', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
-                        <?php if($this->params->get('project_list_col_created')) : ?>
-                        <th id="tableOrdering6" class="list-created" nowrap="nowrap">
-                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_ON', 'a.created', $list_dir, $list_order); ?>
-                        </th>
-                        <?php endif;?>
-                        <?php if($this->params->get('project_list_col_sdate')) : ?>
-	               		<th id="tableOrdering7" class="list-sdate" nowrap="nowrap">
-                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_START_DATE', 'a.start_date', $list_dir, $list_order); ?>
+                        <?php if($this->params->get('project_list_col_tasks')) : ?>
+	               		<th id="tableOrdering2" class="list-tasks">
+                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKLISTS_AND_TASKS', 'tasks', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
                         <?php if($this->params->get('project_list_col_deadline')) : ?>
-	               		<th id="tableOrdering8" class="list-deadline">
+	               		<th id="tableOrdering3" class="list-deadline">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
-                        </th>
-                        <?php endif; ?>
-                        <?php if($this->params->get('project_list_col_access')) : ?>
-	               		<th id="tableOrdering9" class="list-access">
-                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'access_level', $list_dir, $list_order); ?>
                         </th>
                         <?php endif; ?>
 	               	</tr>
@@ -104,29 +105,18 @@ $uid	    = $user->get('id');
                     ?>
                         <tr class="cat-list-row<?php echo $k;?>">
     	               		<td class="list-title">
-                                <a class="pointer" onclick="if (window.parent) window.parent.<?php echo $this->escape($function);?>('<?php echo $item->id; ?>', '<?php echo $this->escape(addslashes($item->title)); ?>');">
+                                <a class="pointer" style="cursor: pointer;" onclick="if (window.parent) window.parent.<?php echo $this->escape($function);?>('<?php echo $item->id; ?>', '<?php echo $this->escape(addslashes($item->title)); ?>');">
                                     <?php echo $this->escape($item->title);?>
                                 </a>
     	               		</td>
-                            <?php if($this->params->get('project_list_col_author')) : ?>
-        	               		<td class="list-author">
-        	               			<small><?php echo $this->escape($item->author_name);?></small>
+                            <?php if($this->params->get('project_list_col_milestones')) : ?>
+        	               		<td class="list-milestones">
+                                    <i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?>
         	               		</td>
                             <?php endif; ?>
-                            <?php if($this->params->get('project_list_col_created')) : ?>
-    	               		    <td class="list-created">
-        		               	    <?php echo JHtml::_('date', $item->created, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC4')))); ?>
-        	               		</td>
-                            <?php endif; ?>
-                            <?php if($this->params->get('project_list_col_sdate')) : ?>
-    	               		    <td class="list-sdate">
-        		               	    <?php if($item->start_date == $this->nulldate) {
-                                        echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
-                                    }
-                                    else {
-                                        echo JHtml::_('date', $item->start_date, $this->escape( $this->params->get('sdate_format', JText::_('DATE_FORMAT_LC4'))));
-                                    }
-        		               		?>
+                            <?php if($this->params->get('project_list_col_tasks')) : ?>
+        	               		<td class="list-tasks">
+                                    <i class="icon-ok"></i> <?php echo intval($item->tasklists).' / '.intval($item->tasks);?>
         	               		</td>
                             <?php endif; ?>
                             <?php if($this->params->get('project_list_col_deadline')) : ?>
@@ -138,11 +128,6 @@ $uid	    = $user->get('id');
                                         echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('deadline_format', JText::_('DATE_FORMAT_LC4'))));
                                     }
         		               		?>
-        	               		</td>
-                            <?php endif; ?>
-                            <?php if($this->params->get('project_list_col_access')) : ?>
-    	               		    <td class="list-access">
-        		               		<?php echo $this->escape($item->access_level);?>
         	               		</td>
                             <?php endif; ?>
     	               	</tr>
