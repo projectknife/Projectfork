@@ -195,7 +195,7 @@ $action_count = count($this->actions);
     	               		</td>
     	               		<td class="list-title">
     	               		    <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
-                                <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskRoute($item->alias, $item->project_slug, $item->milestone_slug, $item->list_slug));?>">
+                                <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>">
                                     <?php echo $this->escape($item->title);?>
                                 </a>
     	               		</td>
