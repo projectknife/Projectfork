@@ -43,28 +43,30 @@ class ProjectforkController extends JController
         $uri    = JFactory::getURI();
 
 
-        // Load bootstrap if enabled
-        if($params->get('bootstrap', '1') == '1') {
-            $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap.min.css');
-            $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap-responsive.min.css');
+        if($doc->getType() == 'html') {
+            // Load bootstrap if enabled
+            if($params->get('bootstrap', '1') == '1') {
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap.min.css');
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap-responsive.min.css');
 
-            $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/jquery.min.js');
-            $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/jquery.noconflict.js');
-            $doc->addScript($uri->base(true).'/components/com_projectfork/assets/bootstrap/js/bootstrap.min.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/jquery.min.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/jquery.noconflict.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/bootstrap/js/bootstrap.min.js');
+            }
+
+            // Load Projectfork CSS if enabled
+            if($params->get('css', '1') == '1') {
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_icons.css');
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_layout.css');
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_theme.css');
+            }
+
+            // Load Projectfork JS
+            $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/com_projectfork.js');
+
+
+            JHTML::_('behavior.tooltip');
         }
-
-        // Load Projectfork CSS if enabled
-        if($params->get('css', '1') == '1') {
-            $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_icons.css');
-            $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_layout.css');
-            $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_theme.css');
-        }
-
-        // Load Projectfork JS
-        $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/com_projectfork.js');
-
-
-        JHTML::_('behavior.tooltip');
 
 
         $cachable = true;

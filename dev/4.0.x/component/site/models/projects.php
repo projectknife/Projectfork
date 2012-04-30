@@ -170,7 +170,7 @@ class ProjectforkModelProjects extends JModelList
 		$query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
 
         // Join over the users for the owner.
-		$query->select('ua.name AS author_name');
+		$query->select('ua.name AS author_name, ua.email AS author_email');
 		$query->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
         // Join over the milestones for milestone count
