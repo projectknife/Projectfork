@@ -97,10 +97,10 @@ class ProjectforkControllerProjectform extends JControllerForm
 	/**
 	 * Method to cancel an edit.
 	 *
-	 * @param	string	$key	The name of the primary key of the URL variable.
-	 * @return	Boolean	True if access level checks pass, false otherwise.
+	 * @param	string    $key    The name of the primary key of the URL variable.
+	 * @return	void
 	 */
-	public function cancel($key = 'a_id')
+	public function cancel($key = 'id')
 	{
 		parent::cancel($key);
 
@@ -183,7 +183,7 @@ class ProjectforkControllerProjectform extends JControllerForm
 		$return = JRequest::getVar('return', null, 'default', 'base64');
 
 		if (empty($return) || !JUri::isInternal(base64_decode($return))) {
-			return JRoute::_('index.php?option=com_projectfork&view='.$this->view_list, false);
+			return JRoute::_(ProjectforkHelperRoute::getProjectsRoute(), false);
 		}
 		else {
 			return base64_decode($return);
@@ -203,7 +203,7 @@ class ProjectforkControllerProjectform extends JControllerForm
 		$task = $this->getTask();
 
 		if ($task == 'save') {
-			$this->setRedirect(JRoute::_('index.php?option=com_projectfork&view='.$this->view_list, false));
+			$this->setRedirect(JRoute::_(ProjectforkHelperRoute::getProjectsRoute(), false));
 		}
 	}
 

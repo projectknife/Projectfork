@@ -33,14 +33,15 @@ class ProjectforkViewProjects extends JView
 	 */
 	public function display($tpl = null)
 	{
+	    $app	    = JFactory::getApplication();
+        $null_date  = JFactory::getDbo()->getNullDate();
+        $user       = JFactory::getUser();
 	    $items      = $this->get('Items');
         $pagination = $this->get('Pagination');
         $state		= $this->get('State');
         $authors    = $this->get('Authors');
         $states     = $this->get('PublishedStates');
 		$params		= $state->params;
-        $null_date  = JFactory::getDbo()->getNullDate();
-        $user       = JFactory::getUser();
         $actions    = $this->getActions();
         $toolbar    = $this->getToolbar();
         $canDo      = ProjectforkHelper::getActions();
@@ -51,10 +52,16 @@ class ProjectforkViewProjects extends JView
 		$this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
 
 
-        // Check for errors.
+        // Check for errors
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseError(500, implode("\n", $errors));
 			return false;
+		}
+
+		// Check for layout override
+		$active	= $app->getMenu()->getActive();
+		if (isset($active->query['layout']) && (JRequest::getCmd('layout') == '')) {
+			$this->setLayout($active->query['layout']);
 		}
 
 

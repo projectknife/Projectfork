@@ -36,6 +36,12 @@ abstract class ProjectforkHelperRoute
 	protected static $lookup;
 
 
+    /**
+     * Creates a link to the dashboard
+     *
+     * @param    string    $project      The project slug. Optional
+     * @return   string    $link         The link
+     */
     public static function getDashboardRoute($project = '')
     {
         if($project) {
@@ -58,6 +64,29 @@ abstract class ProjectforkHelperRoute
     }
 
 
+    /**
+     * Creates a link to the projects overview
+     *
+     * @return   string    $link         The link
+     */
+    public static function getProjectsRoute()
+    {
+        $link = 'index.php?option=com_projectfork&view=projects';
+
+        if ($item = self::_findItem(null, 'projects')) {
+			$link .= '&Itemid='.$item;
+		}
+
+        return $link;
+    }
+
+
+    /**
+     * Creates a link to the milestones overview
+     *
+     * @param    string    $project      The project slug. Optional
+     * @return   string    $link         The link
+     */
     public static function getMilestonesRoute($project = '')
     {
         $link = 'index.php?option=com_projectfork&view=milestones&filter_project='.$project;
@@ -75,6 +104,14 @@ abstract class ProjectforkHelperRoute
     }
 
 
+    /**
+     * Creates a link to a milestone item view
+     *
+     * @param    string    $id           The milestone slug
+     * @param    string    $project      The project slug. Optional
+     *
+     * @return   string    $link         The link
+     */
     public static function getMilestoneRoute($id, $project = '')
     {
         $link = 'index.php?option=com_projectfork&view=milestone&filter_project='.$project.'&id='.$id;
@@ -92,27 +129,15 @@ abstract class ProjectforkHelperRoute
     }
 
 
-    public static function getTaskListsRoute($project = '', $milestone = '')
-    {
-        $link  = 'index.php?option=com_projectfork&view=tasklists';
-        $link .= '&filter_project='.$project;
-        $link .= '&filter_milestone='.$milestone;
-
-        $needles = array('filter_project'   => array((int) $project),
-                         'filter_milestone' => array((int) $milestone)
-                        );
-
-        if ($item = self::_findItem($needles, 'tasklists')) {
-			$link .= '&Itemid='.$item;
-		}
-		elseif ($item = self::_findItem(null, 'tasklists')) {
-			$link .= '&Itemid='.$item;
-		}
-
-		return $link;
-    }
-
-
+    /**
+     * Creates a link to the task overview
+     *
+     * @param    string    $project      The project slug. Optional
+     * @param    string    $milestone    The milestone slug. Optional
+     * @param    string    $list         The list slug. Optional
+     *
+     * @return   string    $link         The link
+     */
     public static function getTasksRoute($project = '', $milestone = '', $list = '')
     {
         $link  = 'index.php?option=com_projectfork&view=tasks';
@@ -136,6 +161,16 @@ abstract class ProjectforkHelperRoute
     }
 
 
+    /**
+     * Creates a link to a task item view
+     *
+     * @param    string    $id           The task slug
+     * @param    string    $project      The project slug. Optional
+     * @param    string    $milestone    The milestone slug. Optional
+     * @param    string    $list         The list slug. Optional
+     *
+     * @return   string    $link         The link
+     */
     public static function getTaskRoute($id, $project = '', $milestone = '', $list = '')
     {
         $link  = 'index.php?option=com_projectfork&view=task';
@@ -157,6 +192,13 @@ abstract class ProjectforkHelperRoute
     }
 
 
+    /**
+     * Searches a menu item id based on $needles and a view
+     *
+     * @param    array    $needles     Query segments to search for
+     * @param    string   $com_view    The component view name to look for
+     * @return   mixed                 The item id if found, or NULL
+     */
 	protected static function _findItem($needles = null, $com_view = null)
 	{
 		$app		= JFactory::getApplication();
@@ -167,8 +209,9 @@ abstract class ProjectforkHelperRoute
 		{
 			self::$lookup = array();
 
-			$component	= JComponentHelper::getComponent('com_projectfork');
-			$items		= $menus->getItems('component_id', $component->id);
+			$component = JComponentHelper::getComponent('com_projectfork');
+			$items	   = $menus->getItems('component_id', $component->id);
+
 			foreach ($items as $item)
 			{
 				if (isset($item->query) && isset($item->query['view']))

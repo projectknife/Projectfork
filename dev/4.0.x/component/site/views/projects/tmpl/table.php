@@ -197,6 +197,7 @@ $action_count = count($this->actions);
             <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
 	        <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
             <input type="hidden" name="task" value="" />
+            <input type="hidden" name="layout" value="<?php echo $this->getLayout(); ?>" />
 	        <?php echo JHtml::_('form.token'); ?>
         </form>
     </div>
