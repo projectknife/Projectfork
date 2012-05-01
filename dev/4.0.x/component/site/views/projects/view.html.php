@@ -80,7 +80,6 @@ class ProjectforkViewProjects extends JView
         $this->assignRef('nulldate',   $null_date);
         $this->assignRef('actions',    $actions);
         $this->assignRef('toolbar',    $toolbar);
-        $this->assignRef('user',       $user);
         $this->assignRef('authors',    $authors);
         $this->assignRef('states',     $states);
         $this->assignRef('canDo',      $canDo);
