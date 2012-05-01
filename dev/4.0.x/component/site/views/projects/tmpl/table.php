@@ -25,9 +25,9 @@ defined('_JEXEC') or die;
 
 JHtml::_('behavior.multiselect');
 
-
-$list_order = $this->escape($this->state->get('list.ordering'));
-$list_dir   = $this->escape($this->state->get('list.direction'));
+$state      = $this->state;
+$list_order = $this->escape($state->get('list.ordering'));
+$list_dir   = $this->escape($state->get('list.direction'));
 $user	    = JFactory::getUser();
 $uid	    = $user->get('id');
 
@@ -49,17 +49,17 @@ $action_count = count($this->actions);
             <fieldset class="filters">
                 <?php if($this->params->get('filter_fields')) : ?>
                     <span class="filter-search">
-    			        <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
+    			        <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($state->get('filter.search')); ?>" />
     			        <button type="submit" class="btn"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
     			        <button type="button" class="btn" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
     		        </span>
-                    <?php if ($this->user->authorise('core.edit.state', 'com_projectfork') || $this->user->authorize('project.edit.state', 'com_projectfork')
-                          ||  $this->user->authorise('core.edit', 'com_projectfork') || $this->user->authorize('project.edit', 'com_projectfork')) : ?>
+                    <?php if ($user->authorise('core.edit.state', 'com_projectfork') || $user->authorize('project.edit.state', 'com_projectfork')
+                          ||  $user->authorise('core.edit', 'com_projectfork') || $user->authorize('project.edit', 'com_projectfork')) : ?>
         				<span class="filter-published">
         				    <select id="filter_published" name="filter_published" class="inputbox" onchange="this.form.submit()">
         				        <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
         				        <?php echo JHtml::_('select.options', $this->states,
-                                                    'value', 'text', $this->state->get('filter.published'),
+                                                    'value', 'text', $state->get('filter.published'),
                                                     true
                                                    );
                                 ?>
@@ -86,103 +86,105 @@ $action_count = count($this->actions);
 		        <?php endif; ?>
 			</fieldset>
 
-            <table class="category table table-striped">
-                <thead>
-	                <tr>
-                        <?php if($action_count) : ?>
-    	               	    <th id="tableOrdering0" class="list-select" width="1%">
-    	               			<input type="checkbox" onclick="checkAll(<?php echo count($this->items);?>);" value="" name="toggle" />
-    	               		</th>
-                        <?php endif; ?>
-                        <th id="tableOrdering1" class="list-actions" width="1%">
-    	               	    <?php echo $this->menu->bulkItems($this->actions); ?>
-    	               	</th>
-	               		<th id="tableOrdering2" class="list-title">
-                            <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
-                        </th>
-                        <?php if($this->params->get('project_list_col_milestones')) : ?>
-	               		<th id="tableOrdering3" class="list-milestones">
-                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONES', 'milestones', $list_dir, $list_order); ?>
-                        </th>
-                        <?php endif; ?>
-                        <?php if($this->params->get('project_list_col_tasks')) : ?>
-	               		<th id="tableOrdering4" class="list-tasks">
-                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKLISTS_AND_TASKS', 'tasks', $list_dir, $list_order); ?>
-                        </th>
-                        <?php endif; ?>
-                        <?php if($this->params->get('project_list_col_deadline')) : ?>
-	               		<th id="tableOrdering5" class="list-deadline">
-                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
-                        </th>
-                        <?php endif; ?>
-	               	</tr>
-               </thead>
-               <tbody>
-                    <?php
-                    $k = 0;
-                    foreach($this->items AS $i => $item) :
-                        $asset_name = 'com_projectfork.project.'.$item->id;
-
-			            $canCreate	= ($user->authorise('core.create', $asset_name) || $user->authorise('project.create', $asset_name));
-			            $canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('project.edit', $asset_name));
-			            $canCheckin	= ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
-			            $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('project.edit.own', $asset_name)) && $item->created_by == $uid);
-			            $canChange	= (($user->authorise('core.edit.state',	$asset_name) || $user->authorise('project.edit.state', $asset_name)) && $canCheckin);
-                    ?>
-                        <tr class="cat-list-row<?php echo $k;?>">
-    	               		<?php if($action_count) : ?>
-                               <td class="list-select">
-                                    <?php echo JHtml::_('grid.id', $i, $item->id); ?>
-    	               		    </td>
+            <?php if(count($this->items)) : ?>
+                <table class="category table table-striped">
+                    <thead>
+    	                <tr>
+                            <?php if($action_count) : ?>
+        	               	    <th id="tableOrdering0" class="list-select" width="1%">
+        	               			<input type="checkbox" onclick="checkAll(<?php echo count($this->items);?>);" value="" name="toggle" />
+        	               		</th>
                             <?php endif; ?>
-                            <td class="list-actions">
-                                <?php
-                                    $this->menu->start();
-                                    $this->menu->itemEdit('projectform', $item->id, ($canEdit || $canEditOwn));
-                                    $this->menu->itemTrash('projects', $i, ($canEdit || $canEditOwn));
-                                    $this->menu->end();
-
-                                    echo $this->menu->render();
-                                ?>
-    	               		</td>
-    	               		<td class="list-title">
-                                <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->slug)); ?>">
-                                    <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
-                                    <?php echo $this->escape($item->title);?>
-                                </a>
-    	               		</td>
+                            <th id="tableOrdering1" class="list-actions" width="1%">
+        	               	    <?php echo $this->menu->bulkItems($this->actions); ?>
+        	               	</th>
+    	               		<th id="tableOrdering2" class="list-title">
+                                <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
+                            </th>
                             <?php if($this->params->get('project_list_col_milestones')) : ?>
-        	               		<td class="list-milestones">
-        		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute($item->slug));?>">
-                                       <i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?>
-                                    </a>
-        	               		</td>
+    	               		<th id="tableOrdering3" class="list-milestones">
+                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONES', 'milestones', $list_dir, $list_order); ?>
+                            </th>
                             <?php endif; ?>
                             <?php if($this->params->get('project_list_col_tasks')) : ?>
-        	               		<td class="list-tasks">
-        		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->slug));?>">
-                                       <i class="icon-ok"></i> <?php echo intval($item->tasklists).' / '.intval($item->tasks);?>
-                                    </a>
-        	               		</td>
+    	               		<th id="tableOrdering4" class="list-tasks">
+                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKLISTS_AND_TASKS', 'tasks', $list_dir, $list_order); ?>
+                            </th>
                             <?php endif; ?>
                             <?php if($this->params->get('project_list_col_deadline')) : ?>
-    	               		    <td class="list-deadline">
-                                    <?php if($item->end_date == $this->nulldate) {
-                                        echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
-                                    }
-                                    else {
-                                        echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('deadline_format', JText::_('DATE_FORMAT_LC4'))));
-                                    }
-        		               		?>
-        	               		</td>
+    	               		<th id="tableOrdering5" class="list-deadline">
+                                <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
+                            </th>
                             <?php endif; ?>
     	               	</tr>
-                    <?php
-                    $k = 1 - $k;
-                    endforeach;
-                    ?>
-                </tbody>
-            </table>
+                   </thead>
+                   <tbody>
+                        <?php
+                        $k = 0;
+                        foreach($this->items AS $i => $item) :
+                            $asset_name = 'com_projectfork.project.'.$item->id;
+
+    			            $canCreate	= ($user->authorise('core.create', $asset_name) || $user->authorise('project.create', $asset_name));
+    			            $canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('project.edit', $asset_name));
+    			            $canCheckin	= ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
+    			            $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('project.edit.own', $asset_name)) && $item->created_by == $uid);
+    			            $canChange	= (($user->authorise('core.edit.state',	$asset_name) || $user->authorise('project.edit.state', $asset_name)) && $canCheckin);
+                        ?>
+                            <tr class="cat-list-row<?php echo $k;?>">
+        	               		<?php if($action_count) : ?>
+                                   <td class="list-select">
+                                        <?php echo JHtml::_('grid.id', $i, $item->id); ?>
+        	               		    </td>
+                                <?php endif; ?>
+                                <td class="list-actions">
+                                    <?php
+                                        $this->menu->start();
+                                        $this->menu->itemEdit('projectform', $item->id, ($canEdit || $canEditOwn));
+                                        $this->menu->itemTrash('projects', $i, ($canEdit || $canEditOwn));
+                                        $this->menu->end();
+
+                                        echo $this->menu->render();
+                                    ?>
+        	               		</td>
+        	               		<td class="list-title">
+                                    <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->slug)); ?>">
+                                        <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
+                                        <?php echo $this->escape($item->title);?>
+                                    </a>
+        	               		</td>
+                                <?php if($this->params->get('project_list_col_milestones')) : ?>
+            	               		<td class="list-milestones">
+            		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute($item->slug));?>">
+                                           <i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?>
+                                        </a>
+            	               		</td>
+                                <?php endif; ?>
+                                <?php if($this->params->get('project_list_col_tasks')) : ?>
+            	               		<td class="list-tasks">
+            		               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->slug));?>">
+                                           <i class="icon-ok"></i> <?php echo intval($item->tasklists).' / '.intval($item->tasks);?>
+                                        </a>
+            	               		</td>
+                                <?php endif; ?>
+                                <?php if($this->params->get('project_list_col_deadline')) : ?>
+        	               		    <td class="list-deadline">
+                                        <?php if($item->end_date == $this->nulldate) {
+                                            echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
+                                        }
+                                        else {
+                                            echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('deadline_format', JText::_('DATE_FORMAT_LC4'))));
+                                        }
+            		               		?>
+            	               		</td>
+                                <?php endif; ?>
+        	               	</tr>
+                        <?php
+                        $k = 1 - $k;
+                        endforeach;
+                        ?>
+                    </tbody>
+                </table>
+            <?php endif; ?>
 
             <?php if($this->pagination->get('pages.total') > 1 && $this->params->get('show_pagination')) : ?>
                 <div class="pagination">

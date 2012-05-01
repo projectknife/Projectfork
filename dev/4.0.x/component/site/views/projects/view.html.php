@@ -58,6 +58,13 @@ class ProjectforkViewProjects extends JView
 			return false;
 		}
 
+        // Check for empty search result
+        if((count($items) == 0) && ($state->get('filter.search') != '' || $state->get('filter.author') != ''
+            || $state->get('filter.published') != '')
+          ) {
+            $app->enqueueMessage(JText::_('COM_PROJECTFORK_EMPTY_SEARCH_RESULT'));
+        }
+
 		// Check for layout override
 		$active	= $app->getMenu()->getActive();
 		if (isset($active->query['layout']) && (JRequest::getCmd('layout') == '')) {
