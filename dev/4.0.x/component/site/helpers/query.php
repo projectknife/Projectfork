@@ -30,7 +30,7 @@ defined('_JEXEC') or die;
  */
 class ProjectforkHelperQuery
 {
-    public static function buildFilter(&$query, $filters = array())
+    public function buildFilter(&$query, $filters = array())
     {
         $db = JFactory::getDbo();
 

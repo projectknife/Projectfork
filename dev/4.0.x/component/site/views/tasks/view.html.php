@@ -33,7 +33,20 @@ class ProjectforkViewTasks extends JView
 	 */
 	public function display($tpl = null)
 	{
-	    $app	    = JFactory::getApplication();
+	    $app   = JFactory::getApplication();
+        $state = $this->get('State');
+
+	    // Check for layout override
+		$active	= $app->getMenu()->getActive();
+		if (isset($active->query['layout']) && (JRequest::getCmd('layout') == '')) {
+			$this->setLayout($active->query['layout']);
+		}
+
+        // Set list limit to 0 if default layout
+        if($this->getLayout() == '' || $this->getLayout() == 'default') {
+            $state->set('list.limit', 0);
+        }
+
         $null_date  = JFactory::getDbo()->getNullDate();
         $user       = JFactory::getUser();
 	    $items      = $this->get('Items');
@@ -69,12 +82,6 @@ class ProjectforkViewTasks extends JView
           ) {
             $app->enqueueMessage(JText::_('COM_PROJECTFORK_EMPTY_SEARCH_RESULT'));
         }
-
-		// Check for layout override
-		$active	= $app->getMenu()->getActive();
-		if (isset($active->query['layout']) && (JRequest::getCmd('layout') == '')) {
-			$this->setLayout($active->query['layout']);
-		}
 
 
         // Assign references

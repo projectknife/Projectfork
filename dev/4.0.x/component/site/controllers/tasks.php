@@ -56,6 +56,40 @@ class ProjectforkControllerTasks extends JControllerAdmin
 	}
 
 
+    /**
+	 * Method to get save the priority of one or more tasks
+	 *
+	 * @return	boolean    True on success, otherwise false
+	 */
+    public function savePriority()
+	{
+		// Check for request forgeries.
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		// Initialise variables.
+		$ids  = JRequest::getVar('cid', null, 'post', 'array');
+		$pids = JRequest::getVar('priority', null, 'post', 'array');
+
+		$model  = $this->getModel();
+		$return = $model->savePriority($ids, $pids);
+
+		if ($return === false)
+		{
+			// Reorder failed.
+			$message = JText::sprintf('COM_PROJECTFORK_ERROR_SAVEPRIORITY_FAILED', $model->getError());
+			$this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false), $message, 'error');
+			return false;
+		}
+		else
+		{
+			// Reorder succeeded.
+			$message = JText::_('COM_PROJECTFORK_SUCCESS_TASK_SAVEPRIORITY');
+			$this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false), $message);
+			return true;
+		}
+	}
+
+
 	/**
 	 * Gets the URL arguments to append to an item redirect.
 	 *

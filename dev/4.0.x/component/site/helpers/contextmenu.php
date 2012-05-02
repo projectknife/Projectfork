@@ -63,13 +63,27 @@ class ProjectforkHelperContextMenu
     }
 
 
-    public function start()
+    public function start($options = array(), $return = false)
     {
+        $class = '';
+        $title = '';
+
+        if(isset($options['class']) && $options['class'] != '') {
+            $class = ' '.$options['class'];
+        }
+
+        if(isset($options['title']) && $options['title'] != '') {
+            $title = $options['title'].' ';
+        }
+
         $html = array();
 
         $html[] = '<div class="btn-group">';
-        $html[] = '    <a class="btn dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>';
+        $html[] = '    <a class="btn dropdown-toggle'.$class.'" data-toggle="dropdown" href="#">'.$title.'<span class="caret"></span></a>';
         $html[] = '    <ul class="dropdown-menu">';
+
+
+        if($return) return implode("\n", $html);
 
         $this->addItem(implode("\n", $html));
     }
@@ -133,6 +147,66 @@ class ProjectforkHelperContextMenu
     }
 
 
+    public function priorityList($i, $id, $asset, $selected = 0)
+    {
+        $priorities = JHtml::_('projectfork.priorityOptions');
+        $html  = array();
+        $title = '';
+        $class = 'btn-info very-low-priority';
+
+        // Find the current priority and class
+        foreach($priorities AS $priority)
+        {
+            if($priority->value == $selected) {
+                $title = $priority->text;
+
+                switch($priority->value)
+                {
+                    case 0:
+                        $class = 'btn-info very-low-priority';
+                        break;
+
+                    case 1:
+                        $class = 'btn-info low-priority';
+                        break;
+
+                    case 2:
+                        $class = 'btn-warning medium-priority';
+                        break;
+
+                    case 3:
+                        $class = 'btn-danger high-priority';
+                        break;
+
+                    case 4:
+                        $class = 'btn-danger very-high-priority';
+                        break;
+
+                    default:
+                        $class = 'btn-info very-low-priority';
+                        break;
+                }
+            }
+        }
+
+        $class .= ' btn-mini';
+
+
+        $html[] = $this->start(array('title' => $title, 'class' => $class), true);
+        foreach($priorities AS $priority)
+        {
+            if($title == $priority->text) continue;
+            $action = "$('priority".$i."').set('value', ".intval($priority->value)."); listItemTask('cb".$i."','".$asset.".savePriority');";
+            $html[] = $this->itemJavaScript('icon-flag', $priority->text, $action, true);
+        }
+        $html[] = $this->end(true);
+        $html[] = '<input type="hidden" id="priority'.$i.'" name="priority['.$id.']" value="'.intval($selected).'"/>';
+
+
+        return implode("\n", $html);
+    }
+
+
     public function bulkItems($actions)
     {
         $message = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));
@@ -175,17 +249,18 @@ class ProjectforkHelperContextMenu
         $html[] = '</div>';
 
         return implode("\n", $html);
-
     }
 
 
-    public function end()
+    public function end($return = false)
     {
         $html = array();
 
         $html[] = '    </ul>';
         $html[] = '</div>';
 
-        return implode("\n", $html);
+        if($return) return implode("\n", $html);
+
+        $this->addItem(implode("\n", $html));
     }
 }

@@ -87,13 +87,14 @@ class ProjectforkModelTasks extends JModelList
 		$value = JRequest::getUInt('limit', $app->getCfg('list_limit', 0));
 		$this->setState('list.limit', $value);
 
+
         // Query limit start
 		$value = JRequest::getUInt('limitstart', 0);
 		$this->setState('list.start', $value);
 
         // Query order field
-		$value = JRequest::getCmd('filter_order', 'a.title');
-		if(!in_array($value, $this->filter_fields)) $value = 'a.title';
+		$value = JRequest::getCmd('filter_order', 'a.ordering');
+		if(!in_array($value, $this->filter_fields)) $value = 'a.ordering';
 		$this->setState('list.ordering', $value);
 
         // Query order direction
@@ -120,24 +121,24 @@ class ProjectforkModelTasks extends JModelList
         $this->setState('filter.search', $value);
 
         // Filter - Project
-        $value = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $value = (int) $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
         $this->setState('filter.project', $value);
         ProjectforkHelper::setActiveProject($value);
 
         // Filter - Milestone
-        $value = JRequest::getCmd('filter_milestone', '');
+        $value = JRequest::getInt('filter_milestone', '');
         $this->setState('filter.milestone', $value);
 
         // Filter - Task list
-        $value = JRequest::getCmd('filter_tasklist', '');
+        $value = JRequest::getInt('filter_tasklist', '');
         $this->setState('filter.tasklist', $value);
 
         // Filter - Author
-        $value = JRequest::getCmd('filter_author', '');
+        $value = JRequest::getInt('filter_author', '');
         $this->setState('filter.author', $value);
 
         // Filter - Assigned User
-        $value = JRequest::getCmd('filter_assigned', '');
+        $value = JRequest::getInt('filter_assigned', '');
         $this->setState('filter.assigned', $value);
 
         // Filter - Priority
@@ -179,9 +180,9 @@ class ProjectforkModelTasks extends JModelList
 	function getListQuery()
 	{
 		// Create a new query object.
-		$db		= $this->getDbo();
-		$query	= $db->getQuery(true);
-		$user	= JFactory::getUser();
+		$db	   = $this->getDbo();
+		$query = $db->getQuery(true);
+		$user  = JFactory::getUser();
 
 		// Select the required fields from the table.
 		$query->select(
@@ -212,8 +213,9 @@ class ProjectforkModelTasks extends JModelList
 		$query->select('p.title AS project_title');
 		$query->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
 
-        // Join over the task lists for the task list title.
-		$query->select('tl.title AS tasklist_title');
+        // Join over the task lists for the task list title, description, checked out, author
+		$query->select('tl.title AS tasklist_title, tl.description AS tasklist_description, '
+                       . 'tl.checked_out AS checked_out_list, tl.created_by AS list_created_by');
 		$query->join('LEFT', '#__pf_task_lists AS tl ON tl.id = a.list_id');
 
         // Join over the milestones for the milestone title.
@@ -228,7 +230,7 @@ class ProjectforkModelTasks extends JModelList
 
         // Filter by assigned user
         $assigned = $this->getState('filter.assigned');
-        if(is_numeric($assigned)) {
+        if(is_numeric($assigned) && $assigned != 0) {
             $query->join('INNER', '#__pf_ref_users AS ru ON (ru.item_type = '.
                                    $db->quote('task').' AND ru.item_id = a.id)');
             $query->where('ru.user_id = '.(int)$assigned);
@@ -251,11 +253,14 @@ class ProjectforkModelTasks extends JModelList
 		$orderCol	= $this->state->get('list.ordering', 'a.title');
 		$orderDirn	= $this->state->get('list.direction', 'asc');
 
-		if ($orderCol == 'a.ordering') {
-			$orderCol = 'p.title, m.title, tl.title '.$orderDirn.', '.$orderCol;
+		if ($orderCol == 'a.title') {
+			$orderCol = 'tl.title, p.title, m.title, a.ordering '.$orderDirn.', '.$orderCol;
+		}
+        if ($orderCol == 'a.ordering' || $orderCol == 'a.title') {
+			$orderCol = 'tl.title, p.title, m.title '.$orderDirn.', '.$orderCol;
 		}
         if($orderCol == 'project_title') {
-            $orderCol = 'm.title, tl.title, a.title '.$orderDirn.', p.title';
+            $orderCol = 'tl.title, m.title, a.title '.$orderDirn.', p.title';
         }
         if($orderCol == 'milestone_title') {
             $orderCol = 'p.title '.$orderDirn.', m.title';
@@ -265,7 +270,6 @@ class ProjectforkModelTasks extends JModelList
         }
 
 		$query->order($db->getEscaped($orderCol.' '.$orderDirn));
-
 
 		return $query;
 	}
@@ -339,7 +343,7 @@ class ProjectforkModelTasks extends JModelList
 
         // Filter by assigned user
         $assigned = $this->getState('filter.assigned');
-        if(is_numeric($assigned)) {
+        if(is_numeric($assigned) && $assigned != 0) {
             $query->join('INNER', '#__pf_ref_users AS ru ON (ru.item_type = '.
                                    $db->quote('task').' AND ru.item_id = a.id)');
             $query->where('ru.user_id = '.(int)$assigned);
@@ -408,7 +412,7 @@ class ProjectforkModelTasks extends JModelList
 
         // Filter by assigned user
         $assigned = $this->getState('filter.assigned');
-        if(is_numeric($assigned)) {
+        if(is_numeric($assigned) && $assigned != 0) {
             $query->join('INNER', '#__pf_ref_users AS ru ON (ru.item_type = '.
                                    $db->quote('task').' AND ru.item_id = a.id)');
             $query->where('ru.user_id = '.(int)$assigned);
@@ -476,7 +480,7 @@ class ProjectforkModelTasks extends JModelList
 
         // Filter by assigned user
         $assigned = $this->getState('filter.assigned');
-        if(is_numeric($assigned)) {
+        if(is_numeric($assigned) && $assigned != 0) {
             $query->join('INNER', '#__pf_ref_users AS ru ON (ru.item_type = '.
                                    $db->quote('task').' AND ru.item_id = a.id)');
             $query->where('ru.user_id = '.(int)$assigned);
