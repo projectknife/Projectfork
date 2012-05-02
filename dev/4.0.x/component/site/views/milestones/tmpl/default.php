@@ -51,18 +51,30 @@ $action_count = count($this->actions);
     			        <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
     			        <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
     		        </div>
-                    <?php if ($this->user->authorise('core.edit.state', 'com_projectfork') || $this->user->authorize('milestone.edit.state', 'com_projectfork')
-                          ||  $this->user->authorise('core.edit', 'com_projectfork') || $this->user->authorize('milestone.edit', 'com_projectfork')) : ?>
+                    <?php if ($user->authorise('core.edit.state', 'com_projectfork') || $user->authorize('milestone.edit.state', 'com_projectfork')
+                          ||  $user->authorise('core.edit', 'com_projectfork') || $user->authorize('milestone.edit', 'com_projectfork')) : ?>
         				<div class="filter-published btn-group pull-left">
         				    <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
         				        <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-        				        <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'),
+        				        <?php echo JHtml::_('select.options', $this->states,
                                                     'value', 'text', $this->state->get('filter.published'),
                                                     true
                                                    );
                                 ?>
         				    </select>
         				</div>
+                    <?php endif; ?>
+                    <?php if(intval($this->state->get('filter.project')) != 0 && count($this->authors)) : ?>
+                        <div class="filter-author btn-group pull-left">
+                            <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
+        				        <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+        				        <?php echo JHtml::_('select.options', $this->authors,
+                                                    'value', 'text', $this->state->get('filter.author'),
+                                                    true
+                                                   );
+                                ?>
+        				    </select>
+                        </div>
                     <?php endif; ?>
                     <div class="filter-project btn-group pull-left">
                         <?php echo JHtml::_('projectfork.filterProject');?>
@@ -74,7 +86,7 @@ $action_count = count($this->actions);
 		            </div>
 		        <?php endif; ?>
 			</fieldset>
-			
+
 			<?php
             $k = 0;
             foreach($this->items AS $i => $item) :
@@ -88,7 +100,7 @@ $action_count = count($this->actions);
             ?>
                 <div class="well well-<?php echo $k;?>">
                		<h3>
-                        <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestoneRoute($item->id.':'.$item->alias, $item->project_id.':'.$item->project_alias));?>">
+                        <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestoneRoute($item->slug, $item->project_slug));?>">
                             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                             <?php echo $this->escape($item->title);?>
                         </a>
@@ -98,17 +110,17 @@ $action_count = count($this->actions);
                                 $this->menu->itemEdit('milestoneform', $item->id, ($canEdit || $canEditOwn));
                                 $this->menu->itemTrash('milestones', $i, ($canEdit || $canEditOwn));
                                 $this->menu->end();
-    
+
                                 // echo $this->menu->render();
                             ?>
                    		</div>
                         <small>
                         <?php if($this->params->get('milestone_list_col_project')) : ?>
-                           		in <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->project_id.':'.$item->project_alias));?>">
+                           		in <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->project_slug));?>">
                                    <?php echo $this->escape($item->project_title);?>
                                 </a>
                         <?php endif; ?>
-                        
+
                         <?php if($this->params->get('milestone_list_col_author')) : ?>
                         	by <?php echo $this->escape($item->author_name);?>
                         <?php endif; ?>
@@ -149,14 +161,9 @@ $action_count = count($this->actions);
                		<?php endif; ?>
                		<div class="btn-toolbar">
                			<div class="btn-group">
-		                    <?php if($this->params->get('milestone_list_col_tasklists')) : ?>
-				               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskListsRoute($item->project_id.':'.$item->project_alias, $item->id.':'.$item->alias));?>">
-		                               <i class="icon-th-list"></i> <?php echo (int) $item->tasklists;?>
-		                            </a>
-		                    <?php endif; ?>
 		                    <?php if($this->params->get('milestone_list_col_tasks')) : ?>
 				               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_id.':'.$item->project_alias, $item->id.':'.$item->alias));?>">
-		                               <i class="icon-ok"></i> <?php echo (int) $item->tasks;?>
+		                               <i class="icon-ok"></i> <?php echo intval($item->tasklists).' / '.intval($item->tasks);?>
 		                            </a>
 		                    <?php endif; ?>
                     	</div>

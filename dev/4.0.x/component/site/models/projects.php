@@ -329,6 +329,11 @@ class ProjectforkModelProjects extends JModelList
 	}
 
 
+    /**
+	 * Build a list of publishing states
+	 *
+	 * @return	JDatabaseQuery
+	 */
     public function getPublishedStates()
     {
         $db     = $this->getDbo();

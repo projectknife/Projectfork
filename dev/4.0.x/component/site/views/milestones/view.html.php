@@ -33,12 +33,15 @@ class ProjectforkViewMilestones extends JView
 	 */
 	public function display($tpl = null)
 	{
+	    $app	    = JFactory::getApplication();
+        $null_date  = JFactory::getDbo()->getNullDate();
+        $user       = JFactory::getUser();
 	    $items      = $this->get('Items');
         $pagination = $this->get('Pagination');
         $state		= $this->get('State');
+        $authors    = $this->get('Authors');
+        $states     = $this->get('PublishedStates');
 		$params		= $state->params;
-        $null_date  = JFactory::getDbo()->getNullDate();
-        $user       = JFactory::getUser();
         $actions    = $this->getActions();
         $toolbar    = $this->getToolbar();
         $canDo      = ProjectforkHelper::getActions();
@@ -56,13 +59,19 @@ class ProjectforkViewMilestones extends JView
 		}
 
 
-        // Compute the item slugs.
-		for ($i = 0, $n = count($items); $i < $n; $i++)
-		{
-			$item = &$items[$i];
-			$item->slug = $item->alias ? ($item->id.':'.$item->alias) : $item->id;
-            $item->project_slug = $item->project_alias ? ($item->project_id.':'.$item->project_alias) : $item->project_id;
+        // Check for empty search result
+        if((count($items) == 0) && ($state->get('filter.search') != '' || $state->get('filter.author') != ''
+            || $state->get('filter.published') != '')
+          ) {
+            $app->enqueueMessage(JText::_('COM_PROJECTFORK_EMPTY_SEARCH_RESULT'));
         }
+
+
+        // Check for layout override
+		$active	= $app->getMenu()->getActive();
+		if (isset($active->query['layout']) && (JRequest::getCmd('layout') == '')) {
+			$this->setLayout($active->query['layout']);
+		}
 
 
         // Assign references
@@ -73,7 +82,8 @@ class ProjectforkViewMilestones extends JView
         $this->assignRef('nulldate',   $null_date);
         $this->assignRef('actions',    $actions);
         $this->assignRef('toolbar',    $toolbar);
-        $this->assignRef('user',       $user);
+        $this->assignRef('authors',    $authors);
+        $this->assignRef('states',     $states);
         $this->assignRef('canDo',      $canDo);
         $this->assignRef('menu',       $menu);
 
