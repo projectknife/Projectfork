@@ -162,4 +162,15 @@ abstract class JHtmlProjectfork
 
         return $options;
     }
+
+
+    static function truncate($text = '', $chars = 40)
+    {
+        $truncated = strip_tags($text);
+        $length    = strlen($truncated);
+
+        if(($length + 3) < $chars) return $truncated;
+
+        return substr($truncated, 0, $chars).'...';
+    }
 }
