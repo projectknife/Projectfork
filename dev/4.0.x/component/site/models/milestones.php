@@ -40,6 +40,9 @@ class ProjectforkModelMilestones extends JModelList
 	 */
 	public function __construct($config = array())
 	{
+	    // Include query helper class
+	    require_once JPATH_BASE.DS.'components'.DS.'com_projectfork'.DS.'helpers'.DS.'query.php';
+
 	    if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
 				'id', 'a.id',
@@ -200,43 +203,16 @@ class ProjectforkModelMilestones extends JModelList
 			$query->where('a.access IN ('.$groups.')');
 		}
 
-        // Filter by project
-        $project = $this->getState('filter.project');
-        if(is_numeric($project) && $project != 0) {
-            $query->where('a.project_id = ' . (int) $project);
-        }
 
-        // Filter by published state
-		$published = $this->getState('filter.published');
-		if (is_numeric($published)) {
-			$query->where('a.state = ' . (int) $published);
-		}
-		elseif ($published === '') {
-			$query->where('(a.state = 0 OR a.state = 1)');
-		}
+        // Filter fields
+        $filters = array();
+        $filters['a.state']        = array('STATE',       $this->getState('filter.published'));
+        $filters['a.project_id']   = array('INT-NOTZERO', $this->getState('filter.project'));
+        $filters['a.created_by']   = array('INT-NOTZERO', $this->getState('filter.author'));
+        $filters['a']              = array('SEARCH',      $this->getState('filter.search'));
 
-        // Filter by author
-		$author_id = $this->getState('filter.author');
-		if (is_numeric($author_id)) {
-			$type = $this->getState('filter.author_id.include', true) ? '= ' : '<>';
-			$query->where('a.created_by '.$type.(int) $author_id);
-		}
-
-        // Filter by search in title.
-		$search = $this->getState('filter.search');
-		if (!empty($search)) {
-			if (stripos($search, 'id:') === 0) {
-				$query->where('a.id = '.(int) substr($search, 4));
-			}
-			elseif (stripos($search, 'author:') === 0) {
-				$search = $db->Quote('%'.$db->getEscaped(trim(substr($search, 8)), true).'%');
-				$query->where('(ua.name LIKE '.$search.' OR ua.username LIKE '.$search.')');
-			}
-			else {
-				$search = $db->Quote('%'.$db->getEscaped($search, true).'%');
-				$query->where('(a.title LIKE '.$search.' OR a.alias LIKE '.$search.')');
-			}
-		}
+        // Apply Filter
+        ProjectforkHelperQuery::buildFilter($query, $filters);
 
 		// Add the list ordering clause.
         $query->group('a.id');
@@ -284,9 +260,9 @@ class ProjectforkModelMilestones extends JModelList
 	 */
 	public function getAuthors()
     {
-        $db        = $this->getDbo();
-		$query     = $db->getQuery(true);
-        $user      = $user = JFactory::getUser();
+        $db    = $this->getDbo();
+		$query = $db->getQuery(true);
+        $user  = $user = JFactory::getUser();
 
 		// Construct the query
 		$query->select('u.id AS value, u.name AS text, COUNT(DISTINCT a.id) AS count');
@@ -299,20 +275,14 @@ class ProjectforkModelMilestones extends JModelList
 			$query->where('a.access IN ('.$groups.')');
 		}
 
-        // Filter by project
-        $project = $this->getState('filter.project');
-        if (is_numeric($project)) {
-			$query->where('a.project_id = ' . (int) $project);
-		}
+        // Filter fields
+        $filters = array();
+        $filters['a.state']        = array('STATE',       $this->getState('filter.published'));
+        $filters['a.project_id']   = array('INT-NOTZERO', $this->getState('filter.project'));
 
-        // Filter by published state
-		$published = $this->getState('filter.published');
-		if (is_numeric($published)) {
-			$query->where('a.state = ' . (int) $published);
-		}
-		elseif ($published === '') {
-			$query->where('(a.state = 0 OR a.state = 1)');
-		}
+        // Apply Filter
+        ProjectforkHelperQuery::buildFilter($query, $filters);
+
 
         // Filter by search in title.
 		$search = $this->getState('filter.search');
@@ -359,9 +329,11 @@ class ProjectforkModelMilestones extends JModelList
     public function getPublishedStates()
     {
         $db     = $this->getDbo();
-        $user   = $user = JFactory::getUser();
         $states = JHtml::_('jgrid.publishedOptions');
         $count  = count($states);
+
+        $query_select = $this->getState('list.select');
+        $query_state  = $this->getState('filter.published');
 
         for($i = 0; $i < $count; $i++)
         {
@@ -374,57 +346,19 @@ class ProjectforkModelMilestones extends JModelList
                 continue;
             }
 
-            $query = $db->getQuery(true);
+            $this->setState('list.select', 'COUNT(DISTINCT a.id)');
+            $this->setState('filter.published', $states[$i]->value);
 
-            // Construct the query
-    		$query->select('COUNT(DISTINCT a.id)');
-    		$query->from('#__pf_milestones AS a');
-            $query->join('LEFT', '#__users AS u ON u.id = a.created_by');
-
-            // Implement View Level Access
-    		if(!$user->authorise('core.admin')) {
-    		    $groups	= implode(',', $user->getAuthorisedViewLevels());
-    			$query->where('a.access IN ('.$groups.')');
-    		}
-
-            // Filter by current state
-            $query->where('a.state = ' . (int) $states[$i]->value);
-
-            // Filter by project
-            $project = (int) $this->getState('filter.project');
-            if ($project != 0) {
-    			$query->where('a.project_id = ' . $project);
-    		}
-
-    		// Filter by author
-    		$author_id = $this->getState('filter.author');
-    		if (is_numeric($author_id)) {
-    			$type = $this->getState('filter.author_id.include', true) ? '= ' : '<>';
-    			$query->where('a.created_by '.$type.(int) $author_id);
-    		}
-
-            // Filter by search in title.
-    		$search = $this->getState('filter.search');
-    		if (!empty($search)) {
-    			if (stripos($search, 'id:') === 0) {
-    				$query->where('a.id = '.(int) substr($search, 4));
-    			}
-    			elseif (stripos($search, 'author:') === 0) {
-    				$search = $db->Quote('%'.$db->getEscaped(trim(substr($search, 8)), true).'%');
-    				$query->where('(u.name LIKE '.$search.' OR u.username LIKE '.$search.')');
-    			}
-    			else {
-    				$search = $db->Quote('%'.$db->getEscaped($search, true).'%');
-    				$query->where('(a.title LIKE '.$search.' OR a.alias LIKE '.$search.')');
-    			}
-    		}
-
-    		$db->setQuery($query->__toString());
+            $query = $this->getListQuery();
+            $db->setQuery($query->__toString());
 
             $found = (int) $db->loadResult();
 
             $states[$i]->text = JText::_($states[$i]->text).' ('.$found.')';
         }
+
+        $this->setState('list.select', $query_select);
+        $this->setState('filter.published', $query_state);
 
         return $states;
     }
