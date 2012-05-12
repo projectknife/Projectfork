@@ -155,12 +155,13 @@ CREATE TABLE IF NOT EXISTS `#__pf_ref_tags` (
 
 DROP TABLE IF EXISTS `#__pf_ref_users`;
 CREATE TABLE IF NOT EXISTS `#__pf_ref_users` (
-  `id` int(10) unsigned NOT NULL COMMENT 'Item ID reference',
-  `context` varchar(32) NOT NULL COMMENT 'Reference context',
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID reference',
+  `item_type` varchar(32) NOT NULL COMMENT 'The item type',
+  `item_id` int(10) unsigned NOT NULL COMMENT 'The item id',
   `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'User ID reference',
-  PRIMARY KEY (`context`,`id`,`user_id`),
-  KEY `idx_userid` (`user_id`),
-  KEY `idx_contextid` (`context`,`id`)
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_user` (`user_id`,`item_id`,`item_type`),
+  KEY `idx_item` (`item_type`,`item_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork user references';
 
 DROP TABLE IF EXISTS `#__pf_tags`;
@@ -178,6 +179,8 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table',
   `project_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent project ID',
   `list_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent task list ID',
+  `milestone_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent milestone ID',
+  `catid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Calculated category ID for ordering',
   `title` varchar(128) NOT NULL COMMENT 'Task title',
   `alias` varchar(128) NOT NULL COMMENT 'Title alias. Used in SEF URL''s',
   `description` text NOT NULL COMMENT 'Task description',
@@ -199,6 +202,8 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   UNIQUE KEY `idx_alias` (`project_id`,`alias`),
   KEY `idx_projectid` (`project_id`),
   KEY `idx_listid` (`list_id`),
+  KEY `idx_milestone` (`milestone_id`),
+  KEY `idx_catid` (`catid`),
   KEY `idx_access` (`access`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`),

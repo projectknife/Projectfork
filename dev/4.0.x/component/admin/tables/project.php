@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -29,7 +29,7 @@ jimport('joomla.database.tableasset');
  * Project table
  *
  */
-class JTableProject extends JTable
+class PFTableProject extends JTable
 {
 	/**
 	 * Constructor
@@ -65,6 +65,38 @@ class JTableProject extends JTable
 	protected function _getAssetTitle()
 	{
 		return $this->title;
+	}
+
+
+    /**
+	 * Get the parent asset id for the record
+	 *
+	 * @param   JTable   $table  A JTable object for the asset parent.
+	 * @param   integer  $id     The id for the asset
+	 *
+	 * @return  integer  The id of the asset's parent
+	 */
+	protected function _getAssetParentId($table = null, $id = null)
+	{
+		// Initialise variables.
+		$assetId = null;
+        $query   = $this->_db->getQuery(true);
+
+
+		// Build the query to get the asset id for the parent category.
+		$query->select($this->_db->quoteName('id'))
+		      ->from($this->_db->quoteName('#__assets'))
+			  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_projectfork"));
+
+
+		// Get the asset id from the database.
+		$this->_db->setQuery($query);
+		if ($result = $this->_db->loadResult())$assetId = (int) $result;
+
+		// Return the asset id.
+		if ($assetId) return $assetId;
+
+		return parent::_getAssetParentId($table, $id);
 	}
 
 
@@ -107,24 +139,20 @@ class JTableProject extends JTable
 	 */
 	public function check()
 	{
-		if (trim($this->title) == '') {
+		jimport('joomla.mail.helper');
+
+        if (trim($this->title) == '') {
 			$this->setError(JText::_('COM_PROJECTFORK_WARNING_PROVIDE_VALID_TITLE'));
 			return false;
 		}
 
-		if (trim($this->alias) == '') {
-			$this->alias = $this->title;
-		}
-
+		if (trim($this->alias) == '') $this->alias = $this->title;
 		$this->alias = JApplication::stringURLSafe($this->alias);
+		if (trim(str_replace('-','',$this->alias)) == '') $this->alias = JFactory::getDate()->format('Y-m-d-H-i-s');
 
-		if (trim(str_replace('-','',$this->alias)) == '') {
-			$this->alias = JFactory::getDate()->format('Y-m-d-H-i-s');
-		}
 
-		if (trim(str_replace('&nbsp;', '', $this->description)) == '') {
-			$this->description = '';
-		}
+		if (trim(str_replace('&nbsp;', '', $this->description)) == '') $this->description = '';
+
 
 		// Check the start date is not earlier than the end date.
 		if ($this->end_date > $this->_db->getNullDate() && $this->end_date < $this->start_date) {
@@ -133,6 +161,29 @@ class JTableProject extends JTable
 			$this->start_date = $this->end_date;
 			$this->end_date = $temp;
 		}
+
+
+        // Check attribs
+        $registry = new JRegistry;
+		$registry->loadJSON($this->attribs);
+
+        $website = $registry->get('website');
+        $email   = $registry->get('email');
+
+        // Validate website
+        if ((strlen($website) > 0)
+			&& (stripos($website, 'http://') === false)
+			&& (stripos($website, 'https://') === false)
+			&& (stripos($website, 'ftp://') === false))
+		{
+			$registry->setValue('website', 'http://'.$website);
+		}
+
+        // Validate contact email
+        if (!JMailHelper::isEmailAddress($email)) $registry->setValue('email', '');
+
+        $this->attribs = (string) $registry;
+
 
 		return true;
 	}
@@ -148,6 +199,8 @@ class JTableProject extends JTable
 		$date = JFactory::getDate();
 		$user = JFactory::getUser();
 
+
+
 		if ($this->id) {
 			// Existing item
 			$this->modified		= $date->toMySQL();
@@ -161,7 +214,7 @@ class JTableProject extends JTable
 		}
 
 		// Verify that the alias is unique
-		$table = JTable::getInstance('Project','JTable');
+		$table = JTable::getInstance('Project', 'PFTable');
 		if ($table->load(array('alias'=>$this->alias)) && ($table->id != $this->id || $this->id==0)) {
 			$this->setError(JText::_('JLIB_DATABASE_ERROR_PROJECT_UNIQUE_ALIAS'));
 			return false;
@@ -263,8 +316,9 @@ class JTableProject extends JTable
 
 		if ($mapKeysToText) {
 			$query = 'SELECT name'
-			. ' FROM #__users'
-			. ' WHERE id = ' . (int) $this->created_by;
+			       . ' FROM #__users'
+			       . ' WHERE id = ' . (int) $this->created_by;
+
 			$db->setQuery($query);
 			$this->created_by = $db->loadResult();
 		}
@@ -272,4 +326,3 @@ class JTableProject extends JTable
 		return parent::toXML($mapKeysToText);
 	}
 }
-?>

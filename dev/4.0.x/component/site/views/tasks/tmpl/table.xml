@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<metadata>
+	<layout title="com_projectfork_tasks_view_table_title" option="com_projectfork_tasks_view_table_option">
+		<help key = "JHELP_MENUS_MENU_ITEM_TASKS_TABLE" />
+		<message><![CDATA[com_projectfork_tasks_view_table_desc]]></message>
+	</layout>
+
+    <fields name="params">
+	    <fieldset name="advanced" label="JGLOBAL_LIST_LAYOUT_OPTIONS">
+	        <field name="show_pagination" type="list" label="JGLOBAL_Pagination_Label" description="JGLOBAL_Pagination_Desc">
+		        <option value="">JGLOBAL_USE_GLOBAL</option>
+		        <option value="0">JHIDE</option>
+			    <option value="1">JSHOW</option>
+		    </field>
+		    <field name="show_pagination_results" type="list" label="JGLOBAL_PAGINATION_RESULTS_LABEL" description="JGLOBAL_PAGINATION_RESULTS_DESC">
+		        <option value="">JGLOBAL_USE_GLOBAL</option>
+                <option value="0">JHIDE</option>
+			    <option value="1">JSHOW</option>
+		    </field>
+            <field name="show_pagination_limit" type="list" description="JGLOBAL_DISPLAY_SELECT_DESC" label="JGLOBAL_DISPLAY_SELECT_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="date_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_CREATION_DATE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
+		    <field name="sdate_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_SDATE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
+		    <field name="deadline_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_DEADLINE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
+
+			<field name="spacer1" type="spacer" hr="true"/>
+
+            <field name="task_list_col_project" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_PROJECT_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_PROJECT_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="task_list_col_milestone" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_MILESTONE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_MILESTONE_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="task_list_col_tasklist" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_TASKLIST_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_TASKLIST_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+            <field name="task_list_col_priority" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_PRIORITY_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_PRIORITY_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="task_list_col_author" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="task_list_col_created" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_LABEL">
+		        <option value="">JGLOBAL_USE_GLOBAL</option>
+                <option value="0">JHIDE</option>
+			    <option value="1">JSHOW</option>
+		    </field>
+            <field name="task_list_col_sdate" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="task_list_col_deadline" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+			<field name="task_list_col_access" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_LABEL">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">JHIDE</option>
+				<option value="1">JSHOW</option>
+			</field>
+	    </fieldset>
+	</fields>
+</metadata>

@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
 *
 * This file is part of Projectfork.
@@ -34,21 +34,61 @@ class ProjectforkController extends JController
 
 	public function display($cachable = false, $urlparams = false)
 	{
-		$cachable = true;
-        $safeurlparams = array();
+	    jimport( 'joomla.application.component.helper' );
+
+        JHtml::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/html');
+
+        $params = JComponentHelper::getParams('com_projectfork');
+		$doc    = JFactory::getDocument();
+        $uri    = JFactory::getURI();
 
 
-        // Load Projectfork CSS
-        $doc = JFactory::getDocument();
-        $uri = JFactory::getURI();
-        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_icons.css');
-        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_layout.css');
-        $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_theme.css');
+        if($doc->getType() == 'html') {
+            // Load bootstrap if enabled
+            if($params->get('bootstrap', '1') == '1') {
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap.min.css');
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap-responsive.min.css');
 
-        unset($doc, $uri);
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/jquery.min.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/jquery.noconflict.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/bootstrap/js/bootstrap.min.js');
+            }
+
+            // Load Projectfork CSS if enabled
+            if($params->get('css', '1') == '1') {
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_icons.css');
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_layout.css');
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_theme.css');
+            }
+
+            // Load Projectfork JS
+            $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/com_projectfork.js');
+
+
+            JHTML::_('behavior.tooltip');
+        }
+
+
+        $cachable = true;
+        $safeurlparams = array('id' => 'INT',
+                               'cid' => 'ARRAY',
+                               'limit' => 'INT',
+                               'limitstart' => 'INT',
+			                   'showall' => 'INT',
+                               'return' => 'BASE64',
+                               'filter' => 'STRING',
+                               'filter_order' => 'CMD',
+                               'filter_order_Dir' => 'CMD',
+                               'filter_search' => 'STRING',
+                               'filter_published' => 'CMD',
+                               'filter_project' => 'CMD',
+                               'filter_milestone' => 'CMD',
+                               'filter_tasklist' => 'CMD',
+                               'filter_priority' => 'CMD'
+                              );
+
 
 		parent::display($cachable, $safeurlparams);
 		return $this;
 	}
 }
-?>

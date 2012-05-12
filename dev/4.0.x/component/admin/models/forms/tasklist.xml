@@ -3,8 +3,13 @@
 	<fieldset>
 		<field name="project_id" type="project" label="COM_PROJECTFORK_FIELD_PROJECT_LABEL"
 			description="COM_PROJECTFORK_FIELD_PROJECT_DESC" class="inputbox" size="30"
-			required="true" 
+			required="true" view="tasklist" submit="true" session="true"
         />
+        <field name="milestone_id" type="milestone" label="COM_PROJECTFORK_FIELD_MILESTONE_LABEL"
+			description="COM_PROJECTFORK_FIELD_MILESTONE_DESC" class="inputbox" project="project_id"
+        >
+            <option value="0">COM_PROJECTFORK_OPTION_SELECT_MILESTONE</option>
+        </field>
         <field name="title" type="text" label="JGLOBAL_TITLE"
 			description="JFIELD_TITLE_DESC" class="inputbox" size="30"
 			required="true" 
@@ -21,16 +26,11 @@
 			<option value="2">JARCHIVED</option>
 			<option value="-2">JTRASHED</option>
 		</field>
-		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"
-			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" 
-        />
-		<field
-			name="buttonspacer"
-			description="JGLOBAL_ACTION_PERMISSIONS_DESCRIPTION"
-			type="spacer" 
+		<field name="access" type="pfaccesslevel" label="JFIELD_ACCESS_LABEL"
+			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" permissions="true" 
         />
         <field name="created_by" type="user"
-			label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_TASKLIST_CREATED_BY_DESC"
+			label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_CREATED_BY_DESC"
         />
 		<field name="modified" type="calendar" class="readonly"
 			label="JGLOBAL_FIELD_MODIFIED_LABEL" 
@@ -44,11 +44,9 @@
 		/>
 		<field
 			name="rules"
-			type="rules"
+			type="permissions"
 			label="JCONFIG_PERMISSIONS_LABEL"
 			class="inputbox"
-			validate="rules"
-			filter="rules"
 			component="com_projectfork"
 			section="tasklist" 
         />

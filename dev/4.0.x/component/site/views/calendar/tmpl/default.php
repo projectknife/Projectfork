@@ -24,8 +24,10 @@ defined('_JEXEC') or die;
 ?>
 <div id="projectfork" class="category-list view-calendar">
     <div class="cat-items">
-        <h2>Calendar <input type="button" class="button" value="New Event" /></h2>
-        <table class="category mini-calendar">
+    	<div class="page-header">
+	        <h2>Calendar <input type="button" class="button btn btn-info" value="New Event" /></h2>
+        </div>
+        <table class="category mini-calendar table table-striped table-bordered">
         	<thead>
         		<tr>
         			<th><span class="calendar-title">Sun</span></th>

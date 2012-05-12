@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -42,20 +42,20 @@ class ProjectforkModelProjects extends JModelList
 	{
 		if (empty($config['filter_fields'])) {
 			$config['filter_fields'] = array(
-				'id', 'p.id',
-				'title', 'p.title',
-				'alias', 'p.alias',
-				'created', 'p.created',
-                'created_by', 'p.created_by',
-                'modified', 'p.modified',
-                'modified_by', 'p.modified_by',
-                'checked_out', 'p.checked_out',
-                'checked_out_time', 'p.checked_out_time',
-                'attribs', 'p.attribs',
-                'access', 'p.access', 'access_level',
-                'state', 'p.state',
-                'start_date', 'p.start_date',
-                'end_date', 'p.end_date'
+				'id', 'a.id',
+				'title', 'a.title',
+				'alias', 'a.alias',
+				'created', 'a.created',
+                'created_by', 'a.created_by',
+                'modified', 'a.modified',
+                'modified_by', 'a.modified_by',
+                'checked_out', 'a.checked_out',
+                'checked_out_time', 'a.checked_out_time',
+                'attribs', 'a.attribs',
+                'access', 'a.access', 'access_level',
+                'state', 'a.state',
+                'start_date', 'a.start_date',
+                'end_date', 'a.end_date'
 			);
 		}
 
@@ -74,14 +74,15 @@ class ProjectforkModelProjects extends JModelList
 		// Initialise variables.
 		$app = JFactory::getApplication();
 
+
 		// Adjust the context to support modal layouts.
 		if ($layout = JRequest::getVar('layout')) $this->context .= '.'.$layout;
 
 		$search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
 		$this->setState('filter.search', $search);
 
-		$manager_id = $app->getUserStateFromRequest($this->context.'.filter.manager_id', 'filter_manager_id');
-		$this->setState('filter.manager_id', $manager_id);
+		$manager_id = $app->getUserStateFromRequest($this->context.'.filter.author_id', 'filter_author_id');
+		$this->setState('filter.author_id', $manager_id);
 
 		$published = $this->getUserStateFromRequest($this->context.'.filter.published', 'filter_published', '');
 		$this->setState('filter.published', $published);
@@ -89,8 +90,9 @@ class ProjectforkModelProjects extends JModelList
         $access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', '');
 		$this->setState('filter.access', $access);
 
+
 		// List state information.
-		parent::populateState('p.title', 'asc');
+		parent::populateState('a.title', 'asc');
 	}
 
 
@@ -107,10 +109,10 @@ class ProjectforkModelProjects extends JModelList
 	protected function getStoreId($id = '')
 	{
 		// Compile the store id.
-		$id	.= ':'.$this->getState('filter.search');
+        $id	.= ':'.$this->getState('filter.search');
 		$id	.= ':'.$this->getState('filter.published');
 		$id	.= ':'.$this->getState('filter.access');
-		$id	.= ':'.$this->getState('filter.manager_id');
+		$id	.= ':'.$this->getState('filter.author_id');
 
 		return parent::getStoreId($id);
 	}
@@ -120,7 +122,6 @@ class ProjectforkModelProjects extends JModelList
 	 * Build an SQL query to load the list data.
 	 *
 	 * @return	JDatabaseQuery
-	 * @since	1.6
 	 */
 	protected function getListQuery()
 	{
@@ -133,65 +134,71 @@ class ProjectforkModelProjects extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'p.id, p.title, p.alias, p.checked_out, p.checked_out_time,'
-				. 'p.state, p.access, p.access, p.created, p.created_by,'
-				. 'p.start_date, p.end_date'
+				'a.id, a.title, a.alias, a.checked_out, a.checked_out_time,'
+				. 'a.state, a.access, a.access, a.created, a.created_by,'
+				. 'a.start_date, a.end_date'
 			)
 		);
-		$query->from('#__pf_projects AS p');
+		$query->from('#__pf_projects AS a');
 
 		// Join over the users for the checked out user.
 		$query->select('uc.name AS editor');
-		$query->join('LEFT', '#__users AS uc ON uc.id=p.checked_out');
+		$query->join('LEFT', '#__users AS uc ON uc.id = a.checked_out');
 
 		// Join over the asset groups.
-		$query->select('pg.title AS access_level');
-		$query->join('LEFT', '#__viewlevels AS pg ON pg.id = p.access');
+		$query->select('ag.title AS access_level');
+		$query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
 
 		// Join over the users for the manager.
-		$query->select('up.name AS manager_name');
-		$query->join('LEFT', '#__users AS up ON up.id = p.created_by');
+		$query->select('ua.name AS manager_name');
+		$query->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
 		// Implement View Level Access
 		if(!$user->authorise('core.admin')) {
 		    $groups	= implode(',', $user->getAuthorisedViewLevels());
-			$query->where('p.access IN ('.$groups.')');
+			$query->where('a.access IN ('.$groups.')');
 		}
 
 		// Filter by published state
 		$published = $this->getState('filter.published');
 		if (is_numeric($published)) {
-			$query->where('p.state = ' . (int) $published);
+			$query->where('a.state = ' . (int) $published);
 		}
 		elseif ($published === '') {
-			$query->where('(p.state = 0 OR p.state = 1)');
+			$query->where('(a.state = 0 OR a.state = 1)');
 		}
 
         // Filter by access level.
 		if ($access = $this->getState('filter.access')) {
-			$query->where('p.access = ' . (int) $access);
+			$query->where('a.access = ' . (int) $access);
 		}
 
-		// Filter by manager
-		$manager_id = $this->getState('filter.manager_id');
+        // Implement View Level Access
+		if (!$user->authorise('core.admin')) {
+		    $groups	= implode(',', $user->getAuthorisedViewLevels());
+			$query->where('a.access IN ('.$groups.')');
+		}
+
+		// Filter by author
+		$manager_id = $this->getState('filter.author_id');
 		if (is_numeric($manager_id)) {
-			$type = $this->getState('filter.manager_id.include', true) ? '= ' : '<>';
-			$query->where('p.created_by '.$type.(int) $manager_id);
+			$type = $this->getState('filter.author_id.include', true) ? '= ' : '<>';
+			$query->where('a.created_by '.$type.(int) $manager_id);
 		}
 
 		// Filter by search in title.
 		$search = $this->getState('filter.search');
 		if (!empty($search)) {
 			if (stripos($search, 'id:') === 0) {
-				$query->where('p.id = '.(int) substr($search, 3));
+				$query->where('a.id = '.(int) substr($search, 3));
 			}
-			elseif (stripos($search, 'manager:') === 0) {
+			elseif (stripos($search, 'author:') === 0) {
 				$search = $db->Quote('%'.$db->getEscaped(substr($search, 7), true).'%');
-				$query->where('(up.name LIKE '.$search.' OR up.username LIKE '.$search.')');
+				$query->where('(ua.name LIKE '.$search.' OR ua.username LIKE '.$search.')');
 			}
 			else {
 				$search = $db->Quote('%'.$db->getEscaped($search, true).'%');
-				$query->where('(p.title LIKE '.$search.' OR p.alias LIKE '.$search.')');
+				$query->where('(a.title LIKE '.$search.' OR a.alias LIKE '.$search.')');
 			}
 		}
 
@@ -206,11 +213,11 @@ class ProjectforkModelProjects extends JModelList
 
 
 	/**
-	 * Build a list of project managers
+	 * Build a list of project authors
 	 *
 	 * @return	JDatabaseQuery
 	 */
-	public function getManagers() {
+	public function getAuthors() {
 		// Create a new query object.
 		$db    = $this->getDbo();
 		$query = $db->getQuery(true);
@@ -218,7 +225,7 @@ class ProjectforkModelProjects extends JModelList
 		// Construct the query
 		$query->select('u.id AS value, u.name AS text');
 		$query->from('#__users AS u');
-		$query->join('INNER', '#__pf_projects AS p ON p.created_by = u.id');
+		$query->join('INNER', '#__pf_projects AS a ON a.created_by = u.id');
 		$query->group('u.id');
 		$query->order('u.name');
 
@@ -240,17 +247,22 @@ class ProjectforkModelProjects extends JModelList
 	{
 		$items	= parent::getItems();
 		$app	= JFactory::getApplication();
-		if ($app->isSite()) {
+
+
+		if($app->isSite()) {
 			$user	= JFactory::getUser();
 			$groups	= $user->getAuthorisedViewLevels();
 
-			for ($x = 0, $count = count($items); $x < $count; $x++) {
+			for ($x = 0, $count = count($items); $x < $count; $x++)
+            {
 				//Check the access level. Remove articles the user shouldn't see
 				if (!in_array($items[$x]->access, $groups)) {
 					unset($items[$x]);
 				}
 			}
 		}
+
+
 		return $items;
 	}
 }

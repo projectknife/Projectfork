@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -24,6 +24,7 @@ defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
 
+
 class ProjectforkViewProject extends JView
 {
     protected $form;
@@ -32,7 +33,7 @@ class ProjectforkViewProject extends JView
 
 
 	/**
-	 * Display the view
+	 * Displays the view.
      *
 	 */
 	public function display($tpl = null)
@@ -54,7 +55,7 @@ class ProjectforkViewProject extends JView
 
 
 	/**
-	 * Add the page title and toolbar.
+	 * Adds the page title and toolbar.
 	 *
 	 */
 	protected function addToolbar()
@@ -65,10 +66,11 @@ class ProjectforkViewProject extends JView
 		$userId		= $user->get('id');
 		$isNew		= ($this->item->id == 0);
 		$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $userId);
+
+
 		JToolBarHelper::title(JText::_('COM_PROJECTFORK_PAGE_'.($checkedOut ? 'VIEW_PROJECT' : ($isNew ? 'ADD_PROJECT' : 'EDIT_PROJECT'))), 'article-add.png');
 
-		// Built the actions for new and existing records.
-
+		// Build the actions for new and existing records
 		// For new records, check the create permission.
 		if ($isNew) {
 			JToolBarHelper::apply('project.apply');
@@ -91,4 +93,3 @@ class ProjectforkViewProject extends JView
 		}
 	}
 }
-?>

@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -27,7 +27,7 @@ jimport('joomla.application.component.modellist');
 
 
 /**
- * Methods supporting a list of project records.
+ * Methods supporting a list of milestone records.
  *
  */
 class ProjectforkModelMilestones extends JModelList
@@ -36,7 +36,6 @@ class ProjectforkModelMilestones extends JModelList
 	 * Constructor
 	 *
 	 * @param	array	An optional associative array of configuration settings.
-	 * @see		JController
 	 */
 	public function __construct($config = array())
 	{
@@ -57,7 +56,8 @@ class ProjectforkModelMilestones extends JModelList
                 'access', 'a.access', 'access_level',
                 'state', 'a.state',
                 'start_date', 'a.start_date',
-                'end_date', 'a.end_date'
+                'end_date', 'a.end_date',
+                'project_title', 'p.title'
 			);
 		}
 
@@ -91,8 +91,9 @@ class ProjectforkModelMilestones extends JModelList
         $access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', '');
 		$this->setState('filter.access', $access);
 
-        $project = $this->getUserStateFromRequest('com_projectfork.active_project.id', '');
+        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
         $this->setState('filter.project', $project);
+        ProjectforkHelper::setActiveProject($project);
 
 		// List state information.
 		parent::populateState('a.title', 'asc');
@@ -126,7 +127,6 @@ class ProjectforkModelMilestones extends JModelList
 	 * Build an SQL query to load the list data.
 	 *
 	 * @return	JDatabaseQuery
-	 * @since	1.6
 	 */
 	protected function getListQuery()
 	{
@@ -139,8 +139,8 @@ class ProjectforkModelMilestones extends JModelList
 		$query->select(
 			$this->getState(
 				'list.select',
-				'a.id, a.project_id, a.title, a.alias, a.checked_out, a.checked_out_time,'
-				. 'a.state, a.access, a.created, a.created_by,'
+				'a.id, a.project_id, a.title, a.description, a.alias, a.checked_out, '
+				. 'a.checked_out_time, a.state, a.access, a.created, a.created_by,'
 				. 'a.start_date, a.end_date'
 			)
 		);
@@ -170,7 +170,7 @@ class ProjectforkModelMilestones extends JModelList
 
         // Filter by project
         $project = $this->getState('filter.project');
-        if(is_numeric($project)) {
+        if(is_numeric($project) && $project != 0) {
             $query->where('a.project_id = ' . (int) $project);
         }
 
@@ -201,7 +201,7 @@ class ProjectforkModelMilestones extends JModelList
 			if (stripos($search, 'id:') === 0) {
 				$query->where('a.id = '.(int) substr($search, 3));
 			}
-			elseif (stripos($search, 'manager:') === 0) {
+			elseif (stripos($search, 'author:') === 0) {
 				$search = $db->Quote('%'.$db->getEscaped(substr($search, 7), true).'%');
 				$query->where('(ua.name LIKE '.$search.' OR ua.username LIKE '.$search.')');
 			}
@@ -216,6 +216,7 @@ class ProjectforkModelMilestones extends JModelList
 		$orderDirn = $this->state->get('list.direction');
 
 		$query->order($db->getEscaped($orderCol.' '.$orderDirn));
+
 
 		return $query;
 	}

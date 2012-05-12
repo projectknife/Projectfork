@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -25,11 +25,12 @@ defined('_JEXEC') or die;
 
 jimport('joomla.database.tableasset');
 
+
 /**
  * Task List table
  *
  */
-class JTableTasklist extends JTable
+class PFTableTasklist extends JTable
 {
 	/**
 	 * Constructor
@@ -192,7 +193,7 @@ class JTableTasklist extends JTable
 		}
 
 		// Verify that the alias is unique
-		$table = JTable::getInstance('Tasklist','JTable');
+		$table = JTable::getInstance('Tasklist','PFTable');
 		if ($table->load(array('alias'=>$this->alias)) && ($table->id != $this->id || $this->id==0)) {
 			$this->setError(JText::_('JLIB_DATABASE_ERROR_PROJECT_UNIQUE_ALIAS'));
 			return false;
@@ -280,6 +281,136 @@ class JTableTasklist extends JTable
     public function publish($pks = null, $state = 1, $userId = 0)
     {
         return $this->setState($pks, $state, $userId);
+    }
+
+
+    /**
+	 * Deletes all items by a reference field
+     *
+     *
+     * @return    boolean    True on success, False on error
+	 */
+    public function deleteByReference($id, $field)
+    {
+        $success = true;
+
+        // Get the list of items to delete
+        $this->_db->setQuery(
+			'SELECT '.$this->_tbl_key.' FROM '.$this->_db->quoteName($this->_tbl).
+			' WHERE '.$this->_db->quoteName($field).' = '.(int) $id
+		);
+
+		// Return the result
+		$list = (array) $this->_db->loadResultArray();
+
+
+        foreach($list AS $pk)
+        {
+            if(!$this->delete($pk)) $success = false;
+        }
+
+        return $success;
+    }
+
+
+    /**
+	 * Updates all items by reference data and parent item
+     *
+     * @param    integer    $id       The parent item id
+     * @param    string     $field    The parent field name
+     * @param    array      $data     The parent data
+     * @return   boolean    True on success, False on error
+	 */
+    public function updateByReference($id, $field, $data)
+    {
+        require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'helpers'.DS.'projectfork.php');
+
+        $fields    = array_keys($data);
+        $null_date = $this->_db->getNullDate();
+        $pk        = $this->_tbl_key;
+
+
+        // Check if the fields exist
+        foreach($fields AS $i => $tbl_field)
+        {
+            if(!property_exists($this, $tbl_field)) {
+                unset($fields[$i]);
+                unset($data[$tbl_field]);
+            }
+        }
+
+        $tbl_fields = implode(', ', array_keys($data));
+
+
+        // Find access children if access field is in the data
+        $access_children = array();
+        if(in_array('access', $fields)) {
+            if($data['access']) {
+                $access_children = array_keys(ProjectforkHelper::getChildrenOfAccess($data['access']));
+            }
+        }
+
+
+        // Get the items we have to update
+        $this->_db->setQuery(
+			'SELECT '.$this->_tbl_key.', '.$tbl_fields.' FROM '.$this->_db->quoteName($this->_tbl).
+			' WHERE '.$this->_db->quoteName($field).' = '.(int) $id
+		);
+
+        // Get the result
+		$list = (array) $this->_db->loadObjectList();
+
+
+        // Update each item
+        foreach($list AS $item)
+        {
+            $updates = array();
+
+            foreach($data AS $key => $val)
+            {
+                switch($key)
+                {
+                    case 'start_date':
+                        $tmp_val_1 = strtotime($val);
+                        $tmp_val_2 = strtotime($item->$key);
+                        if($tmp_val_1 > 0) {
+                            if(($tmp_val_1 > $tmp_val_2) && $tmp_val_2 > 0) {
+                                $updates[$key] = $key.' = '.$this->_db->quote($val);
+                            }
+                        }
+                        break;
+
+                    case 'end_date':
+                        $tmp_val_1 = strtotime($val);
+                        $tmp_val_2 = strtotime($item->$key);
+                        if($tmp_val_1 > 0) {
+                            if(($tmp_val_1 < $tmp_val_2)) {
+                                $updates[$key] = $key.' = '.$this->_db->quote($val);
+                            }
+                        }
+                        break;
+
+                    case 'access':
+                        if($val != $item->$key) {
+                            if(!in_array($item->$key, $access_children)) $updates[$key] = $key.' = '.$this->_db->quote($val);
+                        }
+                        break;
+
+                    default:
+                        if($item->$key != $val) $updates[$key] = $key.' = '.$this->_db->quote($val);
+                        break;
+                }
+            }
+
+            if(count($updates)) {
+                $this->_db->setQuery(
+			         'UPDATE '.$this->_db->quoteName($this->_tbl).' SET '.implode(', ', $updates).
+			         ' WHERE '.$this->_db->quoteName($this->_tbl_key).' = '.(int) $item->$pk
+		            );
+
+                $this->_db->query();
+            }
+        }
     }
 
 

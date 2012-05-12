@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -46,7 +46,7 @@ class ProjectforkModelProject extends JModelAdmin
 	 * @param	 array	   Configuration array for model. Optional.
 	 * @return	 JTable	   A database object
 	 */
-	public function getTable($type = 'Project', $prefix = 'JTable', $config = array())
+	public function getTable($type = 'Project', $prefix = 'PFTable', $config = array())
 	{
 		return JTable::getInstance($type, $prefix, $config);
 	}
@@ -84,7 +84,68 @@ class ProjectforkModelProject extends JModelAdmin
 		$form = $this->loadForm('com_projectfork.project', 'project', array('control' => 'jform', 'load_data' => $loadData));
 		if (empty($form)) return false;
 
+        $jinput = JFactory::getApplication()->input;
+        $user   = JFactory::getUser();
+        $id     =  $jinput->get('id', 0);
+
+
+        // Check for existing item.
+		// Modify the form based on Edit State access controls.
+		if ($id != 0 && (!$user->authorise('core.edit.state', 'com_projectfork.project.'.(int) $id) && !$user->authorise('project.edit.state', 'com_projectfork.project.'.(int) $id))
+		|| ($id == 0 && (!$user->authorise('core.edit.state', 'com_projectfork') && !$user->authorise('project.edit.state', 'com_projectfork')))
+		)
+		{
+			// Disable fields for display.
+			$form->setFieldAttribute('state', 'disabled', 'true');
+
+			// Disable fields while saving.
+			// The controller has already verified this is an article you can edit.
+			$form->setFieldAttribute('state', 'filter', 'unset');
+		}
+
 		return $form;
+	}
+
+
+    /**
+	 * Method to test whether a record can be deleted.
+	 *
+	 * @param	  object     $record    A record object.
+	 * @return    boolean	            True if allowed to delete the record.
+     *                                  Defaults to the permission set in the component.
+	 */
+	protected function canDelete($record)
+	{
+	    $asset = 'com_projectfork.project';
+
+		if (!empty($record->id)) {
+			if ($record->state != -2) return ;
+
+			$user = JFactory::getUser();
+			return ($user->authorise('core.delete', $asset.'.'.(int) $record->id) || $user->authorise('project.delete', $asset.'.'.(int) $record->id));
+		}
+	}
+
+
+	/**
+	 * Method to test whether a record can have its state edited.
+	 *
+	 * @param	  object     $record    A record object.
+	 * @return    boolean	            True if allowed to delete the record.
+     *                                  Defaults to the permission set in the component.
+	 */
+	protected function canEditState($record)
+	{
+		$user  = JFactory::getUser();
+        $asset = 'com_projectfork.project';
+
+		// Check for existing item.
+		if (!empty($record->id)) {
+			return ($user->authorise('core.edit.state', $asset.'.'.(int) $record->id) || $user->authorise('project.edit.state', $asset.'.'.(int) $record->id));
+		}
+		else {
+			return parent::canEditState('com_projectfork');
+		}
 	}
 
 
@@ -112,6 +173,10 @@ class ProjectforkModelProject extends JModelAdmin
 	 */
 	public function save($data)
 	{
+	    // Get the users helper class
+	    require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_users'.DS.'helpers'.DS.'users.php');
+
+
 		// Alter the title for save as copy
 		if (JRequest::getVar('task') == 'save2copy') {
 			list($title,$alias) = $this->generateNewTitle($data['alias'], $data['title']);
@@ -123,18 +188,56 @@ class ProjectforkModelProject extends JModelAdmin
             $data['alias'] = '';
         }
 
-
         // Create new access level?
         $new_access = trim($data['access_new']);
+        $can_do     = UsersHelper::getActions();
 
-        if(!is_array($data['access_rules'])) $data['access_rules'] = array();
-        if(strlen($new_access)) $data['access'] = $this->saveAccessLevel($new_access, $data['access_rules']);
-        if(!$data['access'])    $data['access'] = 1;
+        if(!array_key_exists('rules', $data)) $data['rules']  = array();
+        if(strlen($new_access) && $canDo->get('core.create')) $data['access'] = $this->saveAccessLevel($new_access, $data['rules']);
+        if($data['access'] <= 0) $data['access'] = 1;
+
+
+        // Filter the rules
+        $rules = array();
+        foreach ((array) $data['rules'] as $action => $ids)
+		{
+			if(is_numeric($action)) continue;
+
+            // Build the rules array.
+			$rules[$action] = array();
+			foreach ($ids as $id => $p)
+			{
+				if ($p !== '')
+				{
+					$rules[$action][$id] = ($p == '1' || $p == 'true') ? true : false;
+				}
+			}
+		}
+        $data['rules'] = $rules;
+
+        $id = (int) $data['id'];
 
 
         // Store the record
-		if (parent::save($data)) return true;
+		if(parent::save($data)) {
+		    $this->setActive(array('id' => $this->getState('project.id')));
 
+            // To keep data integrity, update deadlines and access of all other project related items
+            if($id) {
+                $milestones = JTable::getInstance('Milestone', 'PFTable');
+                $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
+
+                $parent_data = array('access'     => $data['access'],
+                                     'start_date' => $data['start_date'],
+                                     'end_date'   => $data['end_date']
+                                    );
+
+                $milestones->updateByReference($id, 'project_id', $parent_data);
+                $tasklists->updateByReference($id, 'project_id', $parent_data);
+            }
+
+		    return true;
+		}
 
 		return false;
 	}
@@ -146,7 +249,7 @@ class ProjectforkModelProject extends JModelAdmin
 	 * @param     array	     The form data
 	 * @return    boolean    True on success
 	 */
-    public function activate($data)
+    public function setActive($data)
     {
         $app = JFactory::getApplication();
 
@@ -156,12 +259,12 @@ class ProjectforkModelProject extends JModelAdmin
             $item = $this->getItem($id);
             if(!$item) return false;
 
-            $app->setUserState('com_projectfork.active_project.id', $id);
-            $app->setUserState('com_projectfork.active_project.title', $item->title);
+            $app->setUserState('com_projectfork.project.active.id', $id);
+            $app->setUserState('com_projectfork.project.active.title', $item->title);
         }
         else {
-            $app->setUserState('com_projectfork.active_project.id', 0);
-            $app->setUserState('com_projectfork.active_project.title', '');
+            $app->setUserState('com_projectfork.project.active.id', 0);
+            $app->setUserState('com_projectfork.project.active.title', '');
         }
 
         return true;
@@ -216,7 +319,7 @@ class ProjectforkModelProject extends JModelAdmin
     *
     * @return   integer             The access level id
     **/
-    protected function saveAccessLevel($title, $rules = array())
+    protected function saveAccessLevel($title, $tmp_rules = array())
     {
         // Get user viewing level model
         JModel::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_users'.DS.'models');
@@ -226,6 +329,14 @@ class ProjectforkModelProject extends JModelAdmin
 
         // Trim project name if too long for access level
         if(strlen($title) > 100) $title = substr($title, 0, 97).'...';
+
+
+        // Filter out groups from the permission rules
+        $rules = array();
+        foreach($tmp_rules AS $key => $value)
+        {
+            if(is_numeric($key) && is_numeric($value)) $rules[] = $value;
+        }
 
 
         // Set access level data
@@ -239,5 +350,38 @@ class ProjectforkModelProject extends JModelAdmin
 
 
         return $id;
+    }
+
+
+    /**
+	 * Method to delete one or more records.
+	 *
+	 * @param     array    &$pks    An array of record primary keys.
+	 * @return    boolean           True if successful, false if an error occurs.
+	 */
+    public function delete(&$pks)
+    {
+        $success = parent::delete($pks);
+        $app     = JFactory::getApplication();
+
+        $milestones = JTable::getInstance('Milestone', 'PFTable');
+        $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
+
+        $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
+
+        foreach ($pks as $i => $pk)
+		{
+		    // Delete all other items referenced to each project
+            if(!$milestones->deleteByReference($pk, 'project_id')) $success = false;
+            if(!$tasklists->deleteByReference($pk, 'project_id'))  $success = false;
+
+            // The active project has been delete?
+            if($active_id == $pk) {
+                $app->setUserState('com_projectfork.project.active.id', 0);
+                $app->setUserState('com_projectfork.project.active.title', '');
+            }
+        }
+
+        return $success;
     }
 }

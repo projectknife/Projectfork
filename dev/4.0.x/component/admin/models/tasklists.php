@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -57,7 +57,9 @@ class ProjectforkModelTasklists extends JModelList
                 'attribs', 'a.attribs',
                 'access', 'a.access', 'access_level',
                 'state', 'a.state',
-                'ordering', 'a.ordering'
+                'ordering', 'a.ordering',
+                'project_title', 'p.title',
+                'milestone_title', 'm.title'
 			);
 		}
 
@@ -94,11 +96,12 @@ class ProjectforkModelTasklists extends JModelList
         $milestone = $this->getUserStateFromRequest($this->context.'.filter.milestone', 'filter_milestone', '');
 		$this->setState('filter.milestone', $milestone);
 
-        $project = $this->getUserStateFromRequest('com_projectfork.active_project.id', '');
+        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
         $this->setState('filter.project', $project);
+        ProjectforkHelper::setActiveProject($project);
 
 		// List state information.
-		parent::populateState('a.ordering', 'asc');
+		parent::populateState('a.title', 'asc');
 	}
 
 
@@ -176,14 +179,14 @@ class ProjectforkModelTasklists extends JModelList
 
         // Filter by project
         $project = $this->getState('filter.project');
-        if(is_numeric($project)) {
+        if(is_numeric($project) && $project != 0) {
             $query->where('a.project_id = ' . (int) $project);
         }
 
         // Filter by milestone
-        $project = $this->getState('filter.milestone');
-        if(is_numeric($project)) {
-            $query->where('a.milestone_id = ' . (int) $project);
+        $milestone = $this->getState('filter.milestone');
+        if(is_numeric($milestone)) {
+            $query->where('a.milestone_id = ' . (int) $milestone);
         }
 
 		// Filter by published state
@@ -195,7 +198,7 @@ class ProjectforkModelTasklists extends JModelList
 			$query->where('(a.state = 0 OR a.state = 1)');
 		}
 
-        // Filter by access level.
+        // Filter by access level
 		if ($access = $this->getState('filter.access')) {
 			$query->where('a.access = ' . (int) $access);
 		}

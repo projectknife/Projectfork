@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="1.7" method="upgrade">
+<extension type="component" version="1.6" method="upgrade">
 	<name>com_projectfork</name>
 	<author>Tobias Kuhn</author>
 	<creationDate>October 2011</creationDate>
@@ -9,32 +9,48 @@
 	<authorUrl>www.projectfork.net</authorUrl>
 	<version>4.0.0</version>
 	<description>COM_PROJECTFORK_XML_DESCRIPTION</description>
-	<install>
+	<install folder="admin">
 		<sql>
-			<file driver="mysql">_install/structure.sql</file>
+			<file driver="mysql" charset="utf8">_install/mysql/structure.sql</file>
 		</sql>
 	</install>
+	<uninstall folder="admin">
+		<sql>
+			<file driver="mysql" charset="utf8">_uninstall/mysql/data.sql</file>
+			<file driver="mysql" charset="utf8">_uninstall/mysql/structure.sql</file>
+		</sql>
+	</uninstall>
 	<files folder="site">
 		<filename>projectfork.php</filename>
 		<filename>controller.php</filename>
 		<filename>index.html</filename>
 		<folder>assets</folder>
-		<folder>language</folder>
+		<folder>controllers</folder>
+		<folder>helpers</folder>
 		<folder>models</folder>
 		<folder>views</folder>
 	</files>
+	<languages folder="site">
+	    <language tag="en-GB">language/en-GB/en-GB.com_projectfork.ini</language>
+	</languages>
 	<administration>
 		<files folder="admin">
+			<folder>_install</folder>
+			<folder>_uninstall</folder>
+			<folder>controllers</folder>
+			<folder>helpers</folder>
+			<folder>models</folder>
+			<folder>tables</folder>
+			<folder>views</folder>
 			<filename>access.xml</filename>
 			<filename>config.xml</filename>
 			<filename>projectfork.php</filename>
 			<filename>controller.php</filename>
 			<filename>index.html</filename>
-			<folder>_install</folder>
-			<folder>helpers</folder>
-			<folder>language</folder>
-			<folder>tables</folder>
-			<folder>views</folder>
 		</files>
+		<languages folder="admin">
+	        <language tag="en-GB">language/en-GB/en-GB.com_projectfork.ini</language>
+		    <language tag="en-GB">language/en-GB/en-GB.com_projectfork.sys.ini</language>
+	    </languages>
 	</administration>
 </extension>

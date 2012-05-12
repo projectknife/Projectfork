@@ -27,28 +27,28 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 	<ul class="actions">
 						<li class="print-icon">
 			<a rel="nofollow" onclick="window.open(this.href,'win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no'); return false;" title="Print" href="#"><img alt="Print" src="/projectfork_4/media/system/images/printButton.png"></a>			</li>
-		
+
 					<li class="email-icon">
 			<a onclick="window.open(this.href,'win2','width=400,height=350,menubar=yes,resizable=yes'); return false;" title="Email" href="#"><img alt="Email" src="/projectfork_4/media/system/images/emailButton.png"></a>			</li>
-		
+
 					<li class="edit-icon">
 			<span title="" class="hasTip"><a href="#"><img alt="Edit" src="/projectfork_4/media/system/images/edit.png"></a></span>			</li>
-		
-	
+
+
 	</ul>
 	<dl class="article-info">
 		<dt class="article-info-term">Details</dt>
 		<dd class="milestone-name">
-			Milestone: <a href="#">Milestone Name</a>		
+			Milestone: <a href="#">Milestone Name</a>
 		</dd>
 		<dd class="start-date">
-			Started on Saturday, 01 January 2011 00:00	
+			Started on Saturday, 01 January 2011 00:00
 		</dd>
 		<dd class="due-date">
-			Due by Saturday, 01 January 2011 00:00	
+			Due by Saturday, 01 January 2011 00:00
 		</dd>
 		<dd class="owner">
-			Assigned to <a href="#">Firstname Lastname</a>		
+			Assigned to <a href="#">Firstname Lastname</a>
 		</dd>
 	</dl>
 	<div id="article-index" class="project-stats">
@@ -72,6 +72,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 		Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
 		</p>
 	</div>
+    <!--
 	<div class="items-more">
 		<h3>Comments</h3>
 		<div class="contact-form" class="comment-form">
@@ -126,6 +127,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 							</ul>
 						</div>
 						<!-- Inline Replies -->
+                        <!--
 							<ul>
 								<li class="first">
 									<div class="cat-list-row1 comment-info">
@@ -179,6 +181,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 								</li>
 							</ul>
 						<!-- Inline Replies -->
+                    <!--
 					</li>
 					<li class="last">
 						<div class="cat-list-row1 comment-info">
@@ -205,6 +208,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 							</ul>
 						</div>
 						<!-- Inline Replies -->
+                        <!--
 							<ul>
 								<li class="first">
 									<div class="cat-list-row1 comment-info">
@@ -258,9 +262,10 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 								</li>
 							</ul>
 						<!-- Inline Replies -->
+                        <!--
 					</li>
 				</ul>
 			</div>
 		</div>
-	</div>
+	</div>-->
 </div>

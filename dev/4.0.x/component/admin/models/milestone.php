@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -46,7 +46,7 @@ class ProjectforkModelMilestone extends JModelAdmin
 	 * @param	 array	   Configuration array for model. Optional.
 	 * @return	 JTable	   A database object
 	 */
-	public function getTable($type = 'Milestone', $prefix = 'JTable', $config = array())
+	public function getTable($type = 'Milestone', $prefix = 'PFTable', $config = array())
 	{
 		return JTable::getInstance($type, $prefix, $config);
 	}
@@ -84,7 +84,15 @@ class ProjectforkModelMilestone extends JModelAdmin
 		$form = $this->loadForm('com_projectfork.milestone', 'milestone', array('control' => 'jform', 'load_data' => $loadData));
 		if (empty($form)) return false;
 
-        $form->setFieldAttribute('access', 'params', '1, 2, 3, 4');
+
+        // Check if a project id is already selected. If not, set the currently active project as value
+        $project_id = (int) $form->getValue('project_id');
+        if (!$this->getState('milestone.id') && $project_id == 0) {
+            $app       = JFactory::getApplication();
+            $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
+
+            $form->setValue('project_id', null, $active_id);
+        }
 
 		return $form;
 	}

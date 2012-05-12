@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
 *
 * This file is part of Projectfork.
@@ -22,13 +22,20 @@
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
+
 // Include dependancies
 jimport('joomla.application.component.controller');
+
+require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'helpers'.DS.'projectfork.php');
+require_once JPATH_COMPONENT.DS.'helpers'.DS.'route.php';
+require_once(JPATH_COMPONENT.DS.'helpers'.DS.'toolbar.php');
+require_once(JPATH_COMPONENT.DS.'helpers'.DS.'contextmenu.php');
+
 
 // Add include paths
 JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'tables');
 
+
 $controller = JController::getInstance('Projectfork');
 $controller->execute(JRequest::getCmd('task'));
 $controller->redirect();
-?>

@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -23,6 +23,7 @@
 defined('_JEXEC') or die;
 
 jimport('joomla.application.component.view');
+
 
 class ProjectforkViewTasklists extends JView
 {
@@ -60,23 +61,40 @@ class ProjectforkViewTasklists extends JView
 	 */
 	protected function addToolbar()
 	{
-		$acl  = ProjectforkHelper::getActions();
-		$user = JFactory::getUser();
+		$canDo = ProjectforkHelper::getActions();
+		$user  = JFactory::getUser();
 
 		JToolBarHelper::title(JText::_('COM_PROJECTFORK_TASKLISTS_TITLE'), 'article.png');
 
-        JToolBarHelper::addNew('tasklist.add');
-        JToolBarHelper::editList('tasklist.edit');
-        JToolBarHelper::divider();
-        JToolBarHelper::publish('tasklists.publish', 'JTOOLBAR_PUBLISH', true);
-		JToolBarHelper::unpublish('tasklists.unpublish', 'JTOOLBAR_UNPUBLISH', true);
-		JToolBarHelper::divider();
-		JToolBarHelper::archiveList('tasklists.archive');
-		JToolBarHelper::checkin('tasklists.checkin');
-        JToolBarHelper::deleteList('', 'tasklists.delete','JTOOLBAR_EMPTY_TRASH');
-		JToolBarHelper::divider();
-        JToolBarHelper::trash('tasklists.trash');
-		JToolBarHelper::divider();
+
+        if($canDo->get('core.create') || $canDo->get('tasklist.create')) {
+            JToolBarHelper::addNew('tasklist.add');
+        }
+
+        if($canDo->get('core.edit') || $canDo->get('core.edit.own') ||
+           $canDo->get('tasklist.edit') || $canDo->get('tasklist.edit.own')
+          ) {
+            JToolBarHelper::editList('tasklist.edit');
+        }
+
+        if($canDo->get('core.edit.state') || $canDo->get('tasklist.edit.state')) {
+            JToolBarHelper::divider();
+            JToolBarHelper::publish('tasklists.publish', 'JTOOLBAR_PUBLISH', true);
+		    JToolBarHelper::unpublish('tasklists.unpublish', 'JTOOLBAR_UNPUBLISH', true);
+		    JToolBarHelper::divider();
+		    JToolBarHelper::archiveList('tasklists.archive');
+		    JToolBarHelper::checkin('tasklists.checkin');
+        }
+
+        if($this->state->get('filter.published') == -2 &&
+            ($canDo->get('core.delete') || $canDo->get('tasklist.delete'))
+          ) {
+            JToolBarHelper::deleteList('', 'tasklists.delete','JTOOLBAR_EMPTY_TRASH');
+            JToolBarHelper::divider();
+        }
+        elseif ($canDo->get('core.edit.state') || $canDo->get('tasklist.edit.state')) {
+			JToolBarHelper::trash('tasklists.trash');
+			JToolBarHelper::divider();
+		}
 	}
 }
-?>

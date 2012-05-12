@@ -3,7 +3,7 @@
 	<fieldset>
 		<field name="project_id" type="project" label="COM_PROJECTFORK_FIELD_PROJECT_LABEL"
 			description="COM_PROJECTFORK_FIELD_PROJECT_DESC" class="inputbox" size="30"
-			required="true" 
+			required="true" view="milestone" submit="true" session="true"
         />
         <field name="title" type="text" label="JGLOBAL_TITLE"
 			description="JFIELD_TITLE_DESC" class="inputbox" size="30"
@@ -21,23 +21,18 @@
 			<option value="2">JARCHIVED</option>
 			<option value="-2">JTRASHED</option>
 		</field>
-		<field name="access" type="accesslevel" label="JFIELD_ACCESS_LABEL"
-			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" 
-        />
-		<field
-			name="buttonspacer"
-			description="JGLOBAL_ACTION_PERMISSIONS_DESCRIPTION"
-			type="spacer" 
+		<field name="access" type="pfaccesslevel" label="JFIELD_ACCESS_LABEL"
+			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" permissions="true"
         />
         <field name="created_by" type="user"
-			label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_MILESTONE_CREATED_BY_DESC"
+			label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_CREATED_BY_DESC"
         />
 		<field name="start_date" type="calendar" class="inputbox"
-			label="COM_PROJECTFORK_FIELD_MILESTONE_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_MILESTONE_START_DATE_DESC"
+			label="COM_PROJECTFORK_FIELD_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_START_DATE_OPTIONAL_DESC"
 			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
         />
         <field name="end_date" type="calendar" class="inputbox"
-			label="COM_PROJECTFORK_FIELD_DEADLINE_LABEL" description="COM_PROJECTFORK_FIELD_MILESTONE_END_DATE_DESC"
+			label="COM_PROJECTFORK_FIELD_DEADLINE_LABEL" description="COM_PROJECTFORK_FIELD_DEADLINE_OPTIONAL_LABEL"
 			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
         />
 		<field name="modified" type="calendar" class="readonly"
@@ -52,7 +47,7 @@
 		/>
 		<field
 			name="rules"
-			type="rules"
+			type="permissions"
 			label="JCONFIG_PERMISSIONS_LABEL"
 			class="inputbox"
 			validate="rules"

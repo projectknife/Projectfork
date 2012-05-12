@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
 *
 * This file is part of Projectfork.
@@ -21,422 +21,210 @@
 **/
 
 defined('_JEXEC') or die;
+
+
+$list_order = $this->escape($this->state->get('list.ordering'));
+$list_dir   = $this->escape($this->state->get('list.direction'));
+$save_order = ($list_order == 'a.ordering');
+$user	    = JFactory::getUser();
+$uid	    = $user->get('id');
+
+$action_count = count($this->actions);
 ?>
+<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-tasks">
 
-<div id="projectfork" class="category-list view-tasks">
+    <?php if ($this->params->get('show_page_heading', 1)) : ?>
+        <h1 class="pull-left"><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
+    <?php endif; ?>
+    <?php echo $this->toolbar;?>
+	<div class="clearfix"></div>
+
 	<div class="cat-items">
-		<h2>Tasks <input type="button" class="button" value="New Task" /></h2>
-		<form id="adminForm" name="adminForm" method="post" action="http://localhost:8888/projectfork_4/index.php?option=com_content&amp;view=category&amp;id=19&amp;Itemid=260">
-			<fieldset class="filters">
-				<span class="display-bulk-actions">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="bulk" id="bulk">
-						<option selected="selected" value="">Bulk Actions</option>
-						<option value="0">Complete</option>
-						<option value="1">Reorder</option>
-						<option value="2">Copy</option>
-						<option value="3">Delete</option>
-					</select>
-				</span>
-				<span class="display-milestone">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="milestone" id="milestone">
-						<option selected="selected" value="">Select Milestone</option>
-						<option value="0">All</option>
-					</select>
-				</span>
-				<span class="display-user">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="user" id="user">
-						<option selected="selected" value="">Select User</option>
-						<option value="0">All</option>
-					</select>
-				</span>
-				<span class="display-status">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="status" id="status">
-						<option selected="selected" value="">Select Status</option>
-						<option value="0">All</option>
-					</select>
-				</span>
-				<span class="display-priority">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="priority" id="priority">
-						<option selected="selected" value="">Select Priority</option>
-						<option value="0">All</option>
-					</select>
-				</span>
-				<span class="display-limit">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="limit" id="limit">
-						<option value="5">5</option>
-						<option selected="selected" value="10">10</option>
-						<option value="15">15</option>
-						<option value="20">20</option>
-						<option value="25">25</option>
-						<option value="30">30</option>
-						<option value="50">50</option>
-						<option value="100">100</option>
-						<option value="0">All</option>
-					</select>
-				</span>
 
-				<input type="hidden" value="" name="filter_order">
-				<input type="hidden" value="" name="filter_order_Dir">
-				<input type="hidden" value="" name="limitstart">
+		<form id="adminForm" name="adminForm" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>">
+
+			<fieldset class="filters btn-toolbar">
+                <div class="filter-project btn-group">
+                    <?php echo JHtml::_('projectfork.filterProject');?>
+                </div>
+                <?php if($this->params->get('filter_fields')) : ?>
+
+                    <?php if($this->state->get('filter.project')) : ?>
+                        <div class="filter-milestone btn-group">
+        				    <select onchange="this.form.submit()" class="inputbox" name="filter_milestone" id="milestone">
+    						    <option value=""><?php echo JText::_('JOPTION_SELECT_MILESTONE');?></option>
+    				            <?php echo JHtml::_('select.options', $this->milestones, 'value', 'text', $this->state->get('filter.milestone'));?>
+        					</select>
+        				</div>
+        				<div class="filter-tasklist btn-group">
+        				    <select id="filter_tasklist" name="filter_tasklist" class="inputbox" onchange="this.form.submit()">
+        						<option value=""><?php echo JText::_('JOPTION_SELECT_TASKLIST');?></option>
+        						<?php echo JHtml::_('select.options', $this->tasklists, 'value', 'text', $this->state->get('filter.tasklist'));?>
+        					</select>
+        				</div>
+                        <div class="filter-author btn-group">
+                            <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
+                				<option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+                				<?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'));?>
+                			</select>
+                        </div>
+        				<div class="filter-user btn-group">
+        						<select onchange="this.form.submit()" class="inputbox" name="filter_assigned" id="filter_assigned">
+        						    <option value=""><?php echo JText::_('JOPTION_SELECT_ASSIGNED_USER');?></option>
+        				            <?php echo JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned'));?>
+        					</select>
+        				</div>
+                        <div class="filter-priority btn-group">
+    						<select onchange="this.form.submit()" class="inputbox" name="filter_priority" id="filter_priority">
+        						<option selected="selected" value=""><?php echo JText::_('JOPTION_SELECT_PRIORITY');?></option>
+        						<?php echo JHtml::_('select.options', $this->priorities, 'value', 'text', $this->state->get('filter.priority'));?>
+        					</select>
+        				</div>
+                    <?php endif; ?>
+
+                    <?php if ($user->authorise('core.edit.state', 'com_projectfork') || $user->authorize('task.edit.state', 'com_projectfork')
+                          ||  $user->authorise('core.edit', 'com_projectfork') || $user->authorize('task.edit', 'com_projectfork')) : ?>
+        				<div class="filter-status btn-group">
+        						<select onchange="this.form.submit()" class="inputbox" name="filter_published" id="filter_published">
+        						    <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+        				            <?php echo JHtml::_('select.options', $this->states, 'value', 'text', $this->state->get('filter.published'), true);?>
+        					</select>
+        				</div>
+                    <?php endif; ?>
+
+                <?php endif; ?>
 			</fieldset>
 
-		<table class="category">
-			<thead>
-				<tr>
-					<th id="tableOrdering" class="list-select">
-						<input type="checkbox" onclick="checkAll(2);" value="" name="toggle">
-					</th>
-					<th id="tableOrdering2" class="list-title">
-					<a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');">Title</a>				</th>
-					
-					
-					<th id="tableOrdering3" class="list-owner">
-					<a title="Click to sort by this column" href="javascript:tableOrdering('owner','asc','');">Owner</a>				</th>
-					
-					<th id="tableOrdering4" class="list-comments">
-					<a title="Click to sort by this column" href="javascript:tableOrdering('a.comments','asc','');">Comments</a></th>
-					
-					<th id="tableOrdering5" class="list-date">
-					<a title="Click to sort by this column" href="javascript:tableOrdering('a.hits','asc','');">Due</a>				</th>
-				</tr>
-			</thead>
-		
-			<tbody>
-				<tr class="cat-list-row0">
-					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
-					</td>
-					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=8:beginners&amp;catid=19&amp;Itemid=260">
-					Beginners</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
-					</td>
-					
-					
-					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
-					</td>
-					
-					<td class="list-date">
-					12/04/2011					</td>
-				
-				</tr>
-				<tr class="cat-list-row1">
-					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb1">
-					</td>
-					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=21:getting-help&amp;catid=19&amp;Itemid=436">
-					Getting Help</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
-					</td>
-					
-					
-					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
-					</td>
-					
-					<td class="list-date">
-					12/03/2011					</td>
-				
-				</tr>
-				<tr class="cat-list-row0">
-					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb2">
-					</td>
-					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=22:getting-started&amp;catid=19&amp;Itemid=437">
-					Getting Started</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
-					</td>
-					
-					
-					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
-					</td>
-					
-					<td class="list-date">
-					12/02/2011					</td>
-				
-				</tr>
-				<tr class="cat-list-row1">
-					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb3">
-					</td>
-					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=24:joomla&amp;catid=19&amp;Itemid=260">
-					Joomla!</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
-					</td>
-					
-					
-					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
-					</td>
-					
-					<td class="list-date">
-					12/01/2011					</td>
-				
-				</tr>
-				<tr class="cat-list-row0">
-					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb4">
-					</td>
-					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=32:parameters&amp;catid=19&amp;Itemid=453">
-					Parameters</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
-					</td>
-					
-					
-					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
-					</td>
-					
-					<td class="list-date">
-					11/30/2011					</td>
-				
-				</tr>
-				<tr class="cat-list-row1">
-					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb5">
-					</td>
-					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=35:professionals&amp;catid=19&amp;Itemid=260">
-					Professionals</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
-					</td>
-					
-					
-					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
-					</td>
-					
-					<td class="list-date">
-					11/29/2011					</td>
-				
-				</tr>
-				<tr class="cat-list-row0">
-					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb6">
-					</td>
-					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=38:sample-sites&amp;catid=19&amp;Itemid=238">
-					Sample Sites</a>
-					
-					</td>
-					
-					
-					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
-					</td>
-					
-					<td class="list-date">
-					11/28/2011					</td>
-				
-				</tr>
-				<tr class="cat-list-row1">
-					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb7">
-					</td>
-					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=47:the-joomla-community&amp;catid=19&amp;Itemid=279">
-					The Joomla! Community</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
-					</td>
-					
-					
-					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
-					</td>
-					
-					<td class="list-date">
-					11/27/2011					</td>
-				
-				</tr>
-				<tr class="cat-list-row0">
-					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb8">
-					</td>
-					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=48:the-joomla-project&amp;catid=19&amp;Itemid=278">
-					The Joomla! Project</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
-					</td>
-					
-					
-					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
-					</td>
-					
-					<td class="list-date">
-					11/26/2011					</td>
-				
-				</tr>
-				<tr class="cat-list-row1">
-					<td class="list-select">
-						<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb9">
-					</td>
-					<td class="list-title">
-					<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=50:upgraders&amp;catid=19&amp;Itemid=260">
-					Upgraders</a>
-					<ul class="actions">
-						<li class="edit-icon">
-							<span title=""><a href="#">Edit</a></span>
-						</li>
-						<li class="complete-icon">
-							<span title=""><a href="#">Complete</a></span>
-						</li>
-						<li class="delete-icon">
-							<span title=""><a href="#">Delete</a></span>
-						</li>
-					</ul>
-					</td>
-					
-					
-					<td class="list-owner">
-					
-					Firstname L.											</td>
-					
-					<td class="list-comments">
-					<span title=""><a href="#">6</a></span>				
-					</td>
-					
-					<td class="list-date">
-					11/25/2011					</td>
-				
-				</tr>
-			</tbody>
-		</table>
-		
-		
-		<div class="pagination">
-		
-			<p class="counter">
-			Page 1 of 2			
-			</p>
-			
-			<ul><li class="pagination-start"><span class="pagenav">Start</span></li><li class="pagination-prev"><span class="pagenav">Prev</span></li><li><span class="pagenav">1</span></li><li><a class="pagenav" href="/projectfork_4/index.php?option=com_content&amp;view=category&amp;id=19&amp;Itemid=260&amp;limitstart=10" title="2">2</a></li><li class="pagination-next"><a class="pagenav" href="/projectfork_4/index.php?option=com_content&amp;view=category&amp;id=19&amp;Itemid=260&amp;limitstart=10" title="Next">Next</a></li><li class="pagination-end"><a class="pagenav" href="/projectfork_4/index.php?option=com_content&amp;view=category&amp;id=19&amp;Itemid=260&amp;limitstart=10" title="End">End</a></li>
-			</ul>	
-		</div>
-	</form>
-</div>
+			<div id="list-reorder">
+               <?php
+                $k = 0;
+                $x = 0;
+                $current_list = '';
+                $list_open    = null;
 
+                foreach($this->items AS $i => $item) :
+                ?>
+                    <?php if($current_list !== $item->tasklist_title) : ?>
+                        <?php
+                        if($item->tasklist_title) :
+                            $asset_name = 'com_projectfork.tasklist.'.$item->list_id;
 
+        		            $canCreate	= ($user->authorise('core.create', $asset_name) || $user->authorise('tasklist.create', $asset_name));
+        		            $canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('tasklist.edit', $asset_name));
+        		            $canCheckin	= ($user->authorise('core.manage', 'com_checkin') || $item->checked_out_list == $uid || $item->checked_out_list == 0);
+        		            $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('tasklist.edit.own', $asset_name)) && $item->list_created_by == $uid);
+        		            $canChange	= (($user->authorise('core.edit.state',	$asset_name) || $user->authorise('tasklist.edit.state', $asset_name)) && $canCheckin);
+                        endif;
+                        ?>
+                        <?php if($list_open) : ?>
+                                 </ul>
+                             </div>
+                             <hr />
+                        <?php $list_open = false; endif; ?>
+
+                        <div class="cat-list-row<?php echo $k;?>">
+    	               		<div class="list-title">
+    	               			<div class="btn-toolbar">
+    		               			<?php if($action_count) : ?>
+        		               			<div class="btn-group">
+        		               			   <span class="list-select">
+        		               			        <?php echo JHtml::_('grid.id', $x, $item->list_id, false, 'lid'); ?>
+        		               				</span>
+        		               			</div>
+    		               			<?php endif; ?>
+                                    <?php if($item->tasklist_title) : ?>
+        		               			<div class="btn-group">
+        		               				<h3>
+        			                            <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_slug, $item->milestone_slug, $item->list_slug));?>">
+        			                                <?php echo $this->escape($item->tasklist_title);?>
+        			                            </a>
+        			                            <small><?php echo $this->escape($item->tasklist_description);?></small>
+        		                            </h3>
+        	                            </div>
+                                        <?php
+                                            $this->menu->start(array('class' => 'btn-mini'));
+                                            $this->menu->itemEdit('tasklistform', $item->list_id, ($canEdit || $canEditOwn));
+                                            $this->menu->itemTrash('tasklists', $x, ($canEdit || $canEditOwn));
+                                            $this->menu->end();
+                                            echo $this->menu->render();
+                                        ?>
+                                    <?php endif; ?>
+                                </div>
+                            </div>
+                            <ul class="list-tasks list-striped unstyled">
+                    <?php
+                        $k            = 1 - $k;
+                        $list_open    = true;
+                        $current_list = $item->tasklist_title;
+                        $x++;
+                        endif;
+                    ?>
+                    <?php
+                    $asset_name = 'com_projectfork.task.'.$item->id;
+
+		            $canCreate	= ($user->authorise('core.create', $asset_name) || $user->authorise('task.create', $asset_name));
+		            $canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('task.edit', $asset_name));
+		            $canCheckin	= ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
+		            $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('task.edit.own', $asset_name)) && $item->created_by == $uid);
+		            $canChange	= (($user->authorise('core.edit.state',	$asset_name) || $user->authorise('task.edit.state', $asset_name)) && $canCheckin);
+                    ?>
+
+                    <li>
+           				<div class="btn-toolbar">
+           					<?php if($action_count) : ?>
+                                <div class="btn-group">
+	               			        <i class="icon-move"></i>
+               				    </div>
+                   				<div class="btn-group">
+    	               				<?php echo JHtml::_('grid.id', $x, $item->id); ?>
+                   				</div>
+                            <?php endif; ?>
+               				<div class="btn-group">
+	               				<a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>">
+                                   <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
+                                   <?php echo $this->escape($item->title);?>
+                                </a>
+               				</div>
+               				<div class="btn-group">
+	               				<small><?php echo $this->escape(JHtml::_('projectfork.truncate', $item->description));?></small>
+               				</div>
+               				<!--<div class="btn-group">
+               					<a href="#" class="btn btn-mini dropdown-toggle" data-toggle="dropdown">Tobias Kuhn <span class="caret"></span></a>
+               					<ul class="dropdown-menu">
+               						<li><a href="#">Kyle Ledbetter</a></li>
+               						<li><a href="#">Melinda Ledbetter</a></li>
+               						<li><a href="#">Tobias Kuhn</a></li>
+               						<li class="divider"></li>
+               						<li><a href="#">Unassigned</a></li>
+               					</ul>
+               				</div>-->
+                            <?php
+                                echo $this->menu->assignedUsers($x, $item->id, 'tasks', $item->users, ($canEdit || $canEditOwn));
+                                echo $this->menu->priorityList($x, $item->id, 'tasks', $item->priority, ($canEdit || $canEditOwn || $canChange));
+
+                                $this->menu->start(array('class' => 'btn-mini'));
+                                $this->menu->itemEdit('taskform', $item->id, ($canEdit || $canEditOwn));
+                                $this->menu->itemTrash('tasks', $i, ($canEdit || $canEditOwn));
+                                $this->menu->end();
+                                echo $this->menu->render();
+                            ?>
+           				</div>
+           			</li>
+                <?php
+                    $x++;
+                    endforeach;
+                ?>
+                <?php if($list_open) : ?>
+                    </ul>
+                </div>
+                <?php $list_open = false; endif; ?>
+            </div>
+
+            <input type="hidden" name="boxchecked" value="0" />
+            <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
+	        <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
+            <input type="hidden" name="task" value="" />
+	        <?php echo JHtml::_('form.token'); ?>
+	    </form>
+    </div>
 </div>

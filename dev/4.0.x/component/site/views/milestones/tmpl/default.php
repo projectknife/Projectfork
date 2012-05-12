@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
 *
 * This file is part of Projectfork.
@@ -21,163 +21,173 @@
 **/
 
 defined('_JEXEC') or die;
-?>
-<div id="projectfork" class="category-list view-milestones">
-    <div class="cat-items">
-    
-        <h2>Milestones <input type="button" class="button" value="New Milestone" /></h2>
-        
-        <form name="adminForm" id="adminForm" action="index.php">
-            
-            <fieldset class="filters">
-            	<span class="display-bulk-actions">
-            			<select onchange="this.form.submit()" size="1" class="inputbox" name="bulk" id="bulk">
-            			<option selected="selected" value="">Bulk Actions</option>
-            			<option value="0">Copy</option>
-            			<option value="1">Delete</option>
-            		</select>
-            	</span>
-				<span class="display-owner">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="owner" id="owner">
-						<option selected="selected" value="">Select Owner</option>
-						<option value="0">All</option>
-					</select>
-				</span>
-				<span class="display-status">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="status" id="status">
-						<option selected="selected" value="">Select Status</option>
-						<option value="0">All</option>
-					</select>
-				</span>
-				<span class="display-limit">
-						<select onchange="this.form.submit()" size="1" class="inputbox" name="limit" id="limit">
-						<option value="5">5</option>
-						<option selected="selected" value="10">10</option>
-						<option value="15">15</option>
-						<option value="20">20</option>
-						<option value="25">25</option>
-						<option value="30">30</option>
-						<option value="50">50</option>
-						<option value="100">100</option>
-						<option value="0">All</option>
-					</select>
-				</span>
 
-				<input type="hidden" value="" name="filter_order">
-				<input type="hidden" value="" name="filter_order_Dir">
-				<input type="hidden" value="" name="limitstart">
+
+$list_order = $this->escape($this->state->get('list.ordering'));
+$list_dir   = $this->escape($this->state->get('list.direction'));
+$user	    = JFactory::getUser();
+$uid	    = $user->get('id');
+
+$action_count = count($this->actions);
+?>
+<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-milestones">
+
+    <?php if ($this->params->get('show_page_heading', 1)) : ?>
+        <h1 class="pull-left"><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
+    <?php endif; ?>
+    <?php echo $this->toolbar;?>
+	<div class="clearfix"></div>
+
+    <div class="cat-items">
+
+        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=milestones'); ?>" method="post">
+
+            <fieldset class="filters btn-toolbar">
+				<?php if($this->params->get('filter_fields')) : ?>
+                    <div class="filter-search btn-group pull-left">
+    			        <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
+					</div>
+					<div class="filter-search-buttons btn-group pull-left">
+    			        <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+    			        <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
+    		        </div>
+                    <?php if ($user->authorise('core.edit.state', 'com_projectfork') || $user->authorize('milestone.edit.state', 'com_projectfork')
+                          ||  $user->authorise('core.edit', 'com_projectfork') || $user->authorize('milestone.edit', 'com_projectfork')) : ?>
+        				<div class="filter-published btn-group pull-left">
+        				    <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
+        				        <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+        				        <?php echo JHtml::_('select.options', $this->states,
+                                                    'value', 'text', $this->state->get('filter.published'),
+                                                    true
+                                                   );
+                                ?>
+        				    </select>
+        				</div>
+                    <?php endif; ?>
+                    <?php if(intval($this->state->get('filter.project')) != 0 && count($this->authors)) : ?>
+                        <div class="filter-author btn-group pull-left">
+                            <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
+        				        <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+        				        <?php echo JHtml::_('select.options', $this->authors,
+                                                    'value', 'text', $this->state->get('filter.author'),
+                                                    true
+                                                   );
+                                ?>
+        				    </select>
+                        </div>
+                    <?php endif; ?>
+                    <div class="filter-project btn-group pull-left">
+                        <?php echo JHtml::_('projectfork.filterProject');?>
+                    </div>
+                <?php endif; ?>
+				<?php if ($this->params->get('show_pagination_limit')) : ?>
+		            <div class="filter-limit btn-group pull-left">
+			            <?php echo $this->pagination->getLimitBox(); ?>
+		            </div>
+		        <?php endif; ?>
 			</fieldset>
-            
-            <table class="category">
-               <thead>
-	               	<tr>
-	               		<th id="tableOrdering" class="list-select">
-	               			<input type="checkbox" onclick="checkAll(2);" value="" name="toggle">
-	               		</th>
-	               		<th id="tableOrdering2" class="list-title">
-	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.title','asc','');">Title</a></th>
-	               		
-	               		<th id="tableOrdering3" class="list-tags">
-	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.tags','asc','');">Tags</a></th>
-	               		
-	               		<th id="tableOrdering4" class="list-owner">
-	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.owner','asc','');">Owner</a></th>
-	               		
-	               		<th id="tableOrdering5" class="list-comments">
-	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.comments','asc','');">Comments</a></th>
-	               		
-	               		<th id="tableOrdering6" class="list-tasks">
-	               		<a title="Click to sort by this column" href="javascript:tableOrdering('a.tasks','asc','');">Tasks</a></th>
-	               	</tr>
-               </thead>
-               <tbody>
-					<tr class="cat-list-row0">
-	               		<td class="list-select">
-	               			<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb0">
-	               		</td>
-	               		<td class="list-title">
-	               		<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=8:beginners&amp;catid=19&amp;Itemid=260">
-	               		Joomla Template Design</a>
-	               		<ul class="actions">
-	               			<li class="edit-icon">
-	               				<span title=""><a href="#">Edit</a></span>
-	               			</li>
-	               			<li class="complete-icon">
-	               				<span title=""><a href="#">Complete</a></span>
-	               			</li>
-	               			<li class="delete-icon">
-	               				<span title=""><a href="#">Delete</a></span>
-	               			</li>
-	               		</ul>
-	               		</td>
-	               		<td class="list-tags">
-	               		<span class="tag"><a href="#">Design</a></span>, <span class="tag"><a href="#">Joomla</a></span>									
-	               		</td>
-	               		
-	               		<td class="list-owner">
-               		Firstname L.											
-	               		</td>
-	               		
-	               		<td class="list-comments">
-	               		<span title=""><a href="#">6</a></span>				
-	               		</td>
-	               		
-	               		<td class="list-tasks">
-	               		<span title=""><a href="#">25</a></span>					
-	               		</td>
-	               	
-	               	</tr>
-	               	<tr class="cat-list-row1">
-	               		<td class="list-select">
-	               			<input type="checkbox" onclick="isChecked(this.checked);" value="16" name="cid[]" id="cb1">
-	               		</td>
-	               		<td class="list-title">
-	               		<a href="/projectfork_4/index.php?option=com_content&amp;view=article&amp;id=21:getting-help&amp;catid=19&amp;Itemid=436">
-	               		Joomla Extension Development</a>
-	               		<ul class="actions">
-	               			<li class="edit-icon">
-	               				<span title=""><a href="#">Edit</a></span>
-	               			</li>
-	               			<li class="complete-icon">
-	               				<span title=""><a href="#">Complete</a></span>
-	               			</li>
-	               			<li class="delete-icon">
-	               				<span title=""><a href="#">Delete</a></span>
-	               			</li>
-	               		</ul>
-	               		</td>
-	               		<td class="list-tags">
-	               		<span class="tag"><a href="#">Programming</a></span>, <span class="tag"><a href="#">Joomla</a></span>									
-	               		</td>
-	               		
-	               		<td class="list-owner">
-	               		
-	               		Firstname L.											</td>
-	               		
-	               		<td class="list-comments">
-	               		<span title=""><a href="#">10</a></span>				
-	               		</td>
-	               		
-	               		<td class="list-tasks">
-	               		<span title=""><a href="#">25</a></span>					
-	               		</td>
-	               	
-	               	</tr>
-                </tbody>
-            </table>
-            
-            <div class="pagination">
-			    <p class="counter">Page 1 of 2</p>
-		        <ul>
-                    <li class="pagination-start"><span class="pagenav">Start</span></li>
-                    <li class="pagination-prev"><span class="pagenav">Prev</span></li>
-                    <li><span class="pagenav">1</span></li>
-                    <li><a title="2" href="index.php?start=10" class="pagenav">2</a></li>
-                    <li class="pagination-next"><a title="Next" href="index.php?start=10" class="pagenav">Next</a></li>
-                    <li class="pagination-end"><a title="End" href="index.php?start=10" class="pagenav">End</a></li>
-                </ul>	
-            </div>
-            
+
+			<?php
+            $k = 0;
+            foreach($this->items AS $i => $item) :
+                $asset_name = 'com_projectfork.milestone.'.$item->id;
+
+	            $canCreate	= ($user->authorise('core.create', $asset_name) || $user->authorise('milestone.create', $asset_name));
+	            $canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('milestone.edit', $asset_name));
+	            $canCheckin	= ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
+	            $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('milestone.edit.own', $asset_name)) && $item->created_by == $uid);
+	            $canChange	= (($user->authorise('core.edit.state',	$asset_name) || $user->authorise('milestone.edit.state', $asset_name)) && $canCheckin);
+            ?>
+                <div class="well well-<?php echo $k;?>">
+               		<h3>
+                        <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestoneRoute($item->slug, $item->project_slug));?>">
+                            <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
+                            <?php echo $this->escape($item->title);?>
+                        </a>
+                        <div class="list-actions pull-left">
+                            <?php
+                                $this->menu->start();
+                                $this->menu->itemEdit('milestoneform', $item->id, ($canEdit || $canEditOwn));
+                                $this->menu->itemTrash('milestones', $i, ($canEdit || $canEditOwn));
+                                $this->menu->end();
+
+                                // echo $this->menu->render();
+                            ?>
+                   		</div>
+                        <small>
+                        <?php if($this->params->get('milestone_list_col_project')) : ?>
+                           		in <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->project_slug));?>">
+                                   <?php echo $this->escape($item->project_title);?>
+                                </a>
+                        <?php endif; ?>
+
+                        <?php if($this->params->get('milestone_list_col_author')) : ?>
+                        	by <?php echo $this->escape($item->author_name);?>
+                        <?php endif; ?>
+                        <?php if($this->params->get('milestone_list_col_deadline')) : ?>
+                        	<span class="pull-right">
+                            <?php if($item->end_date != $this->nulldate) {
+                                echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('deadline_format', JText::_('DATE_FORMAT_LC3'))));
+                            }
+                        		?>
+                        	</span>
+                        <?php endif; ?>
+                        </small>
+               		</h3>
+               		<hr />
+               		<div class="small">
+               			<?php echo $this->escape($item->description);?>
+               			<?php if($this->params->get('milestone_list_col_created')) : ?>
+               				    <span class="list-created">
+               			   	    <?php echo JHtml::_('date', $item->created, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC4')))); ?>
+               					</span>
+               			<?php endif; ?>
+               			<?php if($this->params->get('milestone_list_col_sdate')) : ?>
+               				    <span class="list-sdate">
+               			   	    <?php if($item->start_date == $this->nulldate) {
+               			            echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
+               			        }
+               			        else {
+               			            echo JHtml::_('date', $item->start_date, $this->escape( $this->params->get('sdate_format', JText::_('DATE_FORMAT_LC4'))));
+               			        }
+               			   		?>
+               					</span>
+               			<?php endif; ?>
+               		</div>
+               		<?php if($this->params->get('milestone_list_col_access')) : ?>
+               			    <span class="label pull-right access">
+               		   		<?php echo $this->escape($item->access_level);?>
+               				</span>
+               		<?php endif; ?>
+               		<div class="btn-toolbar">
+               			<div class="btn-group">
+		                    <?php if($this->params->get('milestone_list_col_tasks')) : ?>
+				               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_id.':'.$item->project_alias, $item->id.':'.$item->alias));?>">
+		                               <i class="icon-ok"></i> <?php echo intval($item->tasklists).' / '.intval($item->tasks);?>
+		                            </a>
+		                    <?php endif; ?>
+                    	</div>
+                    </div>
+               	</div>
+            <?php
+            $k = 1 - $k;
+            endforeach;
+            ?>
+
+            <?php if($this->pagination->get('pages.total') > 1 && $this->params->get('show_pagination')) : ?>
+                <div class="pagination">
+                    <?php if ($this->params->get('show_pagination_results')) : ?>
+    				    <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
+    				<?php endif; ?>
+    		        <?php echo $this->pagination->getPagesLinks(); ?>
+                </div>
+            <?php endif; ?>
+
+            <input type="hidden" name="boxchecked" value="0" />
+            <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
+	        <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
+            <input type="hidden" name="task" value="" />
+	        <?php echo JHtml::_('form.token'); ?>
         </form>
     </div>
 </div>
