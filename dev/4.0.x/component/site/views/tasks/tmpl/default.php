@@ -188,7 +188,7 @@ $action_count = count($this->actions);
                				<div class="btn-group">
 	               				<small><?php echo $this->escape(JHtml::_('projectfork.truncate', $item->description));?></small>
                				</div>
-               				<div class="btn-group">
+               				<!--<div class="btn-group">
                					<a href="#" class="btn btn-mini dropdown-toggle" data-toggle="dropdown">Tobias Kuhn <span class="caret"></span></a>
                					<ul class="dropdown-menu">
                						<li><a href="#">Kyle Ledbetter</a></li>
@@ -197,9 +197,10 @@ $action_count = count($this->actions);
                						<li class="divider"></li>
                						<li><a href="#">Unassigned</a></li>
                					</ul>
-               				</div>
+               				</div>-->
                             <?php
-                                echo $this->menu->priorityList($x, $item->id, 'tasks', $item->priority);
+                                echo $this->menu->assignedUsers($x, $item->id, 'tasks', $item->users, ($canEdit || $canEditOwn));
+                                echo $this->menu->priorityList($x, $item->id, 'tasks', $item->priority, ($canEdit || $canEditOwn || $canChange));
 
                                 $this->menu->start(array('class' => 'btn-mini'));
                                 $this->menu->itemEdit('taskform', $item->id, ($canEdit || $canEditOwn));

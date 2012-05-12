@@ -246,4 +246,20 @@ class ProjectforkModelTask extends JModelAdmin
 
 		return array($title, $alias);
 	}
+
+
+    /**
+	 * Method to test whether a record can be deleted.
+	 *
+	 * @param   object  $record  A record object.
+	 *
+	 * @return  boolean  True if allowed to change the state of the record. Defaults to the permission for the component.
+	 *
+	 * @since   11.1
+	 */
+	protected function canEdit($record)
+	{
+		$user = JFactory::getUser();
+		return ($user->authorise('core.edit', $this->option) || $user->authorise('task.edit', $this->option));
+	}
 }

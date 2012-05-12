@@ -57,7 +57,7 @@ class ProjectforkControllerTasks extends JControllerAdmin
 
 
     /**
-	 * Method to get save the priority of one or more tasks
+	 * Method to save the priority of one or more tasks
 	 *
 	 * @return	boolean    True on success, otherwise false
 	 */
@@ -73,17 +73,79 @@ class ProjectforkControllerTasks extends JControllerAdmin
 		$model  = $this->getModel();
 		$return = $model->savePriority($ids, $pids);
 
-		if ($return === false)
-		{
-			// Reorder failed.
+		if ($return === false) {
+			// Storage failed.
 			$message = JText::sprintf('COM_PROJECTFORK_ERROR_SAVEPRIORITY_FAILED', $model->getError());
 			$this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false), $message, 'error');
 			return false;
 		}
-		else
-		{
-			// Reorder succeeded.
+		else {
+			// Storage succeeded.
 			$message = JText::_('COM_PROJECTFORK_SUCCESS_TASK_SAVEPRIORITY');
+			$this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false), $message);
+			return true;
+		}
+	}
+
+
+    /**
+	 * Method to assign a user to one or more tasks
+	 *
+	 * @return	boolean    True on success, otherwise false
+	 */
+    public function addUsers()
+	{
+		// Check for request forgeries.
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		// Initialise variables.
+		$ids  = JRequest::getVar('cid', null, 'post', 'array');
+		$uids = JRequest::getVar('assigned', null, 'post', 'array');
+
+		$model  = $this->getModel();
+		$return = $model->addUsers($ids, $uids);
+
+		if ($return === false) {
+			// Assigning failed.
+			$message = JText::sprintf('COM_PROJECTFORK_ERROR_ADDUSER_FAILED', $model->getError());
+			$this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false), $message, 'error');
+			return false;
+		}
+		else {
+			// Assigning succeeded.
+			$message = JText::_('COM_PROJECTFORK_SUCCESS_TASK_ADDUSER');
+			$this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false), $message);
+			return true;
+		}
+	}
+
+
+    /**
+	 * Method to remove a user from one or more tasks
+	 *
+	 * @return	boolean    True on success, otherwise false
+	 */
+    public function deleteUsers()
+	{
+		// Check for request forgeries.
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		// Initialise variables.
+		$ids  = JRequest::getVar('cid', null, 'post', 'array');
+		$uids = JRequest::getVar('assigned', null, 'post', 'array');
+
+		$model  = $this->getModel();
+		$return = $model->deleteUsers($ids, $uids);
+
+		if ($return === false) {
+			// Deletion failed.
+			$message = JText::sprintf('COM_PROJECTFORK_ERROR_ADDUSER_FAILED', $model->getError());
+			$this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false), $message, 'error');
+			return false;
+		}
+		else {
+			// Deletion succeeded.
+			$message = JText::_('COM_PROJECTFORK_SUCCESS_TASK_ADDUSER');
 			$this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false), $message);
 			return true;
 		}

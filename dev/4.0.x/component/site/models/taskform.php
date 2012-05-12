@@ -169,6 +169,50 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
 
 
     /**
+	 * Method to assign a user to one or more tasks
+	 *
+	 * @param	  array    $ids    An array of primary key ids.
+     * @param	  array    $uids   An array of user id values.
+	 * @return    mixed	           True on success, otherwise false
+	 */
+    public function addUsers($pks = null, $uids = null)
+    {
+        // Initialise variables.
+		$table = $this->getTable();
+		$conditions = array();
+
+		if (empty($pks)) {
+			return JError::raiseWarning(500, JText::_($this->text_prefix . '_ERROR_NO_ITEMS_SELECTED'));
+		}
+
+		// update priority values
+		foreach ($pks as $i => $pk)
+		{
+			$table->load((int) $pk);
+
+			// Access checks.
+			if (!$this->canEditState($table))
+			{
+				// Prune items that you can't change.
+				unset($pks[$i]);
+				JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'));
+			}
+
+            $refs = JModel::getInstance('UserRefs', 'ProjectforkModel', array('ignore_request' => true));
+
+            if(!$refs->store($uids, 'task', $pk)) {
+                return false;
+            }
+		}
+
+		// Clear the component's cache
+		$this->cleanCache();
+
+		return true;
+    }
+
+
+    /**
 	 * Method to get the data that should be injected in the form.
 	 *
 	 * @return    mixed    The data for the form.
