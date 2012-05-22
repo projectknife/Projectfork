@@ -100,12 +100,13 @@ $action_count = count($this->actions);
                 $k = 0;
                 $x = 0;
                 $current_list = '';
-                $list_open    = null;
+                $list_open    = false;
+                $item_order   = array();
 
                 foreach($this->items AS $i => $item) :
                 ?>
-                    <?php if($current_list !== $item->tasklist_title) : ?>
-                        <?php
+                    <?php if($current_list !== $item->tasklist_title) :
+                        JHtml::_('projectfork.ajaxReorder', 'tasklist_'.$i, 'tasks', $k);
                         if($item->tasklist_title) :
                             $asset_name = 'com_projectfork.tasklist.'.$item->list_id;
 
@@ -118,9 +119,14 @@ $action_count = count($this->actions);
                         ?>
                         <?php if($list_open) : ?>
                                  </ul>
+                                 <input type="hidden" name="item-order-<?php echo $k;?>" id="item_order_<?php echo $k;?>" value="<?php echo implode($item_order,'|'); ?>" />
                              </div>
                              <hr />
-                        <?php $list_open = false; endif; ?>
+                        <?php
+                            $list_open  = false;
+                            $item_order = array();
+                            endif;
+                        ?>
 
                         <div class="cat-list-row<?php echo $k;?>">
     	               		<div class="list-title">
@@ -151,7 +157,7 @@ $action_count = count($this->actions);
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            <ul class="list-tasks list-striped unstyled">
+                            <ul class="list-tasks list-striped unstyled" id="tasklist_<?php echo $i;?>">
                     <?php
                         $k            = 1 - $k;
                         $list_open    = true;
@@ -160,7 +166,8 @@ $action_count = count($this->actions);
                         endif;
                     ?>
                     <?php
-                    $asset_name = 'com_projectfork.task.'.$item->id;
+                    $asset_name   = 'com_projectfork.task.'.$item->id;
+                    $item_order[] = $item->ordering;
 
 		            $canCreate	= ($user->authorise('core.create', $asset_name) || $user->authorise('task.create', $asset_name));
 		            $canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('task.edit', $asset_name));
@@ -169,11 +176,12 @@ $action_count = count($this->actions);
 		            $canChange	= (($user->authorise('core.edit.state',	$asset_name) || $user->authorise('task.edit.state', $asset_name)) && $canCheckin);
                     ?>
 
-                    <li>
+                    <li alt="<?php echo (int) $item->id;?>">
            				<div class="btn-toolbar">
            					<?php if($action_count) : ?>
                                 <div class="btn-group">
 	               			        <i class="icon-move"></i>
+                                    <input type="hidden" name="order[]" value="<?php echo (int) $item->ordering;?>"/>
                				    </div>
                    				<div class="btn-group">
     	               				<?php echo JHtml::_('grid.id', $x, $item->id); ?>
@@ -188,16 +196,6 @@ $action_count = count($this->actions);
                				<div class="btn-group">
 	               				<small><?php echo $this->escape(JHtml::_('projectfork.truncate', $item->description));?></small>
                				</div>
-               				<!--<div class="btn-group">
-               					<a href="#" class="btn btn-mini dropdown-toggle" data-toggle="dropdown">Tobias Kuhn <span class="caret"></span></a>
-               					<ul class="dropdown-menu">
-               						<li><a href="#">Kyle Ledbetter</a></li>
-               						<li><a href="#">Melinda Ledbetter</a></li>
-               						<li><a href="#">Tobias Kuhn</a></li>
-               						<li class="divider"></li>
-               						<li><a href="#">Unassigned</a></li>
-               					</ul>
-               				</div>-->
                             <?php
                                 echo $this->menu->assignedUsers($x, $item->id, 'tasks', $item->users, ($canEdit || $canEditOwn));
                                 echo $this->menu->priorityList($x, $item->id, 'tasks', $item->priority, ($canEdit || $canEditOwn || $canChange));
@@ -216,6 +214,7 @@ $action_count = count($this->actions);
                 ?>
                 <?php if($list_open) : ?>
                     </ul>
+                    <input type="hidden" name="item-order-<?php echo $k;?>" id="item_order_<?php echo $k;?>" value="<?php echo implode($item_order,'|'); ?>" />
                 </div>
                 <?php $list_open = false; endif; ?>
             </div>
