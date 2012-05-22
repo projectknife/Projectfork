@@ -555,7 +555,6 @@ class ProjectforkModelTasks extends JModelList
         $filters['t.list_id']      = array('INT-NOTZERO', $this->getState('filter.tasklist'));
         $filters['t.created_by']   = array('INT-NOTZERO', $this->getState('filter.author'));
         $filters['t.priority']     = array('INT',         $this->getState('filter.priority'));
-        $filters['a.user_id']      = array('INT-NOTZERO', $this->getState('filter.assigned'));
 
         // Apply Filter
         ProjectforkHelperQuery::buildFilter($query, $filters);
