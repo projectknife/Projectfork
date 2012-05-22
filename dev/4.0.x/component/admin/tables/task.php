@@ -233,7 +233,7 @@ class PFTableTask extends JTable
         // Store the main record
         $success = parent::store($updateNulls);
 
-        if($success) {
+        if($success && isset($this->users)) {
             $success = $this->storeUsers($this->id, $this->users);
         }
 
