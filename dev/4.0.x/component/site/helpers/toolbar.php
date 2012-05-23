@@ -45,8 +45,7 @@ class ProjectforkHelperToolbar
     {
         $html = array();
 
-        $html[] = '<input type="submit" class="button btn btn-info" ';
-        $html[] = 'value="'.addslashes(JText::_($text)).'" ';
+        $html[] = '<button class="button btn btn-info" ';
 
         if($task) {
             $html[] = 'onclick="';
@@ -62,8 +61,11 @@ class ProjectforkHelperToolbar
 
             $html[] = '" ';
         }
-
-        $html[] = '/>';
+        
+        $html[] = '>';
+        $html[] = '<i class="icon-plus icon-white"></i> ';
+        $html[] = addslashes(JText::_($text));
+        $html[] = '</button>';
 
         return implode('', $html);
     }
