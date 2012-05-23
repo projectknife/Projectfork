@@ -152,6 +152,21 @@ class ProjectforkControllerTasks extends JControllerAdmin
 	}
 
 
+    public function saveorder()
+    {
+        $result = parent::saveorder();
+        $format = JRequest::getVar('format');
+        $ajax   = JRequest::getVar('ajax');
+
+        if($format == 'json') {
+            die("yes");
+        }
+        else {
+            die("ajax: $ajax");
+        }
+    }
+
+
 	/**
 	 * Gets the URL arguments to append to an item redirect.
 	 *

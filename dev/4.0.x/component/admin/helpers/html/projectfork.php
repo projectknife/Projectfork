@@ -1,7 +1,7 @@
 <?php
 /**
 * @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
+* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
 * @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
 *
 * This file is part of Projectfork.
@@ -172,5 +172,65 @@ abstract class JHtmlProjectfork
         if(($length + 3) < $chars) return $truncated;
 
         return substr($truncated, 0, $chars).'...';
+    }
+
+
+    static function ajaxReorder($list, $view, $i = 0)
+    {
+        $doc = JFactory::getDocument();
+        $js  = array();
+
+        $js[] = "window.addEvent('domready', function() {";
+        $js[] = "    new Sortables('$list', {";
+        $js[] = "        clone:false,";
+        $js[] = "        constrain:true,";
+        $js[] = "        revert: true,";
+        $js[] = "        handle:'.icon-move',";
+        $js[] = "        onStart: function(el, clone) {el.erase('style'); el.set('class', 'alert-info')},";
+        $js[] = "        onComplete: function(el) {";
+        $js[] = "            var order_array = new Array();";
+        $js[] = "            var cid_array   = new Array();";
+        $js[] = "            var i  = 0;";
+        $js[] = "            $$('#$list li').each(function(li) {";
+        $js[] = "                if(li.get('alt')) {";
+        $js[] = "                    cid_array[i]   = 'cid[]=' + li.get('alt');";
+        $js[] = "                    order_array[i] = 'order[]=' + i;";
+        $js[] = "                    i++;";
+        $js[] = "                }";
+        $js[] = "            });";
+        $js[] = "            var order = order_array.join('&');";
+        $js[] = "            var cid   = cid_array.join('&');";
+        $js[] = "            var token = '".JSession::getFormToken()."=1'";
+        $js[] = "            ";
+        $js[] = "            var req = new Request({";
+        $js[] = "                url:'".htmlspecialchars(JFactory::getURI()->toString())."',";
+        $js[] = "                method:'post',";
+        $js[] = "                autoCancel:true,";
+        $js[] = "                format:'json',";
+        $js[] = "                data:'option=com_projectfork&task=".$view.".saveorder&' + cid + '&' + order + '&tmpl=component&' + token,";
+        $js[] = "                onSuccess: function(responseText, responseXML) {";
+        $js[] = "                    var resp = JSON.decode(responseText);";
+        $js[] = "                    if(resp.success == true) {";
+        $js[] = "                        el.morph('.alert-success', {duration: 500});";
+        $js[] = "                    } else {";
+        $js[] = "                        el.morph('.alert-error', {duration: 500});";
+        $js[] = "                        alert(resp.message);";
+        $js[] = "                    }";
+        $js[] = "                },";
+        $js[] = "                onFailure: function(xhr) {";
+        $js[] = "                    el.morph('.alert-error', {duration: 500});";
+        $js[] = "                    alert('Reorder failed. Request returned: ' + xhr);";
+        $js[] = "                },";
+        $js[] = "                onException: function(headerName, value) {";
+        $js[] = "                    el.morph('.alert-error', {duration: 500});";
+        $js[] = "                    alert('Reorder failed. Header exception: ' + headerName + ' - ' + value);";
+        $js[] = "                }";
+        $js[] = "            }).send();";
+        $js[] = "        }";
+        $js[] = "    })";
+        $js[] = "});";
+
+
+        $doc->addScriptDeclaration(implode("\n", $js));
     }
 }
