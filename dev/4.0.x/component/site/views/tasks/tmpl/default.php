@@ -32,11 +32,16 @@ $uid	    = $user->get('id');
 $action_count = count($this->actions);
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-tasks">
-
-    <?php if ($this->params->get('show_page_heading', 1)) : ?>
-        <h1 class="pull-left"><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
-    <?php endif; ?>
-    <?php echo $this->toolbar;?>
+	<div class="btn-toolbar">
+	    <?php if ($this->params->get('show_page_heading', 1)) : ?>
+	    	<div class="btn-group">
+	      	  <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
+	        </div>
+	    <?php endif; ?>
+	    <div class="btn-group">
+	   	 <?php echo $this->toolbar;?>
+	    </div>
+    </div>
 	<div class="clearfix"></div>
 
 	<div class="cat-items">
@@ -44,11 +49,17 @@ $action_count = count($this->actions);
 		<form id="adminForm" name="adminForm" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>">
 
 			<fieldset class="filters btn-toolbar">
+				<div class="btn-group pull-right">
+					<a data-toggle="collapse" data-target="#filters" class="btn"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
+				</div>
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('projectfork.filterProject');?>
                 </div>
-                <?php if($this->params->get('filter_fields')) : ?>
-
+			</fieldset>
+			<div class="clearfix"> </div>
+			<div class="collapse" id="filters">
+				<?php if($this->params->get('filter_fields')) : ?>
+					<div class="well btn-toolbar">
                     <?php if($this->state->get('filter.project')) : ?>
                         <div class="filter-milestone btn-group">
         				    <select onchange="this.form.submit()" class="inputbox" name="filter_milestone" id="milestone">
@@ -91,10 +102,9 @@ $action_count = count($this->actions);
         					</select>
         				</div>
                     <?php endif; ?>
-
+					</div>
                 <?php endif; ?>
-			</fieldset>
-
+			</div>
 			<div id="list-reorder">
                <?php
                 $k = 0;
