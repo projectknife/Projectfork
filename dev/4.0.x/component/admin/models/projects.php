@@ -135,7 +135,7 @@ class ProjectforkModelProjects extends JModelList
 			$this->getState(
 				'list.select',
 				'a.id, a.title, a.alias, a.checked_out, a.checked_out_time,'
-				. 'a.state, a.access, a.access, a.created, a.created_by,'
+				. 'a.state, a.access, a.created, a.created_by,'
 				. 'a.start_date, a.end_date'
 			)
 		);
