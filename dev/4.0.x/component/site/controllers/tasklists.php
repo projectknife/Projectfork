@@ -56,6 +56,42 @@ class ProjectforkControllerTasklists extends JControllerAdmin
 	}
 
 
+    /**
+     * Override of parent method
+     *
+     * @see    JControllerAdmin
+     */
+    public function delete()
+    {
+        $cid = JRequest::getVar('cid', array(), '', 'array');
+        $lid = JRequest::getVar('lid', array(), '', 'array');
+
+        if(!count($cid)) {
+            JRequest::setVar('cid', $lid);
+        }
+
+        parent::delete();
+    }
+
+
+    /**
+     * Override of parent method
+     *
+     * @see    JControllerAdmin
+     */
+    public function publish()
+    {
+        $cid = JRequest::getVar('cid', array(), '', 'array');
+        $lid = JRequest::getVar('lid', array(), '', 'array');
+
+        if(!count($cid)) {
+            JRequest::setVar('cid', $lid);
+        }
+
+        parent::publish();
+    }
+
+
 	/**
 	 * Gets the URL arguments to append to an item redirect.
 	 *
