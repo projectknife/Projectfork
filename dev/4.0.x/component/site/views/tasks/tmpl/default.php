@@ -91,6 +91,8 @@ $action_count = count($this->actions);
         						<?php echo JHtml::_('select.options', $this->priorities, 'value', 'text', $this->state->get('filter.priority'));?>
         					</select>
         				</div>
+                    <?php  else : ?>
+                        <input type="hidden" name="filter_assigned" id="filter_assigned"/>
                     <?php endif; ?>
 
                     <?php if ($user->authorise('core.edit.state', 'com_projectfork') || $user->authorize('task.edit.state', 'com_projectfork')
@@ -103,7 +105,10 @@ $action_count = count($this->actions);
         				</div>
                     <?php endif; ?>
 					</div>
+                <?php else : ?>
+                    <input type="hidden" name="filter_assigned" id="filter_assigned"/>
                 <?php endif; ?>
+
 			</div>
 			<div id="list-reorder">
                <?php
