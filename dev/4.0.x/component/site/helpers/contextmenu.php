@@ -208,19 +208,19 @@ class ProjectforkHelperContextMenu
                         $class = 'btn-info very-low-priority';
                         break;
 
-                    case 1:
+                    case 2:
                         $class = 'btn-info low-priority';
                         break;
 
-                    case 2:
+                    case 3:
                         $class = 'btn-warning medium-priority';
                         break;
 
-                    case 3:
+                    case 4:
                         $class = 'btn-danger high-priority';
                         break;
 
-                    case 4:
+                    case 5:
                         $class = 'btn-danger very-high-priority';
                         break;
 

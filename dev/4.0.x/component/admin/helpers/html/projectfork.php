@@ -107,34 +107,34 @@ abstract class JHtmlProjectfork
     {
         switch((int) $value)
         {
-            case 0:
+            case 1:
                 $class = 'label-success very-low-priority';
                 $text  = JText::_('COM_PROJECTFORK_PRIORITY_VERY_LOW');
                 break;
 
-            case 1:
+            case 2:
                 $class = 'label-success low-priority';
                 $text  = JText::_('COM_PROJECTFORK_PRIORITY_LOW');
                 break;
 
-            case 2:
+            case 3:
                 $class = 'label-info medium-priority';
                 $text  = JText::_('COM_PROJECTFORK_PRIORITY_MEDIUM');
                 break;
 
-            case 3:
+            case 4:
                 $class = 'label-warning high-priority';
                 $text  = JText::_('COM_PROJECTFORK_PRIORITY_HIGH');
                 break;
 
-            case 4:
+            case 5:
                 $class = 'label-important very-high-priority';
                 $text  = JText::_('COM_PROJECTFORK_PRIORITY_VERY_HIGH');
                 break;
 
             default:
-                $class = '';
-                $text  = '';
+                $class = 'label-success very-low-priority';
+                $text  = JText::_('COM_PROJECTFORK_PRIORITY_VERY_LOW');
                 break;
         }
 
@@ -154,11 +154,11 @@ abstract class JHtmlProjectfork
     {
         $options = array();
 
-        $options[] =  JHtml::_('select.option', '0', JText::_('COM_PROJECTFORK_PRIORITY_VERY_LOW'));
-        $options[] =  JHtml::_('select.option', '1', JText::_('COM_PROJECTFORK_PRIORITY_LOW'));
-        $options[] =  JHtml::_('select.option', '2', JText::_('COM_PROJECTFORK_PRIORITY_MEDIUM'));
-        $options[] =  JHtml::_('select.option', '3', JText::_('COM_PROJECTFORK_PRIORITY_HIGH'));
-        $options[] =  JHtml::_('select.option', '4', JText::_('COM_PROJECTFORK_PRIORITY_VERY_HIGH'));
+        $options[] =  JHtml::_('select.option', '1', JText::_('COM_PROJECTFORK_PRIORITY_VERY_LOW'));
+        $options[] =  JHtml::_('select.option', '2', JText::_('COM_PROJECTFORK_PRIORITY_LOW'));
+        $options[] =  JHtml::_('select.option', '3', JText::_('COM_PROJECTFORK_PRIORITY_MEDIUM'));
+        $options[] =  JHtml::_('select.option', '4', JText::_('COM_PROJECTFORK_PRIORITY_HIGH'));
+        $options[] =  JHtml::_('select.option', '5', JText::_('COM_PROJECTFORK_PRIORITY_VERY_HIGH'));
 
         return $options;
     }
