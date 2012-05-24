@@ -90,9 +90,34 @@ class JFormFieldMilestone extends JFormFieldList
         }
 
 
+        // Override value based on selected task list
+        $list_id = (int) $this->form->getValue('list_id');
+        if($list_id) $this->value = $this->getListMilestone($list_id);
+
+
 		// Generate the list.
 		return JHtml::_('select.genericlist', $options, $this->name, trim($attr), 'value', 'text', $this->value, $this->id);
 	}
+
+
+    /**
+	 * Method to get the parent milestone of a task list
+	 *
+     * @param     int      $list_id     The list id
+	 * @return    int                   The milestone id
+	 */
+    protected function getListMilestone($list_id)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('a.milestone_id');
+        $query->from('#__pf_task_lists AS a');
+        $query->where('a.id = '.(int) $list_id);
+
+        $db->setQuery($query->__toString());
+        return (int) $db->loadResult();
+    }
 
 
     /**
