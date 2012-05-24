@@ -49,9 +49,11 @@ $action_count = count($this->actions);
 		<form id="adminForm" name="adminForm" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>">
 
 			<fieldset class="filters btn-toolbar">
-				<div class="btn-group pull-right">
-					<a data-toggle="collapse" data-target="#filters" class="btn"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
-				</div>
+				<?php if($this->params->get('filter_fields')) : ?>
+					<div class="btn-group pull-right">
+						<a data-toggle="collapse" data-target="#filters" class="btn"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
+					</div>
+				<?php endif; ?>
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('projectfork.filterProject');?>
                 </div>
