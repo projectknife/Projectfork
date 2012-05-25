@@ -191,7 +191,11 @@ class ProjectforkModelMilestones extends JModelList
 
         // Join over the tasks for task count
         $query->select('COUNT(DISTINCT ta.id) AS tasks');
-        $query->join('LEFT', '#__pf_tasks AS ta ON ta.project_id = a.id');
+        $query->join('LEFT', '#__pf_tasks AS ta ON (ta.milestone_id = a.id)');
+
+        // Join over the tasks again for completed task count
+        $query->select('COUNT(DISTINCT tc.id) AS completed_tasks');
+        $query->join('LEFT', '#__pf_tasks AS tc ON (tc.milestone_id = a.id AND tc.complete = 1)');
 
         // Join over the task lists for task list count
         $query->select('COUNT(DISTINCT tl.id) AS tasklists');

@@ -108,6 +108,24 @@ $action_count = count($this->actions);
 	            $canCheckin	= ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
 	            $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('milestone.edit.own', $asset_name)) && $item->created_by == $uid);
 	            $canChange	= (($user->authorise('core.edit.state',	$asset_name) || $user->authorise('milestone.edit.state', $asset_name)) && $canCheckin);
+
+                // Calculate milestone progress
+                $task_count = (int) $item->tasks;
+                $completed  = (int) $item->completed_tasks;
+                $progress   = 0;
+
+                if($task_count == 0) {
+                    $progress = 0;
+                }
+                else {
+                    $progress = round($completed * (100 / $task_count));
+                }
+
+                if($progress >= 66)  $progress_class = 'progress-info';
+                if($progress == 100) $progress_class = 'progress-success';
+                if($progress < 66)   $progress_class = 'progress-warning';
+                if($progress < 33)   $progress_class = 'progress-danger';
+
             ?>
                 <div class="well well-<?php echo $k;?>">
                		<h4>
@@ -121,7 +139,7 @@ $action_count = count($this->actions);
                                 // echo $this->menu->render();
                             ?>
                    		</div>
-                   		<i class="icon-map-marker"></i> 
+                   		<i class="icon-map-marker"></i>
                         <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestoneRoute($item->slug, $item->project_slug));?>">
                             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                             <?php echo $this->escape($item->title);?>
@@ -186,9 +204,9 @@ $action_count = count($this->actions);
 	                    <div class="clearfix"></div>
                     </div>
                     <hr />
-                    <div class="progress progress-success progress-striped progress-milestone">
+                    <div class="progress <?php echo $progress_class;?> progress-striped progress-milestone">
                       <div class="bar"
-                           style="width: <?php echo rand(50, 95);?>%;"></div>
+                           style="width: <?php echo $progress;?>%;"></div>
                     </div>
                	</div>
             <?php
@@ -204,7 +222,7 @@ $action_count = count($this->actions);
     		        <?php echo $this->pagination->getPagesLinks(); ?>
                 </div>
             <?php endif; ?>
-            
+
             <?php if ($this->params->get('show_pagination_limit')) : ?>
                 <div class="filter-limit">
                     <?php echo $this->pagination->getLimitBox(); ?>
