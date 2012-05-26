@@ -99,6 +99,14 @@ class ProjectforkModelMilestone extends JModelItem
 				$query->select('p.title AS project_title, p.alias AS project_alias');
 				$query->join('LEFT', '#__pf_projects AS p on p.id = a.project_id');
 
+                // Join on tasks table.
+				$query->select('COUNT(DISTINCT t.id) AS tasks');
+				$query->join('LEFT', '#__pf_tasks AS t on t.milestone_id = a.id');
+
+                // Join on task lists table.
+				$query->select('COUNT(DISTINCT l.id) AS lists');
+				$query->join('LEFT', '#__pf_task_lists AS l on l.milestone_id = a.id');
+
 				// Join on user table.
 				$query->select('u.name AS author');
 				$query->join('LEFT', '#__users AS u on u.id = a.created_by');
@@ -128,6 +136,10 @@ class ProjectforkModelMilestone extends JModelItem
 				if (((is_numeric($published)) || (is_numeric($archived))) && (($data->state != $published) && ($data->state != $archived))) {
 					return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_MILESTONE_NOT_FOUND'));
 				}
+
+                // Generate slugs
+                $data->slug = $data->id.':'.$data->alias;
+                $data->project_slug = $data->project_id.':'.$data->project_alias;
 
 				// Convert parameter fields to objects.
 				$registry = new JRegistry;

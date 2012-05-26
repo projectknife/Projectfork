@@ -137,8 +137,7 @@ class ProjectforkViewMilestone extends JView
 		}
 
 		$title = $this->params->get('page_title', '');
-
-		$id = (int) @$menu->query['id'];
+		$id    = (int) @$menu->query['id'];
 
 		// If the menu item does not concern this item
 		if($menu && ($menu->query['option'] != 'com_projectfork' || $menu->query['view'] != 'milestone' || $id != $this->item->id)) {

@@ -33,7 +33,7 @@ $user	 = JFactory::getUser();
 	    <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
 
-    <?php if ($params->get('show_title')) : ?>
+    <?php if ($params->get('show_title', 1)) : ?>
     	<h2><?php echo $this->escape($this->item->title); ?></h2>
     <?php endif; ?>
 
@@ -61,28 +61,29 @@ $user	 = JFactory::getUser();
     		</dd>
         <?php endif;?>
 	</dl>
-    <!--
+
 	<div id="article-index" class="project-stats">
 		<ul>
-			<li class="comment-stats">
+			<!--<li class="comment-stats">
 				<a class="toclink" href="#comment-1">6</a> Comments
+			</li>-->
+            <li class="list-stats">
+				<a class="toclink" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($this->item->project_slug, $this->item->slug));?>"><?php echo $this->item->lists;?></a> Lists
 			</li>
-			<li class="file-stats">
-				<a class="toclink" href="#">15</a> Tasks
+			<li class="task-stats">
+				<a class="toclink" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($this->item->project_slug, $this->item->slug));?>"><?php echo $this->item->tasks;?></a> Tasks
 			</li>
-			<li class="dependencies-stats">
+			<!--<li class="dependencies-stats">
 				<a class="toclink" href="#">2</a> Dependencies
 			</li>
 			<li class="user-stats">
 				<a class="toclink" href="#">1</a> Users
-			</li>
+			</li>-->
 		</ul>
 	</div>
-    -->
+
 	<div class="item-description">
-		<p>
-		<?php echo $this->item->description; ?>
-		</p>
+		<p><?php echo $this->item->description; ?></p>
 	</div>
     <!--
 	<div class="items-more">
