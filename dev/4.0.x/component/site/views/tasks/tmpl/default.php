@@ -151,7 +151,8 @@ $action_count = count($this->actions);
     		               			<?php if($action_count) : ?>
         		               			<div class="btn-group">
         		               			   <span class="list-select">
-        		               			        <?php echo JHtml::_('grid.id', $x, $item->list_id, false, 'lid'); ?>
+        		               			        <i class="icon-move"></i>
+        		               			        <input type="hidden" name="order[]" value="<?php echo $k;?>"/>
         		               				</span>
         		               			</div>
     		               			<?php endif; ?>
