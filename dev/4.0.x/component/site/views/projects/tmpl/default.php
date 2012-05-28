@@ -98,13 +98,13 @@ $action_count = count($this->actions);
                               </p>
                               <div class="btn-group">
                               	<?php if($this->params->get('project_list_col_milestones')) : ?>
-                              	   		<a class="btn"><i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?></a>
+                              	   		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_MILESTONES');?>"><i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?></a>
                               	<?php endif; ?>
                               	<?php if($this->params->get('project_list_col_tasklists')) : ?>
-                              	   		<a class="btn"><i class="icon-th-list"></i> <?php echo (int) $item->tasklists;?></a>
+                              	   		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_TASKLISTS');?>"><i class="icon-th-list"></i> <?php echo (int) $item->tasklists;?></a>
                               	<?php endif; ?>
                               	<?php if($this->params->get('project_list_col_tasks')) : ?>
-                              	   		<a class="btn"><i class="icon-ok"></i> <?php echo (int) $item->tasks;?></a>
+                              	   		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_TASKS');?>"><i class="icon-ok"></i> <?php echo (int) $item->tasks;?></a>
                               	<?php endif; ?>
                               </div>
                             </div>
