@@ -161,7 +161,7 @@ $action_count = count($this->actions);
                         		?>
                         <?php endif; ?>
                         </small>
-                        <a href="#milestone-<?php echo $item->id;?>" class="btn btn-mini" data-toggle="collapse"><span class="caret"></span></a>
+                        <a href="#milestone-<?php echo $item->id;?>" class="btn btn-mini" data-toggle="collapse"><?php echo JText::_('COM_PROJECTFORK_DETAILS_LABEL');?> <span class="caret"></span></a>
                		</h4>
                		<div class="collapse" id="milestone-<?php echo $item->id;?>">
 	               		<hr />
