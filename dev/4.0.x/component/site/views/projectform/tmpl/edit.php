@@ -48,55 +48,80 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
 	}
 </script>
 <div class="edit item-page<?php echo $this->pageclass_sfx; ?>">
-<?php if ($params->get('show_page_heading', 1)) : ?>
+<?php if ($params->get('show_page_heading', 0)) : ?>
 <h1>
 	<?php echo $this->escape($params->get('page_heading')); ?>
 </h1>
 <?php endif; ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_projectfork&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="adminForm" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_projectfork&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="adminForm" class="form-validate form-vertical">
 	<fieldset>
-		<legend><?php echo JText::_('JEDITOR'); ?></legend>
-			<div class="formelm">
-			    <?php echo $this->form->getLabel('title'); ?>
-			    <?php echo $this->form->getInput('title'); ?>
+		<div class="formelm-buttons btn-toolbar">
+		    <button class="btn btn-primary" type="button" onclick="Joomla.submitbutton('projectform.save')">
+			    <?php echo JText::_('JSAVE') ?>
+		    </button>
+		    <button class="btn" type="button" onclick="Joomla.submitbutton('projectform.cancel')">
+			    <?php echo JText::_('JCANCEL') ?>
+		    </button>
+		</div>
+		<div class="formelm control-group">
+			<div class="control-label">
+		    	<?php echo $this->form->getLabel('title'); ?>
+		    </div>
+		    <div class="controls">
+		    	<?php echo $this->form->getInput('title'); ?>
+		    </div>
+		</div>
+		<div class="control-group">
+			<div class="controls">
+				<?php echo $this->form->getInput('description'); ?>
 			</div>
-			<div class="formelm-buttons">
-			    <button class="btn btn-primary" type="button" onclick="Joomla.submitbutton('projectform.save')">
-				    <?php echo JText::_('JSAVE') ?>
-			    </button>
-			    <button class="btn" type="button" onclick="Joomla.submitbutton('projectform.cancel')">
-				    <?php echo JText::_('JCANCEL') ?>
-			    </button>
-			</div>
-
-			<?php echo $this->form->getInput('description'); ?>
-
+		</div>
 	</fieldset>
 
     <?php echo JHtml::_('tabs.start', 'projectform', array('useCookie' => 'true')) ;?>
     <?php echo JHtml::_('tabs.panel', 'Publishing', 'project-publishing') ;?>
     <fieldset>
-        <div class="formelm">
-		    <?php echo $this->form->getLabel('state'); ?>
-			<?php echo $this->form->getInput('state'); ?>
+        <div class="formelm control-group">
+        	<div class="control-label">
+		    	<?php echo $this->form->getLabel('state'); ?>
+		    </div>
+		    <div class="controls">
+				<?php echo $this->form->getInput('state'); ?>
+			</div>
 		</div>
-        <div class="formelm">
-		    <?php echo $this->form->getLabel('start_date'); ?>
-			<?php echo $this->form->getInput('start_date'); ?>
+        <div class="formelm control-group">
+        	<div class="control-label">
+		    	<?php echo $this->form->getLabel('start_date'); ?>
+		    </div>
+		    <div class="controls">
+				<?php echo $this->form->getInput('start_date'); ?>
+			</div>
 		</div>
-        <div class="formelm">
-		    <?php echo $this->form->getLabel('end_date'); ?>
-			<?php echo $this->form->getInput('end_date'); ?>
+        <div class="formelm control-group">
+        	<div class="control-label">
+		    	<?php echo $this->form->getLabel('end_date'); ?>
+		    </div>
+		    <div class="controls">
+				<?php echo $this->form->getInput('end_date'); ?>
+			</div>
 		</div>
         <?php if ($this->item->modified_by) : ?>
-            <div class="formelm">
-                <?php echo $this->form->getLabel('modified_by');?>
-                <?php echo $this->form->getInput('modified_by');?>
+            <div class="formelm control-group">
+            	<div class="control-label">
+                	<?php echo $this->form->getLabel('modified_by');?>
+                </div>
+                <div class="controls">
+                	<?php echo $this->form->getInput('modified_by');?>
+                </div>
             </div>
-            <div class="formelm">
-                <?php echo $this->form->getLabel('modified');?>
-                <?php echo $this->form->getInput('modified');?>
+            <div class="formelm control-group">
+            	<div class="control-label">
+                	<?php echo $this->form->getLabel('modified');?>
+                </div>
+                <div class="controls">
+                	<?php echo $this->form->getInput('modified');?>
+                </div>
             </div>
 		<?php endif; ?>
     </fieldset>
@@ -104,23 +129,31 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
     <?php echo JHtml::_('tabs.panel', 'Permissions', 'project-permissions') ;?>
     <fieldset>
         <div class="formelm" id="jform_access-li">
-		    <?php echo $this->form->getLabel('access'); ?>
-			<?php echo $this->form->getInput('access'); ?>
+        	<div class="control-label">
+		    	<?php echo $this->form->getLabel('access'); ?>
+		    </div>
+		    <div class="controls">
+				<?php echo $this->form->getInput('access'); ?>
+			</div>
 		</div>
         <div class="formelm" id="jform_access_new-li" style="display: none;">
-		    <?php echo $this->form->getLabel('access_new'); ?>
-			<?php echo $this->form->getInput('access_new'); ?>
+        	<div class="control-label">
+		    	<?php echo $this->form->getLabel('access_new'); ?>
+		    </div>
+		    <div class="controls">
+				<?php echo $this->form->getInput('access_new'); ?>
+			</div>
 		</div>
         <div class="formelm" id="jform_access_exist-li" style="display: none;">
-            <label id="jform_access_exist-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
+            <label id="jform_access_exist-lbl" class="hasTip control-label" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
                 <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
             </label>
         </div>
         <div class="formlm" id="jform_access_groups-li">
-            <label id="jform_access_groups-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_NEW_ACCESS_GROUPS_DESC');?>">
+            <label id="jform_access_groups-lbl" class="hasTip control-label" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_NEW_ACCESS_GROUPS_DESC');?>">
                 <?php echo JText::_('COM_PROJECTFORK_FIELD_NEW_ACCESS_GROUPS_LABEL');?>
             </label>
-            <div id="jform_access_groups">
+            <div id="jform_access_groups" class="controls">
     		    <div class="clr"></div>
                 <?php echo $this->form->getInput('rules'); ?>
             </div>
@@ -133,9 +166,13 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
 			<?php foreach ($fieldSets as $name => $fieldSet) : ?>
 				<fieldset>
                     <?php foreach ($this->form->getFieldset($name) as $field) : ?>
-                        <div class="formelm" id="jform_access-li">
-                		    <?php echo $field->label; ?>
-                			<?php echo $field->input; ?>
+                        <div class="formelm control-group" id="jform_access-li">
+                        	<div class="control-label">
+                		   		<?php echo $field->label; ?>
+                		    </div>
+                		    <div class="controls">
+                				<?php echo $field->input; ?>
+                			</div>
                 		</div>
                     <?php endforeach; ?>
                 </fieldset>
