@@ -194,7 +194,7 @@ class ProjectforkHelperContextMenu
         $priorities = JHtml::_('projectfork.priorityOptions');
         $html  = array();
         $title = '';
-        $class = 'btn-info very-low-priority';
+        $class = 'very-low-priority';
 
         // Find the current priority and class
         foreach($priorities AS $priority)
@@ -205,7 +205,7 @@ class ProjectforkHelperContextMenu
                 switch($priority->value)
                 {
                     case 0:
-                        $class = 'btn-info very-low-priority';
+                        $class = 'very-low-priority';
                         break;
 
                     case 2:
@@ -213,11 +213,11 @@ class ProjectforkHelperContextMenu
                         break;
 
                     case 3:
-                        $class = 'btn-warning medium-priority';
+                        $class = 'btn-primary medium-priority';
                         break;
 
                     case 4:
-                        $class = 'btn-danger high-priority';
+                        $class = 'btn-warning high-priority';
                         break;
 
                     case 5:
@@ -225,7 +225,7 @@ class ProjectforkHelperContextMenu
                         break;
 
                     default:
-                        $class = 'btn-info very-low-priority';
+                        $class = 'very-low-priority';
                         break;
                 }
             }
