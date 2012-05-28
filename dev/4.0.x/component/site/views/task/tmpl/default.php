@@ -21,59 +21,82 @@
 **/
 
 defined( '_JEXEC' ) or die( 'Restricted access' );
+
+// Create shortcuts to some parameters.
+$params	 = $this->item->params;
+$canEdit = $this->item->params->get('access-edit');
+$user	 = JFactory::getUser();
+$uid	    = $user->get('id');
+
+$asset_name   = 'com_projectfork.task.'.$this->item->id;
+
+$canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('task.edit', $asset_name));
+$canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('task.edit.own', $asset_name)) && $this->item->created_by == $uid);
+
 ?>
 <div id="projectfork" class="item-page view-task">
-	<h2>Task Name <input type="button" class="button" value="View Dashboard" /></h2>
-	<ul class="actions">
-						<li class="print-icon">
-			<a rel="nofollow" onclick="window.open(this.href,'win2','status=no,toolbar=no,scrollbars=yes,titlebar=no,menubar=no,resizable=yes,width=640,height=480,directories=no,location=no'); return false;" title="Print" href="#"><img alt="Print" src="/projectfork_4/media/system/images/printButton.png"></a>			</li>
+	<?php if ($params->get('show_title', 1)) : ?>
+		<div class="page-header">
+			<h2><?php echo $this->escape($this->item->title); ?> <small><?php echo JText::_('COM_PROJECTFORK_ASSIGNED_TO');?> <?php echo $this->escape($this->item->author);?> <?php echo JText::_('COM_PROJECTFORK_DUE_ON');?> <?php echo JHtml::_('date', $this->item->end_date, JText::_('DATE_FORMAT_LC2'));?></small></h2>
+		</div>
+	<?php endif; ?>
+	<?php
+	/*
+        $this->item->menu->start();
+        $this->item->menu->itemEdit('taskform', $this->item->id, ($canEdit || $canEditOwn));
+        $this->item->menu->itemTrash('tasks', $i, ($canEdit || $canEditOwn));
+        $this->item->menu->end();
 
-					<li class="email-icon">
-			<a onclick="window.open(this.href,'win2','width=400,height=350,menubar=yes,resizable=yes'); return false;" title="Email" href="#"><img alt="Email" src="/projectfork_4/media/system/images/emailButton.png"></a>			</li>
-
-					<li class="edit-icon">
-			<span title="" class="hasTip"><a href="#"><img alt="Edit" src="/projectfork_4/media/system/images/edit.png"></a></span>			</li>
-
-
-	</ul>
-	<dl class="article-info">
-		<dt class="article-info-term">Details</dt>
-		<dd class="milestone-name">
-			Milestone: <a href="#">Milestone Name</a>
+        echo $this->item->menu->render();
+    */
+    ?>
+	
+	<div class="actions btn-toolbar">
+		<div class="btn-group">
+			<a href="#" class="btn"><i class="icon-edit"></i> Edit</a>
+			<a href="#" class="btn"><i class="icon-print"></i> Print</a>
+			<a href="#" class="btn"><i class="icon-envelope"></i> Email</a>
+			<a href="#comments" class="btn"><i class="icon-comment"></i> Comment <span class="badge badge-warning">4</span></a>
+		</div>
+	</div>
+	<dl class="article-info dl-horizontal pull-right">
+		<dt class="project-title">
+			Project:
+		</dt>
+		<dd class="project-data">
+			<a href="#">Project Name</a>
 		</dd>
-		<dd class="start-date">
-			Started on Saturday, 01 January 2011 00:00
+		<dt class="milestone-title">
+			Milestone:
+		</dt>
+		<dd class="milestone-data">
+			<a href="#">Milestone Name</a>
 		</dd>
-		<dd class="due-date">
-			Due by Saturday, 01 January 2011 00:00
+		<dt class="start-title">
+			<?php echo JText::_('JGRID_HEADING_START_DATE');?>:
+		</dt>
+		<dd class="start-data">
+			<?php echo JHtml::_('date', $this->item->start_date, JText::_('DATE_FORMAT_LC2'));?>
 		</dd>
-		<dd class="owner">
-			Assigned to <a href="#">Firstname Lastname</a>
+		<dt class="due-title">
+			<?php echo JText::_('JGRID_HEADING_DEADLINE');?>:
+		</dt>
+		<dd class="due-data">
+			<?php echo JHtml::_('date', $this->item->end_date, JText::_('DATE_FORMAT_LC2'));?>
+		</dd>
+		<dt class="owner-title">
+			<?php echo JText::_('JGRID_HEADING_CREATED_BY');?>:
+		</dt>
+		<dd class="owner-data">
+			 <?php echo $this->escape($this->item->author);?>
 		</dd>
 	</dl>
-	<div id="article-index" class="project-stats">
-		<ul>
-			<li class="comment-stats">
-				<a class="toclink" href="#comment-1">6</a> Comments
-			</li>
-			<li class="file-stats">
-				<a class="toclink" href="#">15</a> Files
-			</li>
-			<li class="dependencies-stats">
-				<a class="toclink" href="#">2</a> Dependencies
-			</li>
-			<li class="user-stats">
-				<a class="toclink" href="#">1</a> Users
-			</li>
-		</ul>
-	</div>
 	<div class="item-description">
-		<p>
-		Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-		</p>
+		<?php echo $this->escape($this->item->description); ?>
 	</div>
+	<hr />
     <!--
-	<div class="items-more">
+	<div class="items-more" id="comments">
 		<h3>Comments</h3>
 		<div class="contact-form" class="comment-form">
 			<form class="form-validate" method="post" action="#" id="contact-form">
