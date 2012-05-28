@@ -204,7 +204,7 @@ $action_count = count($this->actions);
 	                    <div class="clearfix"></div>
                     </div>
                     <hr />
-                    <div class="progress <?php echo $progress_class;?> progress-striped progress-milestone">
+                    <div class="progress <?php echo $progress_class;?> progress-striped progress-milestone" rel="tooltip" title="<?php echo $progress;?>% <?php echo JText::_('COM_PROJECTFORK_FIELD_COMPLETE_LABEL');?>">
                       <div class="bar"
                            style="width: <?php echo $progress;?>%;"></div>
                     </div>
