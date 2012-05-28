@@ -53,7 +53,11 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
 	
 	<div class="actions btn-toolbar">
 		<div class="btn-group">
-			<a href="#" class="btn"><i class="icon-edit"></i> Edit</a>
+			<?php if($canEdit || $canEditOwn) : ?>
+			   <a class="btn" href="<?php echo JRoute::_('index.php?option=com_projectfork&task=taskform.edit&id='.intval($this->item->id).':'.$this->item->alias);?>">
+			       <i class="icon-edit"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
+			   </a>
+			<?php endif; ?>
 			<a href="#" class="btn"><i class="icon-print"></i> Print</a>
 			<a href="#" class="btn"><i class="icon-envelope"></i> Email</a>
 			<a href="#comments" class="btn"><i class="icon-comment"></i> Comment <span class="badge badge-warning">4</span></a>
