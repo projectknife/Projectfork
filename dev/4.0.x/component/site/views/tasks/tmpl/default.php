@@ -195,7 +195,7 @@ $action_count = count($this->actions);
                     ?>
 
                     <li alt="<?php echo (int) $item->id;?>">
-           				<div class="btn-toolbar">
+           				<div class="btn-toolbar <?php if($item->complete): echo "complete"; endif;?>">
            					<?php if($action_count) : ?>
                                 <div class="btn-group">
 	               			        <i class="icon-move"></i>
@@ -206,7 +206,7 @@ $action_count = count($this->actions);
                    				</div>
                             <?php endif; ?>
                				<div class="btn-group">
-	               				<a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>">
+	               				<a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>" class="task-title">
                                    <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                                    <?php echo $this->escape($item->title);?>
                                 </a>
