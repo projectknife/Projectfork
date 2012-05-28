@@ -158,7 +158,7 @@ class JFormFieldPermissions extends JFormField
 
 
 		// Prepare output
-		$html[] = '<ul class="checklist usergroups">';
+		$html[] = '<ul class="checklist usergroups unstyled">';
 
 		for ($i = 0, $n = count($this->groups); $i < $n; $i++)
 		{
@@ -209,7 +209,7 @@ class JFormFieldPermissions extends JFormField
 
 
 				// Build the HTML for the item.
-				$html[] = '	<li class="usergroup '.$li_class.'">';
+				$html[] = '	<li class="usergroup '.$li_class.' control-group">';
                 $html[] = '     <div style="float:left">';
                 $html[] = '         <button id="'.$btn_id.'" type="button" '.$btn_disabled.' onclick="'.$btn_js.'" class="usergroup_btn btn">Set Permissions</button>';
                 $html[] = '     </div>';
