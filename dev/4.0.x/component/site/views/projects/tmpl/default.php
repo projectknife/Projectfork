@@ -76,35 +76,39 @@ $action_count = count($this->actions);
                     
                         <li class="span3">
                           <div class="thumbnail">
+                          <?php /*
                             <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=dashboard&id='.intval($item->id).':'.$item->alias);?>">
                             	<img src="http://placehold.it/260x180" alt="">
                             </a>
+                            */
+                           ?>
                             <div class="caption">
-                              <h5>
+                              <h3>
                               	<?php if ($item->checked_out) : ?>
                               	<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'projects.', $canCheckin); ?>
 	                              <?php endif; ?>
-	                              <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=dashboard&id='.intval($item->id).':'.$item->alias);?>">
+	                              <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_TASKLISTS');?> &amp; <?php echo JText::_('JGRID_HEADING_TASKS');?>">
 	                                  <?php echo $this->escape($item->title);?>
 	                              </a>
-	                              <?php if($canEdit || $canEditOwn) : ?>
-	                                 <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_projectfork&task=projectform.edit&id='.intval($item->id).':'.$item->alias);?>">
-	                                     <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
-	                                 </a>
-	                              <?php endif; ?>
-                              </h5>
-                              <p>
+                              </h3>
+                              <hr />
+                              <div class="well well-projects">
                               	<?php echo $this->escape($item->description);?>
-                              </p>
+                              </div>
                               <div class="btn-group">
+                              	<?php if($canEdit || $canEditOwn) : ?>
+                              	   <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_projectfork&task=projectform.edit&id='.intval($item->id).':'.$item->alias);?>">
+                              	       <i class="icon-edit"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
+                              	   </a>
+                              	<?php endif; ?>
                               	<?php if($this->params->get('project_list_col_milestones')) : ?>
-                              	   		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_MILESTONES');?>"><i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?></a>
+                              	   		<a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_MILESTONES');?>"><i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?></a>
                               	<?php endif; ?>
                               	<?php if($this->params->get('project_list_col_tasklists')) : ?>
-                              	   		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_TASKLISTS');?>"><i class="icon-th-list"></i> <?php echo (int) $item->tasklists;?></a>
+                              	   		<a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_TASKLISTS');?>"><i class="icon-th-list"></i> <?php echo (int) $item->tasklists;?></a>
                               	<?php endif; ?>
                               	<?php if($this->params->get('project_list_col_tasks')) : ?>
-                              	   		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_TASKS');?>"><i class="icon-ok"></i> <?php echo (int) $item->tasks;?></a>
+                              	   		<a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_TASKS');?>"><i class="icon-ok"></i> <?php echo (int) $item->tasks;?></a>
                               	<?php endif; ?>
                               </div>
                             </div>
