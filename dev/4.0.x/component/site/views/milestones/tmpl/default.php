@@ -121,10 +121,10 @@ $action_count = count($this->actions);
                     $progress = round($completed * (100 / $task_count));
                 }
 
-                if($progress >= 66)  $progress_class = 'progress-info';
-                if($progress == 100) $progress_class = 'progress-success';
-                if($progress < 66)   $progress_class = 'progress-warning';
-                if($progress < 33)   $progress_class = 'progress-danger';
+                if($progress >= 66)  $progress_class = 'info';
+                if($progress == 100) $progress_class = 'success';
+                if($progress < 66)   $progress_class = 'warning';
+                if($progress < 33)   $progress_class = 'danger';
 
             ?>
                 <div class="well well-<?php echo $k;?>">
@@ -204,9 +204,9 @@ $action_count = count($this->actions);
 	                    <div class="clearfix"></div>
                     </div>
                     <hr />
-                    <div class="progress <?php echo $progress_class;?> progress-striped progress-milestone" rel="tooltip" title="<?php echo $progress;?>% <?php echo JText::_('COM_PROJECTFORK_FIELD_COMPLETE_LABEL');?>">
+                    <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-milestone" rel="tooltip" title="<?php echo $progress;?>% <?php echo JText::_('COM_PROJECTFORK_FIELD_COMPLETE_LABEL');?>">
                       <div class="bar"
-                           style="width: <?php echo $progress;?>%;"></div>
+                           style="width: <?php echo $progress;?>%;"><span class="label label-<?php echo $progress_class;?>"><?php echo $progress;?>%</span></div>
                     </div>
                	</div>
             <?php
