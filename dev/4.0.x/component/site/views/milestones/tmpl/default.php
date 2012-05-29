@@ -206,7 +206,7 @@ $action_count = count($this->actions);
                     <hr />
                     <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-milestone" rel="tooltip" title="<?php echo $progress;?>% <?php echo JText::_('COM_PROJECTFORK_FIELD_COMPLETE_LABEL');?>">
                       <div class="bar"
-                           style="width: <?php echo $progress;?>%;"><span class="label label-<?php echo $progress_class;?>"><?php echo $progress;?>%</span></div>
+                           style="width: <?php echo $progress;?>%;"><span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $progress;?>%</span></div>
                     </div>
                	</div>
             <?php
