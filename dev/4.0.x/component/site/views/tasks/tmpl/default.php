@@ -30,6 +30,9 @@ $user	    = JFactory::getUser();
 $uid	    = $user->get('id');
 
 $action_count = count($this->actions);
+
+// Enable ajax driven complete/incomplete checkbox
+JHtml::_('projectfork.ajaxCompleteTask');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-tasks">
 	<div class="btn-toolbar">
@@ -192,9 +195,21 @@ $action_count = count($this->actions);
 		            $canCheckin	= ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
 		            $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('task.edit.own', $asset_name)) && $item->created_by == $uid);
 		            $canChange	= (($user->authorise('core.edit.state',	$asset_name) || $user->authorise('task.edit.state', $asset_name)) && $canCheckin);
+
+                    // Task completed javascript
+                    $cbjs = '';
+                    $disabled = ' disabled = disabled';
+                    $checked  = ($item->complete ? ' checked="checked"' : '');
+                    if($canChange) {
+                        $cbjs = ' onclick="setTaskComplete('.intval($item->id).', this.checked);"';
+                        $disabled = '';
+                    }
+
+                    // list item class
+                    $class = ($item->complete ? 'task-complete' : 'task-incomplete');
                     ?>
 
-                    <li alt="<?php echo (int) $item->id;?>">
+                    <li alt="<?php echo (int) $item->id;?>" id="task-<?php echo (int) $item->id;?>" class="<?php echo $class;?>">
            				<div class="btn-toolbar <?php if($item->complete): echo "complete"; endif;?>">
            					<?php if($action_count) : ?>
                                 <div class="btn-group">
@@ -202,7 +217,7 @@ $action_count = count($this->actions);
                                     <input type="hidden" name="order[]" value="<?php echo (int) $item->ordering;?>"/>
                				    </div>
                    				<div class="btn-group">
-    	               				<?php echo JHtml::_('grid.id', $x, $item->id); ?>
+                                    <input id="cb<?php echo $x;?>" type="checkbox" <?php echo $cbjs.$disabled.$checked;?> value="<?php echo $item->id;?>" name="cid[]"/>
                    				</div>
                             <?php endif; ?>
                				<div class="btn-group">
