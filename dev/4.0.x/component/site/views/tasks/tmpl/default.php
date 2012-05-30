@@ -217,7 +217,8 @@ JHtml::_('projectfork.ajaxCompleteTask');
                                     <input type="hidden" name="order[]" value="<?php echo (int) $item->ordering;?>"/>
                				    </div>
                    				<div class="btn-group">
-                                    <input id="cb<?php echo $x;?>" type="checkbox" <?php echo $cbjs.$disabled.$checked;?> value="<?php echo $item->id;?>" name="cid[]"/>
+                                    <input id="complete-cb<?php echo $x;?>" type="checkbox" <?php echo $cbjs.$disabled.$checked;?> value="<?php echo $item->id;?>" name="complete-cid[]"/>
+                                    <input id="cb<?php echo $x;?>" type="checkbox" value="<?php echo $item->id;?>" name="cid[]" style="display: none !important;"/>
                    				</div>
                             <?php endif; ?>
                				<div class="btn-group">
