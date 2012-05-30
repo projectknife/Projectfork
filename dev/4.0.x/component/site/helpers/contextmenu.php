@@ -239,7 +239,7 @@ class ProjectforkHelperContextMenu
             foreach($priorities AS $priority)
             {
                 if($title == $priority->text) continue;
-                $action = "$('priority".$i."').set('value', ".intval($priority->value)."); return listItemTask('cb".$i."','".$asset.".savePriority');";
+                $action = "document.id('priority".$i."').set('value', ".intval($priority->value)."); return listItemTask('cb".$i."','".$asset.".savePriority');";
                 $html[] = $this->itemJavaScript('icon-flag', $priority->text, $action, true);
             }
             $html[] = $this->end(true);
