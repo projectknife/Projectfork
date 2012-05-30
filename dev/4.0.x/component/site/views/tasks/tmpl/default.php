@@ -218,7 +218,7 @@ JHtml::_('projectfork.ajaxCompleteTask');
                				    </div>
                    				<div class="btn-group">
                                     <input id="complete-cb<?php echo $x;?>" type="checkbox" <?php echo $cbjs.$disabled.$checked;?> value="<?php echo $item->id;?>" name="complete-cid[]"/>
-                                    <input id="cb<?php echo $x;?>" type="checkbox" value="<?php echo $item->id;?>" name="cid[]" style="display: none !important;"/>
+                                    <input id="cb<?php echo $x;?>" type="checkbox" value="<?php echo $item->id;?>" name="cid[]" style="display: none !important;" onclick="Joomla.isChecked(this.checked);"/>
                    				</div>
                             <?php endif; ?>
                				<div class="btn-group">
@@ -236,7 +236,7 @@ JHtml::_('projectfork.ajaxCompleteTask');
 
                                 $this->menu->start(array('class' => 'btn-mini'));
                                 $this->menu->itemEdit('taskform', $item->id, ($canEdit || $canEditOwn));
-                                $this->menu->itemTrash('tasks', $i, ($canEdit || $canEditOwn));
+                                $this->menu->itemTrash('tasks', $x, ($canEdit || $canEditOwn));
                                 $this->menu->end();
                                 echo $this->menu->render();
                             ?>
