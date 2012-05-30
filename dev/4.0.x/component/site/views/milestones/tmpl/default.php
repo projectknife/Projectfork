@@ -129,16 +129,6 @@ $action_count = count($this->actions);
             ?>
                 <div class="well well-<?php echo $k;?>">
                		<h4>
-               			 <div class="list-actions pull-left">
-                            <?php
-                                $this->menu->start();
-                                $this->menu->itemEdit('milestoneform', $item->id, ($canEdit || $canEditOwn));
-                                $this->menu->itemTrash('milestones', $i, ($canEdit || $canEditOwn));
-                                $this->menu->end();
-
-                                // echo $this->menu->render();
-                            ?>
-                   		</div>
                    		<i class="icon-map-marker"></i>
                         <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestoneRoute($item->slug, $item->project_slug));?>">
                             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
@@ -162,6 +152,16 @@ $action_count = count($this->actions);
                         <?php endif; ?>
                         </small>
                         <a href="#milestone-<?php echo $item->id;?>" class="btn btn-mini" data-toggle="collapse"><?php echo JText::_('COM_PROJECTFORK_DETAILS_LABEL');?> <span class="caret"></span></a>
+                        <div class="pull-left">
+                            <?php
+                                $this->menu->start(array('class' => 'btn-mini'));
+                                $this->menu->itemEdit('milestoneform', $item->id, ($canEdit || $canEditOwn));
+                                $this->menu->itemTrash('milestones', $i, ($canEdit || $canEditOwn));
+                                $this->menu->end();
+
+                                echo $this->menu->render();
+                            ?>
+                        </div>
                		</h4>
                		<div class="collapse" id="milestone-<?php echo $item->id;?>">
 	               		<hr />
