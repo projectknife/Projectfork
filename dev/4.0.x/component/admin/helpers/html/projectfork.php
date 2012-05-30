@@ -242,7 +242,7 @@ abstract class JHtmlProjectfork
 
         $js[] = "function setTaskComplete(tid, complete) {";
         $js[] = "    var token = '".JSession::getFormToken()."=1';";
-        $js[] = "    var el = $('task-'+tid);";
+        $js[] = "    var el = document.id('task-'+tid);";
         $js[] = "    if(complete == true) {var cv = 1;} else { var cv = 0;}";
         $js[] = "    var req = new Request({";
         $js[] = "        url:'".htmlspecialchars(JFactory::getURI()->toString())."',";
