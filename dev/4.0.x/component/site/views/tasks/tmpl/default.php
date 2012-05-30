@@ -152,12 +152,12 @@ JHtml::_('projectfork.ajaxCompleteTask');
     	               		<div class="list-title">
     	               			<div class="btn-toolbar">
     		               			<?php if($action_count) : ?>
-        		               			<div class="btn-group">
+        		               			<!--<div class="btn-group">
         		               			   <span class="list-select">
         		               			        <i class="icon-move"></i>
         		               			        <input type="hidden" name="order[]" value="<?php echo $k;?>"/>
         		               				</span>
-        		               			</div>
+        		               			</div>-->
     		               			<?php endif; ?>
                                     <?php if($item->tasklist_title) : ?>
         		               			<div class="btn-group">
