@@ -26,65 +26,73 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 $params	 = $this->item->params;
 $canEdit = $this->item->params->get('access-edit');
 $user	 = JFactory::getUser();
+$uid	    = $user->get('id');
+
+$asset_name   = 'com_projectfork.task.'.$this->item->id;
+
+$canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('task.edit', $asset_name));
+$canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('task.edit.own', $asset_name)) && $this->item->created_by == $uid);
 ?>
 <div id="projectfork" class="item-page<?php echo $this->pageclass_sfx?> view-milestone">
 
-    <?php if ($this->params->get('show_page_heading', 1)) : ?>
+    <?php if ($this->params->get('show_page_heading', 0)) : ?>
 	    <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
 
     <?php if ($params->get('show_title', 1)) : ?>
-    	<h2><?php echo $this->escape($this->item->title); ?></h2>
+    	<div class="page-header">
+    		<h2><?php echo $this->escape($this->item->title); ?> <small class="small"><?php echo JText::_('COM_PROJECTFORK_DUE_ON');?> <?php echo JHtml::_('date', $this->item->end_date, JText::_('DATE_FORMAT_LC1'));?></small></h2>
+    	</div>
     <?php endif; ?>
 
-
-	<dl class="article-info">
-		<dt class="article-info-term">Details</dt>
-        <dd class="created-by">
-            <?php echo JText::_('JGRID_HEADING_CREATED_BY');?>:
-            <?php echo $this->escape($this->item->author);?>
-        </dd>
-		<dd class="created-on">
-            <?php echo JText::_('JGRID_HEADING_CREATED_ON');?>:
-            <?php echo JHtml::_('date', $this->item->created, JText::_('DATE_FORMAT_LC2'));?>
-        </dd>
-        <?php if($this->item->start_date != JFactory::getDBO()->getNullDate()): ?>
-            <dd class="start-date">
-                <?php echo JText::_('JGRID_HEADING_START_DATE');?>:
-    			<?php echo JHtml::_('date', $this->item->start_date, JText::_('DATE_FORMAT_LC2'));?>
-    		</dd>
-        <?php endif; ?>
-        <?php if($this->item->end_date != JFactory::getDBO()->getNullDate()): ?>
-    		<dd class="due-date">
-    			<?php echo JText::_('JGRID_HEADING_DEADLINE');?>:
-                <?php echo JHtml::_('date', $this->item->end_date, JText::_('DATE_FORMAT_LC2'));?>
-    		</dd>
-        <?php endif;?>
+	<dl class="article-info dl-horizontal pull-right">
+		<dt class="project-title">
+			Project:
+		</dt>
+		<dd class="project-data">
+			<a href="#">Project Name</a>
+		</dd>
+		<?php if($this->item->start_date != JFactory::getDBO()->getNullDate()): ?>
+			<dt class="start-title">
+				<?php echo JText::_('JGRID_HEADING_START_DATE');?>:
+			</dt>
+			<dd class="start-data">
+				<?php echo JHtml::_('date', $this->item->start_date, JText::_('DATE_FORMAT_LC1'));?>
+			</dd>
+		<?php endif; ?>
+		<?php if($this->item->end_date != JFactory::getDBO()->getNullDate()): ?>
+			<dt class="due-title">
+				<?php echo JText::_('JGRID_HEADING_DEADLINE');?>:
+			</dt>
+			<dd class="due-data">
+				<?php echo JHtml::_('date', $this->item->end_date, JText::_('DATE_FORMAT_LC1'));?>
+			</dd>
+		<?php endif;?>
+		<dt class="owner-title">
+			<?php echo JText::_('JGRID_HEADING_CREATED_BY');?>:
+		</dt>
+		<dd class="owner-data">
+			 <?php echo $this->escape($this->item->author);?>
+		</dd>
 	</dl>
 
-	<div id="article-index" class="project-stats">
-		<ul>
-			<!--<li class="comment-stats">
-				<a class="toclink" href="#comment-1">6</a> Comments
-			</li>-->
-            <li class="list-stats">
-				<a class="toclink" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($this->item->project_slug, $this->item->slug));?>"><?php echo $this->item->lists;?></a> Lists
-			</li>
-			<li class="task-stats">
-				<a class="toclink" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($this->item->project_slug, $this->item->slug));?>"><?php echo $this->item->tasks;?></a> Tasks
-			</li>
-			<!--<li class="dependencies-stats">
-				<a class="toclink" href="#">2</a> Dependencies
-			</li>
-			<li class="user-stats">
-				<a class="toclink" href="#">1</a> Users
-			</li>-->
-		</ul>
+	<div class="actions btn-toolbar">
+		<div class="btn-group">
+			<?php if($canEdit || $canEditOwn) : ?>
+			   <a class="btn" href="<?php echo JRoute::_('index.php?option=com_projectfork&task=milestoneform.edit&id='.intval($this->item->id).':'.$this->item->alias);?>">
+			       <i class="icon-edit"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
+			   </a>
+			<?php endif; ?>
+			<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($this->item->project_slug, $this->item->slug));?>"><i class="icon-th-list"></i> <?php echo $this->item->lists;?> <?php echo JText::_('JGRID_HEADING_TASKLISTS');?></a>
+			<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($this->item->project_slug, $this->item->slug));?>"><i class="icon-ok"></i> <?php echo $this->item->tasks;?> <?php echo JText::_('JGRID_HEADING_TASKS');?></a>
+		</div>
 	</div>
-
+	
 	<div class="item-description">
-		<p><?php echo $this->item->description; ?></p>
+		<?php echo $this->escape($this->item->description); ?>
 	</div>
+	<hr />
+
     <!--
 	<div class="items-more">
 		<h3>Comments</h3>
