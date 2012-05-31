@@ -21,6 +21,14 @@
 **/
 
 defined('_JEXEC') or die;
+
+$doc = JFactory::getDocument();
+
+// Add Highcharts JavaScript
+$doc->addScript('components/com_projectfork/assets/js/jquery.min.js');
+$doc->addScript('components/com_projectfork/assets/js/jquery.noconflict.js');
+$doc->addScript('components/com_projectfork/assets/highcharts/highcharts.js');
+$doc->addScript('components/com_projectfork/assets/highcharts/modules/exporting.js');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-dashboard">
 
@@ -38,6 +46,22 @@ defined('_JEXEC') or die;
                 </span>
             <?php endif; ?>
         </fieldset>
+        
+        <!-- Begin Highcharts -->
+        <div class="row-fluid">
+        	<div class="span12">
+        		<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+        	</div>
+        </div>
+        <div class="row-fluid">
+        	<div class="span6">
+        		<div id="container2" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+        	</div>
+        	<div class="span6">
+        		<div id="container3" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+        	</div>
+        </div>
+        <!-- End Highcharts -->
 
         <?php echo $this->modules->render('pf-dasboard-top', array('style' => 'rounded'), null); ?>
 
@@ -552,3 +576,214 @@ defined('_JEXEC') or die;
         <!--Activity Stream Module End-->
 	</div>
 </div>
+
+<!--hicharts-->
+<script type="text/javascript">
+var chart;
+jQuery(document).ready(function() {
+	chart = new Highcharts.Chart({
+		chart: {
+			renderTo: 'container',
+			type: 'spline'
+		},
+		title: {
+			text: 'Completed Tasks'
+		},
+		xAxis: {
+			type: 'datetime',
+			dateTimeLabelFormats: { // don't display the dummy year
+				month: '%e. %b',
+				year: '%b'
+			}
+		},
+		yAxis: {
+			title: {
+				text: 'Tasks'
+			},
+			min: 0
+		},
+		tooltip: {
+			formatter: function() {
+					return '<b>'+ this.series.name +'</b><br/>'+
+					Highcharts.dateFormat('%e. %b', this.x) +': '+ this.y +' k';
+			}
+		},
+		
+		series: [{
+			name: 'Project One',
+			// Define the data points. All series have a dummy year
+			// of 1970/71 in order to be compared on the same x axis. Note
+			// that in JavaScript, months start at 0 for January, 1 for February etc.
+			data: [
+				[Date.UTC(1970,  9, 27), 0   ],
+				[Date.UTC(1970, 10, 10), 0.6 ],
+				[Date.UTC(1970, 10, 18), 0.7 ],
+				[Date.UTC(1970, 11,  2), 0.8 ],
+				[Date.UTC(1970, 11,  9), 0.6 ],
+				[Date.UTC(1970, 11, 16), 0.6 ],
+				[Date.UTC(1970, 11, 28), 0.67],
+				[Date.UTC(1971,  0,  1), 0.81],
+				[Date.UTC(1971,  0,  8), 0.78],
+				[Date.UTC(1971,  0, 12), 0.98],
+				[Date.UTC(1971,  0, 27), 1.84],
+				[Date.UTC(1971,  1, 10), 1.80],
+				[Date.UTC(1971,  1, 18), 1.80],
+				[Date.UTC(1971,  1, 24), 1.92],
+				[Date.UTC(1971,  2,  4), 2.19],
+				[Date.UTC(1971,  2, 11), 2.29],
+				[Date.UTC(1971,  2, 15), 2.23],
+				[Date.UTC(1971,  2, 25), 2.11],
+				[Date.UTC(1971,  3,  2), 2.26],
+				[Date.UTC(1971,  3,  6), 2.22],
+				[Date.UTC(1971,  3, 13), 2.1 ],
+				[Date.UTC(1971,  4,  3), 2.1 ],
+				[Date.UTC(1971,  4, 26), 1.9 ],
+				[Date.UTC(1971,  5,  9), 2.0],
+				[Date.UTC(1971,  5, 12), 2.1]
+			]
+		}, {
+			name: 'Project Two',
+			data: [
+				[Date.UTC(1970,  9, 18), 0   ],
+				[Date.UTC(1970,  9, 26), 0.2 ],
+				[Date.UTC(1970, 11,  1), 0.47],
+				[Date.UTC(1970, 11, 11), 0.55],
+				[Date.UTC(1970, 11, 25), 1.38],
+				[Date.UTC(1971,  0,  8), 1.38],
+				[Date.UTC(1971,  0, 15), 1.38],
+				[Date.UTC(1971,  1,  1), 1.38],
+				[Date.UTC(1971,  1,  8), 1.48],
+				[Date.UTC(1971,  1, 21), 1.5 ],
+				[Date.UTC(1971,  2, 12), 1.89],
+				[Date.UTC(1971,  2, 25), 2.0 ],
+				[Date.UTC(1971,  3,  4), 1.94],
+				[Date.UTC(1971,  3,  9), 1.91],
+				[Date.UTC(1971,  3, 13), 1.75],
+				[Date.UTC(1971,  3, 19), 1.6 ],
+				[Date.UTC(1971,  4, 25), 1.9 ],
+				[Date.UTC(1971,  4, 31), 2.1],
+				[Date.UTC(1971,  5,  7), 2.3]
+			]
+		}, {
+			name: 'Project Three',
+			data: [
+				[Date.UTC(1970,  9,  9), 0   ],
+				[Date.UTC(1970,  9, 14), 0.15],
+				[Date.UTC(1970, 10, 28), 0.35],
+				[Date.UTC(1970, 11, 12), 0.46],
+				[Date.UTC(1971,  0,  1), 0.59],
+				[Date.UTC(1971,  0, 24), 0.58],
+				[Date.UTC(1971,  1,  1), 0.62],
+				[Date.UTC(1971,  1,  7), 0.65],
+				[Date.UTC(1971,  1, 23), 0.77],
+				[Date.UTC(1971,  2,  8), 0.77],
+				[Date.UTC(1971,  2, 14), 0.79],
+				[Date.UTC(1971,  2, 24), 0.86],
+				[Date.UTC(1971,  3,  4), 0.8 ],
+				[Date.UTC(1971,  3, 18), 0.94],
+				[Date.UTC(1971,  3, 24), 0.9 ],
+				[Date.UTC(1971,  4, 16), 1.1],
+				[Date.UTC(1971,  4, 21), 1.2]
+			]
+		}]
+	});
+});
+</script>
+
+<script type="text/javascript">
+var chart;
+jQuery(document).ready(function() {
+	chart = new Highcharts.Chart({
+		chart: {
+			renderTo: 'container2',
+			type: 'bar'
+		},
+		title: {
+			text: 'Projects By The Numbers'
+		},
+		xAxis: {
+			categories: ['Project One', 'Project Two', 'Project Three']
+		},
+		yAxis: {
+			min: 0,
+			title: {
+				text: 'Project Items'
+			}
+		},
+		legend: {
+			backgroundColor: '#FFFFFF',
+			reversed: true
+		},
+		tooltip: {
+			formatter: function() {
+				return ''+
+					this.series.name +': '+ this.y +'';
+			}
+		},
+		plotOptions: {
+			series: {
+				stacking: 'normal'
+			}
+		},
+			series: [{
+			name: 'Milestones',
+			data: [2, 3, 2]
+		}, {
+			name: 'Task Lists',
+			data: [5, 4, 7]
+		}, {
+			name: 'Tasks',
+			data: [23, 45, 32]
+		}]
+	});
+});
+</script>
+
+<script type="text/javascript">
+var chart;
+jQuery(document).ready(function() {
+	chart = new Highcharts.Chart({
+			chart: {
+				renderTo: 'container3',
+				plotBackgroundColor: null,
+				plotBorderWidth: null,
+				plotShadow: false
+			},
+			title: {
+				text: 'Tasks Completed By User'
+			},
+			tooltip: {
+				formatter: function() {
+					return '<b>'+ this.point.name +'</b>: '+ this.percentage +' %';
+				}
+			},
+			plotOptions: {
+				pie: {
+					allowPointSelect: true,
+					cursor: 'pointer',
+					dataLabels: {
+						enabled: false
+					},
+					showInLegend: true
+				}
+			},
+			series: [{
+				type: 'pie',
+				name: 'Browser share',
+				data: [
+					['Captain America',   45.0],
+					['Iron Man',       26.8],
+					{
+						name: 'The Hulk',
+						y: 12.8,
+						sliced: true,
+						selected: true
+					},
+					['Hawkeye',    8.5],
+					['Black Widow',     6.2],
+					['Nick Fury',   0.7]
+				]
+			}]
+		});
+});
+</script>
