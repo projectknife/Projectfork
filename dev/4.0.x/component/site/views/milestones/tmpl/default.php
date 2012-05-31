@@ -121,15 +121,24 @@ $action_count = count($this->actions);
                     $progress = round($completed * (100 / $task_count));
                 }
 
-                if($progress >= 66)  $progress_class = 'info';
+                if($progress >= 67)  $progress_class = 'info';
                 if($progress == 100) $progress_class = 'success';
-                if($progress < 66)   $progress_class = 'warning';
-                if($progress < 33)   $progress_class = 'danger';
+                if($progress < 67)   $progress_class = 'warning';
+                if($progress < 34)   $progress_class = 'danger label-important';
 
             ?>
                 <div class="well well-<?php echo $k;?>">
                		<h4>
-                   		<i class="icon-map-marker"></i>
+               			<span class="pull-left"> 
+                        	<?php
+                                $this->menu->start(array('class' => 'btn-mini'));
+                                $this->menu->itemEdit('milestoneform', $item->id, ($canEdit || $canEditOwn));
+                                $this->menu->itemTrash('milestones', $i, ($canEdit || $canEditOwn));
+                                $this->menu->end();
+
+                                echo $this->menu->render();
+                            ?>
+                        </span>
                         <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestoneRoute($item->slug, $item->project_slug));?>">
                             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                             <?php echo $this->escape($item->title);?>
@@ -152,16 +161,7 @@ $action_count = count($this->actions);
                         <?php endif; ?>
                         </small>
                         <a href="#milestone-<?php echo $item->id;?>" class="btn btn-mini" data-toggle="collapse"><?php echo JText::_('COM_PROJECTFORK_DETAILS_LABEL');?> <span class="caret"></span></a>
-                        <div class="pull-left">
-                            <?php
-                                $this->menu->start(array('class' => 'btn-mini'));
-                                $this->menu->itemEdit('milestoneform', $item->id, ($canEdit || $canEditOwn));
-                                $this->menu->itemTrash('milestones', $i, ($canEdit || $canEditOwn));
-                                $this->menu->end();
-
-                                echo $this->menu->render();
-                            ?>
-                        </div>
+                        
                		</h4>
                		<div class="collapse" id="milestone-<?php echo $item->id;?>">
 	               		<hr />
@@ -204,7 +204,7 @@ $action_count = count($this->actions);
 	                    <div class="clearfix"></div>
                     </div>
                     <hr />
-                    <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-milestone" rel="tooltip" title="<?php echo $progress;?>% <?php echo JText::_('COM_PROJECTFORK_FIELD_COMPLETE_LABEL');?>">
+                    <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-milestone">
                       <div class="bar"
                            style="width: <?php echo $progress;?>%;"><span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $progress;?>%</span></div>
                     </div>
