@@ -37,7 +37,7 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
 <div id="projectfork" class="item-page view-task">
 	<?php if ($params->get('show_title', 1)) : ?>
 		<div class="page-header">
-			<h2><?php echo $this->escape($this->item->title); ?> <small><?php echo JText::_('COM_PROJECTFORK_ASSIGNED_TO');?> <?php echo $this->escape($this->item->author);?> <?php echo JText::_('COM_PROJECTFORK_DUE_ON');?> <?php echo JHtml::_('date', $this->item->end_date, JText::_('DATE_FORMAT_LC2'));?></small></h2>
+			<h2><?php echo $this->escape($this->item->title); ?> <small class="small"><?php echo JText::_('COM_PROJECTFORK_ASSIGNED_TO');?> <?php echo $this->escape($this->item->author);?> <?php echo JText::_('COM_PROJECTFORK_DUE_ON');?> <?php echo JHtml::_('date', $this->item->end_date, JText::_('DATE_FORMAT_LC1'));?></small></h2>
 		</div>
 	<?php endif; ?>
 	<?php
@@ -50,19 +50,6 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
         echo $this->item->menu->render();
     */
     ?>
-	
-	<div class="actions btn-toolbar">
-		<div class="btn-group">
-			<?php if($canEdit || $canEditOwn) : ?>
-			   <a class="btn" href="<?php echo JRoute::_('index.php?option=com_projectfork&task=taskform.edit&id='.intval($this->item->id).':'.$this->item->alias);?>">
-			       <i class="icon-edit"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
-			   </a>
-			<?php endif; ?>
-			<a href="#" class="btn"><i class="icon-print"></i> Print</a>
-			<a href="#" class="btn"><i class="icon-envelope"></i> Email</a>
-			<a href="#comments" class="btn"><i class="icon-comment"></i> Comment <span class="badge badge-warning">4</span></a>
-		</div>
-	</div>
 	<dl class="article-info dl-horizontal pull-right">
 		<dt class="project-title">
 			Project:
@@ -80,13 +67,13 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
 			<?php echo JText::_('JGRID_HEADING_START_DATE');?>:
 		</dt>
 		<dd class="start-data">
-			<?php echo JHtml::_('date', $this->item->start_date, JText::_('DATE_FORMAT_LC2'));?>
+			<?php echo JHtml::_('date', $this->item->start_date, JText::_('DATE_FORMAT_LC1'));?>
 		</dd>
 		<dt class="due-title">
 			<?php echo JText::_('JGRID_HEADING_DEADLINE');?>:
 		</dt>
 		<dd class="due-data">
-			<?php echo JHtml::_('date', $this->item->end_date, JText::_('DATE_FORMAT_LC2'));?>
+			<?php echo JHtml::_('date', $this->item->end_date, JText::_('DATE_FORMAT_LC1'));?>
 		</dd>
 		<dt class="owner-title">
 			<?php echo JText::_('JGRID_HEADING_CREATED_BY');?>:
@@ -95,6 +82,19 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
 			 <?php echo $this->escape($this->item->author);?>
 		</dd>
 	</dl>
+	<div class="actions btn-toolbar">
+		<div class="btn-group">
+			<?php if($canEdit || $canEditOwn) : ?>
+			   <a class="btn" href="<?php echo JRoute::_('index.php?option=com_projectfork&task=taskform.edit&id='.intval($this->item->id).':'.$this->item->alias);?>">
+			       <i class="icon-edit"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
+			   </a>
+			<?php endif; ?>
+			<a href="#" class="btn"><i class="icon-print"></i> Print</a>
+			<a href="#" class="btn"><i class="icon-envelope"></i> Email</a>
+			<a href="#comments" class="btn"><i class="icon-comment"></i> Comment <span class="badge badge-warning">4</span></a>
+		</div>
+	</div>
+	
 	<div class="item-description">
 		<?php echo $this->escape($this->item->description); ?>
 	</div>
