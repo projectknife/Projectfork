@@ -22,3 +22,52 @@
 
 defined('_JEXEC') or die;
 ?>
+
+<div class="adminform">
+	<div class="cpanel-left">
+		<div class="cpanel">
+			<div class="icon-wrapper">
+				<div class="icon">
+					<a href="index.php?option=com_projectfork&view=projects">
+						<img src="../components/com_projectfork/assets/images/header/icon-48-projects.png" alt="">
+						<span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_PROJECTS');?></span>
+					</a>
+				</div>
+			</div>
+			<div class="icon-wrapper">
+				<div class="icon">
+					<a href="index.php?option=com_projectfork&view=milestones">
+						<img src="../components/com_projectfork/assets/images/header/icon-48-milestones.png" alt="">
+						<span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_MILESTONES');?></span>
+					</a>
+				</div>
+			</div>
+			<div class="icon-wrapper">
+				<div class="icon">
+					<a href="index.php?option=com_projectfork&view=tasklists">
+						<img src="../components/com_projectfork/assets/images/header/icon-48-tasklists.png" alt="">
+						<span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS');?></span>
+					</a>
+				</div>
+			</div>
+			<div class="icon-wrapper">
+				<div class="icon">
+					<a href="index.php?option=com_projectfork&view=tasks">
+						<img src="../components/com_projectfork/assets/images/header/icon-48-tasks.png" alt="">
+						<span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_TASKS');?></span>
+					</a>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="cpanel-right width-40">
+		<fieldset>
+			<legend><?php echo JText::_('COM_PROJECTFORK');?></legend>
+			<h3>Projectfork 4 Alpha <small class="small">codename: Projectknife</small></h3>
+			<p>Consider this a preview-only version of Projectfork. We highly recommend against using in a production environment as there may be many bugs. Features and functions will rapidly change in the alpha stage and we don't offer support or migration for these features.</p>
+			<p>We include Highcharts software for our dashboard charts. Distribution of a Highsoft software product is only allowed with non-commercial packages and is <strong>not free for commercial use</strong>.</p>
+			<p>Reference the <a href="highcharts.com/license">Highcharts license</a> for more usage information.</p>
+			<p>Onebit icon set from <a href="http://www.icojoy.com/">icojoy.com</a>.</p>
+		</fieldset>
+	</div>
+</div>
