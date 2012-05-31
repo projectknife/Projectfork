@@ -29,3 +29,20 @@
     margin:0px 0px 0px 0px;
     padding:0px 0px 0px 0px;
 }
+
+/* General Classes */
+.small{
+	font-size: 12px;
+}
+
+/* Bootstrap Classes */
+#projectfork .page-header{
+	padding-bottom: 5px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+/* Milestone Progress */
+.progress.progress-milestone{
+	margin-bottom: 0;
+}
