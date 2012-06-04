@@ -49,20 +49,20 @@ class ProjectforkController extends JController
                 $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap.min.css');
                 $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap-responsive.min.css');
 
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/jquery.min.js');
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/jquery.noconflict.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/jquery/jquery.min.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/jquery/jquery.noconflict.js');
                 $doc->addScript($uri->base(true).'/components/com_projectfork/assets/bootstrap/js/bootstrap.min.js');
             }
 
             // Load Projectfork CSS if enabled
             if($params->get('css', '1') == '1') {
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_icons.css');
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_layout.css');
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/css/com_projectfork_theme.css');
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/icons.css');
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/layout.css');
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/theme.css');
             }
 
             // Load Projectfork JS
-            $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/com_projectfork.js');
+            $doc->addScript($uri->base(true).'/components/com_projectfork/assets/projectfork/js/projectfork.js');
 
 
             JHTML::_('behavior.tooltip');
