@@ -191,13 +191,23 @@ class ProjectforkViewTasks extends JView
         $tb    = new ProjectforkHelperToolbar();
 
 
-        if($canDo->get('core.create') || $canDo->get('tasklist.create')) {
-            $tb->button('COM_PROJECTFORK_ACTION_NEW_TASKLIST', 'tasklistform.add');
-        }
-        if($canDo->get('core.create') || $canDo->get('task.create')) {
-            $tb->button('COM_PROJECTFORK_ACTION_NEW_TASK', 'taskform.add');
-        }
+        $canCreateList = $canDo->get('core.create') || $canDo->get('tasklist.create');
+        $canCreateTask = $canDo->get('core.create') || $canDo->get('task.create');
 
+        if($canCreateTask && $canCreateList) {
+            $items = array();
+            $items['tasklistform.add'] = array('text' => 'COM_PROJECTFORK_ACTION_NEW_TASKLIST');
+
+            $tb->dropdownButton($items, 'COM_PROJECTFORK_ACTION_NEW', 'taskform.add', false);
+        }
+        else {
+            if($canCreateList) {
+                $tb->button('COM_PROJECTFORK_ACTION_NEW_TASKLIST', 'tasklistform.add');
+            }
+            if($canCreateTask) {
+                $tb->button('COM_PROJECTFORK_ACTION_NEW_TASK', 'taskform.add');
+            }
+        }
 
         return $tb->__toString();
     }
