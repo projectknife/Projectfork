@@ -60,7 +60,7 @@ $action_count = count($this->actions);
             	    </div>
             	<?php endif; ?>
 			</div>
-			
+
 			<ul class="thumbnails">
                     <?php
                     $k = 0;
@@ -72,8 +72,25 @@ $action_count = count($this->actions);
 			            $canCheckin	= ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
 			            $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('project.edit.own', $asset_name)) && $item->created_by == $uid);
 			            $canChange	= (($user->authorise('core.edit.state',	$asset_name) || $user->authorise('project.edit.state', $asset_name)) && $canCheckin);
+
+                        // Calculate project progress
+                        $task_count = (int) $item->tasks;
+                        $completed  = (int) $item->completed_tasks;
+                        $progress   = 0;
+
+                        if($task_count == 0) {
+                            $progress = 0;
+                        }
+                        else {
+                            $progress = round($completed * (100 / $task_count));
+                        }
+
+                        if($progress >= 67)  $progress_class = 'info';
+                        if($progress == 100) $progress_class = 'success';
+                        if($progress < 67)   $progress_class = 'warning';
+                        if($progress < 34)   $progress_class = 'danger label-important';
                     ?>
-                    
+
                         <li class="span3">
                           <div class="thumbnail">
                           <?php /*
@@ -92,8 +109,13 @@ $action_count = count($this->actions);
 	                              </a>
                               </h3>
                               <hr />
-                              <div class="well well-projects">
-                              	<?php echo $this->escape($item->description);?>
+                              <!--<div class="well well-projects">
+                              	<?php echo $this->escape(JHtml::_('projectfork.truncate', $item->description));?>
+                              </div>
+                              <hr />-->
+                              <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-project">
+                                  <div class="bar"
+                                       style="width: <?php echo $progress;?>%;"><span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $progress;?>%</span></div>
                               </div>
                               <div class="btn-group">
                               	<?php if($canEdit || $canEditOwn) : ?>
@@ -119,7 +141,7 @@ $action_count = count($this->actions);
                     endforeach;
                     ?>
 			</ul>
-			
+
 			<div class="filters btn-toolbar">
 				<?php if($this->pagination->get('pages.total') > 1 && $this->params->get('show_pagination')) : ?>
 				    <div class="btn-group pagination">

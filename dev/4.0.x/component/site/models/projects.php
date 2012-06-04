@@ -185,6 +185,10 @@ class ProjectforkModelProjects extends JModelList
         $query->select('COUNT(DISTINCT ta.id) AS tasks');
         $query->join('LEFT', '#__pf_tasks AS ta ON ta.project_id = a.id');
 
+        // Join over the tasks again for completed task count
+        $query->select('COUNT(DISTINCT tc.id) AS completed_tasks');
+        $query->join('LEFT', '#__pf_tasks AS tc ON (tc.project_id = a.id AND tc.complete = 1)');
+
         // Implement View Level Access
 		if(!$user->authorise('core.admin')) {
 		    $groups	= implode(',', $user->getAuthorisedViewLevels());
