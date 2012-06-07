@@ -436,7 +436,7 @@ abstract class JHtmlProjectfork
 
                 $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/basic.css');
                 $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/visualize.css');
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/visualize-light.css');
+                //$doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/visualize-light.css');
             }
 
             define('COM_PROJECTFORK_JQUERY_VISUALIZE', 1);
