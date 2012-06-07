@@ -434,7 +434,6 @@ abstract class JHtmlProjectfork
                 $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/js/excanvas.js');
                 $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/js/visualize.jQuery.js');
 
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/basic.css');
                 $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/visualize.css');
                 //$doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/visualize-light.css');
             }
