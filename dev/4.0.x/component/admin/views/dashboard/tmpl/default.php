@@ -63,10 +63,8 @@ defined('_JEXEC') or die;
 	<div class="cpanel-right width-40">
 		<fieldset>
 			<legend><?php echo JText::_('COM_PROJECTFORK');?></legend>
-			<h3>Projectfork 4 Alpha <small class="small">codename: Projectknife</small></h3>
+			<h3>Projectfork 4 Alpha</h3>
 			<p>Consider this a preview-only version of Projectfork. We highly recommend against using in a production environment as there may be many bugs. Features and functions will rapidly change in the alpha stage and we don't offer support or migration for these features.</p>
-			<p>We include Highcharts software for our dashboard charts. Distribution of a Highsoft software product is only allowed with non-commercial packages and is <strong>not free for commercial use</strong>.</p>
-			<p>Reference the <a href="highcharts.com/license">Highcharts license</a> for more usage information.</p>
 			<p>Onebit icon set from <a href="http://www.icojoy.com/">icojoy.com</a>.</p>
 		</fieldset>
 	</div>

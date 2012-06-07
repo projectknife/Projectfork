@@ -309,10 +309,11 @@ abstract class JHtmlProjectfork
         if(!defined('COM_PROJECTFORK_CSS')) {
             jimport( 'joomla.application.component.helper' );
 
-	        $doc = JFactory::getDocument();
-            $uri = JFactory::getURI();
+            $params = JComponentHelper::getParams('com_projectfork');
+	        $doc    = JFactory::getDocument();
+            $uri    = JFactory::getURI();
 
-            if($doc->getType() == 'html') {
+            if($doc->getType() == 'html' && $params->get('projectfork_css', '1') == '1') {
                 $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/icons.css');
                 $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/layout.css');
                 $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/theme.css');
@@ -333,8 +334,8 @@ abstract class JHtmlProjectfork
         if(!defined('COM_PROJECTFORK_JS')) {
             jimport( 'joomla.application.component.helper' );
 
-	        $doc = JFactory::getDocument();
-            $uri = JFactory::getURI();
+	        $doc  = JFactory::getDocument();
+            $uri  = JFactory::getURI();
 
             if($doc->getType() == 'html') {
                 $doc->addScript($uri->base(true).'/components/com_projectfork/assets/projectfork/js/projectfork.js');

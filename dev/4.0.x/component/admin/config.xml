@@ -1,174 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-    <fieldset name="list_parameters" label="COM_PROJECTFORK_CONFIG_LIST_LABEL" description="COM_PROJECTFORK_CONFIG_LIST_LABEL_DESC">
-        <field name="show_pagination" type="list" default="2" label="JGLOBAL_Pagination_Label" description="JGLOBAL_Pagination_Desc">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-			<option value="2">JGLOBAL_AUTO</option>
-		</field>
-        <field name="show_pagination_limit" type="radio" default="1" label="JGLOBAL_DISPLAY_SELECT_LABEL" description="JGLOBAL_DISPLAY_SELECT_DESC">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="show_pagination_results" type="radio" default="1" label="JGLOBAL_PAGINATION_RESULTS_LABEL" description="JGLOBAL_PAGINATION_RESULTS_DESC">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-        <field name="filter_fields" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_FILTER_FIELDS_LABEL" description="COM_PROJECTFORK_CONFIG_FILTER_FIELDS_DESC">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="date_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_CREATION_DATE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
-		<field name="sdate_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_SDATE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
-		<field name="deadline_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_DEADLINE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
-
-        <field type="spacer" hr="true"/>
-        <field type="spacer" label="COM_PROJECTFORK_CONFIG_PROJECT_LIST_SPACER"/>
-        <field name="project_list_col_author" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="project_list_col_milestones" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_MILESTONES_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_MILESTONES_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="project_list_col_tasklists" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_TASKLISTS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_TASKLISTS_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="project_list_col_tasks" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_TASKS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_TASKS_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="project_list_col_created" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="project_list_col_sdate" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="project_list_col_deadline" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="project_list_col_access" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-
-        <field type="spacer" hr="true"/>
-        <field type="spacer" label="COM_PROJECTFORK_CONFIG_MILESTONE_LIST_SPACER"/>
-        <field name="milestone_list_col_author" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="milestone_list_col_project" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_PROJECT_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_PROJECT_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="milestone_list_col_tasklists" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_TASKLISTS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_TASKLISTS_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="milestone_list_col_tasks" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_TASKS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_TASKS_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="milestone_list_col_created" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="milestone_list_col_sdate" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="milestone_list_col_deadline" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="milestone_list_col_access" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-
-        <field type="spacer" hr="true"/>
-        <field type="spacer" label="COM_PROJECTFORK_CONFIG_TASKLIST_LIST_SPACER"/>
-        <field name="tasklist_list_col_author" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="tasklist_list_col_project" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_PROJECT_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_PROJECT_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="tasklist_list_col_milestone" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_MILESTONE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_MILESTONE_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="tasklist_list_col_tasks" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_TASKS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_TASKS_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="tasklist_list_col_created" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="tasklist_list_col_access" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-
-        <field type="spacer" hr="true"/>
-        <field type="spacer" label="COM_PROJECTFORK_CONFIG_TASK_LIST_SPACER"/>
-        <field name="task_list_col_author" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="task_list_col_project" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_PROJECT_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_PROJECT_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="task_list_col_milestone" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_MILESTONE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_MILESTONE_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="task_list_col_tasklist" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_TASKLIST_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_TASKLIST_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-        <field name="task_list_col_priority" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_PRIORITY_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_PRIORITY_LABEL" default="1">
-				<option value="0">JHIDE</option>
-				<option value="1">JSHOW</option>
-			</field>
-		<field name="task_list_col_created" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-        <field name="task_list_col_sdate" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="task_list_col_deadline" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-		<field name="task_list_col_access" type="radio" description="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_LABEL" default="1">
-		    <option value="0">JHIDE</option>
-			<option value="1">JSHOW</option>
-		</field>
-
-	</fieldset>
-	
 	<fieldset name="compat_parameters" label="COM_PROJECTFORK_CONFIG_COMPAT_LABEL" description="COM_PROJECTFORK_CONFIG_COMPAT_DESC">
-		<field name="bootstrap" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_BOOTSTRAP_LABEL" description="COM_PROJECTFORK_CONFIG_BOOTSTRAP_DESC">
+       <field name="projectfork_css" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_CSS_LABEL" description="COM_PROJECTFORK_CONFIG_CSS_DESC">
 		    <option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-		<field name="css" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_CSS_LABEL" description="COM_PROJECTFORK_CONFIG_CSS_DESC">
+        <field name="bootstrap_css" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_BOOTSTRAP_CSS_LABEL" description="COM_PROJECTFORK_CONFIG_BOOTSTRAP_CSS_DESC">
 		    <option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+        <field name="bootstrap_js" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_BOOTSTRAP_JS_LABEL" description="COM_PROJECTFORK_CONFIG_BOOTSTRAP_JS_DESC">
+		    <option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+        <field name="jquery" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_JQUERY_LABEL" description="COM_PROJECTFORK_CONFIG_JQUERY_DESC">
+		    <option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+		
 	</fieldset>
 	
     <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">

@@ -26,6 +26,12 @@
 		<action name="tasklist.edit" title="COM_PROJECTFORK_TASKLIST_ACTION_EDIT" description="COM_PROJECTFORK_TASKLIST_ACTION_EDIT_DESC" />
 		<action name="tasklist.edit.state" title="COM_PROJECTFORK_TASKLIST_ACTION_EDITSTATE" description="COM_PROJECTFORK_TASKLIST_ACTION_EDITSTATE_DESC" />
 		<action name="tasklist.edit.own" title="COM_PROJECTFORK_TASKLIST_ACTION_EDITOWN" description="COM_PROJECTFORK_TASKLIST_ACTION_EDITOWN_DESC" />
+
+        <action name="task.create" title="COM_PROJECTFORK_TASK_ACTION_CREATE" description="COM_PROJECTFORK_TASK_ACTION_CREATE_DESC" />
+		<action name="task.delete" title="COM_PROJECTFORK_TASK_ACTION_DELETE" description="COM_PROJECTFORK_TASK_ACTION_DELETE_DESC" />
+		<action name="task.edit" title="COM_PROJECTFORK_TASK_ACTION_EDIT" description="COM_PROJECTFORK_TASK_ACTION_EDIT_DESC" />
+		<action name="task.edit.state" title="COM_PROJECTFORK_TASK_ACTION_EDITSTATE" description="COM_PROJECTFORK_TASK_ACTION_EDITSTATE_DESC" />
+		<action name="task.edit.own" title="COM_PROJECTFORK_TASK_ACTION_EDITOWN" description="COM_PROJECTFORK_TASK_ACTION_EDITOWN_DESC" />
 	</section>
 	<section name="project">
 	    <action name="project.create" title="COM_PROJECTFORK_PROJECT_ACTION_CREATE" description="COM_PROJECTFORK_PROJECT_ACTION_CREATE_DESC" />
@@ -45,6 +51,12 @@
 		<action name="tasklist.edit" title="COM_PROJECTFORK_TASKLIST_ACTION_EDIT" description="COM_PROJECTFORK_TASKLIST_ACTION_EDIT_DESC" />
 		<action name="tasklist.edit.state" title="COM_PROJECTFORK_TASKLIST_ACTION_EDITSTATE" description="COM_PROJECTFORK_TASKLIST_ACTION_EDITSTATE_DESC" />
 		<action name="tasklist.edit.own" title="COM_PROJECTFORK_TASKLIST_ACTION_EDITOWN" description="COM_PROJECTFORK_TASKLIST_ACTION_EDITOWN_DESC" />
+
+        <action name="task.create" title="COM_PROJECTFORK_TASK_ACTION_CREATE" description="COM_PROJECTFORK_TASK_ACTION_CREATE_DESC" />
+		<action name="task.delete" title="COM_PROJECTFORK_TASK_ACTION_DELETE" description="COM_PROJECTFORK_TASK_ACTION_DELETE_DESC" />
+		<action name="task.edit" title="COM_PROJECTFORK_TASK_ACTION_EDIT" description="COM_PROJECTFORK_TASK_ACTION_EDIT_DESC" />
+		<action name="task.edit.state" title="COM_PROJECTFORK_TASK_ACTION_EDITSTATE" description="COM_PROJECTFORK_TASK_ACTION_EDITSTATE_DESC" />
+		<action name="task.edit.own" title="COM_PROJECTFORK_TASK_ACTION_EDITOWN" description="COM_PROJECTFORK_TASK_ACTION_EDITOWN_DESC" />
 	</section>
 	<section name="milestone">
 	    <action name="milestone.create" title="COM_PROJECTFORK_MILESTONE_ACTION_CREATE" description="COM_PROJECTFORK_MILESTONE_ACTION_CREATE_DESC" />
@@ -52,6 +64,18 @@
 		<action name="milestone.edit" title="COM_PROJECTFORK_MILESTONE_ACTION_EDIT" description="COM_PROJECTFORK_MILESTONE_ACTION_EDIT_DESC" />
 		<action name="milestone.edit.state" title="COM_PROJECTFORK_MILESTONE_ACTION_EDITSTATE" description="COM_PROJECTFORK_MILESTONE_ACTION_EDITSTATE_DESC" />
 		<action name="milestone.edit.own" title="COM_PROJECTFORK_MILESTONE_ACTION_EDITOWN" description="COM_PROJECTFORK_MILESTONE_ACTION_EDITOWN_DESC" />
+
+        <action name="tasklist.create" title="COM_PROJECTFORK_TASKLIST_ACTION_CREATE" description="COM_PROJECTFORK_TASKLIST_ACTION_CREATE_DESC" />
+		<action name="tasklist.delete" title="COM_PROJECTFORK_TASKLIST_ACTION_DELETE" description="COM_PROJECTFORK_TASKLIST_ACTION_DELETE_DESC" />
+		<action name="tasklist.edit" title="COM_PROJECTFORK_TASKLIST_ACTION_EDIT" description="COM_PROJECTFORK_TASKLIST_ACTION_EDIT_DESC" />
+		<action name="tasklist.edit.state" title="COM_PROJECTFORK_TASKLIST_ACTION_EDITSTATE" description="COM_PROJECTFORK_TASKLIST_ACTION_EDITSTATE_DESC" />
+		<action name="tasklist.edit.own" title="COM_PROJECTFORK_TASKLIST_ACTION_EDITOWN" description="COM_PROJECTFORK_TASKLIST_ACTION_EDITOWN_DESC" />
+
+        <action name="task.create" title="COM_PROJECTFORK_TASK_ACTION_CREATE" description="COM_PROJECTFORK_TASK_ACTION_CREATE_DESC" />
+		<action name="task.delete" title="COM_PROJECTFORK_TASK_ACTION_DELETE" description="COM_PROJECTFORK_TASK_ACTION_DELETE_DESC" />
+		<action name="task.edit" title="COM_PROJECTFORK_TASK_ACTION_EDIT" description="COM_PROJECTFORK_TASK_ACTION_EDIT_DESC" />
+		<action name="task.edit.state" title="COM_PROJECTFORK_TASK_ACTION_EDITSTATE" description="COM_PROJECTFORK_TASK_ACTION_EDITSTATE_DESC" />
+		<action name="task.edit.own" title="COM_PROJECTFORK_TASK_ACTION_EDITOWN" description="COM_PROJECTFORK_TASK_ACTION_EDITOWN_DESC" />
 	</section>
 	<section name="tasklist">
 	    <action name="tasklist.create" title="COM_PROJECTFORK_TASKLIST_ACTION_CREATE" description="COM_PROJECTFORK_TASKLIST_ACTION_CREATE_DESC" />
@@ -59,5 +83,11 @@
 		<action name="tasklist.edit" title="COM_PROJECTFORK_TASKLIST_ACTION_EDIT" description="COM_PROJECTFORK_TASKLIST_ACTION_EDIT_DESC" />
 		<action name="tasklist.edit.state" title="COM_PROJECTFORK_TASKLIST_ACTION_EDITSTATE" description="COM_PROJECTFORK_TASKLIST_ACTION_EDITSTATE_DESC" />
 		<action name="tasklist.edit.own" title="COM_PROJECTFORK_TASKLIST_ACTION_EDITOWN" description="COM_PROJECTFORK_TASKLIST_ACTION_EDITOWN_DESC" />
+
+        <action name="task.create" title="COM_PROJECTFORK_TASK_ACTION_CREATE" description="COM_PROJECTFORK_TASK_ACTION_CREATE_DESC" />
+		<action name="task.delete" title="COM_PROJECTFORK_TASK_ACTION_DELETE" description="COM_PROJECTFORK_TASK_ACTION_DELETE_DESC" />
+		<action name="task.edit" title="COM_PROJECTFORK_TASK_ACTION_EDIT" description="COM_PROJECTFORK_TASK_ACTION_EDIT_DESC" />
+		<action name="task.edit.state" title="COM_PROJECTFORK_TASK_ACTION_EDITSTATE" description="COM_PROJECTFORK_TASK_ACTION_EDITSTATE_DESC" />
+		<action name="task.edit.own" title="COM_PROJECTFORK_TASK_ACTION_EDITOWN" description="COM_PROJECTFORK_TASK_ACTION_EDITOWN_DESC" />
 	</section>
 </access>

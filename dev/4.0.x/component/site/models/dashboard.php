@@ -42,6 +42,11 @@ class ProjectforkModelDashboard extends JModel
 
 		// Load state from the request.
 		$project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'id', '');
+
+        if(is_numeric(JRequest::getVar('filter_project'))) {
+            $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        }
+
         $this->setState('filter.project', $project);
         ProjectforkHelper::setActiveProject($project);
 
