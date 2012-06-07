@@ -31,13 +31,21 @@ defined('_JEXEC') or die;
 
     <div class="cat-items">
 
-        <fieldset class="filters">
-            <?php if($this->params->get('filter_fields')) : ?>
-                <span class="filter-project">
-                    <?php echo JHtml::_('projectfork.filterProject');?>
-                </span>
-            <?php endif; ?>
-        </fieldset>
+        <form id="adminForm" name="adminForm" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>">
+
+            <fieldset class="filters">
+                <?php if($this->params->get('filter_fields')) : ?>
+                    <span class="filter-project">
+                        <?php echo JHtml::_('projectfork.filterProject');?>
+                    </span>
+                <?php endif; ?>
+            </fieldset>
+
+            <input type="hidden" name="task" value="" />
+	        <?php echo JHtml::_('form.token'); ?>
+
+        </form>
+
 
         <!-- Begin Highcharts
         <div class="row-fluid">
