@@ -164,6 +164,13 @@ abstract class JHtmlProjectfork
     }
 
 
+    /**
+     * Returns a truncated text. Also strips html tags
+     *
+     * @param    string    $text     The text to truncate
+     * @param    int       $chars    The new length of the string
+     * @return   string              The truncated string
+	 */
     static function truncate($text = '', $chars = 40)
     {
         $truncated = strip_tags($text);
@@ -175,7 +182,15 @@ abstract class JHtmlProjectfork
     }
 
 
-    static function ajaxReorder($list, $view, $i = 0)
+    /**
+     * Adds a JS script declaration to the doc header which enables
+     * ajax reordering of list items.
+     *
+     * @param    string    $list     The CSS list id selector
+     * @param    string    $view     The component view
+     * @return   void
+	 */
+    static function ajaxReorder($list, $view)
     {
         $doc = JFactory::getDocument();
         $js  = array();
@@ -235,6 +250,12 @@ abstract class JHtmlProjectfork
     }
 
 
+    /**
+     * Adds a JS script declaration to the doc header which enables
+     * ajax based task completition through checkboxes.
+     *
+     * @return   void
+	 */
     static function ajaxCompleteTask()
     {
         $doc = JFactory::getDocument();
@@ -275,5 +296,150 @@ abstract class JHtmlProjectfork
         $js[] = "}";
 
         $doc->addScriptDeclaration(implode("\n", $js));
+    }
+
+
+    /**
+     * Loads projectfork CSS files
+     *
+     * @return   void
+	 */
+    static function CSS()
+    {
+        if(!defined('COM_PROJECTFORK_CSS')) {
+            jimport( 'joomla.application.component.helper' );
+
+	        $doc = JFactory::getDocument();
+            $uri = JFactory::getURI();
+
+            if($doc->getType() == 'html') {
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/icons.css');
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/layout.css');
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/theme.css');
+            }
+
+            define('COM_PROJECTFORK_CSS', 1);
+        }
+    }
+
+
+    /**
+     * Loads projectfork JS files
+     *
+     * @return   void
+	 */
+    static function JS()
+    {
+        if(!defined('COM_PROJECTFORK_JS')) {
+            jimport( 'joomla.application.component.helper' );
+
+	        $doc = JFactory::getDocument();
+            $uri = JFactory::getURI();
+
+            if($doc->getType() == 'html') {
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/projectfork/js/projectfork.js');
+            }
+
+            define('COM_PROJECTFORK_JS', 1);
+        }
+    }
+
+
+    /**
+     * Loads bootstrap CSS files
+     *
+     * @return   void
+	 */
+    static function boostrapCSS()
+    {
+        if(!defined('COM_PROJECTFORK_BOOSTRAP_CSS')) {
+            jimport( 'joomla.application.component.helper' );
+
+            $params = JComponentHelper::getParams('com_projectfork');
+		    $doc    = JFactory::getDocument();
+            $uri    = JFactory::getURI();
+
+            if($doc->getType() == 'html' && $params->get('bootstrap_css', '1') == '1') {
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap.min.css');
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap-responsive.min.css');
+            }
+
+            define('COM_PROJECTFORK_BOOTSTRAP_CSS', 1);
+        }
+    }
+
+
+    /**
+     * Loads bootstrap JS files
+     *
+     * @return   void
+	 */
+    static function boostrapJS()
+    {
+        if(!defined('COM_PROJECTFORK_BOOSTRAP_JS')) {
+            jimport( 'joomla.application.component.helper' );
+
+            $params = JComponentHelper::getParams('com_projectfork');
+		    $doc    = JFactory::getDocument();
+            $uri    = JFactory::getURI();
+
+            if($doc->getType() == 'html' && $params->get('bootstrap_js', '1') == '1') {
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/bootstrap/js/bootstrap.min.js');
+            }
+
+            define('COM_PROJECTFORK_BOOTSTRAP_JS', 1);
+        }
+    }
+
+
+    /**
+     * Loads bootstrap JS files
+     *
+     * @return   void
+	 */
+    static function jQuery()
+    {
+        if(!defined('COM_PROJECTFORK_JQUERY')) {
+            jimport( 'joomla.application.component.helper' );
+
+            $params = JComponentHelper::getParams('com_projectfork');
+		    $doc    = JFactory::getDocument();
+            $uri    = JFactory::getURI();
+
+            if($doc->getType() == 'html' && $params->get('jquery', '1') == '1') {
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery/jquery.min.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery/jquery.noconflict.js');
+            }
+
+            define('COM_PROJECTFORK_JQUERY', 1);
+        }
+    }
+
+
+    /**
+     * Loads bootstrap-visualize JS files
+     *
+     * @return   void
+	 */
+    static function jQueryVisualize()
+    {
+        if(!defined('COM_PROJECTFORK_JQUERY_VISUALIZE')) {
+            jimport( 'joomla.application.component.helper' );
+
+		    $doc = JFactory::getDocument();
+            $uri = JFactory::getURI();
+
+            if($doc->getType() == 'html') {
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/enhancejs/enhance.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/js/excanvas.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/js/visualize.jQuery.js');
+
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/basic.css');
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/visualize.css');
+                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/visualize-light.css');
+            }
+
+            define('COM_PROJECTFORK_JQUERY_VISUALIZE', 1);
+        }
     }
 }

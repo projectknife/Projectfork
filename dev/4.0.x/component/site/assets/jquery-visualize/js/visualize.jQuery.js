@@ -6,14 +6,14 @@
  * licensed under MIT (filamentgroup.com/examples/mit-license.txt)
  * --------------------------------------------------------------------
 */
-(function($) { 
-$.fn.visualize = function(options, container){
-	return $(this).each(function(){
+(function(jQuery) { 
+jQuery.fn.visualize = function(options, container){
+	return jQuery(this).each(function(){
 		//configuration
-		var o = $.extend({
+		var o = jQuery.extend({
 			type: 'bar', //also available: area, pie, line
-			width: $(this).width(), //height of canvas - defaults to table height
-			height: $(this).height(), //height of canvas - defaults to table height
+			width: jQuery(this).width(), //height of canvas - defaults to table height
+			height: jQuery(this).height(), //height of canvas - defaults to table height
 			appendTitle: true, //table caption text is added to chart
 			title: null, //grabs from table caption if null
 			appendKey: true, //color key is added to chart
@@ -36,7 +36,7 @@ $.fn.visualize = function(options, container){
 		o.height = parseFloat(o.height);
 		
 		
-		var self = $(this);
+		var self = jQuery(this);
 		
 		//function to scrape data from html table
 		function scrapeTable(){
@@ -51,8 +51,8 @@ $.fn.visualize = function(options, container){
 							dataGroups[i].points = [];
 							dataGroups[i].color = colors[i];
 							if(textColors[i]){ dataGroups[i].textColor = textColors[i]; }
-							$(this).find('td').filter(o.colFilter).each(function(){
-								dataGroups[i].points.push( parseFloat($(this).text()) );
+							jQuery(this).find('td').filter(o.colFilter).each(function(){
+								dataGroups[i].points.push( parseFloat(jQuery(this).text()) );
 							});
 						});
 					}
@@ -64,7 +64,7 @@ $.fn.visualize = function(options, container){
 							dataGroups[i].color = colors[i];
 							if(textColors[i]){ dataGroups[i].textColor = textColors[i]; }
 							self.find('tr:gt(0)').filter(o.rowFilter).each(function(){
-								dataGroups[i].points.push( $(this).find('td').filter(o.colFilter).eq(i).text()*1 );
+								dataGroups[i].points.push( jQuery(this).find('td').filter(o.colFilter).eq(i).text()*1 );
 							});
 						};
 					}
@@ -72,7 +72,7 @@ $.fn.visualize = function(options, container){
 				},
 				allData: function(){
 					var allData = [];
-					$(this.dataGroups()).each(function(){
+					jQuery(this.dataGroups()).each(function(){
 						allData.push(this.points);
 					});
 					return allData;
@@ -80,7 +80,7 @@ $.fn.visualize = function(options, container){
 				dataSum: function(){
 					var dataSum = 0;
 					var allData = this.allData().join(',').split(',');
-					$(allData).each(function(){
+					jQuery(allData).each(function(){
 						dataSum += parseFloat(this);
 					});
 					return dataSum
@@ -88,7 +88,7 @@ $.fn.visualize = function(options, container){
 				topValue: function(){
 						var topValue = 0;
 						var allData = this.allData().join(',').split(',');
-						$(allData).each(function(){
+						jQuery(allData).each(function(){
 							if(parseFloat(this,10)>topValue) topValue = parseFloat(this);
 						});
 						return topValue;
@@ -96,7 +96,7 @@ $.fn.visualize = function(options, container){
 				bottomValue: function(){
 						var bottomValue = 0;
 						var allData = this.allData().join(',').split(',');
-						$(allData).each(function(){
+						jQuery(allData).each(function(){
 							if(this<bottomValue) bottomValue = parseFloat(this);
 						});
 						return bottomValue;
@@ -104,9 +104,9 @@ $.fn.visualize = function(options, container){
 				memberTotals: function(){
 					var memberTotals = [];
 					var dataGroups = this.dataGroups();
-					$(dataGroups).each(function(l){
+					jQuery(dataGroups).each(function(l){
 						var count = 0;
-						$(dataGroups[l].points).each(function(m){
+						jQuery(dataGroups[l].points).each(function(m){
 							count +=dataGroups[l].points[m];
 						});
 						memberTotals.push(count);
@@ -120,11 +120,11 @@ $.fn.visualize = function(options, container){
 					for(var i = 0; i<loopLength; i++){
 						yTotals[i] =[];
 						var thisTotal = 0;
-						$(dataGroups).each(function(l){
+						jQuery(dataGroups).each(function(l){
 							yTotals[i].push(this.points[i]);
 						});
 						yTotals[i].join(',').split(',');
-						$(yTotals[i]).each(function(){
+						jQuery(yTotals[i]).each(function(){
 							thisTotal += parseFloat(this);
 						});
 						yTotals[i] = thisTotal;
@@ -135,7 +135,7 @@ $.fn.visualize = function(options, container){
 				topYtotal: function(){
 					var topYtotal = 0;
 						var yTotals = this.yTotals().join(',').split(',');
-						$(yTotals).each(function(){
+						jQuery(yTotals).each(function(){
 							if(parseFloat(this,10)>topYtotal) topYtotal = parseFloat(this);
 						});
 						return topYtotal;
@@ -147,12 +147,12 @@ $.fn.visualize = function(options, container){
 					var xLabels = [];
 					if(o.parseDirection == 'x'){
 						self.find('tr:eq(0) th').filter(o.colFilter).each(function(){
-							xLabels.push($(this).html());
+							xLabels.push(jQuery(this).html());
 						});
 					}
 					else {
 						self.find('tr:gt(0) th').filter(o.rowFilter).each(function(){
-							xLabels.push($(this).html());
+							xLabels.push(jQuery(this).html());
 						});
 					}
 					return xLabels;
@@ -187,11 +187,11 @@ $.fn.visualize = function(options, container){
 				var radius = centery - o.pieMargin;				
 				var counter = 0.0;
 				var toRad = function(integer){ return (Math.PI/180)*integer; };
-				var labels = $('<ul class="visualize-labels"></ul>')
+				var labels = jQuery('<ul class="visualize-labels"></ul>')
 					.insertAfter(canvas);
 
 				//draw the pie pieces
-				$.each(memberTotals, function(i){
+				jQuery.each(memberTotals, function(i){
 					var fraction = (this <= 0 || isNaN(this))? 0 : this / dataSum;
 					ctx.beginPath();
 					ctx.moveTo(centerx, centery);
@@ -214,11 +214,11 @@ $.fn.visualize = function(options, container){
 
 			        if(percentage){
 			        	var labelval = (o.pieLabelsAsPercent) ? percentage + '%' : this;
-				        var labeltext = $('<span class="visualize-label">' + labelval +'</span>')
+				        var labeltext = jQuery('<span class="visualize-label">' + labelval +'</span>')
 				        	.css(leftRight, 0)
 				        	.css(topBottom, 0);
 				        	if(labeltext)
-				        var label = $('<li class="visualize-label-pos"></li>')
+				        var label = jQuery('<li class="visualize-label-pos"></li>')
 				       			.appendTo(labels)
 				        		.css({left: labelx, top: labely})
 				        		.append(labeltext);	
@@ -240,12 +240,12 @@ $.fn.visualize = function(options, container){
 			
 				//write X labels
 				var xInterval = canvas.width() / (xLabels.length -1);
-				var xlabelsUL = $('<ul class="visualize-labels-x"></ul>')
+				var xlabelsUL = jQuery('<ul class="visualize-labels-x"></ul>')
 					.width(canvas.width())
 					.height(canvas.height())
 					.insertBefore(canvas);
-				$.each(xLabels, function(i){ 
-					var thisLi = $('<li><span>'+this+'</span></li>')
+				jQuery.each(xLabels, function(i){ 
+					var thisLi = jQuery('<li><span>'+this+'</span></li>')
 						.prepend('<span class="line" />')
 						.css('left', xInterval * i)
 						.appendTo(xlabelsUL);						
@@ -261,13 +261,13 @@ $.fn.visualize = function(options, container){
 				//write Y labels
 				var yScale = canvas.height() / totalYRange;
 				var liBottom = canvas.height() / (yLabels.length-1);
-				var ylabelsUL = $('<ul class="visualize-labels-y"></ul>')
+				var ylabelsUL = jQuery('<ul class="visualize-labels-y"></ul>')
 					.width(canvas.width())
 					.height(canvas.height())
 					.insertBefore(canvas);
 					
-				$.each(yLabels, function(i){  
-					var thisLi = $('<li><span>'+this+'</span></li>')
+				jQuery.each(yLabels, function(i){  
+					var thisLi = jQuery('<li><span>'+this+'</span></li>')
 						.prepend('<span class="line"  />')
 						.css('bottom',liBottom*i)
 						.prependTo(ylabelsUL);
@@ -283,14 +283,14 @@ $.fn.visualize = function(options, container){
 				//start from the bottom left
 				ctx.translate(0,zeroLoc);
 				//iterate and draw
-				$.each(dataGroups,function(h){
+				jQuery.each(dataGroups,function(h){
 					ctx.beginPath();
 					ctx.lineWidth = o.lineWeight;
 					ctx.lineJoin = 'round';
 					var points = this.points;
 					var integer = 0;
 					ctx.moveTo(0,-(points[0]*yScale));
-					$.each(points, function(){
+					jQuery.each(points, function(){
 						ctx.lineTo(integer,-(this*yScale));
 						integer+=xInterval;
 					});
@@ -319,12 +319,12 @@ $.fn.visualize = function(options, container){
 			
 				//write X labels
 				var xInterval = canvas.width() / (xLabels.length);
-				var xlabelsUL = $('<ul class="visualize-labels-x"></ul>')
+				var xlabelsUL = jQuery('<ul class="visualize-labels-x"></ul>')
 					.width(canvas.width())
 					.height(canvas.height())
 					.insertBefore(canvas);
-				$.each(xLabels, function(i){ 
-					var thisLi = $('<li><span class="label">'+this+'</span></li>')
+				jQuery.each(xLabels, function(i){ 
+					var thisLi = jQuery('<li><span class="label">'+this+'</span></li>')
 						.prepend('<span class="line" />')
 						.css('left', xInterval * i)
 						.width(xInterval)
@@ -336,12 +336,12 @@ $.fn.visualize = function(options, container){
 				//write Y labels
 				var yScale = canvas.height() / totalYRange;
 				var liBottom = canvas.height() / (yLabels.length-1);
-				var ylabelsUL = $('<ul class="visualize-labels-y"></ul>')
+				var ylabelsUL = jQuery('<ul class="visualize-labels-y"></ul>')
 					.width(canvas.width())
 					.height(canvas.height())
 					.insertBefore(canvas);
-				$.each(yLabels, function(i){  
-					var thisLi = $('<li><span>'+this+'</span></li>')
+				jQuery.each(yLabels, function(i){  
+					var thisLi = jQuery('<li><span>'+this+'</span></li>')
 						.prepend('<span class="line"  />')
 						.css('bottom',liBottom*i)
 						.prependTo(ylabelsUL);
@@ -383,13 +383,13 @@ $.fn.visualize = function(options, container){
 		var canvasNode = document.createElement("canvas"); 
 		canvasNode.setAttribute('height',o.height);
 		canvasNode.setAttribute('width',o.width);
-		var canvas = $(canvasNode);
+		var canvas = jQuery(canvasNode);
 			
 		//get title for chart
 		var title = o.title || self.find('caption').text();
 		
 		//create canvas wrapper div, set inline w&h, append
-		var canvasContain = (container || $('<div class="visualize" role="img" aria-label="Chart representing data from the table: '+ title +'" />'))
+		var canvasContain = (container || jQuery('<div class="visualize" role="img" aria-label="Chart representing data from the table: '+ title +'" />'))
 			.height(o.height)
 			.width(o.width)
 			.append(canvas);
@@ -409,19 +409,19 @@ $.fn.visualize = function(options, container){
 								
 		//title/key container
 		if(o.appendTitle || o.appendKey){
-			var infoContain = $('<div class="visualize-info"></div>')
+			var infoContain = jQuery('<div class="visualize-info"></div>')
 				.appendTo(canvasContain);
 		}
 		
 		//append title
 		if(o.appendTitle){
-			$('<div class="visualize-title">'+ title +'</div>').appendTo(infoContain);
+			jQuery('<div class="visualize-title">'+ title +'</div>').appendTo(infoContain);
 		}
 		
 		
 		//append key
 		if(o.appendKey){
-			var newKey = $('<ul class="visualize-key"></ul>');
+			var newKey = jQuery('<ul class="visualize-key"></ul>');
 			var selector;
 			if(o.parseDirection == 'x'){
 				selector = self.find('tr:gt(0) th').filter(o.rowFilter);
@@ -431,7 +431,7 @@ $.fn.visualize = function(options, container){
 			}
 			
 			selector.each(function(i){
-				$('<li><span class="visualize-key-color" style="background: '+dataGroups[i].color+'"></span><span class="visualize-key-label">'+ $(this).text() +'</span></li>')
+				jQuery('<li><span class="visualize-key-color" style="background: '+dataGroups[i].color+'"></span><span class="visualize-key-label">'+ jQuery(this).text() +'</span></li>')
 					.appendTo(newKey);
 			});
 			newKey.appendTo(infoContain);
@@ -449,11 +449,11 @@ $.fn.visualize = function(options, container){
 		createChart[o.type]();
 		
 		//clean up some doubled lines that sit on top of canvas borders (done via JS due to IE)
-		$('.visualize-line li:first-child span.line, .visualize-line li:last-child span.line, .visualize-area li:first-child span.line, .visualize-area li:last-child span.line, .visualize-bar li:first-child span.line,.visualize-bar .visualize-labels-y li:last-child span.line').css('border','none');
+		jQuery('.visualize-line li:first-child span.line, .visualize-line li:last-child span.line, .visualize-area li:first-child span.line, .visualize-area li:last-child span.line, .visualize-bar li:first-child span.line,.visualize-bar .visualize-labels-y li:last-child span.line').css('border','none');
 		if(!container){
 		//add event for updating
 		canvasContain.bind('visualizeRefresh', function(){
-			self.visualize(o, $(this).empty()); 
+			self.visualize(o, jQuery(this).empty()); 
 		});
 		}
 	}).next(); //returns canvas(es)

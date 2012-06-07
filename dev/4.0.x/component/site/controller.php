@@ -35,38 +35,17 @@ class ProjectforkController extends JController
 	public function display($cachable = false, $urlparams = false)
 	{
 	    jimport( 'joomla.application.component.helper' );
-
         JHtml::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/html');
 
-        $params = JComponentHelper::getParams('com_projectfork');
-		$doc    = JFactory::getDocument();
-        $uri    = JFactory::getURI();
+        // Load CSS and JS assets
+        JHtml::_('projectfork.boostrapCSS');
+        JHtml::_('projectfork.CSS');
 
+        JHtml::_('projectfork.jQuery');
+        JHtml::_('projectfork.boostrapJS');
+        JHtml::_('projectfork.JS');
 
-        if($doc->getType() == 'html') {
-            // Load bootstrap if enabled
-            if($params->get('bootstrap', '1') == '1') {
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap.min.css');
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap-responsive.min.css');
-
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/jquery/jquery.min.js');
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/js/jquery/jquery.noconflict.js');
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/bootstrap/js/bootstrap.min.js');
-            }
-
-            // Load Projectfork CSS if enabled
-            if($params->get('css', '1') == '1') {
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/icons.css');
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/layout.css');
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/theme.css');
-            }
-
-            // Load Projectfork JS
-            $doc->addScript($uri->base(true).'/components/com_projectfork/assets/projectfork/js/projectfork.js');
-
-
-            JHTML::_('behavior.tooltip');
-        }
+        JHtml::_('behavior.tooltip');
 
 
         $cachable = true;
@@ -86,7 +65,6 @@ class ProjectforkController extends JController
                                'filter_tasklist' => 'CMD',
                                'filter_priority' => 'CMD'
                               );
-
 
 		parent::display($cachable, $safeurlparams);
 		return $this;
