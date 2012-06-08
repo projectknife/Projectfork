@@ -40,12 +40,6 @@ $action_count = count($this->actions);
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
 
-    <?php if(!$uid) : ?>
-        <h2><?php echo JText::_('COM_PROJECTFORK_PUBLIC_PROJECTS'); ?></h2>
-    <?php else : ?>
-        <h2><?php echo JText::_('COM_PROJECTFORK_AVAILABLE_PROJECTS'); ?></h2>
-    <?php endif; ?>
-
 	<div class="btn-group">
 	    <?php echo $this->toolbar;?>
 	</div>
@@ -54,15 +48,26 @@ $action_count = count($this->actions);
 
     <div class="grid">
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=projects'); ?>" method="post">
-            <div class="filters btn-toolbar">
-        	    <div class="btn-group filter-search">
-        	        <label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
-        	        <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
-        	        <button type="submit" class="btn"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
-        	        <button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
-        	    </div>
-			</div>
+            <?php if($uid) : ?>
+				<div class="btn-group pull-right">
+					<a data-toggle="collapse" data-target="#filters" class="btn"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
+				</div>
+			<?php endif; ?>
 
+            <div class="clearfix"></div>
+            <div class="collapse" id="filters">
+                <div class="well btn-toolbar">
+                    <?php if($uid) : ?>
+                        <div class="filter-search btn-group pull-left">
+        			        <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
+        				</div>
+        				<div class="filter-search-buttons btn-group pull-left">
+        			        <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+        			        <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
+        			    </div>
+                    <?php endif; ?>
+                </div>
+            </div>
             <div class="clearfix"></div>
 
 			<ul class="thumbnails">

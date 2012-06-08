@@ -30,6 +30,7 @@ class ProjectforkViewDashboard extends JView
 	function display($tpl = null)
 	{
 	    $state   = $this->get('State');
+        $item    = $this->get('Item');
         $params	 = $state->params;
         $modules = JFactory::getDocument()->loadRenderer('modules');
 
@@ -37,9 +38,6 @@ class ProjectforkViewDashboard extends JView
         // Escape strings for HTML output
 		$this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
 
-
-        // Get project title
-        $this->project_title = htmlspecialchars(ProjectforkHelper::getActiveProjectTitle('COM_PROJECTFORK_ALL_PROJECTS'));
 
         // Check for errors.
 		if (count($errors = $this->get('Errors'))) {
@@ -52,6 +50,7 @@ class ProjectforkViewDashboard extends JView
         $this->assignRef('params', $params);
         $this->assignRef('state',  $state);
         $this->assignRef('modules', $modules);
+        $this->assignRef('item', $item);
 
 
         // Prepare the document
