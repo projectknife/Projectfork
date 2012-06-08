@@ -28,17 +28,16 @@ defined('_JEXEC') or die;
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
 
+    <h2><?php echo $this->project_title;?></h2>
 
     <div class="cat-items">
 
         <form id="adminForm" name="adminForm" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>">
 
-            <fieldset class="filters">
-                <?php if($this->params->get('filter_fields')) : ?>
-                    <span class="filter-project">
+            <fieldset class="filters btn-toolbar">
+                    <div class="filter-project btn-group">
                         <?php echo JHtml::_('projectfork.filterProject');?>
-                    </span>
-                <?php endif; ?>
+                    </div>
             </fieldset>
 
             <input type="hidden" name="task" value="" />

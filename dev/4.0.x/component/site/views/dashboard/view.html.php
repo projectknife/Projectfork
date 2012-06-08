@@ -38,6 +38,9 @@ class ProjectforkViewDashboard extends JView
 		$this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
 
 
+        // Get project title
+        $this->project_title = htmlspecialchars(ProjectforkHelper::getActiveProjectTitle('COM_PROJECTFORK_ALL_PROJECTS'));
+
         // Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseError(500, implode("\n", $errors));
