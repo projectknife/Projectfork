@@ -35,16 +35,15 @@ $action_count = count($this->actions);
 JHtml::_('projectfork.ajaxCompleteTask');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-tasks">
-	<div class="btn-toolbar">
-	    <?php if ($this->params->get('show_page_heading', 1)) : ?>
-	    	<div class="btn-group">
-	      	  <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
-	        </div>
-	    <?php endif; ?>
-	    <div class="btn-group">
-	   	 <?php echo $this->toolbar;?>
-	    </div>
-    </div>
+
+    <?php if ($this->params->get('show_page_heading', 1)) : ?>
+        <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
+    <?php endif; ?>
+
+	<div class="btn-group">
+	    <?php echo $this->toolbar;?>
+	</div>
+
 	<div class="clearfix"></div>
 
 	<div class="cat-items">
@@ -52,18 +51,19 @@ JHtml::_('projectfork.ajaxCompleteTask');
 		<form id="adminForm" name="adminForm" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>">
 
 			<fieldset class="filters btn-toolbar">
-				<?php if($this->params->get('filter_fields')) : ?>
+				<div class="filter-project btn-group">
+                    <?php echo JHtml::_('projectfork.filterProject');?>
+                </div>
+                <?php if($uid) : ?>
 					<div class="btn-group pull-right">
 						<a data-toggle="collapse" data-target="#filters" class="btn"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
 					</div>
 				<?php endif; ?>
-                <div class="filter-project btn-group">
-                    <?php echo JHtml::_('projectfork.filterProject');?>
-                </div>
 			</fieldset>
+
 			<div class="clearfix"> </div>
 			<div class="collapse" id="filters">
-				<?php if($this->params->get('filter_fields')) : ?>
+				<?php if($uid) : ?>
 					<div class="well btn-toolbar">
                     <?php if($this->state->get('filter.project')) : ?>
                         <div class="filter-milestone btn-group">
