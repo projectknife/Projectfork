@@ -23,7 +23,7 @@
 // no direct access
 defined('_JEXEC') or die;
 
-if(!file_exists(JPATH_ADMINISTRATOR.'/components/com_projectfork/projectfork.xml')) {
+if(!file_exists(JPATH_ADMINISTRATOR.'/components/com_projectfork/projectfork.php')) {
     echo JText::_('MOD_PF_STATS_TASKS_PROJECTFORK_NOT_INSTALLED');
 }
 else {
