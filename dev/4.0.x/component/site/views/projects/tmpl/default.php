@@ -36,30 +36,34 @@ $action_count = count($this->actions);
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects">
 
-	<div class="btn-toolbar">
-	    <?php if ($this->params->get('show_page_heading', 1)) : ?>
-	    	<div class="btn-group">
-	      	  <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
-	        </div>
-	    <?php endif; ?>
-	    <div class="btn-group">
-	   	 <?php echo $this->toolbar;?>
-	    </div>
+    <?php if ($this->params->get('show_page_heading', 1)) : ?>
+        <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
+    <?php endif; ?>
+
+    <?php if(!$uid) : ?>
+        <h2><?php echo JText::_('COM_PROJECTFORK_PUBLIC_PROJECTS'); ?></h2>
+    <?php else : ?>
+        <h2><?php echo JText::_('COM_PROJECTFORK_AVAILABLE_PROJECTS'); ?></h2>
+    <?php endif; ?>
+
+	<div class="btn-group">
+	    <?php echo $this->toolbar;?>
 	</div>
+
 	<div class="clearfix"></div>
 
     <div class="grid">
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=projects'); ?>" method="post">
             <div class="filters btn-toolbar">
-            	<?php if($this->params->get('filter_field')) : ?>
-            	    <div class="btn-group filter-search">
-            	        <label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
-            	        <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
-            	        <button type="submit" class="btn"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
-            	        <button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
-            	    </div>
-            	<?php endif; ?>
+        	    <div class="btn-group filter-search">
+        	        <label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
+        	        <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
+        	        <button type="submit" class="btn"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
+        	        <button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
+        	    </div>
 			</div>
+
+            <div class="clearfix"></div>
 
 			<ul class="thumbnails">
                     <?php
@@ -104,15 +108,11 @@ $action_count = count($this->actions);
                               	<?php if ($item->checked_out) : ?>
                               	<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'projects.', $canCheckin); ?>
 	                              <?php endif; ?>
-	                              <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_TASKLISTS');?> &amp; <?php echo JText::_('JGRID_HEADING_TASKS');?>">
+	                              <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom">
 	                                  <?php echo $this->escape($item->title);?>
 	                              </a>
                               </h3>
                               <hr />
-                              <!--<div class="well well-projects">
-                              	<?php echo $this->escape(JHtml::_('projectfork.truncate', $item->description));?>
-                              </div>
-                              <hr />-->
                               <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-project">
                                   <div class="bar"
                                        style="width: <?php echo $progress;?>%;"><span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $progress;?>%</span></div>
@@ -123,15 +123,9 @@ $action_count = count($this->actions);
                               	       <i class="icon-edit"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
                               	   </a>
                               	<?php endif; ?>
-                              	<?php if($this->params->get('project_list_col_milestones')) : ?>
-                              	   		<a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_MILESTONES');?>"><i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?></a>
-                              	<?php endif; ?>
-                              	<?php if($this->params->get('project_list_col_tasklists')) : ?>
-                              	   		<a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_TASKLISTS');?>"><i class="icon-th-list"></i> <?php echo (int) $item->tasklists;?></a>
-                              	<?php endif; ?>
-                              	<?php if($this->params->get('project_list_col_tasks')) : ?>
-                              	   		<a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_TASKS');?>"><i class="icon-ok"></i> <?php echo (int) $item->tasks;?></a>
-                              	<?php endif; ?>
+                              	<a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_MILESTONES');?>"><i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?></a>
+                              	<a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_TASKLISTS');?>"><i class="icon-th-list"></i> <?php echo (int) $item->tasklists;?></a>
+                              	<a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_TASKS');?>"><i class="icon-ok"></i> <?php echo (int) $item->tasks;?></a>
                               </div>
                             </div>
                           </div>
