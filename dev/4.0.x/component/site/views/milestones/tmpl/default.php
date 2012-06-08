@@ -32,16 +32,16 @@ $action_count = count($this->actions);
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-milestones">
 
+    <?php if ($this->params->get('show_page_heading', 1)) : ?>
+        <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
+    <?php endif; ?>
+
     <div class="btn-toolbar">
-        <?php if ($this->params->get('show_page_heading', 1)) : ?>
-        	<div class="btn-group">
-          	  <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
-            </div>
-        <?php endif; ?>
         <div class="btn-group">
        	 <?php echo $this->toolbar;?>
         </div>
     </div>
+
     <div class="clearfix"></div>
 
     <div class="cat-items">
@@ -49,17 +49,17 @@ $action_count = count($this->actions);
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=milestones'); ?>" method="post">
 
             <fieldset class="filters btn-toolbar">
-				<?php if($this->params->get('filter_fields')) : ?>
+				<div class="filter-project btn-group pull-left">
+				    <?php echo JHtml::_('projectfork.filterProject');?>
+				</div>
+                <?php if($uid) : ?>
 					<div class="btn-group pull-right">
 						<a data-toggle="collapse" data-target="#filters" class="btn"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
 					</div>
 				<?php endif; ?>
-				<div class="filter-project btn-group pull-left">
-				    <?php echo JHtml::_('projectfork.filterProject');?>
-				</div>
 			</fieldset>
 			<div class="clearfix"> </div>
-			<?php if($this->params->get('filter_fields')) : ?>
+			<?php if($uid) : ?>
 				<div class="collapse" id="filters">
 					<div class="well btn-toolbar">
 					    <div class="filter-search btn-group pull-left">
@@ -129,7 +129,7 @@ $action_count = count($this->actions);
             ?>
                 <div class="well well-<?php echo $k;?>">
                		<h4>
-               			<span class="pull-left"> 
+               			<span class="pull-left">
                         	<?php
                                 $this->menu->start(array('class' => 'btn-mini'));
                                 $this->menu->itemEdit('milestoneform', $item->id, ($canEdit || $canEditOwn));
@@ -144,69 +144,59 @@ $action_count = count($this->actions);
                             <?php echo $this->escape($item->title);?>
                         </a>
                         <small>
-                        <?php if($this->params->get('milestone_list_col_project')) : ?>
-                           		in <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->project_slug));?>">
-                                   <?php echo $this->escape($item->project_title);?>
-                                </a>
-                        <?php endif; ?>
-
-                        <?php if($this->params->get('milestone_list_col_author')) : ?>
+                            in <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->project_slug));?>">
+                                <?php echo $this->escape($item->project_title);?>
+                            </a>
                         	by <?php echo $this->escape($item->author_name);?>
-                        <?php endif; ?>
-                        <?php if($this->params->get('milestone_list_col_deadline')) : ?>
-                            <?php if($item->end_date != $this->nulldate) {
-                                echo '<span class="label label-info pull-right"><i class="icon-calendar icon-white"></i> ' . JHtml::_('date', $item->end_date, $this->escape( $this->params->get('deadline_format', JText::_('DATE_FORMAT_LC3')))). '</span>';
-                            }
-                        		?>
-                        <?php endif; ?>
+                            <?php if($item->end_date != $this->nulldate) : ?>
+                                <span class="label label-info pull-right"><i class="icon-calendar icon-white"></i>
+                                    <?php echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('deadline_format', JText::_('DATE_FORMAT_LC3'))));?>
+                                </span>
+                            <?php endif; ?>
                         </small>
-                        <a href="#milestone-<?php echo $item->id;?>" class="btn btn-mini" data-toggle="collapse"><?php echo JText::_('COM_PROJECTFORK_DETAILS_LABEL');?> <span class="caret"></span></a>
-                        
+                        <a href="#milestone-<?php echo $item->id;?>" class="btn btn-mini" data-toggle="collapse">
+                            <?php echo JText::_('COM_PROJECTFORK_DETAILS_LABEL');?> <span class="caret"></span>
+                        </a>
                		</h4>
                		<div class="collapse" id="milestone-<?php echo $item->id;?>">
 	               		<hr />
 	               		<div class="small">
-	               			<?php if($this->params->get('milestone_list_col_access')) : ?>
-	               			    <span class="label access pull-right">
-	               						<i class="icon-user icon-white"></i> <?php echo $this->escape($item->access_level);?>
-	               				</span>
-	               			<?php endif; ?>
+	               		    <span class="label access pull-right">
+	               			    <i class="icon-user icon-white"></i> <?php echo $this->escape($item->access_level);?>
+	               			</span>
+
 	               			<?php echo $this->escape($item->description);?>
-	               			<?php if($this->params->get('milestone_list_col_created')) : ?>
-	               				    <span class="list-created">
-	               			   	    <?php echo JHtml::_('date', $item->created, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC4')))); ?>
-	               					</span>
-	               			<?php endif; ?>
-	               			<?php if($this->params->get('milestone_list_col_sdate')) : ?>
-	               				    <span class="list-sdate">
-	               			   	    <?php if($item->start_date == $this->nulldate) {
-	               			            echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
-	               			        }
-	               			        else {
-	               			            echo JHtml::_('date', $item->start_date, $this->escape( $this->params->get('sdate_format', JText::_('DATE_FORMAT_LC4'))));
-	               			        }
-	               			   		?>
-	               					</span>
-	               			<?php endif; ?>
+
+	               			<span class="list-created">
+	               			    <?php echo JHtml::_('date', $item->created, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC4')))); ?>
+	               			</span>
+	               			<span class="list-sdate">
+               			   	    <?php if($item->start_date == $this->nulldate) {
+               			            echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
+               			        }
+               			        else {
+               			            echo JHtml::_('date', $item->start_date, $this->escape( $this->params->get('sdate_format', JText::_('DATE_FORMAT_LC4'))));
+               			        }
+               			   		?>
+           					</span>
 	               		</div>
 	               		<div class="btn-toolbar">
 	               			<div class="btn-group">
-			                    <?php if($this->params->get('milestone_list_col_tasks')) : ?>
-					               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_id.':'.$item->project_alias, $item->id.':'.$item->alias));?>">
-			                               <i class="icon-list"></i> <?php echo intval($item->tasklists).' '. JText::_('COM_PROJECTFORK_TASK_LISTS');?>
-			                            </a>
-			                            <a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_id.':'.$item->project_alias, $item->id.':'.$item->alias));?>">
-			                               <i class="icon-ok"></i> <?php echo intval($item->tasks).' '. JText::_('COM_PROJECTFORK_TASKS');?>
-			                            </a>
-			                    <?php endif; ?>
+			               		<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_id.':'.$item->project_alias, $item->id.':'.$item->alias));?>">
+	                               <i class="icon-list"></i> <?php echo intval($item->tasklists).' '. JText::_('COM_PROJECTFORK_TASK_LISTS');?>
+	                            </a>
+	                            <a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_id.':'.$item->project_alias, $item->id.':'.$item->alias));?>">
+	                               <i class="icon-ok"></i> <?php echo intval($item->tasks).' '. JText::_('COM_PROJECTFORK_TASKS');?>
+	                            </a>
 	                    	</div>
 	                    </div>
 	                    <div class="clearfix"></div>
                     </div>
                     <hr />
                     <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-milestone">
-                      <div class="bar"
-                           style="width: <?php echo $progress;?>%;"><span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $progress;?>%</span></div>
+                        <div class="bar" style="width: <?php echo $progress;?>%;">
+                            <span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $progress;?>%</span>
+                        </div>
                     </div>
                	</div>
             <?php
