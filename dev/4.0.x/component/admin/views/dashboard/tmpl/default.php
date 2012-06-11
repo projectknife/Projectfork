@@ -29,7 +29,7 @@ defined('_JEXEC') or die;
 			<div class="icon-wrapper">
 				<div class="icon">
 					<a href="index.php?option=com_projectfork&view=projects">
-						<img src="../components/com_projectfork/assets/projectfork/images/header/icon-48-projects.png" alt="">
+						<img src="../components/com_projectfork/assets/projectfork/images/header/icon-48-projects.png" alt=""/>
 						<span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_PROJECTS');?></span>
 					</a>
 				</div>
@@ -37,7 +37,7 @@ defined('_JEXEC') or die;
 			<div class="icon-wrapper">
 				<div class="icon">
 					<a href="index.php?option=com_projectfork&view=milestones">
-						<img src="../components/com_projectfork/assets/projectfork/images/header/icon-48-milestones.png" alt="">
+						<img src="../components/com_projectfork/assets/projectfork/images/header/icon-48-milestones.png" alt=""/>
 						<span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_MILESTONES');?></span>
 					</a>
 				</div>
@@ -45,7 +45,7 @@ defined('_JEXEC') or die;
 			<div class="icon-wrapper">
 				<div class="icon">
 					<a href="index.php?option=com_projectfork&view=tasklists">
-						<img src="../components/com_projectfork/assets/projectfork/images/header/icon-48-tasklists.png" alt="">
+						<img src="../components/com_projectfork/assets/projectfork/images/header/icon-48-tasklists.png" alt=""/>
 						<span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS');?></span>
 					</a>
 				</div>
@@ -53,8 +53,16 @@ defined('_JEXEC') or die;
 			<div class="icon-wrapper">
 				<div class="icon">
 					<a href="index.php?option=com_projectfork&view=tasks">
-						<img src="../components/com_projectfork/assets/projectfork/images/header/icon-48-tasks.png" alt="">
+						<img src="../components/com_projectfork/assets/projectfork/images/header/icon-48-tasks.png" alt=""/>
 						<span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_TASKS');?></span>
+					</a>
+				</div>
+			</div>
+            <div class="icon-wrapper">
+				<div class="icon">
+					<a class="modal" rel="{handler: 'iframe', size: {x: 875, y: 550}, onClose: function() {}}" href="<?php echo JRoute::_('index.php?option=com_config&view=component&component=com_projectfork&path=&tmpl=component');?>">
+						<img src="../components/com_projectfork/assets/projectfork/images/header/icon-48-tasks.png" alt=""/>
+						<span><?php echo JText::_('COM_PROJECTFORK_DASHBOARD_CONFIG');?></span>
 					</a>
 				</div>
 			</div>

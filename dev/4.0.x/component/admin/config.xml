@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
+    <fieldset name="general_parameters" label="COM_PROJECTFORK_CONFIG_GENERAL_LABEL" description="COM_PROJECTFORK_CONFIG_GENERAL_DESC">
+        <field type="spacer" label="COM_PROJECTFORK_CONFIG_GENERAL_FORMAT_SPACER"/>
+        <field type="text" name="date_format" label="COM_PROJECTFORK_CONFIG_DATE_FORMAT_LABEL" description="JGLOBAL_DATE_FORMAT_DESC" default=""/>
+    </fieldset>
+
 	<fieldset name="compat_parameters" label="COM_PROJECTFORK_CONFIG_COMPAT_LABEL" description="COM_PROJECTFORK_CONFIG_COMPAT_DESC">
        <field name="projectfork_css" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_CSS_LABEL" description="COM_PROJECTFORK_CONFIG_CSS_DESC">
 		    <option value="0">JNO</option>
