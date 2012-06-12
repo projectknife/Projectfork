@@ -142,20 +142,17 @@ $action_count = count($this->actions);
 			</ul>
 
 			<div class="filters btn-toolbar">
-				<?php if($this->pagination->get('pages.total') > 1 && $this->params->get('show_pagination')) : ?>
+				<?php if($this->pagination->get('pages.total') > 1) : ?>
 				    <div class="btn-group pagination">
-				        <?php if ($this->params->get('show_pagination_results')) : ?>
-						    <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
-						<?php endif; ?>
+						<p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
 				        <?php echo $this->pagination->getPagesLinks(); ?>
 				    </div>
 				<?php endif; ?>
-				<?php if ($this->params->get('show_pagination_limit')) : ?>
-			        <div class="btn-group display-limit">
-			            <?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?>&#160;
-			            <?php echo $this->pagination->getLimitBox(); ?>
-			        </div>
-			    <?php endif; ?>
+
+		        <div class="btn-group display-limit">
+		            <?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?>&#160;
+		            <?php echo $this->pagination->getLimitBox(); ?>
+		        </div>
 			</div>
 
             <input type="hidden" name="boxchecked" value="0" />

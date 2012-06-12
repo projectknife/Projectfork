@@ -7,67 +7,7 @@
 	
 	<fields name="params">
 	    <fieldset name="advanced" label="JGLOBAL_LIST_LAYOUT_OPTIONS">
-	        <field name="show_pagination" type="list" label="JGLOBAL_Pagination_Label" description="JGLOBAL_Pagination_Desc">
-		        <option value="">JGLOBAL_USE_GLOBAL</option>
-		        <option value="0">JHIDE</option>
-			    <option value="1">JSHOW</option>
-		    </field>
-		    <field name="show_pagination_results" type="list" label="JGLOBAL_PAGINATION_RESULTS_LABEL" description="JGLOBAL_PAGINATION_RESULTS_DESC">
-		        <option value="">JGLOBAL_USE_GLOBAL</option>
-                <option value="0">JHIDE</option>
-			    <option value="1">JSHOW</option>
-		    </field>
-            <field name="show_pagination_limit" type="list" description="JGLOBAL_DISPLAY_SELECT_DESC" label="JGLOBAL_DISPLAY_SELECT_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="0">JHIDE</option>
-				<option value="1">JSHOW</option>
-			</field>
-			<field name="date_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_CREATION_DATE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
-		    <field name="sdate_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_SDATE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
-		    <field name="deadline_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_DEADLINE_FORMAT_LABEL" description="COM_PROJECTFORK_DATE_FORMAT_DESC" />
-			
-			<field name="spacer1" type="spacer" hr="true"/>
-			
-			<field name="milestone_list_col_author" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_AUTHOR_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="0">JHIDE</option>
-				<option value="1">JSHOW</option>
-			</field>
-			<field name="milestone_list_col_project" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_PROJECT_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_PROJECT_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="0">JHIDE</option>
-				<option value="1">JSHOW</option>
-			</field>
-			<field name="milestone_list_col_tasklists" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_TASKLISTS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_TASKLISTS_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="0">JHIDE</option>
-				<option value="1">JSHOW</option>
-			</field>
-			<field name="milestone_list_col_tasks" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_TASKS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_TASKS_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="0">JHIDE</option>
-				<option value="1">JSHOW</option>
-			</field>
-			<field name="milestone_list_col_created" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_CREATED_LABEL">
-		        <option value="">JGLOBAL_USE_GLOBAL</option>
-                <option value="0">JHIDE</option>
-			    <option value="1">JSHOW</option>
-		    </field>
-			<field name="milestone_list_col_sdate" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_SDATE_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="0">JHIDE</option>
-				<option value="1">JSHOW</option>
-			</field>
-			<field name="milestone_list_col_deadline" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_DEADLINE_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="0">JHIDE</option>
-				<option value="1">JSHOW</option>
-			</field>
-			<field name="milestone_list_col_access" type="list" description="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_DESC" label="COM_PROJECTFORK_CONFIG_LIST_COL_ACCESS_LABEL">
-				<option value="">JGLOBAL_USE_GLOBAL</option>
-				<option value="0">JHIDE</option>
-				<option value="1">JSHOW</option>
-			</field>
+			<field name="date_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_DATE_FORMAT_LABEL" description="JGLOBAL_DATE_FORMAT_DESC" />
 	    </fieldset>
 	</fields>
 </metadata>
