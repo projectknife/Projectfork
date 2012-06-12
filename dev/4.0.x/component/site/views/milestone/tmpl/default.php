@@ -23,56 +23,54 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 // Create shortcuts to some parameters.
-$params	 = $this->item->params;
-$canEdit = $this->item->params->get('access-edit');
+$item    = &$this->item;
+$params	 = $item->params;
+$canEdit = $item->params->get('access-edit');
 $user	 = JFactory::getUser();
-$uid	    = $user->get('id');
+$uid	 = $user->get('id');
 
-$asset_name   = 'com_projectfork.task.'.$this->item->id;
-
-$canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('task.edit', $asset_name));
-$canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('task.edit.own', $asset_name)) && $this->item->created_by == $uid);
+$asset_name = 'com_projectfork.milestone.'.$item->id;
+$canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('milestone.edit', $asset_name));
+$canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('milestone.edit.own', $asset_name)) && $item->created_by == $uid);
 ?>
 <div id="projectfork" class="item-page<?php echo $this->pageclass_sfx?> view-milestone">
 
-    <?php if ($this->params->get('show_page_heading', 0)) : ?>
-	    <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
+    <?php if ($this->params->get('show_page_heading', 1)) : ?>
+        <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
 
-    <?php if ($params->get('show_title', 1)) : ?>
-    	<div class="page-header">
-    		<h2><?php echo $this->escape($this->item->title); ?> <small class="small"><?php echo JText::_('COM_PROJECTFORK_DUE_ON');?> <?php echo JHtml::_('date', $this->item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?></small></h2>
-    	</div>
-    <?php endif; ?>
+	<div class="page-header">
+		<h2><?php echo $this->escape($item->title); ?></h2>
+	</div>
 
 	<dl class="article-info dl-horizontal pull-right">
 		<dt class="project-title">
-			Project:
+			<?php echo JText::_('JGRID_HEADING_PROJECT');?>:
 		</dt>
 		<dd class="project-data">
-			<a href="#">Project Name</a>
+			<a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->project_slug));?>"><?php echo $item->project_title;?></a>
 		</dd>
-		<?php if($this->item->start_date != JFactory::getDBO()->getNullDate()): ?>
+		<?php if($item->start_date != JFactory::getDBO()->getNullDate()): ?>
 			<dt class="start-title">
 				<?php echo JText::_('JGRID_HEADING_START_DATE');?>:
 			</dt>
 			<dd class="start-data">
-				<?php echo JHtml::_('date', $this->item->start_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
+				<?php echo JHtml::_('date', $item->start_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
 			</dd>
 		<?php endif; ?>
-		<?php if($this->item->end_date != JFactory::getDBO()->getNullDate()): ?>
+		<?php if($item->end_date != JFactory::getDBO()->getNullDate()): ?>
 			<dt class="due-title">
 				<?php echo JText::_('JGRID_HEADING_DEADLINE');?>:
 			</dt>
 			<dd class="due-data">
-				<?php echo JHtml::_('date', $this->item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
+				<?php echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
 			</dd>
 		<?php endif;?>
 		<dt class="owner-title">
 			<?php echo JText::_('JGRID_HEADING_CREATED_BY');?>:
 		</dt>
 		<dd class="owner-data">
-			 <?php echo $this->escape($this->item->author);?>
+			 <?php echo $this->escape($item->author);?>
 		</dd>
 	</dl>
 
@@ -89,7 +87,7 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
 	</div>
 
 	<div class="item-description">
-		<?php echo $this->escape($this->item->description); ?>
+		<?php echo $this->escape($item->description); ?>
 	</div>
 	<hr />
 
