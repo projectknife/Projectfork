@@ -101,18 +101,18 @@ $action_count = count($this->actions);
                     ?>
 
                         <li class="span3">
-                          <div class="thumbnail">
-                          <?php /*
+                            <div class="thumbnail">
+                            <?php /*
                             <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=dashboard&id='.intval($item->id).':'.$item->alias);?>">
                             	<img src="http://placehold.it/260x180" alt="">
                             </a>
                             */
-                           ?>
+                            ?>
                             <div class="caption">
                               <h3>
                               	<?php if ($item->checked_out) : ?>
-                              	<?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'projects.', $canCheckin); ?>
-	                              <?php endif; ?>
+                              	    <i class="icon-lock"></i>
+	                            <?php endif; ?>
 	                              <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->id.':'.$item->alias));?>" rel="tooltip" data-placement="bottom">
 	                                  <?php echo $this->escape($item->title);?>
 	                              </a>
