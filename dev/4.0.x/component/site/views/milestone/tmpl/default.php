@@ -41,7 +41,7 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
 
     <?php if ($params->get('show_title', 1)) : ?>
     	<div class="page-header">
-    		<h2><?php echo $this->escape($this->item->title); ?> <small class="small"><?php echo JText::_('COM_PROJECTFORK_DUE_ON');?> <?php echo JHtml::_('date', $this->item->end_date, JText::_('DATE_FORMAT_LC1'));?></small></h2>
+    		<h2><?php echo $this->escape($this->item->title); ?> <small class="small"><?php echo JText::_('COM_PROJECTFORK_DUE_ON');?> <?php echo JHtml::_('date', $this->item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?></small></h2>
     	</div>
     <?php endif; ?>
 
@@ -57,7 +57,7 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
 				<?php echo JText::_('JGRID_HEADING_START_DATE');?>:
 			</dt>
 			<dd class="start-data">
-				<?php echo JHtml::_('date', $this->item->start_date, JText::_('DATE_FORMAT_LC1'));?>
+				<?php echo JHtml::_('date', $this->item->start_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
 			</dd>
 		<?php endif; ?>
 		<?php if($this->item->end_date != JFactory::getDBO()->getNullDate()): ?>
@@ -65,7 +65,7 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
 				<?php echo JText::_('JGRID_HEADING_DEADLINE');?>:
 			</dt>
 			<dd class="due-data">
-				<?php echo JHtml::_('date', $this->item->end_date, JText::_('DATE_FORMAT_LC1'));?>
+				<?php echo JHtml::_('date', $this->item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
 			</dd>
 		<?php endif;?>
 		<dt class="owner-title">
@@ -87,7 +87,7 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
 			<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($this->item->project_slug, $this->item->slug));?>"><i class="icon-ok"></i> <?php echo $this->item->tasks;?> <?php echo JText::_('JGRID_HEADING_TASKS');?></a>
 		</div>
 	</div>
-	
+
 	<div class="item-description">
 		<?php echo $this->escape($this->item->description); ?>
 	</div>

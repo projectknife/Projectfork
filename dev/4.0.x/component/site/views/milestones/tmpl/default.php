@@ -150,7 +150,7 @@ $action_count = count($this->actions);
                         	by <?php echo $this->escape($item->author_name);?>
                             <?php if($item->end_date != $this->nulldate) : ?>
                                 <span class="label label-info pull-right"><i class="icon-calendar icon-white"></i>
-                                    <?php echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('deadline_format', JText::_('DATE_FORMAT_LC3'))));?>
+                                    <?php echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
                                 </span>
                             <?php endif; ?>
                         </small>
@@ -168,14 +168,14 @@ $action_count = count($this->actions);
 	               			<?php echo $this->escape($item->description);?>
 
 	               			<span class="list-created">
-	               			    <?php echo JHtml::_('date', $item->created, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC4')))); ?>
+	               			    <?php echo JHtml::_('date', $item->created, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>
 	               			</span>
 	               			<span class="list-sdate">
                			   	    <?php if($item->start_date == $this->nulldate) {
                			            echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
                			        }
                			        else {
-               			            echo JHtml::_('date', $item->start_date, $this->escape( $this->params->get('sdate_format', JText::_('DATE_FORMAT_LC4'))));
+               			            echo JHtml::_('date', $item->start_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));
                			        }
                			   		?>
            					</span>

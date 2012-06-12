@@ -58,7 +58,7 @@ defined('_JEXEC') or die;
                     				<?php echo JText::_('JGRID_HEADING_START_DATE');?>:
                     			</dt>
                     			<dd class="start-data">
-                    				<?php echo JHtml::_('date', $this->item->start_date, JText::_('DATE_FORMAT_LC1'));?>
+                    				<?php echo JHtml::_('date', $this->item->start_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
                     			</dd>
                     		<?php endif; ?>
                     		<?php if($this->item->end_date != JFactory::getDBO()->getNullDate()): ?>
@@ -66,7 +66,7 @@ defined('_JEXEC') or die;
                     				<?php echo JText::_('JGRID_HEADING_DEADLINE');?>:
                     			</dt>
                     			<dd class="due-data">
-                    				<?php echo JHtml::_('date', $this->item->end_date, JText::_('DATE_FORMAT_LC1'));?>
+                    				<?php echo JHtml::_('date', $this->item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
                     			</dd>
                     		<?php endif;?>
                     		<dt class="owner-title">

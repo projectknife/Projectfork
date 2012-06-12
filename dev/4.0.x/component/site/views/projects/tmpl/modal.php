@@ -125,7 +125,7 @@ $uid	    = $user->get('id');
                                         echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
                                     }
                                     else {
-                                        echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('deadline_format', JText::_('DATE_FORMAT_LC4'))));
+                                        echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));
                                     }
         		               		?>
         	               		</td>

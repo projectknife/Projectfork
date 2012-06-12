@@ -87,7 +87,7 @@ class ProjectforkModelTask extends JModelItem
 
 				$query->select($this->getState(
 					    'item.select',
-                        'a.id, a.asset_id, a.project_id, a.title, a.alias, a.description, '
+                        'a.id, a.asset_id, a.project_id, a.milestone_id, a.list_id, a.title, a.alias, a.description, '
 					    . 'a.created, a.created_by, a.modified_by, a.checked_out, a.checked_out_time, '
 					    . 'a.attribs, a.access, a.state, a.ordering, a.start_date, a.end_date'
 					)
@@ -97,6 +97,14 @@ class ProjectforkModelTask extends JModelItem
 				// Join on project table.
 				$query->select('p.title AS project_title, p.alias AS project_alias');
 				$query->join('LEFT', '#__pf_projects AS p on p.id = a.project_id');
+
+                // Join on milestone table.
+				$query->select('m.title AS milestone_title, m.alias AS milestone_alias');
+				$query->join('LEFT', '#__pf_milestones AS m on m.id = a.milestone_id');
+
+                // Join on task lists table.
+				$query->select('l.title AS list_title, l.alias AS list_alias');
+				$query->join('LEFT', '#__pf_task_lists AS l on l.id = a.list_id');
 
 				// Join on user table.
 				$query->select('u.name AS author');
@@ -118,7 +126,6 @@ class ProjectforkModelTask extends JModelItem
 
 				if ($error = $db->getErrorMsg()) throw new Exception($error);
 
-
 				if (empty($data)) {
 					return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_TASK_NOT_FOUND'));
 				}
@@ -128,16 +135,18 @@ class ProjectforkModelTask extends JModelItem
 					return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_TASK_NOT_FOUND'));
 				}
 
+                // Generate slugs
+                $data->slug           = $data->alias ? ($data->id.':'.$data->alias) : $data->id;
+                $data->project_slug   = $data->project_alias ? ($data->project_id.':'.$data->project_alias) : $data->project_id;
+                $data->milestone_slug = $data->milestone_alias ? ($data->milestone_id.':'.$data->milestone_alias) : $data->milestone_id;
+                $data->list_slug      = $data->list_alias ? ($data->list_id.':'.$data->list_alias) : $data->list_id;
+
 				// Convert parameter fields to objects.
 				$registry = new JRegistry;
 				$registry->loadString($data->attribs);
 
 				$data->params = clone $this->getState('params');
 				$data->params->merge($registry);
-
-				/*$registry = new JRegistry;
-				$registry->loadString($data->metadata);
-				$data->metadata = $registry;*/
 
 				// Compute selected asset permissions.
 				$user	= JFactory::getUser();
