@@ -36,16 +36,20 @@ defined('_JEXEC') or die;
             <td scope="row"><?php echo $stats['complete'];?></td>
         </tr>
         <tr>
-            <th scope="row"><?php echo JText::_('MOD_PF_STATS_TASKS_INCOMPLETE');?></th>
-            <td scope="row"><?php echo $stats['incomplete'];?></td>
+            <th scope="row"><?php echo JText::_('MOD_PF_STATS_TASKS_PENDING');?></th>
+            <td scope="row"><?php echo $stats['pending'];?></td>
         </tr>
-        <tr>
-            <th scope="row"><?php echo JText::_('MOD_PF_STATS_TASKS_ARCHIVED');?></th>
-            <td scope="row"><?php echo $stats['archived'];?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?php echo JText::_('MOD_PF_STATS_TASKS_TRASHED');?></th>
-            <td scope="row"><?php echo $stats['trashed'];?></td>
-        </tr>
+        <?php if($show_a) : ?>
+            <tr>
+                <th scope="row"><?php echo JText::_('MOD_PF_STATS_TASKS_ARCHIVED');?></th>
+                <td scope="row"><?php echo $stats['archived'];?></td>
+            </tr>
+        <?php endif; ?>
+        <?php if($show_t) : ?>
+            <tr>
+                <th scope="row"><?php echo JText::_('MOD_PF_STATS_TASKS_TRASHED');?></th>
+                <td scope="row"><?php echo $stats['trashed'];?></td>
+            </tr>
+        <?php endif; ?>
     </tbody>
 </table>

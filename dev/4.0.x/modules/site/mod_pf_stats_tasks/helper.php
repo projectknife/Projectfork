@@ -37,13 +37,13 @@ abstract class modPFstatsTasksHelper
 	}
 
 
-    public static function getStats($id = 0)
+    public static function getStats($id = 0, $archived = 0, $trashed = 0)
     {
         $data = array();
-        $data['complete']   = self::getData($id, array('complete = 1'));
-        $data['incomplete'] = self::getData($id, array('complete = 0'));
-        $data['archived']   = self::getData($id, array('state = 2'));
-        $data['trashed']    = self::getData($id, array('state = -2'));
+        $data['complete'] = self::getData($id, array('complete = 1'));
+        $data['pending']  = self::getData($id, array('complete = 0'));
+        $data['archived'] = ($archived ? self::getData($id, array('state = 2')) : 0);
+        $data['trashed']  = ($trashed  ? self::getData($id, array('state = -2')) : 0);
 
         return $data;
     }

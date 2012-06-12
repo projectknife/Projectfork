@@ -39,21 +39,31 @@ else {
         JHtml::_('projectfork.jQuery');
         JHtml::_('projectfork.jQueryVisualize');
 
+        // Get params
+        $height   = (int) $params->get('height', 240);
+        $width    = (int) $params->get('width', 300);
+        $show_a   = (int) $params->get('show_archived', 1);
+        $show_t   = (int) $params->get('show_trashed', 1);
+        $color_c  = $params->get('color_completed', '66CC66');
+        $color_p  = $params->get('color_pending', 'FFCC66');
+        $color_a  = $params->get('color_archived', 'FF99FF');
+        $color_t  = $params->get('color_trashed', '6699CC');
+
         // Initialize jQueryVisualize
         $doc = JFactory::getDocument();
         $doc->addScriptDeclaration("jQuery(function(){jQuery('#mod-pf-stats-tasks').visualize({
                                             type: 'pie',
-                                            height: '240px',
-                                            width: '300px',
+                                            height: '".$height."px',
+                                            width: '".$width."px',
                                             pieMargin: 10,
                                             appendTitle: false,
-                                            colors: ['#66CC66', '#FFCC66', '#FF99FF', '#6699CC']
+                                            colors: ['#".$color_c."', '#".$color_p."', '#".$color_a."', '#".$color_t."']
                                         });
                                     });");
 
         // Get current project and statistics
         $project = modPFstatsTasksHelper::getProject();
-        $stats   = modPFstatsTasksHelper::getStats($project->id);
+        $stats   = modPFstatsTasksHelper::getStats($project->id, $show_a, $show_t);
 
         // Include layout
         $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));

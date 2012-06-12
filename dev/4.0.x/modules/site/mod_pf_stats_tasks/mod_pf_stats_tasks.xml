@@ -20,4 +20,96 @@
 		<language tag="en-GB">language/en-GB/en-GB.mod_pf_stats_tasks.ini</language>
 		<language tag="en-GB">language/en-GB/en-GB.mod_pf_stats_tasks.sys.ini</language>
 	</languages>
+    <config>
+        <fields name="params">
+			<fieldset name="basic">
+                <field
+					name="show_archived"
+					type="list"
+					default="1"
+					label="MOD_PF_STATS_TASKS_CONFIG_SHOW_ARCHIVED_LABEL"
+					description="MOD_PF_STATS_TASKS_CONFIG_SHOW_ARCHIVED_DESC">
+					    <option value="1">JYES</option>
+					    <option value="0">JNO</option>
+				</field>
+                <field
+					name="show_trashed"
+					type="list"
+					default="1"
+					label="MOD_PF_STATS_TASKS_CONFIG_SHOW_TRASHED_LABEL"
+					description="MOD_PF_STATS_TASKS_CONFIG_SHOW_TRASHED_DESC">
+					    <option value="1">JYES</option>
+					    <option value="0">JNO</option>
+				</field>
+                <field type="text"
+                       name="height"
+                       default="240"
+                       size="15"
+                       label="MOD_PF_STATS_TASKS_CONFIG_HEIGHT_LABEL"
+                       description="MOD_PF_STATS_TASKS_CONFIG_HEIGHT_DESC" />
+                <field type="text"
+                       name="width"
+                       default="300"
+                       size="15"
+                       label="MOD_PF_STATS_TASKS_CONFIG_WIDTH_LABEL"
+                       description="MOD_PF_STATS_TASKS_CONFIG_WIDTH_DESC" />
+                <field type="text"
+                       name="color_completed"
+                       default="66CC66"
+                       label="MOD_PF_STATS_TASKS_CONFIG_COLOR_COMPLETED_LABEL"
+                       description="MOD_PF_STATS_TASKS_CONFIG_COLOR_COMPLETED_DESC" />
+                <field type="text"
+                       name="color_pending"
+                       default="FFCC66"
+                       label="MOD_PF_STATS_TASKS_CONFIG_COLOR_PENDING_LABEL"
+                       description="MOD_PF_STATS_TASKS_CONFIG_COLOR_PENDING_DESC" />
+                 <field type="text"
+                       name="color_archived"
+                       default="FF99FF"
+                       label="MOD_PF_STATS_TASKS_CONFIG_COLOR_ARCHIVED_LABEL"
+                       description="MOD_PF_STATS_TASKS_CONFIG_COLOR_ARCHIVED_DESC" />
+                 <field type="text"
+                       name="color_trashed"
+                       default="6699CC"
+                       label="MOD_PF_STATS_TASKS_CONFIG_COLOR_TRASHED_LABEL"
+                       description="MOD_PF_STATS_TASKS_CONFIG_COLOR_TRASHED_DESC" />
+            </fieldset>
+            <fieldset name="advanced">
+				<field
+					name="layout"
+					type="modulelayout"
+					label="JFIELD_ALT_LAYOUT_LABEL"
+					description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
+				<field
+					name="moduleclass_sfx"
+					type="text"
+					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+					description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC" />
+				<field
+					name="cache"
+					type="list"
+					default="1"
+					label="COM_MODULES_FIELD_CACHING_LABEL"
+					description="COM_MODULES_FIELD_CACHING_DESC">
+					<option
+						value="1">JGLOBAL_USE_GLOBAL</option>
+					<option
+						value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
+				</field>
+				<field
+					name="cache_time"
+					type="text"
+					default="900"
+					label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+					description="COM_MODULES_FIELD_CACHE_TIME_DESC" />
+				<field
+					name="cachemode"
+					type="hidden"
+					default="static">
+					<option
+						value="static"></option>
+				</field>
+            </fieldset>
+        </fields>
+    </config>
 </extension>
