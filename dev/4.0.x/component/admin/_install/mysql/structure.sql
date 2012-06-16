@@ -122,6 +122,7 @@ DROP TABLE IF EXISTS `#__pf_projects`;
 CREATE TABLE IF NOT EXISTS `#__pf_projects` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Project ID',
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table',
+  `catid` integer unsigned NOT NULL default '0',
   `title` varchar(128) NOT NULL COMMENT 'Project title',
   `alias` varchar(128) NOT NULL COMMENT 'Title alias. Used in SEF URL''s',
   `description` text NOT NULL COMMENT 'Project description',

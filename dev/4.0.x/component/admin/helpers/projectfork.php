@@ -42,6 +42,11 @@ class ProjectforkHelper
 			'index.php?option=com_projectfork&view=dashboard',
 			($vName == 'dashboard')
 		);
+        JSubMenuHelper::addEntry(
+        JText::_('COM_PROJECTFORK_SUBMENU_CATEGORIES'),
+        'index.php?option=com_projectfork&view=categories',
+        ($vName == 'categories')
+        );
 		JSubMenuHelper::addEntry(
 			JText::_('COM_PROJECTFORK_SUBMENU_PROJECTS'),
 			'index.php?option=com_projectfork&view=projects',
