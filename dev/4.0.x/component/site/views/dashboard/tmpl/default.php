@@ -48,39 +48,41 @@ defined('_JEXEC') or die;
             <?php endif; ?>
 
             <div class="clearfix"></div>
-            <div class="collapse" id="project-details">
-                <div class="well btn-toolbar">
-                    <div class="item-description">
-                		<?php echo $this->escape($this->item->description); ?>
-                        <dl class="article-info dl-horizontal pull-right">
-                    		<?php if($this->item->start_date != JFactory::getDBO()->getNullDate()): ?>
-                    			<dt class="start-title">
-                    				<?php echo JText::_('JGRID_HEADING_START_DATE');?>:
-                    			</dt>
-                    			<dd class="start-data">
-                    				<?php echo JHtml::_('date', $this->item->start_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
-                    			</dd>
-                    		<?php endif; ?>
-                    		<?php if($this->item->end_date != JFactory::getDBO()->getNullDate()): ?>
-                    			<dt class="due-title">
-                    				<?php echo JText::_('JGRID_HEADING_DEADLINE');?>:
-                    			</dt>
-                    			<dd class="due-data">
-                    				<?php echo JHtml::_('date', $this->item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
-                    			</dd>
-                    		<?php endif;?>
-                    		<dt class="owner-title">
-                    			<?php echo JText::_('JGRID_HEADING_CREATED_BY');?>:
-                    		</dt>
-                    		<dd class="owner-data">
-                    			 <?php echo $this->escape($this->item->author);?>
-                    		</dd>
-                    	</dl>
-                        <div class="clearfix"></div>
-                	</div>
+            <?php if($this->state->get('filter.project')) : ?>
+                <div class="collapse" id="project-details">
+                    <div class="well btn-toolbar">
+                        <div class="item-description">
+                    		<?php echo $this->escape($this->item->description); ?>
+                            <dl class="article-info dl-horizontal pull-right">
+                        		<?php if($this->item->start_date != JFactory::getDBO()->getNullDate()): ?>
+                        			<dt class="start-title">
+                        				<?php echo JText::_('JGRID_HEADING_START_DATE');?>:
+                        			</dt>
+                        			<dd class="start-data">
+                        				<?php echo JHtml::_('date', $this->item->start_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
+                        			</dd>
+                        		<?php endif; ?>
+                        		<?php if($this->item->end_date != JFactory::getDBO()->getNullDate()): ?>
+                        			<dt class="due-title">
+                        				<?php echo JText::_('JGRID_HEADING_DEADLINE');?>:
+                        			</dt>
+                        			<dd class="due-data">
+                        				<?php echo JHtml::_('date', $this->item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
+                        			</dd>
+                        		<?php endif;?>
+                        		<dt class="owner-title">
+                        			<?php echo JText::_('JGRID_HEADING_CREATED_BY');?>:
+                        		</dt>
+                        		<dd class="owner-data">
+                        			 <?php echo $this->escape($this->item->author);?>
+                        		</dd>
+                        	</dl>
+                            <div class="clearfix"></div>
+                    	</div>
+                    </div>
                 </div>
-            </div>
-            <div class="clearfix"></div>
+                <div class="clearfix"></div>
+            <?php endif; ?>
 
         </form>
 
