@@ -60,6 +60,7 @@ Joomla.submitbutton = function(task) {
             <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
             <fieldset class="panelform">
 				<ul class="adminformlist">
+					<li><?php echo $this->form->getLabel('catid').$this->form->getInput('catid'); ?></li>
                     <li><?php echo $this->form->getLabel('created_by').$this->form->getInput('created_by'); ?></li>
                     <li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
                     <li><?php echo $this->form->getLabel('start_date').$this->form->getInput('start_date'); ?></li>

@@ -44,7 +44,7 @@ class ProjectforkHelper
 		);
         JSubMenuHelper::addEntry(
         JText::_('COM_PROJECTFORK_SUBMENU_CATEGORIES'),
-        'index.php?option=com_projectfork&view=categories',
+        'index.php?option=com_categories&extension=com_projectfork',
         ($vName == 'categories')
         );
 		JSubMenuHelper::addEntry(
