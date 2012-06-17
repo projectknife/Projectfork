@@ -27,6 +27,6 @@
 .visualize-labels-x li span.line { border-left-width: 1px; height: 100%; display: block; }
 .visualize-labels-x li span.line { border: 0;} /*hide vertical lines on area, line, bar*/
 .visualize-labels-y li { width: 100%;  }
-.visualize-labels-y li span.label { right: 100%; margin-right: 5px; display: block; width: 100px; text-align: right; }
+.visualize-labels-y li span.label { right: 100%; margin-right: 5px; display: block; text-align: right; }
 .visualize-labels-y li span.line { border-top-width: 1px; width: 100%; }
 .visualize-bar .visualize-labels-x li span.label { width: 100%; text-align: center; }
