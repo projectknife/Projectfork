@@ -27,6 +27,9 @@ if(!file_exists(JPATH_ADMINISTRATOR.'/components/com_projectfork/projectfork.php
     echo JText::_('MOD_PF_STATS_LOAD_PROJECTFORK_NOT_INSTALLED');
 }
 else {
+    // Include the helper classes
+    require_once dirname(__FILE__).'/helper.php';
+
     // Load jQuery and jQuery-Visualize
     JHtml::_('projectfork.jQuery');
     JHtml::_('projectfork.jQueryVisualize');
