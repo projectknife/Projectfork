@@ -90,6 +90,14 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
 				<?php echo $this->form->getInput('state'); ?>
 			</div>
 		</div>
+		<div class="formelm control-group">
+			<div class="control-label">
+				<?php echo $this->form->getLabel('catid'); ?>
+		    </div>
+		    <div class="controls">
+				<?php echo $this->form->getInput('catid'); ?>
+			</div>
+		</div>
         <div class="formelm control-group">
         	<div class="control-label">
 		    	<?php echo $this->form->getLabel('start_date'); ?>
