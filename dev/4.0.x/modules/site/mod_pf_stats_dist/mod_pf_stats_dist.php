@@ -63,7 +63,7 @@ else {
         // Include layout
         if(count($stats['users']) > 0 || $show_u == 1) {
             $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
-            require JModuleHelper::getLayoutPath('mod_pf_stats_assigned', $params->get('layout', 'default'));
+            require JModuleHelper::getLayoutPath('mod_pf_stats_dist', $params->get('layout', 'default'));
         }
     }
 }
