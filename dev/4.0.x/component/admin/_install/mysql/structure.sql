@@ -1,4 +1,3 @@
-DROP TABLE IF EXISTS `#__pf_comments`;
 CREATE TABLE IF NOT EXISTS `#__pf_comments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Comment ID',
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table',
@@ -24,7 +23,6 @@ CREATE TABLE IF NOT EXISTS `#__pf_comments` (
   KEY `idx_contextitemid` (`context`,`item_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork item comments';
 
-DROP TABLE IF EXISTS `#__pf_files`;
 CREATE TABLE IF NOT EXISTS `#__pf_files` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'File ID',
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table',
@@ -50,7 +48,6 @@ CREATE TABLE IF NOT EXISTS `#__pf_files` (
   KEY `idx_checkedout` (`checked_out`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork file info. The actual files are stored in';
 
-DROP TABLE IF EXISTS `#__pf_file_folders`;
 CREATE TABLE IF NOT EXISTS `#__pf_file_folders` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Folder ID',
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table.',
@@ -80,7 +77,6 @@ CREATE TABLE IF NOT EXISTS `#__pf_file_folders` (
   KEY `idx_projectid` (`project_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork folder structure';
 
-DROP TABLE IF EXISTS `#__pf_milestones`;
 CREATE TABLE IF NOT EXISTS `#__pf_milestones` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Milestone ID',
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table',
@@ -108,7 +104,6 @@ CREATE TABLE IF NOT EXISTS `#__pf_milestones` (
   KEY `idx_checkedout` (`checked_out`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork milestone data';
 
-DROP TABLE IF EXISTS `#__pf_milestone_map`;
 CREATE TABLE IF NOT EXISTS `#__pf_milestone_map` (
   `id` int(10) unsigned NOT NULL COMMENT 'Dependency Map',
   `milestone_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Milestone ID reference',
@@ -118,11 +113,10 @@ CREATE TABLE IF NOT EXISTS `#__pf_milestone_map` (
   KEY `idx_dependency` (`dependency`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork milestone dependency';
 
-DROP TABLE IF EXISTS `#__pf_projects`;
 CREATE TABLE IF NOT EXISTS `#__pf_projects` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Project ID',
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table',
-  `catid` integer unsigned NOT NULL default '0',
+  `catid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Category ID',
   `title` varchar(128) NOT NULL COMMENT 'Project title',
   `alias` varchar(128) NOT NULL COMMENT 'Title alias. Used in SEF URL''s',
   `description` text NOT NULL COMMENT 'Project description',
@@ -144,7 +138,6 @@ CREATE TABLE IF NOT EXISTS `#__pf_projects` (
   KEY `idx_checkedout` (`checked_out`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork project data';
 
-DROP TABLE IF EXISTS `#__pf_ref_tags`;
 CREATE TABLE IF NOT EXISTS `#__pf_ref_tags` (
   `id` int(10) unsigned NOT NULL COMMENT 'Item ID reference',
   `context` varchar(32) NOT NULL COMMENT 'Reference context',
@@ -154,7 +147,6 @@ CREATE TABLE IF NOT EXISTS `#__pf_ref_tags` (
   KEY `idx_contextid` (`context`,`id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork tag references';
 
-DROP TABLE IF EXISTS `#__pf_ref_users`;
 CREATE TABLE IF NOT EXISTS `#__pf_ref_users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID reference',
   `item_type` varchar(32) NOT NULL COMMENT 'The item type',
@@ -165,7 +157,6 @@ CREATE TABLE IF NOT EXISTS `#__pf_ref_users` (
   KEY `idx_item` (`item_type`,`item_id`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork user references';
 
-DROP TABLE IF EXISTS `#__pf_tags`;
 CREATE TABLE IF NOT EXISTS `#__pf_tags` (
   `id` int(10) unsigned NOT NULL COMMENT 'Tag ID',
   `title` varchar(64) NOT NULL COMMENT 'Tag title',
@@ -174,7 +165,6 @@ CREATE TABLE IF NOT EXISTS `#__pf_tags` (
   UNIQUE KEY `idx_alias` (`alias`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork tags';
 
-DROP TABLE IF EXISTS `#__pf_tasks`;
 CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Task ID',
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table',
@@ -212,7 +202,6 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   KEY `idx_complete` (`complete`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task data';
 
-DROP TABLE IF EXISTS `#__pf_task_lists`;
 CREATE TABLE IF NOT EXISTS `#__pf_task_lists` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Task list ID',
   `asset_id` int(10) NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table',
@@ -239,7 +228,6 @@ CREATE TABLE IF NOT EXISTS `#__pf_task_lists` (
   KEY `idx_checkedout` (`checked_out`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task list data';
 
-DROP TABLE IF EXISTS `#__pf_task_map`;
 CREATE TABLE IF NOT EXISTS `#__pf_task_map` (
   `id` int(10) unsigned NOT NULL COMMENT 'Dependency Map',
   `task_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Task ID reference',
