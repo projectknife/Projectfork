@@ -23,7 +23,7 @@
 // no direct access
 defined('_JEXEC') or die;
 ?>
-<table id="mod-pf-stats-dist" style="display:none;">
+<table id="mod-pf-stats-dist" style="display:none;<?php echo $width_tbl;?>">
     <thead>
         <tr>
             <td></td>

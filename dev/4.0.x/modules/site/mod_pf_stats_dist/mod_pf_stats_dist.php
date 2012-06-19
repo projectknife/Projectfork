@@ -41,16 +41,41 @@ else {
 
         // Get params
         $height   = (int) $params->get('height', 240);
-        $width    = (int) $params->get('width', 300);
+        $width    = $params->get('width', 300);
         $show_c   = (int) $params->get('show_completed', 1);
         $show_u   = (int) $params->get('show_unassigned', 1);
 
+        // Check if width param is in percent or pixel
+        $in_percent = false;
+        if(substr($width, -1) == '%') $in_percent = true;
+
+
+        $width     = (int) $width;
+        $width_js  = "width: '".$width."px',";
+        $width_tbl = "";
+
+        if($in_percent) {
+            $width_js = '';
+            $width_tbl = " width:".$width."%";
+        }
+
+        $refresh_js = '';
+        if(!defined('JQUERY_VISUALIZE_REFRESH') && $in_percent) {
+            define('JQUERY_VISUALIZE_REFRESH', 1);
+
+            $refresh_js = "jQuery(window).resize(function(){"
+                        . "jQuery('.visualize').trigger('visualizeRefresh');"
+                        . "});";
+        }
+
         // Initialize jQueryVisualize
         $doc = JFactory::getDocument();
-        $doc->addScriptDeclaration("jQuery(function(){jQuery('#mod-pf-stats-dist').visualize({
+        $doc->addScriptDeclaration("jQuery(function(){
+                                        ".$refresh_js."
+                                        jQuery('#mod-pf-stats-dist').visualize({
                                             type: 'pie',
                                             height: '".$height."px',
-                                            width: '".$width."px',
+                                            ".$width_js."
                                             pieMargin: 10,
                                             appendTitle: false
                                         });
