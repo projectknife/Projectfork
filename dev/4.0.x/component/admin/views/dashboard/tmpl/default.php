@@ -61,7 +61,7 @@ defined('_JEXEC') or die;
             <div class="icon-wrapper">
 				<div class="icon">
 					<a class="modal" rel="{handler: 'iframe', size: {x: 875, y: 550}, onClose: function() {}}" href="<?php echo JRoute::_('index.php?option=com_config&view=component&component=com_projectfork&path=&tmpl=component');?>">
-						<img src="../components/com_projectfork/assets/projectfork/images/header/icon-48-tasks.png" alt=""/>
+						<img src="../components/com_projectfork/assets/projectfork/images/header/icon-48-config.png" alt=""/>
 						<span><?php echo JText::_('COM_PROJECTFORK_DASHBOARD_CONFIG');?></span>
 					</a>
 				</div>
