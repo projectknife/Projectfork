@@ -133,6 +133,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_projects` (
   `end_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Project end date',
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_alias` (`alias`),
+  KEY `idx_catid` (`catid`),
   KEY `idx_access` (`access`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`)
