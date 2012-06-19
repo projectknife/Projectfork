@@ -87,23 +87,28 @@ defined('_JEXEC') or die;
         </form>
 
 
-        <!-- Begin Highcharts
+        <!-- Begin Dashboard Modules -->
         <div class="row-fluid">
         	<div class="span12">
-        		<div id="container" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+        		<?php echo $this->modules->render('pf-dashboard-top', array('style' => 'xhtml'), null); ?>
         	</div>
         </div>
         <div class="row-fluid">
         	<div class="span6">
-        		<div id="container2" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+        		<?php echo $this->modules->render('pf-dashboard-left', array('style' => 'xhtml'), null); ?>
         	</div>
         	<div class="span6">
-        		<div id="container3" style="min-width: 400px; height: 400px; margin: 0 auto"></div>
+        		<?php echo $this->modules->render('pf-dashboard-right', array('style' => 'xhtml'), null); ?>
         	</div>
         </div>
-        <!-- End Highcharts -->
+        <div class="row-fluid">
+        	<div class="span12">
+        		<?php echo $this->modules->render('pf-dashboard-bottom', array('style' => 'xhtml'), null); ?>
+        	</div>
+        </div>
+        <!-- End Dashboard Modules -->
 
-        <?php echo $this->modules->render('pf-dasboard-top', array('style' => 'rounded'), null); ?>
+        
 
         <!--Project List Module Begin
         <table class="category project-list table table-striped">
