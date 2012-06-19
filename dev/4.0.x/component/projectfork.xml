@@ -9,6 +9,7 @@
 	<authorUrl>www.projectfork.net</authorUrl>
 	<version>4.0.0 CEA1</version>
 	<description>COM_PROJECTFORK_XML_DESCRIPTION</description>
+    <scriptfile>com_projectfork.script.php</scriptfile>
 	<install folder="admin">
 		<sql>
 			<file driver="mysql" charset="utf8">_install/mysql/structure.sql</file>
@@ -47,6 +48,7 @@
 			<filename>config.xml</filename>
 			<filename>projectfork.php</filename>
 			<filename>controller.php</filename>
+			<filename>com_projectfork.script.php</filename>
 			<filename>index.html</filename>
 		</files>
 		<languages folder="admin">
