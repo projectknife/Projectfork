@@ -2,7 +2,7 @@
 /**
 * @package   Projectfork Project Workload Statistics
 * @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
+* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 *
 * This file is part of Projectfork.
 *
@@ -71,6 +71,7 @@ class Mod_Pf_Stats_LoadInstallerScript
             $name  = $manifest->name;
             $pos   = (isset($manifest->position) ? $manifest->position : '');
             $pub   = (isset($manifest->published) ? (int) $manifest->published : 0);
+            $title = (isset($manifest->show_title) ? (int) $manifest->show_title : 1);
 
 
             // Get the module id
@@ -84,18 +85,17 @@ class Mod_Pf_Stats_LoadInstallerScript
             if(!$id) return true;
 
 
-            // Update module position and published state
-            if($pub || $state) {
-                $query = $db->getQuery(true);
+            // Update params
+            $query = $db->getQuery(true);
 
-                $query->update('#__modules');
-                if($pos) $query->set('position = '.$db->quote($pos));
-                if($pub) $query->set('published = '.$db->quote($pub));
-                $query->where('module = '.$db->quote($name));
+            $query->update('#__modules');
+            if($pos) $query->set('position = '.$db->quote($pos));
+            if($pub) $query->set('published = '.$db->quote($pub));
+            $query->set('showtitle = '.$db->quote($title));
+            $query->where('module = '.$db->quote($name));
 
-                $db->setQuery($query->__toString());
-                $db->query();
-            }
+            $db->setQuery($query->__toString());
+            $db->query();
 
 
             // Show the module on all pages if a position is given
