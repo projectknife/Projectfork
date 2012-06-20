@@ -13,23 +13,6 @@
 	background: #EEE;
 }
 
-/* Context and Bulk action menu */
-#projectfork .btn-group ul li a,
-#projectfork .btn-group ul li a:link,
-#projectfork .btn-group ul li a:visited
-{
-    color:#000;
-}
-#projectfork .btn-group ul li a:hover
-{
-    background-color:#ccc;
-}
-#projectfork .btn-group ul
-{
-    margin:0px 0px 0px 0px;
-    padding:0px 0px 0px 0px;
-}
-
 /* General Classes */
 .small{
 	font-size: 12px;
