@@ -39,27 +39,26 @@ JHtml::_('projectfork.ajaxCompleteTask');
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
-
-	<div class="btn-group">
-	    <?php echo $this->toolbar;?>
-	</div>
-
+    
 	<div class="clearfix"></div>
 
 	<div class="cat-items">
 
 		<form id="adminForm" name="adminForm" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>">
 
-			<fieldset class="filters btn-toolbar">
+			<div class="btn-toolbar">
+				<div class="btn-group">
+				    <?php echo $this->toolbar;?>
+				</div>
 				<div class="filter-project btn-group">
                     <?php echo JHtml::_('projectfork.filterProject');?>
                 </div>
                 <?php if($uid) : ?>
-					<div class="btn-group pull-right">
-						<a data-toggle="collapse" data-target="#filters" class="btn"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
+					<div class="btn-group">
+						<a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
 					</div>
 				<?php endif; ?>
-			</fieldset>
+			</div>
 
 			<div class="clearfix"> </div>
 			<div class="collapse" id="filters">

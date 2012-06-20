@@ -36,28 +36,24 @@ $action_count = count($this->actions);
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
 
-    <div class="btn-toolbar">
-        <div class="btn-group">
-       	 <?php echo $this->toolbar;?>
-        </div>
-    </div>
-
     <div class="clearfix"></div>
 
     <div class="cat-items">
 
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=milestones'); ?>" method="post">
-
-            <fieldset class="filters btn-toolbar">
-				<div class="filter-project btn-group pull-left">
-				    <?php echo JHtml::_('projectfork.filterProject');?>
-				</div>
-                <?php if($uid) : ?>
-					<div class="btn-group pull-right">
-						<a data-toggle="collapse" data-target="#filters" class="btn"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
-					</div>
-				<?php endif; ?>
-			</fieldset>
+			<div class="btn-toolbar">
+			    <div class="btn-group">
+			   	 	<?php echo $this->toolbar;?>
+			    </div>
+			    <div class="filter-project btn-group">
+			        <?php echo JHtml::_('projectfork.filterProject');?>
+			    </div>
+			    <?php if($uid) : ?>
+			    	<div class="btn-group">
+			    		<a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
+			    	</div>
+			    <?php endif; ?>
+			</div>
 			<div class="clearfix"> </div>
 			<?php if($uid) : ?>
 				<div class="collapse" id="filters">
