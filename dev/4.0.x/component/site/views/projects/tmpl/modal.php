@@ -54,6 +54,12 @@ $uid	    = $user->get('id');
     				    </select>
     				</span>
                 <?php endif; ?>
+                <span class="filter-category">
+                    <select name="filter_category" class="inputbox" onchange="this.form.submit()">
+				        <option value=""><?php echo JText::_('JOPTION_SELECT_CATEGORY');?></option>
+				        <?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_projectfork'), 'value', 'text', $this->state->get('filter.category'));?>
+			        </select>
+                </span>
                 <?php if($user->authorise('core.admin') && count($this->authors)) : ?>
                     <span class="filter-author">
                         <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
@@ -77,13 +83,16 @@ $uid	    = $user->get('id');
 	               		<th id="tableOrdering0" class="list-title">
                             <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                         </th>
-	               		<th id="tableOrdering1" class="list-milestones">
+                        <th id="tableOrdering1" class="list-category">
+                            <?php echo JHtml::_('grid.sort', 'JCATEGORY', 'c.title', $list_dir, $list_order); ?>
+                        </th>
+	               		<th id="tableOrdering2" class="list-milestones">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONES', 'milestones', $list_dir, $list_order); ?>
                         </th>
-	               		<th id="tableOrdering2" class="list-tasks">
+	               		<th id="tableOrdering3" class="list-tasks">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKLISTS_AND_TASKS', 'tasks', $list_dir, $list_order); ?>
                         </th>
-	               		<th id="tableOrdering3" class="list-deadline">
+	               		<th id="tableOrdering4" class="list-deadline">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
                         </th>
 	               	</tr>
@@ -98,6 +107,9 @@ $uid	    = $user->get('id');
                                 <a class="pointer" style="cursor: pointer;" onclick="if (window.parent) window.parent.<?php echo $this->escape($function);?>('<?php echo $item->id; ?>', '<?php echo $this->escape(addslashes($item->title)); ?>');">
                                     <?php echo $this->escape($item->title);?>
                                 </a>
+    	               		</td>
+                            <td class="list-categories">
+                                <?php echo $this->escape($item->category_title);?>
     	               		</td>
     	               		<td class="list-milestones">
                                 <i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?>

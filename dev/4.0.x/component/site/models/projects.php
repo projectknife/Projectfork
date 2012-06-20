@@ -43,6 +43,7 @@ class ProjectforkModelProjects extends JModelList
 			$config['filter_fields'] = array(
 				'id', 'a.id',
 				'title', 'a.title',
+                'category_title', 'c.title',
 				'created', 'a.created',
                 'modified', 'a.modified',
                 'state', 'a.state',
@@ -112,6 +113,10 @@ class ProjectforkModelProjects extends JModelList
         $value = JRequest::getCmd('filter_author', '');
         $this->setState('filter.author', $value);
 
+        // Filter - Category
+        $value = JRequest::getCmd('filter_category', '');
+        $this->setState('filter.category', $value);
+
         // View Layout
 		$this->setState('layout', JRequest::getCmd('layout'));
 	}
@@ -131,6 +136,8 @@ class ProjectforkModelProjects extends JModelList
 	{
 		// Compile the store id
         $id .= ':'.$this->getState('filter.published');
+        $id .= ':'.$this->getState('filter.author');
+        $id .= ':'.$this->getState('filter.category');
 
 		return parent::getStoreId($id);
 	}
@@ -177,6 +184,10 @@ class ProjectforkModelProjects extends JModelList
         $query->select('COUNT(DISTINCT ma.id) AS milestones');
         $query->join('LEFT', '#__pf_milestones AS ma ON ma.project_id = a.id');
 
+        // Join over the categories.
+		$query->select('c.title AS category_title');
+		$query->join('LEFT', '#__categories AS c ON c.id = a.catid');
+
         // Join over the task lists for list count
         $query->select('COUNT(DISTINCT tl.id) AS tasklists');
         $query->join('LEFT', '#__pf_task_lists AS tl ON tl.project_id = a.id');
@@ -202,6 +213,24 @@ class ProjectforkModelProjects extends JModelList
 		}
 		elseif ($published === '') {
 			$query->where('(a.state = 0 OR a.state = 1)');
+		}
+
+        // Filter by a single or group of categories.
+		$baselevel = 1;
+		$categoryId = $this->getState('filter.category');
+		if (is_numeric($categoryId)) {
+			$cat_tbl = JTable::getInstance('Category', 'JTable');
+			$cat_tbl->load($categoryId);
+			$rgt = $cat_tbl->rgt;
+			$lft = $cat_tbl->lft;
+			$baselevel = (int) $cat_tbl->level;
+			$query->where('c.lft >= '.(int) $lft);
+			$query->where('c.rgt <= '.(int) $rgt);
+		}
+		elseif (is_array($categoryId)) {
+			JArrayHelper::toInteger($categoryId);
+			$categoryId = implode(',', $categoryId);
+			$query->where('a.catid IN ('.$categoryId.')');
 		}
 
         // Filter by author

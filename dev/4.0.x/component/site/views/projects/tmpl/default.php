@@ -65,6 +65,12 @@ $action_count = count($this->actions);
         			        <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
         			        <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
         			    </div>
+                        <div class="filter-category btn-group pull-right">
+                            <select name="filter_category" class="inputbox" onchange="this.form.submit()">
+				                <option value=""><?php echo JText::_('JOPTION_SELECT_CATEGORY');?></option>
+				                <?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_projectfork'), 'value', 'text', $this->state->get('filter.category'));?>
+                            </select>
+        			    </div>
                     <?php endif; ?>
                 </div>
             </div>

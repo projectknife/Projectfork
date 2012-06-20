@@ -48,6 +48,11 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 				<?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
 			</select>
 
+            <select name="filter_category" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('JOPTION_SELECT_CATEGORY');?></option>
+				<?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_projectfork'), 'value', 'text', $this->state->get('filter.category'));?>
+			</select>
+
             <select name="filter_access" class="inputbox" onchange="this.form.submit()">
 				<option value=""><?php echo JText::_('JOPTION_SELECT_ACCESS');?></option>
 				<?php echo JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'));?>
@@ -72,6 +77,9 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 				</th>
 				<th>
 					<?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
+				</th>
+                <th width="15%">
+					<?php echo JHtml::_('grid.sort', 'JCATEGORY', 'c.title', $list_dir, $list_order); ?>
 				</th>
 				<th width="15%">
 					<?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
@@ -121,6 +129,9 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 						<?php echo $this->escape($item->title); ?>
 					<?php endif; ?>
 				</td>
+                <td>
+					<?php echo $this->escape($item->category_title); ?>
+				</td>
 				<td class="center">
 					<?php echo $this->escape($item->manager_name); ?>
 				</td>
@@ -144,7 +155,7 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 		</tbody>
         <tfoot>
 			<tr>
-				<td colspan="9">
+				<td colspan="10">
 					<?php echo $this->pagination->getListFooter(); ?>
 				</td>
 			</tr>

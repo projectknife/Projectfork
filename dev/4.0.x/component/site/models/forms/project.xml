@@ -18,6 +18,11 @@
 			<option value="2">JARCHIVED</option>
 			<option value="-2">JTRASHED</option>
 		</field>
+		<field name="catid" type="category" extension="com_projectfork"
+			label="JCATEGORY" 
+			description="COM_PROJECTFORK_FIELD_CATEGORY_DESC"
+			class="inputbox" show_root="true">
+		</field>
 		<field name="start_date" type="calendar" class="inputbox"
 			label="COM_PROJECTFORK_FIELD_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_START_DATE_OPTIONAL_DESC"
 			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
