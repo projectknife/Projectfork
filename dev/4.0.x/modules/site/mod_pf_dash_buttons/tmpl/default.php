@@ -29,7 +29,8 @@ if(count($buttons) == 0) return '';
 <div class="row-fluid">
     <?php foreach($buttons AS $task => $label) : ?>
     <div class="span3">
-        <a href="<?php echo JRoute::_('index.php?option=com_projectfork&task='.$task);?>" class="btn btn-large">
+        <a href="<?php echo JRoute::_('index.php?option=com_projectfork&task='.$task);?>" class="thumbnail btn">
+        	<p><img src="<?php echo JURI::base();?>components/com_projectfork/assets/projectfork/images/header/icon-48-<?php echo $task;?>.png" /></p>
             <?php echo JText::_($label);?>
         </a>
     </div>
