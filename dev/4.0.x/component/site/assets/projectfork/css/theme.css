@@ -46,3 +46,8 @@
 .progress.progress-milestone{
 	margin-bottom: 0;
 }
+
+/* Completed Task */
+.task-complete{
+	opacity:0.4;filter:alpha(opacity=40);
+}
