@@ -50,7 +50,7 @@ class JFormFieldProject extends JFormField
 		// Initialize variables.
         $app      = JFactory::getApplication();
 		$html     = array();
-		$link     = 'index.php?option=com_projectfork&amp;view=projects'
+		$link     = ProjectforkHelperRoute::getProjectsRoute()
                   . '&amp;layout=modal&amp;tmpl=component'
                   . '&amp;function=pfSelectProject_'.$this->id;
 
@@ -120,7 +120,7 @@ class JFormFieldProject extends JFormField
 		// Create the project select button.
 		if ($this->element['readonly'] != 'true') {
 			$html[] = '		<a class="modal_'.$this->id.' btn" title="'.JText::_('COM_PROJECTFORK_SELECT_PROJECT').'"'
-                    . ' href="'.$link.'"'
+                    . ' href="'.JRoute::_($link).'"'
                     . ' rel="{handler: \'iframe\', size: {x: 800, y: 500}}">';
 			$html[] = '			'.JText::_('COM_PROJECTFORK_SELECT_PROJECT').'</a>';
 		}
