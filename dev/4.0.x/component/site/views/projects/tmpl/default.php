@@ -35,24 +35,24 @@ $message    = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LI
 $action_count = count($this->actions);
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects">
-
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
-
-	<div class="btn-group">
-	    <?php echo $this->toolbar;?>
-	</div>
 
 	<div class="clearfix"></div>
 
     <div class="grid">
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=projects'); ?>" method="post">
-            <?php if($uid) : ?>
-				<div class="btn-group pull-right">
-					<a data-toggle="collapse" data-target="#filters" class="btn"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
-				</div>
-			<?php endif; ?>
+        	<div class="btn-toolbar">
+        		<div class="btn-group">
+        		    <?php echo $this->toolbar;?>
+        		</div>
+        		<?php if($uid) : ?>
+        			<div class="btn-group">
+        				<a data-toggle="collapse" data-target="#filters" class="btn"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
+        			</div>
+        		<?php endif; ?>
+        	</div>
 
             <div class="clearfix"></div>
             <div class="collapse" id="filters">
