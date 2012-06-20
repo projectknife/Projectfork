@@ -2,7 +2,7 @@
 /**
 * @package   Projectfork
 * @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
+* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 *
 * This file is part of Projectfork.
 *
@@ -60,7 +60,7 @@ class Com_ProjectforkInstallerScript
 	 */
 	public function postflight($route, JAdapterInstance $adapter)
     {
-        if($route == 'install') {
+        if(strtolower($route) == 'install') {
             $script = JPATH_ADMINISTRATOR.'/components/com_projectfork/_install/script.postprocess.php';
 
             if(file_exists($script)) {

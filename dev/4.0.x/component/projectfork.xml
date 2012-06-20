@@ -25,6 +25,7 @@
 		<filename>projectfork.php</filename>
 		<filename>controller.php</filename>
 		<filename>router.php</filename>
+		<filename>LICENSE.txt</filename>
 		<filename>index.html</filename>
 		<folder>assets</folder>
 		<folder>controllers</folder>
@@ -49,6 +50,7 @@
 			<filename>projectfork.php</filename>
 			<filename>controller.php</filename>
 			<filename>com_projectfork.script.php</filename>
+            <filename>LICENSE.txt</filename>
 			<filename>index.html</filename>
 		</files>
 		<languages folder="admin">
