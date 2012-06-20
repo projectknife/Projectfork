@@ -35,9 +35,6 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 <form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=projects&layout=modal&tmpl=component&function='.$function);?>" method="post" name="adminForm" id="adminForm">
 	<fieldset class="filter clearfix">
 		<div class="left">
-			<label for="filter_search">
-				<?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>
-			</label>
 			<input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" size="30" />
 			<button type="submit">
 				<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
@@ -45,14 +42,19 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
 		</div>
 		<div class="right">
+            <select name="filter_published" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+				<?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
+			</select>
+            <select name="filter_category" class="inputbox" onchange="this.form.submit()">
+				<option value=""><?php echo JText::_('JOPTION_SELECT_CATEGORY');?></option>
+				<?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_projectfork'), 'value', 'text', $this->state->get('filter.category'));?>
+			</select>
 			<select name="filter_access" class="inputbox" onchange="this.form.submit()">
 				<option value=""><?php echo JText::_('JOPTION_SELECT_ACCESS');?></option>
 				<?php echo JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'));?>
 			</select>
-			<select name="filter_published" class="inputbox" onchange="this.form.submit()">
-				<option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-				<?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
-			</select>
+
 		</div>
 	</fieldset>
 
@@ -62,10 +64,13 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				<th class="title">
 					<?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $listDirn, $listOrder); ?>
 				</th>
-				<th width="15%">
+                <th width="22%">
+					<?php echo JHtml::_('grid.sort',  'JCATEGORY', 'c.title', $listDirn, $listOrder); ?>
+				</th>
+				<th width="22%">
 					<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'access_level', $listDirn, $listOrder); ?>
 				</th>
-				<th width="5%">
+				<th width="14%">
 					<?php echo JHtml::_('grid.sort',  'JDATE', 'a.created', $listDirn, $listOrder); ?>
 				</th>
 				<th width="1%" class="nowrap">
@@ -86,6 +91,9 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				<td>
 					<a class="pointer" onclick="if (window.parent) window.parent.<?php echo $this->escape($function);?>('<?php echo $item->id; ?>', '<?php echo $this->escape(addslashes($item->title)); ?>');">
 						<?php echo $this->escape($item->title); ?></a>
+				</td>
+                <td>
+					<?php echo $this->escape($item->category_title); ?>
 				</td>
 				<td class="center">
 					<?php echo $this->escape($item->access_level); ?>

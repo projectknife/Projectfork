@@ -44,6 +44,7 @@ class ProjectforkModelProjects extends JModelList
 			$config['filter_fields'] = array(
 				'id', 'a.id',
 				'title', 'a.title',
+                'category_title', 'c.title',
 				'alias', 'a.alias',
 				'created', 'a.created',
                 'created_by', 'a.created_by',
@@ -86,6 +87,9 @@ class ProjectforkModelProjects extends JModelList
 
 		$published = $this->getUserStateFromRequest($this->context.'.filter.published', 'filter_published', '');
 		$this->setState('filter.published', $published);
+
+        $category = $this->getUserStateFromRequest($this->context.'.filter.category', 'filter_category', '');
+		$this->setState('filter.category', $category);
 
         $access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', '');
 		$this->setState('filter.access', $access);
@@ -153,6 +157,10 @@ class ProjectforkModelProjects extends JModelList
 		$query->select('ua.name AS manager_name');
 		$query->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
+        // Join over the categories.
+		$query->select('c.title AS category_title');
+		$query->join('LEFT', '#__categories AS c ON c.id = a.catid');
+
 		// Implement View Level Access
 		if(!$user->authorise('core.admin')) {
 		    $groups	= implode(',', $user->getAuthorisedViewLevels());
@@ -166,6 +174,24 @@ class ProjectforkModelProjects extends JModelList
 		}
 		elseif ($published === '') {
 			$query->where('(a.state = 0 OR a.state = 1)');
+		}
+
+        // Filter by a single or group of categories.
+		$baselevel = 1;
+		$categoryId = $this->getState('filter.category');
+		if (is_numeric($categoryId)) {
+			$cat_tbl = JTable::getInstance('Category', 'JTable');
+			$cat_tbl->load($categoryId);
+			$rgt = $cat_tbl->rgt;
+			$lft = $cat_tbl->lft;
+			$baselevel = (int) $cat_tbl->level;
+			$query->where('c.lft >= '.(int) $lft);
+			$query->where('c.rgt <= '.(int) $rgt);
+		}
+		elseif (is_array($categoryId)) {
+			JArrayHelper::toInteger($categoryId);
+			$categoryId = implode(',', $categoryId);
+			$query->where('a.catid IN ('.$categoryId.')');
 		}
 
         // Filter by access level.
