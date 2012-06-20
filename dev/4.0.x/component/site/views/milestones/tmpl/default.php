@@ -50,7 +50,7 @@ $action_count = count($this->actions);
 			    </div>
 			    <?php if($uid) : ?>
 			    	<div class="btn-group">
-			    		<a data-toggle="collapse" data-target="#filters" class="btn"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
+			    		<a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
 			    	</div>
 			    <?php endif; ?>
 			</div>
