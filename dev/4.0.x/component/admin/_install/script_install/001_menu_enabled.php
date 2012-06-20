@@ -108,3 +108,59 @@ foreach($menu_items AS $i => $menu_item)
 		return false;
 	}
 }
+
+// Try to find the position of the (presumably) main menu
+$query = $db->getQuery(true);
+
+$query->select('position')
+      ->from('#__modules')
+      ->where('id = 1');
+
+$db->setQuery($query->__toString());
+$mm_pos = $db->loadResult();
+
+if(!$mm_pos) $mm_pos = '';
+
+
+// Create a module for the menu
+$cols = array($db->quoteName('id'),
+              $db->quoteName('title'),
+              $db->quoteName('position'),
+              $db->quoteName('module'),
+              $db->quoteName('access'),
+              $db->quoteName('params'),
+              $db->quoteName('client_id'),
+              $db->quoteName('language'));
+
+$values = array('NULL',
+                $db->quote('Projectfork'),
+                $db->quote($mm_pos),
+                $db->quote('mod_menu'),
+                $db->quote('1'),
+                $db->quote('{"menutype":"projectfork"}'),
+                $db->quote('0'),
+                $db->quote('*'));
+
+$query = $db->getQuery(true);
+
+$query->insert('#__modules')
+      ->columns($cols)
+      ->values(implode(', ', $values));
+
+$db->setQuery($query->__toString());
+$db->query();
+
+$module_id = $db->insertid();
+
+if(!$module_id) return false;
+
+
+// Show the module on all pages
+$query = $db->getQuery(true);
+
+$query->insert('#__modules_menu')
+      ->columns(array($db->quoteName('moduleid'), $db->quoteName('menuid')))
+      ->values((int)$module_id . ', 0');
+
+$db->setQuery($query->__toString());
+$db->query();
