@@ -41,9 +41,9 @@ class ProjectforkHelperToolbar
     }
 
 
-    public function dropdownButton($text, $items)
+    public function dropdownButton($items, $text, $action = '', $list = false)
     {
-        $this->buttons[] = $this->renderDropdownButton($text, $items);
+        $this->buttons[] = $this->renderDropdownButton($items, $text, $action, $list);
     }
 
 
