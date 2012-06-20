@@ -99,7 +99,6 @@ class ProjectforkHelperToolbar
         }
 
         $html[] = '>';
-        $html[] = '<i class="icon-plus icon-white"></i> ';
         $html[] = addslashes(JText::_($text));
         $html[] = '</a>';
 
