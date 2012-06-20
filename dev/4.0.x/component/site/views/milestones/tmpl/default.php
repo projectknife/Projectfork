@@ -124,17 +124,22 @@ $action_count = count($this->actions);
 
             ?>
                 <div class="well well-<?php echo $k;?>">
-               		<h4>
-               			<span class="pull-left">
-                        	<?php
-                                $this->menu->start(array('class' => 'btn-mini'));
-                                $this->menu->itemEdit('milestoneform', $item->id, ($canEdit || $canEditOwn));
-                                $this->menu->itemTrash('milestones', $i, ($canEdit || $canEditOwn));
-                                $this->menu->end();
+                	<div class="milestone-edit pull-right">
+                    	<?php
+                            $this->menu->start(array('class' => 'btn-mini'));
+                            $this->menu->itemEdit('milestoneform', $item->id, ($canEdit || $canEditOwn));
+                            $this->menu->itemTrash('milestones', $i, ($canEdit || $canEditOwn));
+                            $this->menu->end();
 
-                                echo $this->menu->render();
-                            ?>
-                        </span>
+                            echo $this->menu->render();
+                        ?>
+                    </div>
+                	<?php if($item->end_date != $this->nulldate) : ?>
+                	    <span class="label label-info pull-right"><i class="icon-calendar icon-white"></i>
+                	        <?php echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
+                	    </span>
+                	<?php endif; ?>
+               		<h4 class="milestone-title">
                         <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestoneRoute($item->slug, $item->project_slug));?>">
                             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                             <?php echo $this->escape($item->title);?>
@@ -144,11 +149,6 @@ $action_count = count($this->actions);
                                 <?php echo $this->escape($item->project_title);?>
                             </a>
                         	by <?php echo $this->escape($item->author_name);?>
-                            <?php if($item->end_date != $this->nulldate) : ?>
-                                <span class="label label-info pull-right"><i class="icon-calendar icon-white"></i>
-                                    <?php echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
-                                </span>
-                            <?php endif; ?>
                         </small>
                         <a href="#milestone-<?php echo $item->id;?>" class="btn btn-mini" data-toggle="collapse">
                             <?php echo JText::_('COM_PROJECTFORK_DETAILS_LABEL');?> <span class="caret"></span>
