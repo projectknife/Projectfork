@@ -9,8 +9,8 @@
 	<authorUrl>www.projectfork.net</authorUrl>
 	<version>1.0.0</version>
 	<description>MOD_PF_STATS_TASKS_XML_DESCRIPTION</description>
-    <position>pf-dashboard-top</position>
-    <published>1</published>
+    <position>pf-dashboard-left</position>
+    <published>0</published>
     <scriptfile>script.php</scriptfile>
 	<files>
 		<filename module="mod_pf_stats_tasks">mod_pf_stats_tasks.php</filename>
