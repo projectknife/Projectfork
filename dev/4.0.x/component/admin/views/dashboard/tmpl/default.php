@@ -73,7 +73,8 @@ defined('_JEXEC') or die;
 			<legend><?php echo JText::_('COM_PROJECTFORK');?></legend>
 			<h3>Projectfork 4 Alpha</h3>
 			<p>Consider this a preview-only version of Projectfork. We highly recommend against using in a production environment as there may be many bugs. Features and functions will rapidly change in the alpha stage and we don't offer support or migration for these features.</p>
-			<p>Onebit icon set from <a href="http://www.icojoy.com/">icojoy.com</a>.</p>
+			<!--<p>Onebit icon set from <a href="http://www.icojoy.com/">icojoy.com</a>.</p>-->
+            <p><a href="https://github.com/projectfork/Projectfork/issues" target="_blank">Report an issue on Github</a></p>
 		</fieldset>
 	</div>
 </div>
