@@ -1,0 +1,170 @@
+/* CSS Document */
+.hero-unit {
+	text-align:center;
+}
+.hero-unit .lead {
+	margin-bottom: 18px;
+	font-size: 20px;
+	font-weight: 200;
+	line-height: 27px;
+}
+.btn .caret {
+	margin-bottom:7px;
+}
+.blog-row-rule,
+.blog-item-rule {
+	border:0;
+}
+
+/* Alternating Rows */
+.row-even,.row-odd{
+	padding: 5px;
+	width: 99%;
+	border-bottom: 1px solid #DDD;
+}
+.row-odd {
+	background-color: #fff;
+}
+.row-even {
+	background-color: #f9f9f9;
+}
+
+.blog-row-rule,
+.blog-item-rule {
+	border:0;
+}
+
+/* Alternating Rows */
+.row-even,.row-odd{
+	padding: 5px;
+	width: 99%;
+	border-bottom: 1px solid #DDD;
+}
+.row-odd {
+	background-color: #fff;
+}
+.row-even {
+	background-color: #f9f9f9;
+}
+
+/* Row reveal */
+.row-fluid .row-reveal{
+	visibility: hidden;
+}
+.row-fluid:hover .row-reveal{
+	visibility: visible;
+}
+
+/* Buttons */
+.btn-wide{
+	width: 80%;
+}
+
+/* Nav List Offset */
+.nav-list > li.offset > a{
+	padding-left: 30px;
+	font-size: 12px;
+}
+.blog-row-rule,
+.blog-item-rule {
+	border:0;
+}
+/* Alternating Rows */
+.row-even,.row-odd{
+	padding: 5px;
+	width: 99%;
+	border-bottom: 1px solid #DDD;
+}
+.row-odd {
+	background-color: #fff;
+}
+.row-even {
+	background-color: #f9f9f9;
+}
+
+.row-fluid .offset1 {
+  margin-left: 8.382978723%;
+}
+.row-fluid .offset2 {
+  margin-left: 16.89361702%;
+}
+.row-fluid .offset3 {
+  margin-left: 25.404255317%;
+}
+.row-fluid .offset4 {
+  margin-left: 33.914893614%;
+}
+.row-fluid .offset5 {
+  margin-left: 42.425531911%;
+}
+.row-fluid .offset6 {
+  margin-left: 50.93617020799999%;
+}
+.row-fluid .offset7 {
+  margin-left: 59.446808505%;
+}
+.row-fluid .offset8 {
+  margin-left: 67.95744680199999%;
+}
+.row-fluid .offset9 {
+  margin-left: 76.468085099%;
+}
+.row-fluid .offset10 {
+  margin-left: 84.97872339599999%;
+}
+.row-fluid .offset11 {
+  margin-left: 91.489361693%;
+}
+
+/* Navbar Buttons */
+.navbar .nav > li > a.btn{
+	padding: 4px 10px;
+	line-height: 18px;
+}
+
+/* Nav Tabs Dark */
+.nav-tabs.nav-dark{
+	border-bottom: 1px solid #333;
+	text-shadow: 1px 1px 1px #000;
+}
+.nav-tabs.nav-dark > li > a{
+	color: #F8F8F8;
+}
+.nav-tabs.nav-dark > li > a:hover {
+  border-color: #333 #333 #111;
+  background-color: #777777;
+}
+.nav-tabs.nav-dark > .active > a, .nav-tabs.nav-dark > .active > a:hover {
+  color: #ffffff;
+  background-color: #555555;
+  border: 1px solid #222;
+  border-bottom-color: transparent;
+}
+
+/* Joomla Menu -> Bootstrap Nav */
+.menu{margin-left:0;margin-bottom:18px;list-style:none;}
+.menu>li>a{display:block;}
+.menu>li>a:hover{text-decoration:none;background-color:#eeeeee;}
+.menu .nav-header{display:block;padding:3px 15px;font-size:11px;font-weight:bold;line-height:18px;color:#999999;text-shadow:0 1px 0 rgba(255, 255, 255, 0.5);text-transform:uppercase;}
+.menu li+.nav-header{margin-top:9px;}
+.navbar .menu{position:relative;left:0;display:block;float:left;margin:0 10px 0 0;}
+.navbar .menu.pull-right{float:right;}
+.navbar .menu>li{display:block;float:left;}
+.navbar .menu>li>a{float:none;padding:10px 10px 11px;line-height:19px;color:#999999;text-decoration:none;text-shadow:0 -1px 0 rgba(0, 0, 0, 0.25);}
+.navbar .menu>li>a:hover{background-color:transparent;color:#ffffff;text-decoration:none;}
+.navbar .menu .active>a,.navbar .menu .active>a:hover{color:#ffffff;text-decoration:none;background-color:#222222;}
+.navbar .divider-vertical{height:40px;width:1px;margin:0 9px;overflow:hidden;background-color:#222222;border-right:1px solid #333333;}
+.navbar .menu.pull-right{margin-left:10px;margin-right:0;}
+.navbar .menu .dropdown-toggle .caret,.navbar .menu .open.dropdown .caret{border-top-color:#ffffff;}
+.navbar .menu .active .caret{opacity:1;filter:alpha(opacity=100);}
+.navbar .menu .open>.dropdown-toggle,.navbar .menu .active>.dropdown-toggle,.navbar .menu .open.active>.dropdown-toggle{background-color:transparent;}
+.navbar .menu .active>.dropdown-toggle:hover{color:#ffffff;}
+.navbar .menu.pull-right .dropdown-menu{left:auto;right:0;}.navbar .menu.pull-right .dropdown-menu:before{left:auto;right:12px;}
+.navbar .menu.pull-right .dropdown-menu:after{left:auto;right:13px;}
+
+/* Forms */
+input[type="checkbox"]+label,
+input[type="radio"]+label{
+	display: inline;
+	margin: 2px 10px 2px 0;
+}
