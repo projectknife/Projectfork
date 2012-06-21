@@ -140,7 +140,6 @@ JHtml::_('projectfork.ajaxCompleteTask');
                                  </ul>
                                  <input type="hidden" name="item-order-<?php echo $k;?>" id="item_order_<?php echo $k;?>" value="<?php echo implode($item_order,'|'); ?>" />
                              </div>
-                             <hr />
                         <?php
                             $list_open  = false;
                             $item_order = array();
@@ -177,7 +176,7 @@ JHtml::_('projectfork.ajaxCompleteTask');
                                     <?php endif; ?>
                                 </div>
                             </div>
-                            <ul class="list-tasks list-striped unstyled" id="tasklist_<?php echo $i;?>">
+                            <ul class="list-tasks list-striped list-condensed unstyled" id="tasklist_<?php echo $i;?>">
                     <?php
                         $k            = 1 - $k;
                         $list_open    = true;
