@@ -40,16 +40,20 @@ abstract class modPFdashButtonsHelper
         $buttons = array();
 
         if($user->authorise('core.create', 'com_projectfork') || $user->authorise('project.create', 'com_projectfork')) {
-            $buttons['projectform.add'] = 'MOD_PF_DASH_BUTTONS_ADD_PROJECT';
+            $buttons['projectform.add'] = array('label' => 'MOD_PF_DASH_BUTTONS_ADD_PROJECT',
+                                                'link'  => ProjectforkHelperRoute::getProjectsRoute());
         }
         if($user->authorise('core.create', 'com_projectfork') || $user->authorise('milestone.create', $asset)) {
-            $buttons['milestoneform.add'] = 'MOD_PF_DASH_BUTTONS_ADD_MILESTONE';
+            $buttons['milestoneform.add'] = array('label' => 'MOD_PF_DASH_BUTTONS_ADD_MILESTONE',
+                                                  'link'  => ProjectforkHelperRoute::getMilestonesRoute());
         }
         if($user->authorise('core.create', 'com_projectfork') || $user->authorise('tasklist.create', $asset)) {
-            $buttons['tasklistform.add'] = 'MOD_PF_DASH_BUTTONS_ADD_TASKLIST';
+            $buttons['tasklistform.add'] = array('label' => 'MOD_PF_DASH_BUTTONS_ADD_TASKLIST',
+                                                 'link'  => ProjectforkHelperRoute::getTasksRoute());
         }
         if($user->authorise('core.create', 'com_projectfork') || $user->authorise('task.create', $asset)) {
-            $buttons['taskform.add'] = 'MOD_PF_DASH_BUTTONS_ADD_TASK';
+            $buttons['taskform.add'] = array('label' => 'MOD_PF_DASH_BUTTONS_ADD_TASK',
+                                             'link'  => ProjectforkHelperRoute::getTasksRoute());
         }
 
         return $buttons;

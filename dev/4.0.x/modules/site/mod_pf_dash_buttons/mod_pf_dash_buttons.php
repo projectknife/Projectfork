@@ -28,12 +28,19 @@ if(!file_exists(JPATH_ADMINISTRATOR.'/components/com_projectfork/projectfork.php
     echo JText::_('MOD_PF_DASH_BUTTONS_PROJECTFORK_NOT_INSTALLED');
 }
 else {
-    require_once(dirname(__FILE__).'/helper.php');
+    if(!file_exists(JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/projectfork.php')) {
+        echo JText::_('MOD_PF_STATS_DIST_PROJECTFORK_FILE_NOT_FOUND');
+    }
+    else {
+        // Include the helper classes
+        require_once dirname(__FILE__).'/helper.php';
+        require_once JPATH_ROOT.'/components/com_projectfork/helpers/route.php';
 
-    // Get buttons
-    $buttons = modPFdashButtonsHelper::getButtons();
+        // Get buttons
+        $buttons = modPFdashButtonsHelper::getButtons();
 
-    // Include layout
-    $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
-    require JModuleHelper::getLayoutPath('mod_pf_dash_buttons', $params->get('layout', 'default'));
+        // Include layout
+        $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
+        require JModuleHelper::getLayoutPath('mod_pf_dash_buttons', $params->get('layout', 'default'));
+    }
 }

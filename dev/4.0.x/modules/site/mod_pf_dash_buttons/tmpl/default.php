@@ -27,11 +27,11 @@ defined('_JEXEC') or die;
 if(count($buttons) == 0) return '';
 ?>
 <div class="row-fluid">
-    <?php foreach($buttons AS $task => $label) : ?>
+    <?php foreach($buttons AS $task => $data) : ?>
     <div class="span3">
-        <a href="<?php echo JRoute::_('index.php?option=com_projectfork&task='.$task);?>" class="thumbnail btn">
+        <a href="<?php echo JRoute::_($data['link'].'&task='.$task);?>" class="thumbnail btn">
         	<p><img src="<?php echo JURI::base();?>components/com_projectfork/assets/projectfork/images/header/icon-48-<?php echo $task;?>.png" /></p>
-            <?php echo JText::_($label);?>
+            <?php echo JText::_($data['label']);?>
         </a>
     </div>
     <?php endforeach; ?>
