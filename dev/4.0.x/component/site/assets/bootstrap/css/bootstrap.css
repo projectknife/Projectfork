@@ -4166,7 +4166,7 @@ input[type="submit"].btn.btn-mini {
   filter: alpha(opacity=80);
 }
 
-.modal {
+div.modal {
   position: fixed;
   top: 50%;
   left: 50%;

@@ -34,3 +34,8 @@
 .task-complete{
 	opacity:0.4;filter:alpha(opacity=40);
 }
+
+/* Modal */
+body.modal{
+	padding: 10px;
+}
