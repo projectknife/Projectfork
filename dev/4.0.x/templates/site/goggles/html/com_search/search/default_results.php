@@ -13,7 +13,7 @@ defined('_JEXEC') or die;
 <ul class="list-striped search-results<?php echo $this->pageclass_sfx; ?>">
 	<?php foreach($this->results as $result) : ?>
 		<li>
-			<?php if ($this->params->get('show_date')) : ?>
+			<?php if (($this->params->get('show_date')) && $result->created) : ?>
 				<span class="pull-right label label-info result-created<?php echo $this->pageclass_sfx; ?>">
 					<?php echo JText::sprintf('JGLOBAL_CREATED_DATE_ON', $result->created); ?>
 				</span>
