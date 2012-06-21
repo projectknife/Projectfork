@@ -187,9 +187,13 @@ box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
 .sidebar-nav ul li > a > img{
 	margin-right: 4px;
 }
+.sidebar-nav ul ul{
+	padding-left: 4px;
+}
 
-.sidebar-nav input{
-	width: auto;
+.sidebar-nav .userdata input[type=text],
+.sidebar-nav .userdata input[type=password]{
+	width: 60%;
 }
 .sidebar-nav .module,
 .sidebar-nav .moduletable,
