@@ -109,25 +109,34 @@ foreach($menu_items AS $i => $menu_item)
 	}
 }
 
-// Try to find the position of the (presumably) main menu
+// Try to find the position and showtitle of the (presumably) main menu
 $query = $db->getQuery(true);
 
-$query->select('position')
+$query->select('position, showtitle')
       ->from('#__modules')
       ->where('id = 1');
 
 $db->setQuery($query->__toString());
-$mm_pos = $db->loadResult();
+$main_menu = $db->loadObject();
 
-if(!$mm_pos) $mm_pos = '';
+if(is_object($main_menu)) {
+    $mm_pos = $main_menu->position;
+    $mm_st  = $main_menu->showtitle;
+}
+else {
+    $mm_pos = '';
+    $mm_st  = '1';
+}
 
 
 // Create a module for the menu
 $cols = array($db->quoteName('id'),
               $db->quoteName('title'),
               $db->quoteName('position'),
+              $db->quoteName('published'),
               $db->quoteName('module'),
               $db->quoteName('access'),
+              $db->quoteName('showtitle'),
               $db->quoteName('params'),
               $db->quoteName('client_id'),
               $db->quoteName('language'));
@@ -135,8 +144,10 @@ $cols = array($db->quoteName('id'),
 $values = array('NULL',
                 $db->quote('Projectfork'),
                 $db->quote($mm_pos),
+                $db->quote('1'),
                 $db->quote('mod_menu'),
                 $db->quote('1'),
+                $db->quote($mm_st),
                 $db->quote('{"menutype":"projectfork"}'),
                 $db->quote('0'),
                 $db->quote('*'));
