@@ -78,7 +78,7 @@ if (!empty($this->item->pagination) AND $this->item->pagination && !$this->item-
 	<?php endif; ?>
 	
 	<?php if (isset ($this->item->toc)) :
-		echo "<div class=\"pull-right\">" . $this->item->toc . "</div>";
+		echo "<div class=\"pull-right nav nav-tabs nav-stacked\">" . $this->item->toc . "</div>";
 	endif; ?>
 	
 	<div class="btn-toolbar">
@@ -127,7 +127,7 @@ if (!empty($this->item->pagination) AND $this->item->pagination && !$this->item-
 	<?php endif; ?>
 	<?php
 if (!empty($this->item->pagination) AND $this->item->pagination AND !$this->item->paginationposition AND !$this->item->paginationrelative):
-	echo $this->item->pagination;
+	echo '<div class="pagination">' . $this->item->pagination . '</div>';
  endif;
 ?>
 	<?php echo $this->item->text; ?>
@@ -152,7 +152,7 @@ if (!empty($this->item->pagination) AND $this->item->pagination AND !$this->item
 	<?php
 if (!empty($this->item->pagination) AND $this->item->pagination AND $this->item->paginationposition AND!$this->item->paginationrelative):
 	echo '<hr />';
-	echo $this->item->pagination;
+	echo '<div class="pagination">' . $this->item->pagination . '</div>';
 ?>
 	<?php endif; ?>
 	<?php if (isset($urls) AND ((!empty($urls->urls_position)  AND ($urls->urls_position=='1')) OR ( $params->get('urls_position')=='1') )): ?>
@@ -165,7 +165,7 @@ if (!empty($this->item->pagination) AND $this->item->pagination AND $this->item-
 	<?php if ($params->get('show_readmore') && $this->item->fulltext != null) :
 		$link1 = JRoute::_('index.php?option=com_users&view=login');
 		$link = new JURI($link1);?>
-	<p class="readmore"> <a href="<?php echo $link; ?>">
+	<p class="readmore"> <a href="<?php echo $link; ?>" class="btn">
 		<?php $attribs = json_decode($this->item->attribs);  ?>
 		<?php
 		if ($attribs->alternative_readmore == null) :
@@ -186,7 +186,8 @@ if (!empty($this->item->pagination) AND $this->item->pagination AND $this->item-
 	<?php endif; ?>
 	<?php
 if (!empty($this->item->pagination) AND $this->item->pagination AND $this->item->paginationposition AND $this->item->paginationrelative):
-	echo $this->item->pagination;
+	echo '<div class="pagination">' . $this->item->pagination . '</div>';
 ?>
 	<?php endif; ?>
-	<?php echo $this->item->event->afterDisplayContent; ?> </div>
+	<?php echo $this->item->event->afterDisplayContent; ?>
+</div>
