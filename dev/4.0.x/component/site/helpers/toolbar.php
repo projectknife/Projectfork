@@ -51,7 +51,7 @@ class ProjectforkHelperToolbar
     {
         $html = array();
 
-        $html[] = '<button class="button btn btn-info" ';
+        $html[] = '<button class="btn btn-info" ';
 
         if($task) {
             $html[] = 'onclick="';
@@ -112,7 +112,7 @@ class ProjectforkHelperToolbar
 
         $html[] = '<div class="btn-group">';
         $html[] = '    '.$this->renderButton($text, $task, $list);
-        $html[] = '    <button class="button btn btn-info dropdown-toggle" data-toggle="dropdown">';
+        $html[] = '    <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">';
         $html[] = '        <span class="caret"></span>';
         $html[] = '    </button>';
         $html[] = '    <ul class="dropdown-menu">';
