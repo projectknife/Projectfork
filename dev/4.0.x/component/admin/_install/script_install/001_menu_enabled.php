@@ -26,8 +26,18 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 $db    = JFactory::getDbo();
 $query = $db->getQuery(true);
 
+// Delete projectfork backend menu item if it exists
+// This should help to avoid duplicate entries
+$query->delete('#__menu')
+      ->where('title = '.$db->quote('projectfork'))
+      ->where('client_id = 1');
+
+$db->setQuery($query);
+$db->query();
+
 
 // Check if a projectfork menu already exists
+$query = $db->getQuery(true);
 $query->select('COUNT(id)')
       ->from('#__menu_types')
       ->where('menutype = '.$db->quote('projectfork'));
