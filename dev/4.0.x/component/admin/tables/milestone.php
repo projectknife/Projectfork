@@ -240,9 +240,9 @@ class PFTableMilestone extends JTable
 		}
 
 		// Verify that the alias is unique
-		$table = JTable::getInstance('Milestone','PFTable');
-		if ($table->load(array('alias'=>$this->alias)) && ($table->id != $this->id || $this->id==0)) {
-			$this->setError(JText::_('JLIB_DATABASE_ERROR_PROJECT_UNIQUE_ALIAS'));
+		$table = JTable::getInstance('Milestone', 'PFTable');
+		if ($table->load(array('alias' => $this->alias, 'project_id' => $this->project_id)) && ($table->id != $this->id || $this->id==0)) {
+			$this->setError(JText::_('JLIB_DATABASE_ERROR_MILESTONE_UNIQUE_ALIAS'));
 			return false;
 		}
 
