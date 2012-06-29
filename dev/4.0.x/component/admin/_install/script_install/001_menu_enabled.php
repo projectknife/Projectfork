@@ -120,7 +120,7 @@ foreach($menu_items AS $i => $menu_item)
 }
 
 // Try to find the position and showtitle of the (presumably) main menu
-$query = $db->getQuery(true);
+/*$query = $db->getQuery(true);
 
 $query->select('position, showtitle')
       ->from('#__modules')
@@ -134,9 +134,12 @@ if(is_object($main_menu)) {
     $mm_st  = $main_menu->showtitle;
 }
 else {
-    $mm_pos = '';
+    $mm_pos = 'position-7';
     $mm_st  = '1';
-}
+}*/
+
+$mm_pos = 'position-7';
+$mm_st  = '1';
 
 
 // Create a module for the menu
@@ -154,7 +157,7 @@ $cols = array($db->quoteName('id'),
 $values = array('NULL',
                 $db->quote('Projectfork'),
                 $db->quote($mm_pos),
-                $db->quote('1'),
+                $db->quote('0'),
                 $db->quote('mod_menu'),
                 $db->quote('1'),
                 $db->quote($mm_st),
@@ -185,3 +188,9 @@ $query->insert('#__modules_menu')
 
 $db->setQuery($query->__toString());
 $db->query();
+
+// Notify the user about the module position
+$format = 'A Projectfork navigation module has been created on position "%s". You may need to change it in the Module Manager to fit into your template.';
+$app    = JFactory::getApplication();
+
+$app->enqueueMessage(JText::sprintf($format, $mm_pos));
