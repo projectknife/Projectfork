@@ -71,6 +71,35 @@ class ProjectforkModelProject extends JModelAdmin
 	}
 
 
+    /**
+     * Method to get the user groups of a project
+     *
+     * @param     integer    $pk    The project id
+     *
+     * @return    array             The user groups
+     **/
+    public function getUserGroups($pk = NULL, $children = true)
+    {
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+		$table = $this->getTable();
+
+        if ($pk > 0) {
+			// Attempt to load the row.
+			$return = $table->load($pk);
+
+			// Check for a table object error.
+			if ($return === false && $table->getError()) {
+				$this->setError($table->getError());
+				return false;
+			}
+
+            return ProjectforkHelper::getGroupsByAccess($table->access, $children);
+		}
+
+        return false;
+    }
+
+
 	/**
 	 * Method to get the record form.
 	 *
@@ -174,7 +203,7 @@ class ProjectforkModelProject extends JModelAdmin
 	public function save($data)
 	{
 	    // Get the users helper class
-	    require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_users'.DS.'helpers'.DS.'users.php');
+	    require_once(JPATH_ADMINISTRATOR.'/components/com_users/helpers/users.php');
 
 
 		// Alter the title for save as copy
@@ -193,7 +222,7 @@ class ProjectforkModelProject extends JModelAdmin
         $can_do     = UsersHelper::getActions();
 
         if(!array_key_exists('rules', $data)) $data['rules']  = array();
-        if(strlen($new_access) && $canDo->get('core.create')) $data['access'] = $this->saveAccessLevel($new_access, $data['rules']);
+        if(strlen($new_access) && $can_do->get('core.create')) $data['access'] = $this->saveAccessLevel($new_access, $data['rules']);
         if($data['access'] <= 0) $data['access'] = 1;
 
 
