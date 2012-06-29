@@ -65,6 +65,7 @@ class ProjectforkViewProject extends JView
 		$user		= JFactory::getUser();
 		$userId		= $user->get('id');
 		$isNew		= ($this->item->id == 0);
+        $canDo		= ProjectforkHelper::getActions('project', $this->item->id);
 		$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $userId);
 
 
@@ -81,7 +82,10 @@ class ProjectforkViewProject extends JView
 		else {
 			// Can't save the record if it's checked out.
 			if (!$checkedOut) {
-				if($this->item->created_by == $userId) {
+			    if (($canDo->get('core.edit') || $canDo->get('project.edit')) ||
+                    (($canDo->get('core.edit.own') || $canDo->get('project.edit.own')) &&
+                    $this->item->created_by == $userId))
+                {
 					JToolBarHelper::apply('project.apply');
 					JToolBarHelper::save('project.save');
                     JToolBarHelper::save2new('project.save2new');

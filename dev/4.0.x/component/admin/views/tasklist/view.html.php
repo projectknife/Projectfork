@@ -66,6 +66,7 @@ class ProjectforkViewTasklist extends JView
 		$userId		= $user->get('id');
 		$isNew		= ($this->item->id == 0);
 		$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $userId);
+        $canDo		= ProjectforkHelper::getActions('tasklist', $this->item->id);
 		JToolBarHelper::title(JText::_('COM_PROJECTFORK_PAGE_'.($checkedOut ? 'VIEW_TASKLIST' : ($isNew ? 'ADD_TASKLIST' : 'EDIT_TASKLIST'))), 'article-add.png');
 
 		// Built the actions for new and existing records.
@@ -80,7 +81,10 @@ class ProjectforkViewTasklist extends JView
 		else {
 			// Can't save the record if it's checked out.
 			if (!$checkedOut) {
-				if($this->item->created_by == $userId) {
+				if (($canDo->get('core.edit') || $canDo->get('tasklist.edit')) ||
+                    (($canDo->get('core.edit.own') || $canDo->get('tasklist.edit.own')) &&
+                    $this->item->created_by == $userId))
+                {
 					JToolBarHelper::apply('tasklist.apply');
 					JToolBarHelper::save('tasklist.save');
                     JToolBarHelper::save2new('tasklist.save2new');

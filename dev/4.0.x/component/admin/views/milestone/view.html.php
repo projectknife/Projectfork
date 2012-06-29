@@ -66,6 +66,7 @@ class ProjectforkViewMilestone extends JView
 		$userId		= $user->get('id');
 		$isNew		= ($this->item->id == 0);
 		$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $userId);
+        $canDo		= ProjectforkHelper::getActions('milestone', $this->item->id);
 		JToolBarHelper::title(JText::_('COM_PROJECTFORK_PAGE_'.($checkedOut ? 'VIEW_MILESTONE' : ($isNew ? 'ADD_MILESTONE' : 'EDIT_MILESTONE'))), 'article-add.png');
 
 		// Built the actions for new and existing records.
@@ -80,7 +81,10 @@ class ProjectforkViewMilestone extends JView
 		else {
 			// Can't save the record if it's checked out.
 			if (!$checkedOut) {
-				if($this->item->created_by == $userId) {
+				if (($canDo->get('core.edit') || $canDo->get('milestone.edit')) ||
+                    (($canDo->get('core.edit.own') || $canDo->get('milestone.edit.own')) &&
+                    $this->item->created_by == $userId))
+                {
 					JToolBarHelper::apply('milestone.apply');
 					JToolBarHelper::save('milestone.save');
                     JToolBarHelper::save2new('milestone.save2new');
