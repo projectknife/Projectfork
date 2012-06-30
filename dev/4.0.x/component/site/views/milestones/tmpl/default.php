@@ -65,8 +65,8 @@ $action_count = count($this->actions);
 					        <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
 					        <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
 					    </div>
-					    <?php if ($user->authorise('core.edit.state', 'com_projectfork') || $user->authorize('milestone.edit.state', 'com_projectfork')
-					          ||  $user->authorise('core.edit', 'com_projectfork') || $user->authorize('milestone.edit', 'com_projectfork')) : ?>
+					    <?php if ($user->authorise('core.edit.state', 'com_projectfork') || $user->authorise('milestone.edit.state', 'com_projectfork')
+					          ||  $user->authorise('core.edit', 'com_projectfork') || $user->authorise('milestone.edit', 'com_projectfork')) : ?>
 							<div class="filter-published btn-group pull-left">
 							    <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
 							        <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>

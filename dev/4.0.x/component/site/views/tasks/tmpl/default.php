@@ -99,8 +99,8 @@ JHtml::_('projectfork.ajaxCompleteTask');
                         <input type="hidden" name="filter_assigned" id="filter_assigned"/>
                     <?php endif; ?>
 
-                    <?php if ($user->authorise('core.edit.state', 'com_projectfork') || $user->authorize('task.edit.state', 'com_projectfork')
-                          ||  $user->authorise('core.edit', 'com_projectfork') || $user->authorize('task.edit', 'com_projectfork')) : ?>
+                    <?php if ($user->authorise('core.edit.state', 'com_projectfork') || $user->authorise('task.edit.state', 'com_projectfork')
+                          ||  $user->authorise('core.edit', 'com_projectfork') || $user->authorise('task.edit', 'com_projectfork')) : ?>
         				<div class="filter-status btn-group">
         						<select onchange="this.form.submit()" class="inputbox" name="filter_published" id="filter_published">
         						    <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>

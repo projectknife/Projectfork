@@ -51,8 +51,8 @@ class ProjectforkModelUser extends UsersModelUser
               ->from('#__pf_projects')
               ->where('access IN('.$groups.')');
 
-        if ((!$user->authorise('core.edit.state', 'com_projectfork') && !$user->authorize('project.edit.state', 'com_projectfork')) &&
-            (!$user->authorise('core.edit', 'com_projectfork') && !$user->authorize('project.edit', 'com_projectfork')))
+        if ((!$user->authorise('core.edit.state', 'com_projectfork') && !$user->authorise('project.edit.state', 'com_projectfork')) &&
+            (!$user->authorise('core.edit', 'com_projectfork') && !$user->authorise('project.edit', 'com_projectfork')))
         {
             $query->where('state = 1');
         }
