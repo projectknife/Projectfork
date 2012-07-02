@@ -62,3 +62,11 @@
 .milestone-edit .dropdown-menu{
 	right:0;left:auto;
 }
+
+/* Tasks */
+.icon-move:hover{
+	cursor:hand;
+	cursor:grab;
+	cursor:-moz-grab;
+	cursor:-webkit-grab;
+}
