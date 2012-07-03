@@ -70,3 +70,13 @@
 	cursor:-moz-grab;
 	cursor:-webkit-grab;
 }
+
+/* Thumbnails Wrapping in Fluid Rows */
+.view-users .row-fluid .thumbnails,
+.view-projects .row-fluid .thumbnails{
+	margin-left: -20px;
+}
+.row-fluid .thumbnails > li[class*="span"]:first-child,
+.row-fluid .thumbnails > li[class*="span"]{
+	margin-left: 20px;
+}
