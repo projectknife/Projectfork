@@ -323,7 +323,7 @@ class PFTableTasklist extends JTable
 	 */
     public function updateByReference($id, $field, $data)
     {
-        require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'helpers'.DS.'projectfork.php');
+        require_once(JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/projectfork.php');
 
         $fields    = array_keys($data);
         $null_date = $this->_db->getNullDate();

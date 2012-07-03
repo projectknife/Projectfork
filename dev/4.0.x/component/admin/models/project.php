@@ -244,7 +244,16 @@ class ProjectforkModelProject extends JModelAdmin
 		}
         $data['rules'] = $rules;
 
-        $id = (int) $data['id'];
+
+        $id      = (int) $data['id'];
+        $is_new  = ($id > 0) ? false : true;
+        $project = null;
+
+        if(!$is_new) {
+            // Load the existing project record before updating it
+            $project = $this->getTable();
+            $project->load($id);
+        }
 
 
         // Store the record
@@ -252,17 +261,39 @@ class ProjectforkModelProject extends JModelAdmin
 		    $this->setActive(array('id' => $this->getState('project.id')));
 
             // To keep data integrity, update deadlines and access of all other project related items
-            if($id) {
+            if(!$is_new && is_object($project)) {
+                $updated    = $this->getTable();
                 $milestones = JTable::getInstance('Milestone', 'PFTable');
                 $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
+                $tasks      = JTable::getInstance('Task', 'PFTable');
 
-                $parent_data = array('access'     => $data['access'],
-                                     'start_date' => $data['start_date'],
-                                     'end_date'   => $data['end_date']
-                                    );
+                $parent_data = array();
+                $null_date   = JFactory::getDbo()->getNullDate();
 
-                $milestones->updateByReference($id, 'project_id', $parent_data);
-                $tasklists->updateByReference($id, 'project_id', $parent_data);
+
+                // Load the just updated row
+                if($updated->load($this->getState('project.id')) === false) return false;
+
+
+                // Check if any relevant values have changed that need to be updated to children
+                if($project->access != $updated->access) {
+                    $parent_data['access'] = $updated->access;
+                }
+
+                if($project->start_date != $updated->start_date && $project->start_date != $null_date) {
+                    $parent_data['start_date'] = $updated->start_date;
+                }
+
+                if($project->start_date != $updated->end_date && $project->end_date != $null_date) {
+                    $parent_data['end_date'] = $updated->end_date;
+                }
+
+
+                if(count($parent_data)) {
+                    $milestones->updateByReference($id, 'project_id', $parent_data);
+                    $tasklists->updateByReference($id, 'project_id', $parent_data);
+                    $tasks->updateByReference($id, 'project_id', $parent_data);
+                }
             }
 
 		    return true;
