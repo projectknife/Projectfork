@@ -126,7 +126,7 @@ $action_count = count($this->actions);
                               <hr />
                               <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-project">
                                   <div class="bar"
-                                       style="width: <?php echo $progress;?>%;"><span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $progress;?>%</span></div>
+                                       style="width: <?php echo ($progress > 0) ? $progress."%": "24px";?>"><span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $progress;?>%</span></div>
                               </div>
                               <div class="btn-group">
                               	<?php if($canEdit || $canEditOwn) : ?>

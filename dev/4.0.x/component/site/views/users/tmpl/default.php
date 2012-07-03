@@ -73,6 +73,8 @@ $uid	    = $user->get('id');
                 <?php
                 $k = 0;
                 foreach($this->items AS $i => $item) :
+                $asset_name = 'com_users&task=profile.edit&user_id=.'.$item->id;
+	            $canEdit	= ($user->authorise('core.edit', $asset_name));
                 ?>
                 <li class="span3">
                     <div class="thumbnail">
@@ -80,12 +82,28 @@ $uid	    = $user->get('id');
                             <img src="http://placehold.it/260x180" alt=""/>
                         </a>
                         <div class="caption">
+                        	<h4>
+                        	    <a href="#">
+                        	        <?php echo $this->escape($item->name);?>
+                        	    </a>
+                        	</h4>
                             <h5>
                                 <a href="#">
                                     <?php echo $this->escape($item->username);?>
                                 </a>
                             </h5>
-                            <p></p>
+                            <?php if($canEdit) : ?>
+                            <div class="btn-group">
+                            <?php /* need to find how to view other user profiles
+                            	<a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_users&view=profile&user_id='.$this->escape($item->id));?>">
+                            	    <i class="icon-user"></i> <?php echo JText::_('COM_PROJECTFORK_PROFILE');?>
+                            	</a>
+                            */ ?>
+                            	   <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_users&task=profile.edit&user_id='.$this->escape($item->id));?>">
+                            	       <i class="icon-edit"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
+                            	   </a>
+                            </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </li>

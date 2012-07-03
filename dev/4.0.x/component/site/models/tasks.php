@@ -110,8 +110,8 @@ class ProjectforkModelTasks extends JModelList
         $value = JRequest::getCmd('filter_published', '');
         $this->setState('filter.published', $value);
 
-        if ((!$user->authorise('core.edit.state', 'com_projectfork') && !$user->authorize('milestone.edit.state', 'com_projectfork')) &&
-            (!$user->authorise('core.edit', 'com_projectfork') && !$user->authorize('milestone.edit', 'com_projectfork'))){
+        if ((!$user->authorise('core.edit.state', 'com_projectfork') && !$user->authorise('milestone.edit.state', 'com_projectfork')) &&
+            (!$user->authorise('core.edit', 'com_projectfork') && !$user->authorise('milestone.edit', 'com_projectfork'))){
 			// Filter on published for those who do not have edit or edit.state rights.
 			$this->setState('filter.published', 1);
 		}

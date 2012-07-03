@@ -99,8 +99,8 @@ JHtml::_('projectfork.ajaxCompleteTask');
                         <input type="hidden" name="filter_assigned" id="filter_assigned"/>
                     <?php endif; ?>
 
-                    <?php if ($user->authorise('core.edit.state', 'com_projectfork') || $user->authorize('task.edit.state', 'com_projectfork')
-                          ||  $user->authorise('core.edit', 'com_projectfork') || $user->authorize('task.edit', 'com_projectfork')) : ?>
+                    <?php if ($user->authorise('core.edit.state', 'com_projectfork') || $user->authorise('task.edit.state', 'com_projectfork')
+                          ||  $user->authorise('core.edit', 'com_projectfork') || $user->authorise('task.edit', 'com_projectfork')) : ?>
         				<div class="filter-status btn-group">
         						<select onchange="this.form.submit()" class="inputbox" name="filter_published" id="filter_published">
         						    <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
@@ -220,10 +220,17 @@ JHtml::_('projectfork.ajaxCompleteTask');
                    				</div>
                             <?php endif; ?>
                				<div class="btn-group">
-	               				<a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>" class="task-title">
-                                   <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
-                                   <?php echo $this->escape($item->title);?>
-                                </a>
+               					<?php if(!$item->complete): ?>
+               						<a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>" class="task-title">
+               						   <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
+               						   <?php echo $this->escape($item->title);?>
+               						</a>
+               					<?php else : ?>
+               						<span class="task-title">
+               						   <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
+               						   <?php echo $this->escape($item->title);?>
+               						</span>
+               					<?php endif;?>
                				</div>
                				<div class="btn-group">
 	               				<small><?php echo $this->escape(JHtml::_('projectfork.truncate', $item->description));?></small>
@@ -232,7 +239,7 @@ JHtml::_('projectfork.ajaxCompleteTask');
                                 echo $this->menu->assignedUsers($x, $item->id, 'tasks', $item->users, ($canEdit || $canEditOwn));
                                 echo $this->menu->priorityList($x, $item->id, 'tasks', $item->priority, ($canEdit || $canEditOwn || $canChange));
 
-                                $this->menu->start(array('class' => 'btn-mini'));
+                                $this->menu->start(array('class' => ($item->complete ? 'btn-mini disabled' : 'btn-mini')));
                                 $this->menu->itemEdit('taskform', $item->id, ($canEdit || $canEditOwn));
                                 $this->menu->itemTrash('tasks', $x, ($canEdit || $canEditOwn));
                                 $this->menu->end();
