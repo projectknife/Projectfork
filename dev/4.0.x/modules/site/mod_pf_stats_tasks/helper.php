@@ -39,11 +39,23 @@ abstract class modPFstatsTasksHelper
 
     public static function getStats($id = 0, $archived = 0, $trashed = 0)
     {
-        $data = array();
-        $data['complete'] = self::getData($id, array('complete = 1'));
-        $data['pending']  = self::getData($id, array('complete = 0'));
-        $data['archived'] = ($archived ? self::getData($id, array('state = 2')) : 0);
-        $data['trashed']  = ($trashed  ? self::getData($id, array('state = -2')) : 0);
+        $complete = new stdClass();
+        $complete->label = JText::_('MOD_PF_STATS_TASKS_COMPLETE');
+        $complete->data  = self::getData($id, array('complete = 1'));
+
+        $pending = new stdClass();
+        $pending->label = JText::_('MOD_PF_STATS_TASKS_PENDING');
+        $pending->data  = self::getData($id, array('complete = 0'));
+
+        $archived = new stdClass();
+        $archived->label = JText::_('MOD_PF_STATS_TASKS_ARCHIVED');
+        $archived->data  = ($archived ? self::getData($id, array('state = 2')) : 0);
+
+        $trashed = new stdClass();
+        $trashed->label = JText::_('MOD_PF_STATS_TASKS_TRASHED');
+        $trashed->data  = ($trashed  ? self::getData($id, array('state = -2')) : 0);
+
+        $data = array($complete, $pending, $archived, $trashed);
 
         return $data;
     }
