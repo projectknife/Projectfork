@@ -2,7 +2,7 @@
 /**
 * @package   Projectfork Task Distribution Statistics
 * @copyright Copyright (C) 2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
+* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 *
 * This file is part of Projectfork.
 *
@@ -23,11 +23,14 @@
 // no direct access
 defined('_JEXEC') or die;
 
+
 if(!file_exists(JPATH_ADMINISTRATOR.'/components/com_projectfork/projectfork.php')) {
+    // Projectfork does not appear to be installed
     echo JText::_('MOD_PF_STATS_DIST_PROJECTFORK_NOT_INSTALLED');
 }
 else {
     if(!file_exists(JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/projectfork.php')) {
+        // Projectfork helper class not found
         echo JText::_('MOD_PF_STATS_DIST_PROJECTFORK_FILE_NOT_FOUND');
     }
     else {
@@ -35,60 +38,32 @@ else {
         require_once dirname(__FILE__).'/helper.php';
         require_once JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/projectfork.php';
 
-        // Load jQuery and jQuery-Visualize
+        // Load jQuery and jQuery-Flot
         JHtml::_('projectfork.jQuery');
-        JHtml::_('projectfork.jQueryVisualize');
+        JHtml::_('projectfork.jQueryFlot');
 
         // Get params
-        $height   = (int) $params->get('height', 240);
-        $width    = $params->get('width', 300);
+        $height   = $params->get('height', 300);
+        $width    = $params->get('width', '100%');
         $show_c   = (int) $params->get('show_completed', 1);
         $show_u   = (int) $params->get('show_unassigned', 1);
 
-        // Check if width param is in percent or pixel
-        $in_percent = false;
-        if(substr($width, -1) == '%') $in_percent = true;
+        // Check if width and height params are in percent or pixel
+        $css_w = (substr($width, -1) == '%'  ? "width:".intval($width)."%;"   : "width:".intval($width)."px;");
+        $css_h = (substr($height, -1) == '%' ? "height:".intval($height)."%;" : "height:".intval($height)."px;");
 
-
-        $width     = (int) $width;
-        $width_js  = "width: '".$width."px',";
-        $width_tbl = "";
-
-        if($in_percent) {
-            $width_js = '';
-            $width_tbl = " width:".$width."%";
-        }
-
-        $refresh_js = '';
-        if(!defined('JQUERY_VISUALIZE_REFRESH') && $in_percent) {
-            define('JQUERY_VISUALIZE_REFRESH', 1);
-
-            $refresh_js = "jQuery(window).resize(function(){"
-                        . "jQuery('.visualize').trigger('visualizeRefresh');"
-                        . "});";
-        }
-
-        // Initialize jQueryVisualize
-        $doc = JFactory::getDocument();
-        $doc->addScriptDeclaration("jQuery(function(){
-                                        ".$refresh_js."
-                                        jQuery('#mod-pf-stats-dist').visualize({
-                                            type: 'pie',
-                                            height: '".$height."px',
-                                            ".$width_js."
-                                            pieMargin: 10,
-                                            appendTitle: false
-                                        });
-                                    });");
 
         // Get current project and statistics
         $project = modPFstatsDistHelper::getProject();
         $stats   = modPFstatsDistHelper::getStats($params, $project->id);
 
         // Include layout
-        if(count($stats['users']) > 0 || $show_u == 1) {
+        if(count($stats) > 0) {
             $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
             require JModuleHelper::getLayoutPath('mod_pf_stats_dist', $params->get('layout', 'default'));
+        }
+        else {
+            return '';
         }
     }
 }

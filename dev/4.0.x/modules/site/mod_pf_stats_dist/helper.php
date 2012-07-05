@@ -49,13 +49,13 @@ abstract class modPFstatsDistHelper
         $limit    = (int) $params->get('limit', 5);
 
         // Get the user task distribution
-        $query->select('COUNT(a.user_id) AS total, a.user_id AS id')
+        $query->select('COUNT(a.user_id) AS data')
               ->from('#__pf_ref_users AS a');
 
         $query->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id');
         $query->where('a.item_type = '.$db->quote('task'));
 
-        $query->select('u.username, u.name');
+        $query->select('u.name AS label');
         $query->join('LEFT', '#__users AS u ON u.id = a.user_id');
 
         if($id) {
@@ -73,7 +73,7 @@ abstract class modPFstatsDistHelper
         }
 
         $query->group('a.user_id');
-        $query->order('total', 'desc');
+        $query->order('data', 'desc');
 
         $db->setQuery($query->__toString(), 0, $limit);
         $data = (array) $db->loadObjectList();
@@ -124,13 +124,22 @@ abstract class modPFstatsDistHelper
 
             // Calculate the amount of unassigned tasks
             $unassigned = $total - $assigned;
+
+
+            $obj_unassigned = new stdclass();
+            $obj_unassigned->data  = $unassigned;
+            $obj_unassigned->label = JText::_('MOD_PF_STATS_DIST_UNASSIGNED');
+
+            $data[] = $obj_unassigned;
         }
 
 
-        // Prepare the return values
-        $result = array('users' => $data, 'unassigned' => $unassigned);
+        // Data values must be of type integer!
+        foreach($data AS $i => $item)
+        {
+            $data[$i]->data = (int) $item->data;
+        }
 
-
-        return $result;
+        return $data;
     }
 }

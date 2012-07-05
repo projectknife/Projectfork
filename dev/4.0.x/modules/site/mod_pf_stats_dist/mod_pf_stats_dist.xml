@@ -9,15 +9,10 @@
 	<authorUrl>www.projectfork.net</authorUrl>
 	<version>1.0.0</version>
 	<description>MOD_PF_STATS_DIST_XML_DESCRIPTION</description>
-	<position>pf-dashboard-left</position>
-	<published>0</published>
-    <scriptfile>script.php</scriptfile>
 	<files>
 		<filename module="mod_pf_stats_dist">mod_pf_stats_dist.php</filename>
 		<folder>tmpl</folder>
 		<filename>helper.php</filename>
-		<filename>script.php</filename>
-		<filename>LICENSE.txt</filename>
 		<filename>index.html</filename>
 		<filename>mod_pf_stats_dist.xml</filename>
 	</files>
@@ -48,13 +43,13 @@
 				</field>
                 <field type="text"
                        name="height"
-                       default="240"
+                       default="300"
                        size="15"
                        label="MOD_PF_STATS_DIST_CONFIG_HEIGHT_LABEL"
                        description="MOD_PF_STATS_DIST_CONFIG_HEIGHT_DESC" />
                 <field type="text"
                        name="width"
-                       default="300"
+                       default="100%"
                        size="15"
                        label="MOD_PF_STATS_DIST_CONFIG_WIDTH_LABEL"
                        description="MOD_PF_STATS_DIST_CONFIG_WIDTH_DESC" />
