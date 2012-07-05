@@ -9,10 +9,15 @@
 	<authorUrl>www.projectfork.net</authorUrl>
 	<version>1.0.0</version>
 	<description>MOD_PF_STATS_TASKS_XML_DESCRIPTION</description>
+    <position>pf-dashboard-left</position>
+    <published>1</published>
+    <show_title>1</show_title>
+    <scriptfile>script.php</scriptfile>
 	<files>
 		<filename module="mod_pf_stats_tasks">mod_pf_stats_tasks.php</filename>
 		<folder>tmpl</folder>
 		<filename>helper.php</filename>
+		<filename>script.php</filename>
 		<filename>index.html</filename>
 		<filename>mod_pf_stats_tasks.xml</filename>
 	</files>
