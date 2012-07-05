@@ -75,22 +75,21 @@ $uid	    = $user->get('id');
                 foreach($this->items AS $i => $item) :
                 $asset_name = 'com_users&task=profile.edit&user_id=.'.$item->id;
 	            $canEdit	= ($user->authorise('core.edit', $asset_name));
+                $slug       = $item->id.':'.JFilterOutput::stringURLSafe($item->username);
                 ?>
                 <li class="span3">
                     <div class="thumbnail">
-                        <a href="#">
+                        <a href="<?php echo ProjectforkHelperRoute::getUserRoute($slug);?>">
                             <img src="http://placehold.it/260x180" alt=""/>
                         </a>
                         <div class="caption">
                         	<h4>
-                        	    <a href="#">
+                        	    <a href="<?php echo ProjectforkHelperRoute::getUserRoute($slug);?>">
                         	        <?php echo $this->escape($item->name);?>
                         	    </a>
                         	</h4>
                             <h5>
-                                <a href="#">
-                                    <?php echo $this->escape($item->username);?>
-                                </a>
+                                <?php echo $this->escape($item->username);?>
                             </h5>
                             <?php if($canEdit) : ?>
                             <div class="btn-group">
@@ -99,9 +98,9 @@ $uid	    = $user->get('id');
                             	    <i class="icon-user"></i> <?php echo JText::_('COM_PROJECTFORK_PROFILE');?>
                             	</a>
                             */ ?>
-                            	   <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_users&task=profile.edit&user_id='.$this->escape($item->id));?>">
+                            	   <!--<a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_users&task=profile.edit&user_id='.$this->escape($item->id));?>">
                             	       <i class="icon-edit"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
-                            	   </a>
+                            	   </a>-->
                             </div>
                             <?php endif; ?>
                         </div>

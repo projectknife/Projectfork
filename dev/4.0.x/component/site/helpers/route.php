@@ -193,6 +193,57 @@ abstract class ProjectforkHelperRoute
 
 
     /**
+     * Creates a link to the users overview
+     *
+     * @param    string    $project      The project slug. Optional
+     *
+     * @return   string    $link         The link
+     */
+    public static function getUsersRoute($project = '')
+    {
+        $link  = 'index.php?option=com_projectfork&view=users';
+        $link .= '&filter_project='.$project;
+
+        $needles = array('filter_project' => array((int) $project)
+                        );
+
+        if ($item = self::_findItem($needles, 'users')) {
+			$link .= '&Itemid='.$item;
+		}
+		elseif ($item = self::_findItem(null, 'users')) {
+			$link .= '&Itemid='.$item;
+		}
+
+		return $link;
+    }
+
+
+    /**
+     * Creates a link to a user item view
+     *
+     * @param    string    $id           The user slug
+     *
+     * @return   string    $link         The link
+     */
+    public static function getUserRoute($id)
+    {
+        $link  = 'index.php?option=com_projectfork&view=user';
+        $link .= '&id='.$id;
+
+        $needles = array('id' => array((int) $id));
+
+        if ($item = self::_findItem($needles, 'user')) {
+			$link .= '&Itemid='.$item;
+		}
+		elseif ($item = self::_findItem(null, 'users')) {
+			$link .= '&Itemid='.$item;
+		}
+
+		return $link;
+    }
+
+
+    /**
      * Searches a menu item id based on $needles and a view
      *
      * @param    array    $needles     Query segments to search for
