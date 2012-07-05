@@ -418,32 +418,6 @@ abstract class JHtmlProjectfork
 
 
     /**
-     * Loads jquery-visualize JS files
-     *
-     * @return   void
-	 */
-    static function jQueryVisualize()
-    {
-        if(!defined('COM_PROJECTFORK_JQUERY_VISUALIZE')) {
-            jimport( 'joomla.application.component.helper' );
-
-		    $doc = JFactory::getDocument();
-            $uri = JFactory::getURI();
-
-            if($doc->getType() == 'html') {
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/enhancejs/enhance.js');
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/js/excanvas.js');
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/js/visualize.jQuery.js');
-
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/visualize.css');
-            }
-
-            define('COM_PROJECTFORK_JQUERY_VISUALIZE', 1);
-        }
-    }
-
-
-    /**
      * Loads jquery-flot JS files
      *
      * @return   void
