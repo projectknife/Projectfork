@@ -32,6 +32,7 @@ abstract class modPFstatsLoadHelper
         $db    = JFactory::getDbo();
         $date  = JDate::getInstance();
 		$query = $db->getQuery(true);
+        $data  = array();
 
         // Load the projects
         $query->select('a.title, a.end_date, COUNT(t.id) AS tasks')
@@ -54,7 +55,7 @@ abstract class modPFstatsLoadHelper
 
         foreach($projects AS $i => $project)
         {
-            $projects[$i]->load = 0.00;
+            $load = 0.00;
 
             if($project->tasks > 0) {
                 $project_date = JDate::getInstance($project->end_date);
@@ -63,10 +64,16 @@ abstract class modPFstatsLoadHelper
                 $secs_left = $deadline - $date_unix;
                 $days_left = round($secs_left / 86400, 2);
 
-                $projects[$i]->load = round($project->tasks / $days_left, 2);
+                $load = round($project->tasks / $days_left, 2);
             }
+
+            $set = new stdClass();
+            $set->data  = array(array($i, $load));
+            $set->label = $project->title;
+
+            $data[] = $set;
         }
 
-        return $projects;
+        return $data;
     }
 }

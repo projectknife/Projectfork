@@ -23,37 +23,41 @@
 // no direct access
 defined('_JEXEC') or die;
 
+
 if(!file_exists(JPATH_ADMINISTRATOR.'/components/com_projectfork/projectfork.php')) {
-    echo JText::_('MOD_PF_STATS_LOAD_PROJECTFORK_NOT_INSTALLED');
+    // Projectfork does not appear to be installed
+    echo JText::_('MOD_PF_STATS_TASKS_PROJECTFORK_NOT_INSTALLED');
 }
 else {
-    // Include the helper classes
-    require_once dirname(__FILE__).'/helper.php';
+    if(!file_exists(JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/projectfork.php')) {
+        // Projectfork helper class not found
+        echo JText::_('MOD_PF_STATS_TASKS_PROJECTFORK_FILE_NOT_FOUND');
+    }
+    else {
+        // Include the helper classes
+        require_once dirname(__FILE__).'/helper.php';
+        require_once JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/projectfork.php';
 
-    // Load jQuery and jQuery-Visualize
-    JHtml::_('projectfork.jQuery');
-    JHtml::_('projectfork.jQueryVisualize');
+        // Load jQuery and jQuery-Flot
+        JHtml::_('projectfork.jQuery');
+        JHtml::_('projectfork.jQueryFlot');
 
-    // Get params
-    $height = (int) $params->get('height', 240);
-    $width  = (int) $params->get('width', 300);
+        // Get params
+        $height = $params->get('height', 300);
+        $width  = $params->get('width', '100%');
 
-    // Initialize jQueryVisualize
-    $doc = JFactory::getDocument();
-    $doc->addScriptDeclaration("jQuery(function(){jQuery('#mod-pf-stats-load').visualize({
-                                        type: 'bar',
-                                        height: '".$height."px',
-                                        width: '".$width."px',
-                                        appendTitle: false
-                                    });
-                                });");
+        // Check if width and height params are in percent or pixel
+        $css_w = (substr($width, -1) == '%'  ? "width:".intval($width)."%;"   : "width:".intval($width)."px;");
+        $css_h = (substr($height, -1) == '%' ? "height:".intval($height)."%;" : "height:".intval($height)."px;");
 
-    // Get current project and statistics
-    $stats = modPFstatsLoadHelper::getStats($params);
 
-    // Include layout
-    if(count($stats) > 0) {
-        $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
-        require JModuleHelper::getLayoutPath('mod_pf_stats_load', $params->get('layout', 'default'));
+        // Get current project and statistics
+        $stats = modPFstatsLoadHelper::getStats($params);
+
+        // Include layout
+        if(count($stats) > 0) {
+            $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
+            require JModuleHelper::getLayoutPath('mod_pf_stats_load', $params->get('layout', 'default'));
+        }
     }
 }
