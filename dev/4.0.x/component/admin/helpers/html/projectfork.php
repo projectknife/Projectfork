@@ -418,7 +418,7 @@ abstract class JHtmlProjectfork
 
 
     /**
-     * Loads bootstrap-visualize JS files
+     * Loads jquery-visualize JS files
      *
      * @return   void
 	 */
@@ -436,10 +436,33 @@ abstract class JHtmlProjectfork
                 $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/js/visualize.jQuery.js');
 
                 $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/visualize.css');
-                //$doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/visualize-light.css');
             }
 
             define('COM_PROJECTFORK_JQUERY_VISUALIZE', 1);
+        }
+    }
+
+
+    /**
+     * Loads jquery-flot JS files
+     *
+     * @return   void
+	 */
+    static function jQueryFlot()
+    {
+        if(!defined('COM_PROJECTFORK_JQUERY_FLOT')) {
+            jimport( 'joomla.application.component.helper' );
+
+		    $doc = JFactory::getDocument();
+            $uri = JFactory::getURI();
+
+            if($doc->getType() == 'html') {
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/flot/jquery.flot.min.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/flot/jquery.flot.pie.min.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/flot/jquery.flot.resize.min.js');
+            }
+
+            define('COM_PROJECTFORK_JQUERY_FLOT', 1);
         }
     }
 }
