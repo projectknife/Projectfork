@@ -80,6 +80,9 @@ class ProjectforkModelProject extends JModelAdmin
      **/
     public function getUserGroups($pk = NULL, $children = true)
     {
+        // Include the helper class
+        require_once(JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/projectfork.php');
+
         $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
 		$table = $this->getTable();
 
@@ -128,12 +131,297 @@ class ProjectforkModelProject extends JModelAdmin
 			$form->setFieldAttribute('state', 'disabled', 'true');
 
 			// Disable fields while saving.
-			// The controller has already verified this is an article you can edit.
+			// The controller has already verified this is an item you can edit.
 			$form->setFieldAttribute('state', 'filter', 'unset');
 		}
 
 		return $form;
 	}
+
+
+	/**
+	 * Method to save the form data.
+	 *
+	 * @param     array	     The form data
+	 * @return    boolean    True on success
+	 */
+	public function save($data)
+	{
+ 	   // Get the users helper class
+	    require_once(JPATH_ADMINISTRATOR.'/components/com_users/helpers/users.php');
+
+		// Alter the title for save as copy
+		if (JRequest::getVar('task') == 'save2copy') {
+			list($title, $alias) = $this->generateNewTitle($data['alias'], $data['title']);
+
+			$data['title'] = $title;
+			$data['alias'] = $alias;
+		}
+        else {
+            // Always re-generate the alias unless save2copy
+            $data['alias'] = '';
+        }
+
+        // Create new access level?
+        $new_access = trim($data['access_new']);
+        $can_do     = UsersHelper::getActions();
+
+        if(!isset($data['rules'])) {
+            $data['rules']= array();
+        }
+
+        if(strlen($new_access) && $can_do->get('core.create')) {
+            $data['access'] = $this->saveAccessLevel($new_access, $data['rules']);
+        }
+
+        if($data['access'] <= 0) $data['access'] = 1;
+
+
+        // Filter the rules
+        $rules = array();
+        foreach ((array) $data['rules'] as $action => $ids)
+		{
+			if(is_numeric($action)) continue;
+
+            // Build the rules array.
+			$rules[$action] = array();
+			foreach ($ids as $id => $p)
+			{
+				if ($p !== '')
+				{
+					$rules[$action][$id] = ($p == '1' || $p == 'true') ? true : false;
+				}
+			}
+		}
+        $data['rules'] = $rules;
+
+
+        $id      = (int) $data['id'];
+        $is_new  = ($id > 0) ? false : true;
+        $project = null;
+
+        if(!$is_new) {
+            // Load the existing project record before updating it
+            $project = $this->getTable();
+            $project->load($id);
+        }
+
+
+        // Store the record
+		if(parent::save($data)) {
+		    $this->setActive(array('id' => $this->getState('project.id')));
+
+            // To keep data integrity, update all child assets
+            if(!$is_new && is_object($project)) {
+                $updated    = $this->getTable();
+                $milestones = JTable::getInstance('Milestone', 'PFTable');
+                $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
+                $tasks      = JTable::getInstance('Task', 'PFTable');
+
+                $parent_data = array();
+                $null_date   = JFactory::getDbo()->getNullDate();
+
+
+                // Load the just updated row
+                if($updated->load($this->getState('project.id')) === false) return false;
+
+
+                // Check if any relevant values have changed that need to be updated to children
+                if($project->access != $updated->access) {
+                    $parent_data['access'] = $updated->access;
+                }
+
+                if($project->start_date != $updated->start_date && $project->start_date != $null_date) {
+                    $parent_data['start_date'] = $updated->start_date;
+                }
+
+                if($project->start_date != $updated->end_date && $project->end_date != $null_date) {
+                    $parent_data['end_date'] = $updated->end_date;
+                }
+
+                if($project->state != $updated->state) {
+                    $parent_data['state'] = $updated->state;
+                }
+
+
+                if(count($parent_data)) {
+                    $milestones->updateByReference($id, 'project_id', $parent_data);
+                    $tasklists->updateByReference($id, 'project_id', $parent_data);
+                    $tasks->updateByReference($id, 'project_id', $parent_data);
+                }
+            }
+
+		    return true;
+		}
+
+		return false;
+	}
+
+
+    /**
+	 * Method to set a project to active on the current user
+	 *
+	 * @param     array	     The form data
+	 * @return    boolean    True on success
+	 */
+    public function setActive($data)
+    {
+        $app = JFactory::getApplication();
+
+        $id = (int) $data['id'];
+
+        if ($id) {
+            // Load the project and verify the access
+            $user  = JFactory::getUser();
+            $table = $this->getTable();
+
+            if ($table->load($id) === false) {
+                return false;
+            }
+
+            if (!$user->authorise('core.admin')) {
+		        if(!in_array($table->access, $user->getAuthorisedViewLevels())) {
+		            $this->setError(JText::_('COM_PROJECTFORK_ERROR_PROJECT_ACCESS'));
+		            return false;
+		        }
+            }
+
+            $app->setUserState('com_projectfork.project.active.id', $id);
+            $app->setUserState('com_projectfork.project.active.title', $table->title);
+        }
+        else {
+            $app->setUserState('com_projectfork.project.active.id', 0);
+            $app->setUserState('com_projectfork.project.active.title', '');
+        }
+
+        return true;
+    }
+
+
+    /**
+	 * Method to delete one or more records.
+	 *
+	 * @param     array    &$pks    An array of record primary keys.
+	 * @return    boolean           True if successful, false if an error occurs.
+	 */
+    public function delete(&$pks)
+    {
+        $original_pks = $pks;
+
+        // Delete the records
+        $success = parent::delete($pks);
+
+        // Cancel if something went wrong
+        if(!$success) return false;
+
+
+        $app        = JFactory::getApplication();
+        $milestones = JTable::getInstance('Milestone', 'PFTable');
+        $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
+        $tasks      = JTable::getInstance('Task', 'PFTable');
+
+        $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
+
+        foreach ($pks as $i => $pk)
+		{
+		    // Delete all other items referenced to each project
+            if (!$milestones->deleteByReference($pk, 'project_id')) $success = false;
+            if (!$tasklists->deleteByReference($pk, 'project_id'))  $success = false;
+            if (!$tasks->deleteByReference($pk, 'project_id'))      $success = false;
+
+            // The active project has been delete?
+            if ($active_id == $pk) $this->setActive( array('id' => 0) );
+        }
+
+        return $success;
+    }
+
+
+	/**
+	 * Custom clean the cache of com_projectfork and projectfork modules
+	 *
+	 */
+	protected function cleanCache()
+	{
+		parent::cleanCache('com_projectfork');
+	}
+
+
+    /**
+	 * Method to change the title & alias.
+     * Overloaded from JModelAdmin class
+	 *
+	 * @param    string     $alias    The alias
+	 * @param    string     $title    The title
+	 * @return	 array                Contains the modified title and alias
+	 */
+	protected function generateNewTitle($alias, $title)
+	{
+		// Alter the title & alias
+		$table = $this->getTable();
+
+		while ($table->load(array('alias' => $alias)))
+        {
+			$m = null;
+
+			if (preg_match('#-(\d+)$#', $alias, $m)) {
+				$alias = preg_replace('#-(\d+)$#', '-'.($m[1] + 1).'', $alias);
+			}
+            else {
+				$alias .= '-2';
+			}
+
+
+			if (preg_match('#\((\d+)\)$#', $title, $m)) {
+				$title = preg_replace('#\(\d+\)$#', '('.($m[1] + 1).')', $title);
+			}
+            else {
+				$title .= ' (2)';
+			}
+		}
+
+		return array($title, $alias);
+	}
+
+
+    /**
+    * Method to generate a new access level for a project
+    *
+    * @param    string    $title    The project title
+    * @param    array     $rules    Optional associated user groups
+    *
+    * @return   integer             The access level id
+    **/
+    protected function saveAccessLevel($title, $tmp_rules = array())
+    {
+        // Get user viewing level model
+        JModel::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_users/models');
+
+        $model = JModel::getInstance('Level', 'UsersModel');
+
+
+        // Trim project name if too long for access level
+        if(strlen($title) > 100) $title = substr($title, 0, 97).'...';
+
+
+        // Filter out groups from the permission rules
+        $rules = array();
+        foreach($tmp_rules AS $key => $value)
+        {
+            if(is_numeric($key) && is_numeric($value)) $rules[] = $value;
+        }
+
+
+        // Set access level data
+        $data = array('id' => 0, 'title' => $title, 'rules' => $rules);
+
+
+        // Store access level
+        if(!$model->save($data)) return false;
+
+
+        return $model->getState('level.id');
+    }
 
 
     /**
@@ -192,256 +480,4 @@ class ProjectforkModelProject extends JModelAdmin
 
 		return $data;
 	}
-
-
-	/**
-	 * Method to save the form data.
-	 *
-	 * @param     array	     The form data
-	 * @return    boolean    True on success
-	 */
-	public function save($data)
-	{
-	    // Get the users helper class
-	    require_once(JPATH_ADMINISTRATOR.'/components/com_users/helpers/users.php');
-
-
-		// Alter the title for save as copy
-		if (JRequest::getVar('task') == 'save2copy') {
-			list($title,$alias) = $this->generateNewTitle($data['alias'], $data['title']);
-			$data['title']	= $title;
-			$data['alias']	= $alias;
-		}
-        else {
-            // Always re-generate the alias unless save2copy
-            $data['alias'] = '';
-        }
-
-        // Create new access level?
-        $new_access = trim($data['access_new']);
-        $can_do     = UsersHelper::getActions();
-
-        if(!array_key_exists('rules', $data)) $data['rules']  = array();
-        if(strlen($new_access) && $can_do->get('core.create')) $data['access'] = $this->saveAccessLevel($new_access, $data['rules']);
-        if($data['access'] <= 0) $data['access'] = 1;
-
-
-        // Filter the rules
-        $rules = array();
-        foreach ((array) $data['rules'] as $action => $ids)
-		{
-			if(is_numeric($action)) continue;
-
-            // Build the rules array.
-			$rules[$action] = array();
-			foreach ($ids as $id => $p)
-			{
-				if ($p !== '')
-				{
-					$rules[$action][$id] = ($p == '1' || $p == 'true') ? true : false;
-				}
-			}
-		}
-        $data['rules'] = $rules;
-
-
-        $id      = (int) $data['id'];
-        $is_new  = ($id > 0) ? false : true;
-        $project = null;
-
-        if(!$is_new) {
-            // Load the existing project record before updating it
-            $project = $this->getTable();
-            $project->load($id);
-        }
-
-
-        // Store the record
-		if(parent::save($data)) {
-		    $this->setActive(array('id' => $this->getState('project.id')));
-
-            // To keep data integrity, update deadlines and access of all other project related items
-            if(!$is_new && is_object($project)) {
-                $updated    = $this->getTable();
-                $milestones = JTable::getInstance('Milestone', 'PFTable');
-                $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
-                $tasks      = JTable::getInstance('Task', 'PFTable');
-
-                $parent_data = array();
-                $null_date   = JFactory::getDbo()->getNullDate();
-
-
-                // Load the just updated row
-                if($updated->load($this->getState('project.id')) === false) return false;
-
-
-                // Check if any relevant values have changed that need to be updated to children
-                if($project->access != $updated->access) {
-                    $parent_data['access'] = $updated->access;
-                }
-
-                if($project->start_date != $updated->start_date && $project->start_date != $null_date) {
-                    $parent_data['start_date'] = $updated->start_date;
-                }
-
-                if($project->start_date != $updated->end_date && $project->end_date != $null_date) {
-                    $parent_data['end_date'] = $updated->end_date;
-                }
-
-
-                if(count($parent_data)) {
-                    $milestones->updateByReference($id, 'project_id', $parent_data);
-                    $tasklists->updateByReference($id, 'project_id', $parent_data);
-                    $tasks->updateByReference($id, 'project_id', $parent_data);
-                }
-            }
-
-		    return true;
-		}
-
-		return false;
-	}
-
-
-    /**
-	 * Method to set a project to active on the current user
-	 *
-	 * @param     array	     The form data
-	 * @return    boolean    True on success
-	 */
-    public function setActive($data)
-    {
-        $app = JFactory::getApplication();
-
-        $id = (int) $data['id'];
-
-        if($id) {
-            $item = $this->getItem($id);
-            if(!$item) return false;
-
-            $app->setUserState('com_projectfork.project.active.id', $id);
-            $app->setUserState('com_projectfork.project.active.title', $item->title);
-        }
-        else {
-            $app->setUserState('com_projectfork.project.active.id', 0);
-            $app->setUserState('com_projectfork.project.active.title', '');
-        }
-
-        return true;
-    }
-
-
-	/**
-	 * Custom clean the cache of com_projectfork and projectfork modules
-	 *
-	 */
-	protected function cleanCache()
-	{
-		parent::cleanCache('com_projectfork');
-	}
-
-
-    /**
-	 * Method to change the title & alias.
-     * Overloaded from JModelAdmin class
-	 *
-	 * @param    string     $alias    The alias
-	 * @param    string     $title    The title
-	 * @return	 array                Contains the modified title and alias
-	 */
-	protected function generateNewTitle($alias, $title)
-	{
-		// Alter the title & alias
-		$table = $this->getTable();
-		while ($table->load(array('alias' => $alias))) {
-			$m = null;
-			if (preg_match('#-(\d+)$#', $alias, $m)) {
-				$alias = preg_replace('#-(\d+)$#', '-'.($m[1] + 1).'', $alias);
-			} else {
-				$alias .= '-2';
-			}
-			if (preg_match('#\((\d+)\)$#', $title, $m)) {
-				$title = preg_replace('#\(\d+\)$#', '('.($m[1] + 1).')', $title);
-			} else {
-				$title .= ' (2)';
-			}
-		}
-
-		return array($title, $alias);
-	}
-
-
-    /**
-    * Method to generate a new access level for a project
-    *
-    * @param    string    $title    The project title
-    * @param    array     $rules    Optional associated user groups
-    *
-    * @return   integer             The access level id
-    **/
-    protected function saveAccessLevel($title, $tmp_rules = array())
-    {
-        // Get user viewing level model
-        JModel::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_users'.DS.'models');
-
-        $model = JModel::getInstance('Level', 'UsersModel');
-
-
-        // Trim project name if too long for access level
-        if(strlen($title) > 100) $title = substr($title, 0, 97).'...';
-
-
-        // Filter out groups from the permission rules
-        $rules = array();
-        foreach($tmp_rules AS $key => $value)
-        {
-            if(is_numeric($key) && is_numeric($value)) $rules[] = $value;
-        }
-
-
-        // Set access level data
-        $data = array('id' => 0, 'title' => $title, 'rules' => $rules);
-
-
-        // Store access level
-        if(!$model->save($data)) return false;
-
-        $id = $model->getState('level.id');
-
-
-        return $id;
-    }
-
-
-    /**
-	 * Method to delete one or more records.
-	 *
-	 * @param     array    &$pks    An array of record primary keys.
-	 * @return    boolean           True if successful, false if an error occurs.
-	 */
-    public function delete(&$pks)
-    {
-        $success = parent::delete($pks);
-        $app     = JFactory::getApplication();
-
-        $milestones = JTable::getInstance('Milestone', 'PFTable');
-        $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
-
-        $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
-
-        foreach ($pks as $i => $pk)
-		{
-		    // Delete all other items referenced to each project
-            if(!$milestones->deleteByReference($pk, 'project_id')) $success = false;
-            if(!$tasklists->deleteByReference($pk, 'project_id'))  $success = false;
-
-            // The active project has been delete?
-            if($active_id == $pk) {
-                $app->setUserState('com_projectfork.project.active.id', 0);
-                $app->setUserState('com_projectfork.project.active.title', '');
-            }
-        }
-
-        return $success;
-    }
 }

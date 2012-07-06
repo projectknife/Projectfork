@@ -404,9 +404,7 @@ class PFTableMilestone extends JTable
         // Find access children if access field is in the data
         $access_children = array();
         if(in_array('access', $fields)) {
-            if($data['access']) {
-                $access_children = array_keys(ProjectforkHelper::getChildrenOfAccess($data['access']));
-            }
+            $access_children = array_keys(ProjectforkHelper::getChildrenOfAccess($data['access']));
         }
 
 
@@ -434,7 +432,7 @@ class PFTableMilestone extends JTable
                         $tmp_val_2 = strtotime($item->$key);
                         if($tmp_val_1 > 0) {
                             if(($tmp_val_1 > $tmp_val_2) && $tmp_val_2 > 0) {
-                                $updates[$key] = $key.' = '.$this->_db->quote($val);
+                                $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
                             }
                         }
                         break;
@@ -444,19 +442,30 @@ class PFTableMilestone extends JTable
                         $tmp_val_2 = strtotime($item->$key);
                         if($tmp_val_1 > 0) {
                             if(($tmp_val_1 < $tmp_val_2)) {
-                                $updates[$key] = $key.' = '.$this->_db->quote($val);
+                                $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
                             }
                         }
                         break;
 
                     case 'access':
                         if($val != $item->$key) {
-                            if(!in_array($item->$key, $access_children)) $updates[$key] = $key.' = '.$this->_db->quote($val);
+                            if(!in_array($item->$key, $access_children)) $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
+                        }
+                        break;
+
+                    case 'state':
+                        if($val != $item->$key) {
+                            // Do not publish/unpublish items that are currently archived or trashed
+                            if(($item->key == '2' || $item->key == '-2') && ($val == '0' || $val == '1')) {
+                                continue;
+                            }
+
+                            $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
                         }
                         break;
 
                     default:
-                        if($item->$key != $val) $updates[$key] = $key.' = '.$this->_db->quote($val);
+                        if($item->$key != $val) $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
                         break;
                 }
             }
@@ -471,7 +480,6 @@ class PFTableMilestone extends JTable
             }
         }
     }
-
 
 
 	/**
