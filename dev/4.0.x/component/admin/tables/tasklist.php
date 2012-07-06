@@ -95,7 +95,7 @@ class PFTableTasklist extends JTable
 			if ($result = $this->_db->loadResult()) $assetId = (int) $result;
         }
         else {
-            // This is a task list under a project.
+            // This is a task list list under a project.
             if ($this->project_id) {
     			// Build the query to get the asset id for the parent project.
     			$query	= $db->getQuery(true);
@@ -193,9 +193,9 @@ class PFTableTasklist extends JTable
 		}
 
 		// Verify that the alias is unique
-		$table = JTable::getInstance('Tasklist','PFTable');
-		if ($table->load(array('alias'=>$this->alias)) && ($table->id != $this->id || $this->id==0)) {
-			$this->setError(JText::_('JLIB_DATABASE_ERROR_PROJECT_UNIQUE_ALIAS'));
+		$table = JTable::getInstance('Tasklist', 'PFTable');
+		if ($table->load(array('alias'=>$this->alias, 'project_id' => $this->project_id)) && ($table->id != $this->id || $this->id==0)) {
+			$this->setError(JText::_('JLIB_DATABASE_ERROR_TASKLIST_UNIQUE_ALIAS'));
 			return false;
 		}
 
