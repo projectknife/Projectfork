@@ -127,4 +127,20 @@ class ProjectforkModelTasklistForm extends ProjectforkModelTasklist
 	{
 		return base64_encode($this->getState('return_page'));
 	}
+
+
+    /**
+	 * Method to get the data that should be injected in the form.
+	 *
+	 * @return    mixed    The data for the form.
+	 */
+	protected function loadFormData()
+	{
+		// Check the session for previously entered form data.
+		$data = JFactory::getApplication()->getUserState('com_projectfork.edit.tasklistform.data', array());
+
+		if(empty($data)) $data = $this->getItem();
+
+		return $data;
+	}
 }
