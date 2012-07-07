@@ -84,9 +84,9 @@ class ProjectforkViewTaskForm extends JView
 		if (count($progress) == 3) {
 			$this->form->setFieldAttribute("complete", "type", "integer");
 				
-			$this->form->setFieldAttribute("complete", "first", "$progress[1]");
-			$this->form->setFieldAttribute("complete", "last", "$progress[2]");
-			$this->form->setFieldAttribute("complete", "step", "$progress[3]");
+			$this->form->setFieldAttribute("complete", "first", "$progress[0]");
+			$this->form->setFieldAttribute("complete", "last", "$progress[1]");
+			$this->form->setFieldAttribute("complete", "step", "$progress[2]");
 		}
 		
 		//Escape strings for HTML output
