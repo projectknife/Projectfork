@@ -251,6 +251,19 @@ box-shadow: 0 0 3px rgba(0, 0, 0, 0.15);
 	display: none;
 }
 
+/* Joomla Tooltips */
+.tip {
+  max-width: 200px;
+  padding: 3px 8px;
+  color: #ffffff;
+  text-align: center;
+  text-decoration: none;
+  background-color: #000000;
+  -webkit-border-radius: 4px;
+     -moz-border-radius: 4px;
+          border-radius: 4px;
+}
+
 @media (max-width: 979px) {
 	body.site{
 		padding-top: 0;
