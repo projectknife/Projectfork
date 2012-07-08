@@ -1,3 +1,7 @@
+/* Load Bootstrap CSS via import so we don't modify it and it will show in text editors */
+@import url("bootstrap.extended.css"); /* Custom CSS to extend Bootstrap */
+@import url("bootstrap.overrides.css"); /* Bootstrap -> Joomla CSS Class Support */
+
 /* Body */
 body.site {
 	padding-top: 30px;
