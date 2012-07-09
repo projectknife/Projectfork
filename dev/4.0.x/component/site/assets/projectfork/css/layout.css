@@ -1,6 +1,9 @@
 /* Projectfork Layout CSS */
 
 /* Basic HTML */
+.hr-condensed{
+	margin: 5px 0;
+}
 #projectfork ul li
 {
     list-style: none;
@@ -89,4 +92,12 @@
 /* Dashboard */
 .view-dashboard .moduletable{
 	margin-bottom: 10px;
+}
+
+/* Users */
+.thumbnail.pull-left{
+	margin: 0 10px 10px 0;
+}
+.thumbnail.pull-right{
+	margin: 0 0 10px 10px;
 }
