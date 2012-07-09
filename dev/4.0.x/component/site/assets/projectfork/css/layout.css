@@ -70,6 +70,11 @@
 	cursor:-moz-grab;
 	cursor:-webkit-grab;
 }
+.list-tasks .dropdown-toggle,
+.list-title .dropdown-toggle{
+	position: relative;
+	top: 6px;
+}
 
 /* Thumbnails Wrapping in Fluid Rows */
 .view-users .row-fluid .thumbnails,
