@@ -9,7 +9,7 @@
 	<authorUrl>www.projectfork.net</authorUrl>
 	<version>1.0.0</version>
 	<description>MOD_PF_STATS_DIST_XML_DESCRIPTION</description>
-    <position>pf-dashboard-top</position>
+    <position>pf-dashboard-right</position>
     <published>1</published>
     <show_title>1</show_title>
     <scriptfile>script.php</scriptfile>
