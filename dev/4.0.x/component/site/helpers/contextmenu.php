@@ -189,7 +189,7 @@ class ProjectforkHelperContextMenu
     }
 
 
-    public function priorityList($i, $id, $asset, $selected = 0, $access = false)
+    public function priorityList($i, $id, $asset, $selected = 0, $access = false, $css_class = 'btn-mini')
     {
         $priorities = JHtml::_('projectfork.priorityOptions');
         $html  = array();
@@ -231,7 +231,7 @@ class ProjectforkHelperContextMenu
             }
         }
 
-        $class .= ' btn-mini';
+        $class .= ' '.$css_class;
 
 
         if($access) {
@@ -255,7 +255,7 @@ class ProjectforkHelperContextMenu
     }
 
 
-    public function assignedUsers($i, $id, $asset, $assigned, $access = false)
+    public function assignedUsers($i, $id, $asset, $assigned, $access = false, $css_class = 'btn-mini')
     {
         $count = count($assigned);
         $class = '';
@@ -263,8 +263,8 @@ class ProjectforkHelperContextMenu
         $title = ($count > 0) ? $assigned[0]->name : JText::_('COM_PROJECTFORK_UNASSIGNED');
         $title .= ($count > 1) ? ' +'.($count - 1) : '';
 
-        $class .= ' btn-mini';
-        $link  = 'index.php?option=com_projectfork&amp;view=users&amp;layout=modal&amp;tmpl=component&amp;field=assigned'.$i;
+        $class .= ' '.$css_class;
+        $link  = ProjectforkHelperRoute::getUsersRoute().'&amp;layout=modal&amp;tmpl=component&amp;field=assigned'.$i;
 
         if(!$access && $count < 2) {
             $html[] = $this->start(array('title' => $title, 'class' => $class, 'single-button' => true), true);

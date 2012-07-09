@@ -2,7 +2,7 @@
 /**
 * @package   Projectfork
 * @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
+* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 *
 * This file is part of Projectfork.
 *
@@ -39,7 +39,7 @@ JHtml::_('projectfork.ajaxCompleteTask');
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
-    
+
 	<div class="clearfix"></div>
 
 	<div class="cat-items">
@@ -236,8 +236,8 @@ JHtml::_('projectfork.ajaxCompleteTask');
 	               				<small><?php echo $this->escape(JHtml::_('projectfork.truncate', $item->description));?></small>
                				</div>
                             <?php
-                                echo $this->menu->assignedUsers($x, $item->id, 'tasks', $item->users, ($canEdit || $canEditOwn));
-                                echo $this->menu->priorityList($x, $item->id, 'tasks', $item->priority, ($canEdit || $canEditOwn || $canChange));
+                                echo $this->menu->assignedUsers($x, $item->id, 'tasks', $item->users, ($canEdit || $canEditOwn), ($item->complete ? 'btn-mini disabled' : 'btn-mini'));
+                                echo $this->menu->priorityList($x, $item->id, 'tasks', $item->priority, ($canEdit || $canEditOwn || $canChange), ($item->complete ? 'btn-mini disabled' : 'btn-mini'));
 
                                 $this->menu->start(array('class' => ($item->complete ? 'btn-mini disabled' : 'btn-mini')));
                                 $this->menu->itemEdit('taskform', $item->id, ($canEdit || $canEditOwn));

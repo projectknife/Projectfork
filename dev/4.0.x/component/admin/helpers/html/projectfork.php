@@ -276,8 +276,12 @@ abstract class JHtmlProjectfork
         $js[] = "            if(resp.success == true) {";
         $js[] = "                if(complete == 1) {";
         $js[] = "                    el.set('class', 'task-complete');";
+        $js[] = "                    var children = el.getElements('.btn-mini');";
+        $js[] = "                    children.each(function(child, idx) { child.toggleClass('disabled'); });";
         $js[] = "                } else {";
         $js[] = "                    el.set('class', 'task-incomplete');";
+        $js[] = "                    var children = el.getElements('.btn-mini');";
+        $js[] = "                    children.each(function(child, idx) { child.toggleClass('disabled'); });";
         $js[] = "                }";
         $js[] = "            } else {";
         $js[] = "                el.morph('.alert-error', {duration: 500});";
