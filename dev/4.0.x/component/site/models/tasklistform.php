@@ -23,7 +23,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 // Base this model on the backend version.
-require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'models'.DS.'tasklist.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_projectfork/models/tasklist.php';
 
 
 /**
