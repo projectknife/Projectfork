@@ -84,6 +84,9 @@ $menu_items[] = array('title' => 'Milestones',
 $menu_items[] = array('title' => 'Tasks',
                       'alias' => 'tasks',
                       'link'  => $base_link.'&view=tasks');
+$menu_items[] = array('title' => 'Users',
+                      'alias' => 'users',
+                      'link'  => $base_link.'&view=users');
 
 
 // Iterate through each item
