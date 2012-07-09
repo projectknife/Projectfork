@@ -49,7 +49,7 @@ $params = $this->state->get('params');
 </h1>
 <?php endif; ?>
 
-<form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=tasklistform&layout=edit&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="adminForm" class="form-validate form-vertical">
+<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="adminForm" class="form-validate form-vertical">
 	<fieldset>
 		<div class="formelm-buttons btn-toolbar">
 		    <button class="btn btn-primary" type="button" onclick="Joomla.submitbutton('tasklistform.save')">
