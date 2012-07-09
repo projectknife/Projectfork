@@ -54,7 +54,7 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
 </h1>
 <?php endif; ?>
 
-<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="adminForm" class="form-validate form-vertical">
+<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="adminForm" class="form-validate form-inline">
 	<fieldset>
 		<div class="formelm-buttons btn-toolbar">
 		    <button class="btn btn-primary" type="button" onclick="Joomla.submitbutton('projectform.save')">
