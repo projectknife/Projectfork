@@ -55,7 +55,7 @@ class ProjectforkViewProjects extends JView
 
 			// Strip html from feed item description text
 			$description	= ($params->get('feed_summary', 0) ? $row->description : '');
-			$author			= $row->author;
+			$author			= $row->author_name;
 			@$date			= ($row->created ? date('r', strtotime($row->created)) : '');
 
 			// load individual item creator class
