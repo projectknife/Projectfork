@@ -85,3 +85,8 @@
 .row-fluid .thumbnails > li[class*="span"]{
 	margin-left: 20px;
 }
+
+/* Dashboard */
+.view-dashboard .moduletable{
+	margin-bottom: 10px;
+}
