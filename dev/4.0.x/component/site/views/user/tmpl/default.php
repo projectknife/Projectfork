@@ -45,46 +45,27 @@ defined('_JEXEC') or die;
             <div class="clearfix"></div>
 
                 <div id="user-details">
-                    <div class="well btn-toolbar">
+                    <div class="well">
                         <div class="item-description">
-
-                            <div class="thumbnail pull-left">
-                                <img alt="" src="http://placehold.it/260x180"/>
-                            </div>
-
-
-                            <dl class="article-info dl-horizontal pull-right">
-                    		    <dt class="username-title">
-                    				<?php echo JText::_('COM_PROJECTFORK_USER_USERNAME');?>:
-                    			</dt>
-                    			<dd class="username-data">
-                    				<?php echo $this->escape($this->item->username);?>
-                    			</dd>
-                                <dt class="name-title">
-                    				<?php echo JText::_('COM_PROJECTFORK_USER_NAME');?>:
-                    			</dt>
-                    			<dd class="name-data">
-                    				<?php echo $this->escape($this->item->name);?>
-                    			</dd>
+	                        <img alt="" src="<?php echo $this->baseurl;?>/components/com_projectfork/assets/projectfork/images/icons/avatar.jpg" class="thumbnail pull-left" width="90" />
+	                        <h5><?php echo $this->escape($this->item->name);?></h5>
+	                        <hr class="hr-condensed" />
+	                        <ul class="unstyled">
+                    			<li class="username-item">
+                    				<i class="icon-user" rel="tooltip" title="<?php echo JText::_('COM_PROJECTFORK_USER_USERNAME');?>"></i> <?php echo $this->escape($this->item->username);?>
+                    			</li>
                                 <?php if($this->item->registerDate != JFactory::getDBO()->getNullDate()): ?>
-                        			<dt class="regdate-title">
-                        				<?php echo JText::_('COM_PROJECTFORK_USER_REG_DATE');?>:
-                        			</dt>
-                        			<dd class="regdate-data">
-                        				<?php echo JHtml::_('date', $this->item->registerDate, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
-                        			</dd>
+                        			<li class="regdate-item">
+                        				<i class="icon-calendar" rel="tooltip" title="<?php echo JText::_('COM_PROJECTFORK_USER_REG_DATE');?>"></i> <?php echo JHtml::_('date', $this->item->registerDate, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
+                        			</li>
                         		<?php endif; ?>
                                 <?php if($this->item->lastvisitDate != JFactory::getDBO()->getNullDate()): ?>
-                        			<dt class="visitdate-title">
-                        				<?php echo JText::_('COM_PROJECTFORK_USER_VISIT_DATE');?>:
-                        			</dt>
-                        			<dd class="visitdate-data">
-                        				<?php echo JHtml::_('date', $this->item->lastvisitDate, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
-                        			</dd>
+                        			<li class="visitdate-item">
+                        				<i class="icon-calendar" rel="tooltip" title="<?php echo JText::_('COM_PROJECTFORK_USER_VISIT_DATE');?>"></i> <?php echo JHtml::_('date', $this->item->lastvisitDate, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
+                        			</li>
                         		<?php endif; ?>
                         	</dl>
-
-                            <div class="clearfix"></div>
+                        	<div class="clearfix"></div>
                     	</div>
                     </div>
                 </div>
