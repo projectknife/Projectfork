@@ -77,10 +77,10 @@ $uid	    = $user->get('id');
 	            $canEdit	= ($user->authorise('core.edit', $asset_name));
                 $slug       = $item->id.':'.JFilterOutput::stringURLSafe($item->username);
                 ?>
-                <li class="span3">
+                <li class="span2">
                     <div class="thumbnail">
                         <a href="<?php echo ProjectforkHelperRoute::getUserRoute($slug);?>">
-                            <img src="http://placehold.it/260x180" alt=""/>
+                            <img alt="" src="<?php echo $this->baseurl;?>/components/com_projectfork/assets/projectfork/images/icons/avatar.jpg" />
                         </a>
                         <div class="caption">
                         	<h4>
