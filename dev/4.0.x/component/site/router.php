@@ -218,6 +218,51 @@ function ProjectforkBuildRoute(&$query)
     }
 
 
+    // Users
+    if($view == 'users') {
+        if (!$menuItemGiven) $segments[] = $view;
+        unset($query['view']);
+
+        // Get project filter
+        if (isset($query['filter_project'])) {
+            if (strpos($query['filter_project'], ':') === false) {
+				$query['filter_project'] = ProjectforkMakeSlug($query['filter_project'], '#__pf_projects');
+			}
+        }
+        else {
+            $query['filter_project'] = ProjectforkMakeSlug('0', '#__pf_projects');
+        }
+
+        $segments[] = $query['filter_project'];
+        unset($query['filter_project']);
+
+        return $segments;
+    }
+
+    // User
+    if($view == 'user') {
+        if (!$menuItemGiven) $segments[] = $view;
+        unset($query['view']);
+
+        // Get user id
+        if (isset($query['id'])) {
+            if (strpos($query['id'], ':') === false) {
+				$query['id'] = ProjectforkMakeSlug($query['id'], '#__users', 'username', 'username');
+			}
+        }
+        else {
+            $query['id'] = ProjectforkMakeSlug('0', '#__users', 'username', 'username');
+        }
+
+        $segments[] = 'profile';
+        $segments[] = $query['id'];
+        unset($query['id']);
+
+
+        return $segments;
+    }
+
+
 	// Handle the layout
 	if (isset($query['layout'])) {
 		if ($menuItemGiven && isset($menuItem->query['layout'])) {
@@ -361,6 +406,30 @@ function ProjectforkParseRoute($segments)
     }
 
 
+    // Users
+    if($vars['view'] == 'users') {
+        if($count == 1) {
+            $vars['filter_project'] = ProjectforkParseSlug($segments[0]);
+        }
+        if($count > 1) {
+            $vars['view'] = 'user';
+            $vars['id']   = ProjectforkParseSlug($segments[1]);
+        }
+
+        return $vars;
+    }
+
+
+    // User
+    if($vars['view'] == 'user') {
+        if($count == 1) {
+            $vars['id'] = ProjectforkParseSlug($segments[0]);
+        }
+
+        return $vars;
+    }
+
+
 	return $vars;
 }
 
@@ -390,9 +459,10 @@ function ProjectforkParseSlug($segment)
  * @param	int  	$id       The item id
  * @param   string  $table    The item table
  * @param	string  $alt      Alternative alias if the id is 0
+ * @param   string  $field    The field to query
  * @return  string            The slug
  */
-function ProjectforkMakeSlug($id, $table, $alt = 'all')
+function ProjectforkMakeSlug($id, $table, $alt = 'all', $field = 'alias')
 {
     if($id == '' || $id == '0') {
         if($table == '#__pf_projects') {
@@ -411,7 +481,7 @@ function ProjectforkMakeSlug($id, $table, $alt = 'all')
     $db = JFactory::getDbo();
 
 	$aquery = $db->setQuery($db->getQuery(true)
-				 ->select('alias')
+				 ->select($field)
 				 ->from($table)
 				 ->where('id='.(int) $id));
 

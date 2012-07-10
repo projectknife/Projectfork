@@ -2,12 +2,12 @@
 <extension type="component" version="1.6" method="upgrade">
 	<name>com_projectfork</name>
 	<author>Tobias Kuhn</author>
-	<creationDate>June 2012</creationDate>
+	<creationDate>July 2012</creationDate>
 	<copyright>(C) 2006 - 2012 Tobias Kuhn. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>support@projectfork.net</authorEmail>
 	<authorUrl>www.projectfork.net</authorUrl>
-	<version>4.0.0 CEA1</version>
+	<version>4.0.0 CEA2</version>
 	<description>COM_PROJECTFORK_XML_DESCRIPTION</description>
     <scriptfile>com_projectfork.script.php</scriptfile>
 	<install folder="admin">

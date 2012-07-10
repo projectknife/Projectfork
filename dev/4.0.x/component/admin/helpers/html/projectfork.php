@@ -276,8 +276,12 @@ abstract class JHtmlProjectfork
         $js[] = "            if(resp.success == true) {";
         $js[] = "                if(complete == 1) {";
         $js[] = "                    el.set('class', 'task-complete');";
+        $js[] = "                    var children = el.getElements('.btn-mini');";
+        $js[] = "                    children.each(function(child, idx) { child.toggleClass('disabled'); });";
         $js[] = "                } else {";
         $js[] = "                    el.set('class', 'task-incomplete');";
+        $js[] = "                    var children = el.getElements('.btn-mini');";
+        $js[] = "                    children.each(function(child, idx) { child.toggleClass('disabled'); });";
         $js[] = "                }";
         $js[] = "            } else {";
         $js[] = "                el.morph('.alert-error', {duration: 500});";
@@ -418,28 +422,25 @@ abstract class JHtmlProjectfork
 
 
     /**
-     * Loads bootstrap-visualize JS files
+     * Loads jquery-flot JS files
      *
      * @return   void
 	 */
-    static function jQueryVisualize()
+    static function jQueryFlot()
     {
-        if(!defined('COM_PROJECTFORK_JQUERY_VISUALIZE')) {
+        if(!defined('COM_PROJECTFORK_JQUERY_FLOT')) {
             jimport( 'joomla.application.component.helper' );
 
 		    $doc = JFactory::getDocument();
             $uri = JFactory::getURI();
 
             if($doc->getType() == 'html') {
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/enhancejs/enhance.js');
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/js/excanvas.js');
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/js/visualize.jQuery.js');
-
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/visualize.css');
-                //$doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/jquery-visualize/css/visualize-light.css');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/flot/jquery.flot.min.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/flot/jquery.flot.pie.min.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/flot/jquery.flot.resize.min.js');
             }
 
-            define('COM_PROJECTFORK_JQUERY_VISUALIZE', 1);
+            define('COM_PROJECTFORK_JQUERY_FLOT', 1);
         }
     }
 }

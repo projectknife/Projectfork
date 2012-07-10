@@ -236,6 +236,8 @@ widget-maximize,
   border: 1px solid #ddd;
   border-bottom-color: transparent;
   cursor: default;
+  position: relative;
+  bottom: -1px;
 }
 .tabs > .closed > span{
 	color: #08c;

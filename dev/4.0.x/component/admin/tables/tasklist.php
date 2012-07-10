@@ -95,7 +95,7 @@ class PFTableTasklist extends JTable
 			if ($result = $this->_db->loadResult()) $assetId = (int) $result;
         }
         else {
-            // This is a task list under a project.
+            // This is a task list list under a project.
             if ($this->project_id) {
     			// Build the query to get the asset id for the parent project.
     			$query	= $db->getQuery(true);
@@ -193,9 +193,9 @@ class PFTableTasklist extends JTable
 		}
 
 		// Verify that the alias is unique
-		$table = JTable::getInstance('Tasklist','PFTable');
-		if ($table->load(array('alias'=>$this->alias)) && ($table->id != $this->id || $this->id==0)) {
-			$this->setError(JText::_('JLIB_DATABASE_ERROR_PROJECT_UNIQUE_ALIAS'));
+		$table = JTable::getInstance('Tasklist', 'PFTable');
+		if ($table->load(array('alias'=>$this->alias, 'project_id' => $this->project_id)) && ($table->id != $this->id || $this->id==0)) {
+			$this->setError(JText::_('JLIB_DATABASE_ERROR_TASKLIST_UNIQUE_ALIAS'));
 			return false;
 		}
 
@@ -323,7 +323,7 @@ class PFTableTasklist extends JTable
 	 */
     public function updateByReference($id, $field, $data)
     {
-        require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'helpers'.DS.'projectfork.php');
+        require_once(JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/projectfork.php');
 
         $fields    = array_keys($data);
         $null_date = $this->_db->getNullDate();
@@ -345,9 +345,7 @@ class PFTableTasklist extends JTable
         // Find access children if access field is in the data
         $access_children = array();
         if(in_array('access', $fields)) {
-            if($data['access']) {
-                $access_children = array_keys(ProjectforkHelper::getChildrenOfAccess($data['access']));
-            }
+            $access_children = array_keys(ProjectforkHelper::getChildrenOfAccess($data['access']));
         }
 
 
@@ -375,7 +373,7 @@ class PFTableTasklist extends JTable
                         $tmp_val_2 = strtotime($item->$key);
                         if($tmp_val_1 > 0) {
                             if(($tmp_val_1 > $tmp_val_2) && $tmp_val_2 > 0) {
-                                $updates[$key] = $key.' = '.$this->_db->quote($val);
+                                $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
                             }
                         }
                         break;
@@ -385,19 +383,30 @@ class PFTableTasklist extends JTable
                         $tmp_val_2 = strtotime($item->$key);
                         if($tmp_val_1 > 0) {
                             if(($tmp_val_1 < $tmp_val_2)) {
-                                $updates[$key] = $key.' = '.$this->_db->quote($val);
+                                $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
                             }
                         }
                         break;
 
                     case 'access':
                         if($val != $item->$key) {
-                            if(!in_array($item->$key, $access_children)) $updates[$key] = $key.' = '.$this->_db->quote($val);
+                            if(!in_array($item->$key, $access_children)) $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
+                        }
+                        break;
+
+                    case 'state':
+                        if($val != $item->$key) {
+                            // Do not publish/unpublish items that are currently archived or trashed
+                            if(($item->key == '2' || $item->key == '-2') && ($val == '0' || $val == '1')) {
+                                continue;
+                            }
+
+                            $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
                         }
                         break;
 
                     default:
-                        if($item->$key != $val) $updates[$key] = $key.' = '.$this->_db->quote($val);
+                        if($item->$key != $val) $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
                         break;
                 }
             }

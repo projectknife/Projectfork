@@ -26,12 +26,13 @@ defined('_JEXEC') or die;
 
 abstract class modPFstatsLoadHelper
 {
-    public static function getStats(&$params)
+    public static function getStatsProjects(&$params)
     {
         $user  = JFactory::getUser();
         $db    = JFactory::getDbo();
         $date  = JDate::getInstance();
 		$query = $db->getQuery(true);
+        $data  = array();
 
         // Load the projects
         $query->select('a.title, a.end_date, COUNT(t.id) AS tasks')
@@ -54,7 +55,7 @@ abstract class modPFstatsLoadHelper
 
         foreach($projects AS $i => $project)
         {
-            $projects[$i]->load = 0.00;
+            $load = 0.00;
 
             if($project->tasks > 0) {
                 $project_date = JDate::getInstance($project->end_date);
@@ -63,10 +64,74 @@ abstract class modPFstatsLoadHelper
                 $secs_left = $deadline - $date_unix;
                 $days_left = round($secs_left / 86400, 2);
 
-                $projects[$i]->load = round($project->tasks / $days_left, 2);
+                $load = round($project->tasks / $days_left, 2);
             }
+
+            $set = new stdClass();
+            $set->data  = array(array($i, $load));
+            $set->label = $project->title;
+
+            $data[] = $set;
         }
 
-        return $projects;
+        return $data;
+    }
+
+
+    public static function getStatsUser(&$params, $id)
+    {
+        $user  = JFactory::getUser();
+        $db    = JFactory::getDbo();
+        $date  = JDate::getInstance();
+		$query = $db->getQuery(true);
+        $data  = array();
+
+        // Load the projects
+        $query->select('a.title, a.end_date, COUNT(t.id) AS tasks')
+              ->from('#__pf_projects AS a');
+
+        $query->join('RIGHT', '#__pf_tasks AS t ON t.project_id = a.id');
+        $query->join('RIGHT', '#__pf_ref_users AS u ON u.item_id = t.id');
+        $query->where('u.item_type = '.$db->quote('task'));
+        $query->where('u.user_id = '.$db->quote($id));
+
+        $query->where('a.end_date > '.$db->quote($date->toSql()));
+        $query->where('(t.state = 0 OR t.state = 1)');
+        $query->where('t.complete = 0');
+
+        $query->group('a.id, u.user_id');
+        $query->order('tasks DESC');
+
+
+        $db->setQuery($query->__toString(), 0, $params->get('limit', 5));
+        $projects = (array) $db->loadObjectList();
+
+        // Calculate workload
+        $date_unix = $date->toUnix();
+
+        foreach($projects AS $i => $project)
+        {
+            $load = 0.00;
+
+            if($project->tasks > 0) {
+                $project_date = JDate::getInstance($project->end_date);
+                $deadline     = $project_date->toUnix();
+
+                $secs_left = $deadline - $date_unix;
+                $days_left = round($secs_left / 86400, 2);
+
+                $load = round($project->tasks / $days_left, 2);
+            }
+
+            if($load == 0.00) continue;
+
+            $set = new stdClass();
+            $set->data  = array(array($i, $load));
+            $set->label = $project->title;
+
+            $data[] = $set;
+        }
+
+        return $data;
     }
 }

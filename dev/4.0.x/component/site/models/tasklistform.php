@@ -23,7 +23,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 // Base this model on the backend version.
-require_once JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'models'.DS.'tasklist.php';
+require_once JPATH_ADMINISTRATOR.'/components/com_projectfork/models/tasklist.php';
 
 
 /**
@@ -126,5 +126,21 @@ class ProjectforkModelTasklistForm extends ProjectforkModelTasklist
 	public function getReturnPage()
 	{
 		return base64_encode($this->getState('return_page'));
+	}
+
+
+    /**
+	 * Method to get the data that should be injected in the form.
+	 *
+	 * @return    mixed    The data for the form.
+	 */
+	protected function loadFormData()
+	{
+		// Check the session for previously entered form data.
+		$data = JFactory::getApplication()->getUserState('com_projectfork.edit.tasklistform.data', array());
+
+		if(empty($data)) $data = $this->getItem();
+
+		return $data;
 	}
 }

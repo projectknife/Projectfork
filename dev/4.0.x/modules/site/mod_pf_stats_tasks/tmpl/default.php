@@ -22,34 +22,36 @@
 
 // no direct access
 defined('_JEXEC') or die;
+
+// Initialize the chart
+$doc = JFactory::getDocument();
+$doc->addScriptDeclaration("jQuery(function()
+{
+    var data = ".json_encode($stats).";
+
+    jQuery.plot(jQuery('#mod-pf-stats-tasks-".$module->id."'), data,
+    {
+        series: {
+ 			pie: {
+        		show: true,
+                radius: 1,
+                label: {
+                    show: true,
+                    radius: 3/4,
+                    formatter: function(label, series) {
+                        return '<div style=\'font-size:8pt;text-align:center;padding:2px;color:white;\'>'+label+'<br/>'+Math.round(series.percent)+'%</div>';
+                    },
+                    background: {
+                        opacity: 0.5
+                    }
+                }
+        	}
+        },
+        legend: {
+            show: false
+        },
+        colors: ".$colors."
+    });
+});");
 ?>
-<table id="mod-pf-stats-tasks" style="display:none;">
-    <thead>
-        <tr>
-            <td></td>
-            <th scope="col"></th>
-        </tr>
-    </thead>
-    <tbody>
-        <tr>
-            <th scope="row"><?php echo JText::_('MOD_PF_STATS_TASKS_COMPLETE');?></th>
-            <td scope="row"><?php echo $stats['complete'];?></td>
-        </tr>
-        <tr>
-            <th scope="row"><?php echo JText::_('MOD_PF_STATS_TASKS_PENDING');?></th>
-            <td scope="row"><?php echo $stats['pending'];?></td>
-        </tr>
-        <?php if($show_a) : ?>
-            <tr>
-                <th scope="row"><?php echo JText::_('MOD_PF_STATS_TASKS_ARCHIVED');?></th>
-                <td scope="row"><?php echo $stats['archived'];?></td>
-            </tr>
-        <?php endif; ?>
-        <?php if($show_t) : ?>
-            <tr>
-                <th scope="row"><?php echo JText::_('MOD_PF_STATS_TASKS_TRASHED');?></th>
-                <td scope="row"><?php echo $stats['trashed'];?></td>
-            </tr>
-        <?php endif; ?>
-    </tbody>
-</table>
+<div id="mod-pf-stats-tasks-<?php echo $module->id;?>" style="<?php echo $css_w.$css_h;?>"></div>

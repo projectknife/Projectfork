@@ -41,8 +41,8 @@ $uid	    = $user->get('id');
 			        <button type="submit" class="btn"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
 			        <button type="button" class="btn" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
 		        </span>
-                <?php if ($user->authorise('core.edit.state', 'com_projectfork') || $user->authorize('project.edit.state', 'com_projectfork')
-                      ||  $user->authorise('core.edit', 'com_projectfork') || $user->authorize('project.edit', 'com_projectfork')) : ?>
+                <?php if ($user->authorise('core.edit.state', 'com_projectfork') || $user->authorise('project.edit.state', 'com_projectfork')
+                      ||  $user->authorise('core.edit', 'com_projectfork') || $user->authorise('project.edit', 'com_projectfork')) : ?>
     				<span class="filter-published">
     				    <select id="filter_published" name="filter_published" class="inputbox" onchange="this.form.submit()">
     				        <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>

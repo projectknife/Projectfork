@@ -97,7 +97,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_milestones` (
   `start_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Milestone start date',
   `end_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Milestone end date',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_alias` (`alias`),
+  UNIQUE KEY `idx_alias` (`alias`,`project_id`),
   KEY `idx_projectid` (`project_id`),
   KEY `idx_access` (`access`),
   KEY `idx_createdby` (`created_by`),

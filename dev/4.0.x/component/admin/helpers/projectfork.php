@@ -103,7 +103,7 @@ class ProjectforkHelper
 
 
     /**
-	 * Returns all groups with the give access level
+	 * Returns all groups with the given access level
 	 *
      * @param    int     $access      The access level id
      * @param    bool    $children    Include child groups in the result?
@@ -190,8 +190,6 @@ class ProjectforkHelper
 
                     $db->setQuery((string) $query);
                     $subgroups = (array) $db->loadObjectList();
-
-
 
                     foreach($subgroups AS $subgroup)
                     {
@@ -314,7 +312,7 @@ class ProjectforkHelper
         $app = JFactory::getApplication();
 
         if($app->isSite()) {
-            JModel::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'models');
+            JModel::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_projectfork/models');
         }
 
         $model = JModel::getInstance('Project', 'ProjectforkModel');

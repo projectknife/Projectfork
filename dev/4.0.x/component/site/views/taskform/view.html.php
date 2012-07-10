@@ -80,7 +80,6 @@ class ProjectforkViewTaskForm extends JView
 		// Create a shortcut to the parameters.
 		$params	= &$this->state->params;
 
-
 		//Escape strings for HTML output
 		$this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
 

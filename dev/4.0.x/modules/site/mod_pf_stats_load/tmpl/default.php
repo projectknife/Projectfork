@@ -22,20 +22,19 @@
 
 // no direct access
 defined('_JEXEC') or die;
+
+// Initialize the chart
+$doc = JFactory::getDocument();
+$doc->addScriptDeclaration("jQuery(function()
+{
+    var data = ".json_encode($stats).";
+
+    jQuery.plot(jQuery('#mod-pf-stats-load-".$module->id."'), data,
+    {
+        bars: { show: true },
+        xaxis: { show: false }
+    });
+});");
 ?>
-<table id="mod-pf-stats-load" style="display:none;">
-    <thead>
-        <tr>
-            <td></td>
-            <th scope="col"><?php echo JText::_('MOD_PF_STATS_LOAD_GRAPH_DESC');?></th>
-        </tr>
-    </thead>
-    <tbody>
-        <?php foreach($stats AS $project) : ?>
-            <tr>
-                <th scope="row"><?php echo $project->title;?></th>
-                <td scope="row"><?php echo $project->load;?></td>
-            </tr>
-        <?php endforeach;?>
-    </tbody>
-</table>
+<div id="mod-pf-stats-load-<?php echo $module->id;?>" style="<?php echo $css_w.$css_h;?>"></div>
+<span class="label"><?php echo JText::_('MOD_PF_STATS_LOAD_GRAPH_DESC');?></span>

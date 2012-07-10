@@ -1,6 +1,9 @@
 /* Projectfork Layout CSS */
 
 /* Basic HTML */
+.hr-condensed{
+	margin: 5px 0;
+}
 #projectfork ul li
 {
     list-style: none;
@@ -61,4 +64,40 @@
 }
 .milestone-edit .dropdown-menu{
 	right:0;left:auto;
+}
+
+/* Tasks */
+.icon-move:hover{
+	cursor:hand;
+	cursor:grab;
+	cursor:-moz-grab;
+	cursor:-webkit-grab;
+}
+.list-tasks .dropdown-toggle,
+.list-title .dropdown-toggle{
+	position: relative;
+	top: 6px;
+}
+
+/* Thumbnails Wrapping in Fluid Rows */
+.view-users .row-fluid .thumbnails,
+.view-projects .row-fluid .thumbnails{
+	margin-left: -20px;
+}
+.row-fluid .thumbnails > li[class*="span"]:first-child,
+.row-fluid .thumbnails > li[class*="span"]{
+	margin-left: 20px;
+}
+
+/* Dashboard */
+.view-dashboard .moduletable{
+	margin-bottom: 10px;
+}
+
+/* Users */
+.thumbnail.pull-left{
+	margin: 0 10px 10px 0;
+}
+.thumbnail.pull-right{
+	margin: 0 0 10px 10px;
 }

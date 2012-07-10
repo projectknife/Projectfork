@@ -247,7 +247,8 @@ class ProjectforkControllerTasklistForm extends JControllerForm
 
 
         // Save the data in the session.
-		$app->setUserState('com_projectfork.edit.tasklist.data', $data);
+        $app->setUserState('com_projectfork.edit.tasklistform.id', $recordId);
+		$app->setUserState('com_projectfork.edit.tasklistform.data', $data);
 		$this->project_id = $project;
 
 		$this->setRedirect(JRoute::_('index.php?option='.$this->option.'&view='.$this->view_item.$this->getRedirectToItemAppend($recordId), false));
@@ -279,6 +280,6 @@ class ProjectforkControllerTasklistForm extends JControllerForm
 		$app  = JFactory::getApplication();
 		$data = JRequest::getVar('jform', array(), 'post', 'array');
 
-		$app->setUserState('com_projectfork.edit.tasklist.data', $data);
+		$app->setUserState('com_projectfork.edit.tasklistform.data', $data);
     }
 }

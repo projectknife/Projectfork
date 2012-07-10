@@ -193,7 +193,7 @@ class ProjectforkModelTask extends JModelAdmin
 	{
 		// Alter the title for save as copy
 		if (JRequest::getVar('task') == 'save2copy') {
-			list($title,$alias) = $this->generateNewTitle($data['alias'], $data['title']);
+			list($title,$alias) = $this->generateNewTitle($data['alias'], $data['title'], $data['project_id']);
 			$data['title']	= $title;
 			$data['alias']	= $alias;
 		}
@@ -226,11 +226,11 @@ class ProjectforkModelTask extends JModelAdmin
 	 * @param    string     $title    The title
 	 * @return	 array                Contains the modified title and alias
 	 */
-	protected function generateNewTitle($alias, $title)
+	protected function generateNewTitle($alias, $title, $project_id)
 	{
 		// Alter the title & alias
 		$table = $this->getTable();
-		while ($table->load(array('alias' => $alias))) {
+		while ($table->load(array('alias' => $alias, 'project_id' => $project_id))) {
 			$m = null;
 			if (preg_match('#-(\d+)$#', $alias, $m)) {
 				$alias = preg_replace('#-(\d+)$#', '-'.($m[1] + 1).'', $alias);

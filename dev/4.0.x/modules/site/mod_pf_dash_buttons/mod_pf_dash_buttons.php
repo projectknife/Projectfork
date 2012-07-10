@@ -23,6 +23,14 @@
 // no direct access
 defined('_JEXEC') or die;
 
+// Disable this module on the "user" view if it is positioned on the dashboard
+if(stripos($module->position, 'pf-dashboard') !== false &&
+   JRequest::getVar('option') == 'com_projectfork' &&
+   JRequest::getVar('view') == 'user')
+{
+    return '';
+}
+
 
 if(!file_exists(JPATH_ADMINISTRATOR.'/components/com_projectfork/projectfork.php')) {
     echo JText::_('MOD_PF_DASH_BUTTONS_PROJECTFORK_NOT_INSTALLED');

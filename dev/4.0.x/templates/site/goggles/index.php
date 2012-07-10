@@ -2,13 +2,17 @@
 	/*** @copyright Copyright Pixel Praise LLC © 2012. All rights reserved. */
 	// no direct access
 	defined('_JEXEC') or die;
+
+    // Include the document helper
+    require_once(dirname(__FILE__).'/helpers/document.php');
+
 	$app = JFactory::getApplication();
 	$doc = JFactory::getDocument();
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-	<?php 
+	<?php
     // Detecting Home
     $menu = & JSite::getMenu();
     if ($menu->getActive() == $menu->getDefault()) :
@@ -16,10 +20,10 @@
     else:
     $siteHome = 0;
     endif;
-    
+
     // Add current user information
     $user =& JFactory::getUser();
-    
+
     // Grad the Itemid
     $itemid = JRequest::getint( 'Itemid' );
 
@@ -36,7 +40,7 @@
     $fullWidth = 0;
     endif;
     $document =& JFactory::getDocument();
-    
+
     // Adjusting content width
     if ($this->countModules('position-7') && $this->countModules('right')) :
     	$span = "span6";
@@ -47,19 +51,27 @@
     else :
     	$span = "span12";
     endif;
+
+    // Detect bootstrap and jQuery in document header
+    $isset_jquery = TemplateDocHelper::headContains('jquery', 'script');
+    $isset_bsjs   = TemplateDocHelper::headContains('bootstrap', 'script');
+    $isset_bscss  = TemplateDocHelper::headContains('bootstrap', 'stylesheet');
 	?>
 
 	<jdoc:include type="head" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<?php if($this->params->get('bootstrap_javascript', 1)):?>
-		<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/js/jquery.js"></script>
-		<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/js/bootstrap.min.js"></script>
+        <?php if (!$isset_jquery) : ?>
+		    <script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/js/jquery.js"></script>
+        <?php endif; ?>
+        <?php if (!$isset_bsjs) : ?>
+		    <script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/js/bootstrap.min.js"></script>
+        <?php endif; ?>
 		<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/js/application.js"></script>
 	<?php endif;?>
-	<jdoc:include type="head" />
 	<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/system/css/general.css" type="text/css" />
 	<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/system/css/system.css" type="text/css" />
-	<?php if($this->params->get('bootstrap_css', 1)):?>
+	<?php if($this->params->get('bootstrap_css', 1) && !$isset_bscss):?>
 		<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/css/template.css" type="text/css" />
 	<?php else: ?>
 		<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/css/theme.css" type="text/css" />
@@ -97,7 +109,7 @@
 						<?php endif;?>
 					</ul>
 				</div>
-				<!--/.nav-collapse --> 
+				<!--/.nav-collapse -->
 			</div>
 		</div>
 	</div>
@@ -121,41 +133,41 @@
 			<div id="sidebar" class="span2">
 				<jdoc:include type="modules" name="create" style="xhtml" />
 				<!-- Begin Sidebar -->
-				<?php 
-					if($user->authorise('create', 'com_projectfork')) : 
+				<?php
+					if($user->authorise('create', 'com_projectfork')) :
 				?>
 				<div class="btn-group">
 				  <a href="#" class="btn btn-large btn-info btn-wide dropdown-toggle" data-toggle="dropdown">
-				    <?php echo JText::_('TPL_GOGGLES_CREATE');?> 
+				    <?php echo JText::_('TPL_GOGGLES_CREATE');?>
 				    <span class="caret"></span>
 				  </a>
 				  <ul class="dropdown-menu">
-				  	<?php 
-				  		if($user->authorise('create', 'com_projectfork.project')) : 
+				  	<?php
+				  		if($user->authorise('create', 'com_projectfork.project')) :
 				  	?>
 				    	<li><a href="index.php?option=com_projectfork&view=projectform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
-				    <?php 
-				    	endif; 
+				    <?php
+				    	endif;
 				    	if($user->authorise('create', 'com_projectfork.milestone')) :
 				    ?>
 				    	<li><a href="index.php?option=com_projectfork&view=milestoneform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
-				    <?php 
-				    	endif; 
+				    <?php
+				    	endif;
 				    	if($user->authorise('create', 'com_projectfork.tasklist')) :
 				    ?>
 				    	<li><a href="index.php?option=com_projectfork&view=tasklistform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
-				    <?php 
-				    	endif; 
+				    <?php
+				    	endif;
 				    	if($user->authorise('create', 'com_projectfork.task')) :
 				    ?>
 				    	<li><a href="index.php?option=com_projectfork&view=taskform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
-				    <?php 
-				    	endif; 
+				    <?php
+				    	endif;
 				    ?>
 				  </ul>
 				</div>
-				<?php 
-					endif; 
+				<?php
+					endif;
 				?>
 				<hr />
 				<div class="sidebar-nav">
