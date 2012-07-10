@@ -37,7 +37,7 @@ abstract class modPFstatsDistHelper
 	}
 
 
-    public static function getStats(&$params, $id = 0)
+    public static function getStatsProject(&$params, $id = 0)
     {
         $user  = JFactory::getUser();
         $db    = JFactory::getDbo();
@@ -96,6 +96,11 @@ abstract class modPFstatsDistHelper
     			$query->where('a.access IN ('.$groups.')');
     		}
 
+            // Apply complete stage filter
+            if($show_c == 0) {
+                $query->where('a.complete = 0');
+            }
+
             $db->setQuery($query->__toString());
             $total = (int) $db->loadResult();
 
@@ -113,6 +118,11 @@ abstract class modPFstatsDistHelper
                 $query->where('t.project_id = '.$id);
             }
 
+            // Apply complete stage filter
+            if($show_c == 0) {
+                $query->where('t.complete = 0');
+            }
+
             if(!$user->authorise('core.admin')) {
     		    $groups	= implode(',', $user->getAuthorisedViewLevels());
     			$query->where('t.access IN ('.$groups.')');
@@ -125,6 +135,148 @@ abstract class modPFstatsDistHelper
             // Calculate the amount of unassigned tasks
             $unassigned = $total - $assigned;
 
+
+            $obj_unassigned = new stdclass();
+            $obj_unassigned->data  = $unassigned;
+            $obj_unassigned->label = JText::_('MOD_PF_STATS_DIST_UNASSIGNED');
+
+            $data[] = $obj_unassigned;
+        }
+
+
+        // Data values must be of type integer!
+        foreach($data AS $i => $item)
+        {
+            $data[$i]->data = (int) $item->data;
+        }
+
+        return $data;
+    }
+
+
+    public static function getStatsUser(&$params, $id)
+    {
+        $user  = JFactory::getUser((int) $id);
+        $db    = JFactory::getDbo();
+		$query = $db->getQuery(true);
+        $data  = array();
+
+        // Get Params
+        $show_c = (int) $params->get('show_completed', 1);
+        $show_u = (int) $params->get('show_unassigned', 1);
+        $limit  = (int) $params->get('limit', 5);
+
+        // Get the other users task distribution
+        $query->select('COUNT(a.user_id) AS data')
+              ->from('#__pf_ref_users AS a');
+
+        $query->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id');
+        $query->where('a.item_type = '.$db->quote('task'));
+
+        if(!$user->authorise('core.admin')) {
+		    $groups	= implode(',', $user->getAuthorisedViewLevels());
+			$query->where('t.access IN ('.$groups.')');
+		}
+
+        // Apply complete stage filter
+        if($show_c == 0) {
+            $query->where('t.complete = 0');
+        }
+
+        $query->group('a.user_id');
+
+        $db->setQuery($query->__toString());
+
+        $item = new stdClass();
+        $item->data  = (int) $db->loadResult();
+        $item->label = JText::_('MOD_PF_STATS_DIST_OTHER_USERS');
+
+        $data[] = $item;
+
+
+        // Get the current user task distribution
+        $query = $db->getQuery(true);
+
+        $query->select('COUNT(a.user_id) AS data')
+              ->from('#__pf_ref_users AS a');
+
+        $query->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id');
+        $query->where('a.item_type = '.$db->quote('task'));
+
+        $query->select('u.name AS label');
+        $query->join('RIGHT', '#__users AS u ON u.id = '.(int) $id);
+
+        if(!$user->authorise('core.admin')) {
+		    $groups	= implode(',', $user->getAuthorisedViewLevels());
+			$query->where('t.access IN ('.$groups.')');
+		}
+
+        // Apply complete stage filter
+        if($show_c == 0) {
+            $query->where('t.complete = 0');
+        }
+
+        $query->where('a.user_id = '. (int) $id);
+        $query->group('a.user_id');
+
+        $db->setQuery($query->__toString());
+        $item = $db->loadObject();
+
+        if(is_null($item)) {
+            $item = new stdClass();
+            $item->data = 0;
+            $item->label = $user->get('name');
+        }
+
+        $data[] = $item;
+
+
+        // Find unassigned tasks if enabled
+        $unassigned = 0;
+        if($show_u) {
+            // Count total amount of tasks
+            $query = $db->getQuery(true);
+            $query->select('COUNT(a.id)')
+                  ->from('#__pf_tasks AS a');
+
+            if(!$user->authorise('core.admin')) {
+    		    $groups	= implode(',', $user->getAuthorisedViewLevels());
+    			$query->where('a.access IN ('.$groups.')');
+    		}
+
+            // Apply complete stage filter
+            if($show_c == 0) {
+                $query->where('a.complete = 0');
+            }
+
+            $db->setQuery($query->__toString());
+            $total = (int) $db->loadResult();
+
+
+            // Count assigned tasks
+            $query = $db->getQuery(true);
+
+            $query->select('COUNT(DISTINCT a.item_id)')
+                  ->from('#__pf_ref_users AS a');
+
+            $query->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id');
+            $query->where('a.item_type = '.$db->quote('task'));
+
+            if(!$user->authorise('core.admin')) {
+    		    $groups	= implode(',', $user->getAuthorisedViewLevels());
+    			$query->where('t.access IN ('.$groups.')');
+    		}
+
+            // Apply complete stage filter
+            if($show_c == 0) {
+                $query->where('t.complete = 0');
+            }
+
+            $db->setQuery($query->__toString());
+            $assigned = (int) $db->loadResult();
+
+            // Calculate the amount of unassigned tasks
+            $unassigned = $total - $assigned;
 
             $obj_unassigned = new stdclass();
             $obj_unassigned->data  = $unassigned;

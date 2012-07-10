@@ -53,9 +53,21 @@ else {
         $css_h = (substr($height, -1) == '%' ? "height:".intval($height)."%;" : "height:".intval($height)."px;");
 
 
-        // Get current project and statistics
-        $project = modPFstatsDistHelper::getProject();
-        $stats   = modPFstatsDistHelper::getStats($params, $project->id);
+        // Get the current option, view and user id
+        $option = JRequest::getCmd('option');
+        $view   = JRequest::getCmd('view');
+        $uid    = JRequest::getUint('id');
+
+        if($option == 'com_projectfork' && $view == 'user' && $uid > 0) {
+            // Get stats for the current user
+            $stats = modPFstatsDistHelper::getStatsUser($params, $uid);
+        }
+        else {
+            // Get the stats for the current project
+            $project = modPFstatsDistHelper::getProject();
+            $stats   = modPFstatsDistHelper::getStatsProject($params, $project->id);
+        }
+
 
         // Include layout
         if(count($stats) > 0) {
