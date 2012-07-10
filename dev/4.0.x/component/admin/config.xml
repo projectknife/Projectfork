@@ -3,7 +3,6 @@
     <fieldset name="general_parameters" label="COM_PROJECTFORK_CONFIG_GENERAL_LABEL" description="COM_PROJECTFORK_CONFIG_GENERAL_DESC">
         <field type="spacer" label="COM_PROJECTFORK_CONFIG_GENERAL_FORMAT_SPACER"/>
         <field type="text" name="date_format" label="COM_PROJECTFORK_CONFIG_DATE_FORMAT_LABEL" description="JGLOBAL_DATE_FORMAT_DESC" default=""/>
-        <field type="text" name="task_progress" label="COM_PROJECTFORK_CONFIG_TASK_PROGRESS_LABEL" description="COM_PROJECTFORK_CONFIG_TASK_PROGRESS_LABEL" default=""/>
     </fieldset>
 
 	<fieldset name="compat_parameters" label="COM_PROJECTFORK_CONFIG_COMPAT_LABEL" description="COM_PROJECTFORK_CONFIG_COMPAT_DESC">

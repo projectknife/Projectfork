@@ -80,15 +80,6 @@ class ProjectforkViewTaskForm extends JView
 		// Create a shortcut to the parameters.
 		$params	= &$this->state->params;
 
-		$progress = explode("-",$params->get('task_progress'));
-		if (count($progress) == 3) {
-			$this->form->setFieldAttribute("complete", "type", "integer");
-				
-			$this->form->setFieldAttribute("complete", "first", "$progress[0]");
-			$this->form->setFieldAttribute("complete", "last", "$progress[1]");
-			$this->form->setFieldAttribute("complete", "step", "$progress[2]");
-		}
-		
 		//Escape strings for HTML output
 		$this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
 
