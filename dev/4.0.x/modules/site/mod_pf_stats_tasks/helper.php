@@ -55,7 +55,12 @@ abstract class modPFstatsTasksHelper
         $trashed->label = JText::_('MOD_PF_STATS_TASKS_TRASHED');
         $trashed->data  = ($trashed  ? self::getData($id, array('t.state = -2')) : 0);
 
-        $data = array($complete, $pending, $archived, $trashed);
+        if($complete->data > 0 || $pending->data > 0 || $archived->data > 0 || $trashed->data > 0) {
+            $data = array($complete, $pending, $archived, $trashed);
+        }
+        else {
+            $data = array();
+        }
 
         return $data;
     }
@@ -79,7 +84,12 @@ abstract class modPFstatsTasksHelper
         $trashed->label = JText::_('MOD_PF_STATS_TASKS_TRASHED');
         $trashed->data  = ($trashed  ? self::getData(0, array('t.state = -2', 'a.user_id = '.$id)) : 0);
 
-        $data = array($complete, $pending, $archived, $trashed);
+        if($complete->data > 0 || $pending->data > 0 || $archived->data > 0 || $trashed->data > 0) {
+            $data = array($complete, $pending, $archived, $trashed);
+        }
+        else {
+            $data = array();
+        }
 
         return $data;
     }

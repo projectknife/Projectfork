@@ -81,7 +81,10 @@ else {
 
 
         // Include layout
-        $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
-        require JModuleHelper::getLayoutPath('mod_pf_stats_tasks', $params->get('layout', 'default'));
+        if(count($stats)) {
+            $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
+            require JModuleHelper::getLayoutPath('mod_pf_stats_tasks', $params->get('layout', 'default'));
+        }
+
     }
 }
