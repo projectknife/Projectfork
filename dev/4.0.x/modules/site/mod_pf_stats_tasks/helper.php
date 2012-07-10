@@ -37,23 +37,47 @@ abstract class modPFstatsTasksHelper
 	}
 
 
-    public static function getStats($id = 0, $archived = 0, $trashed = 0)
+    public static function getStatsProject($id = 0, $archived = 0, $trashed = 0)
     {
         $complete = new stdClass();
         $complete->label = JText::_('MOD_PF_STATS_TASKS_COMPLETE');
-        $complete->data  = self::getData($id, array('complete = 1'));
+        $complete->data  = self::getData($id, array('t.complete = 1'));
 
         $pending = new stdClass();
         $pending->label = JText::_('MOD_PF_STATS_TASKS_PENDING');
-        $pending->data  = self::getData($id, array('complete = 0'));
+        $pending->data  = self::getData($id, array('t.complete = 0'));
 
         $archived = new stdClass();
         $archived->label = JText::_('MOD_PF_STATS_TASKS_ARCHIVED');
-        $archived->data  = ($archived ? self::getData($id, array('state = 2')) : 0);
+        $archived->data  = ($archived ? self::getData($id, array('t.state = 2')) : 0);
 
         $trashed = new stdClass();
         $trashed->label = JText::_('MOD_PF_STATS_TASKS_TRASHED');
-        $trashed->data  = ($trashed  ? self::getData($id, array('state = -2')) : 0);
+        $trashed->data  = ($trashed  ? self::getData($id, array('t.state = -2')) : 0);
+
+        $data = array($complete, $pending, $archived, $trashed);
+
+        return $data;
+    }
+
+
+    public static function getStatsUser($id = 0, $archived = 0, $trashed = 0)
+    {
+        $complete = new stdClass();
+        $complete->label = JText::_('MOD_PF_STATS_TASKS_COMPLETE');
+        $complete->data  = self::getData(0, array('t.complete = 1', 'a.user_id = '.$id));
+
+        $pending = new stdClass();
+        $pending->label = JText::_('MOD_PF_STATS_TASKS_PENDING');
+        $pending->data  = self::getData(0, array('t.complete = 0', 'a.user_id = '.$id));
+
+        $archived = new stdClass();
+        $archived->label = JText::_('MOD_PF_STATS_TASKS_ARCHIVED');
+        $archived->data  = ($archived ? self::getData(0, array('t.state = 2', 'a.user_id = '.$id)) : 0);
+
+        $trashed = new stdClass();
+        $trashed->label = JText::_('MOD_PF_STATS_TASKS_TRASHED');
+        $trashed->data  = ($trashed  ? self::getData(0, array('t.state = -2', 'a.user_id = '.$id)) : 0);
 
         $data = array($complete, $pending, $archived, $trashed);
 
@@ -67,19 +91,25 @@ abstract class modPFstatsTasksHelper
         $db    = JFactory::getDbo();
 		$query = $db->getQuery(true);
 
-        $query->select('COUNT(id)')
-              ->from('#__pf_tasks');
+        $query->select('COUNT(t.id)')
+              ->from('#__pf_tasks AS t');
 
         foreach($filters AS $filter)
         {
-            $query->where($filter);
+            if(strpos($filter, 'a.user_id') !== false) {
+                $query->join('RIGHT', '#__pf_ref_users AS a ON a.item_id = t.id');
+                $query->where('a.item_type = '.$db->quote('task'));
+                $query->where($filter);
+                $query->group('a.user_id');
+            }
+            else {
+                $query->where($filter);
+            }
         }
-
-        if($id) $query->where('project_id = '.$id);
 
         if(!$user->authorise('core.admin')) {
 		    $groups	= implode(',', $user->getAuthorisedViewLevels());
-			$query->where('access IN ('.$groups.')');
+			$query->where('t.access IN ('.$groups.')');
 		}
 
         $db->setQuery($query->__toString());

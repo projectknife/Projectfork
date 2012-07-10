@@ -64,9 +64,21 @@ else {
         }
         $colors = '['.implode(', ', $colors).']';
 
-        // Get current project and statistics
-        $project = modPFstatsTasksHelper::getProject();
-        $stats   = modPFstatsTasksHelper::getStats($project->id, $show_a, $show_t);
+        // Get the current option, view and user id
+        $option = JRequest::getCmd('option');
+        $view   = JRequest::getCmd('view');
+        $uid    = JRequest::getUint('id');
+
+        if($option == 'com_projectfork' && $view == 'user' && $uid > 0) {
+            // Get stats for the current user
+            $stats = modPFstatsTasksHelper::getStatsUser($uid, $show_a, $show_t);
+        }
+        else {
+            // Get current project and statistics
+            $project = modPFstatsTasksHelper::getProject();
+            $stats   = modPFstatsTasksHelper::getStatsProject($project->id, $show_a, $show_t);
+        }
+
 
         // Include layout
         $moduleclass_sfx = htmlspecialchars($params->get('moduleclass_sfx'));
