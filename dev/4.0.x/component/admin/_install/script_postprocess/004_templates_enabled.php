@@ -27,8 +27,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 $installer   = JInstaller::getInstance();
 $source_path = $installer->getPath('source');
 
-$source_tmpl_path_site  = $source_path.'/templates/site';
-$source_tmpl_path_admin = $source_path.'/templates/admin';
+$source_tmpl_path_site  = JPath::clean($source_path.'/templates/site');
+$source_tmpl_path_admin = JPath::clean($source_path.'/templates/admin');
 
 $site_templates_exist  = JFolder::exists($source_tmpl_path_site);
 $admin_templates_exist = JFolder::exists($source_tmpl_path_admin);
@@ -48,6 +48,27 @@ $db = JFactory::getDbo();
 
 // Find site templates
 if($site_templates_exist) {
+    // Find all files in the folder
+    $site_template_files = (array) JFolder::files($source_tmpl_path_site);
+
+    // Check if any of the files are archives and try to unpack them
+    foreach($site_template_files AS $site_template_file)
+    {
+        $ext = JFile::getExt($site_template_file);
+
+        if(!in_array($ext, array('zip', 'gzip', 'tar'))) {
+            continue;
+        }
+
+        // Extract the archive
+        $archive_name   = JFile::stripExt($site_template_file);
+        $archive_source = JPath::clean($source_tmpl_path_site.'/'.$site_template_file);
+        $unpack_dir     = JPath::clean($source_tmpl_path_site.'/'.$archive_name);
+
+        JArchive::extract($archive_source, $unpack_dir);
+    }
+
+    // Get all folders
     $frontend_folders = (array) JFolder::folders($source_tmpl_path_site);
 
     foreach($frontend_folders AS $tmpl_name)
@@ -75,6 +96,27 @@ if($site_templates_exist) {
 
 // Find admin templates
 if($admin_templates_exist) {
+    // Find all files in the folder
+    $admin_template_files = (array) JFolder::files($source_tmpl_path_admin);
+
+    // Check if any of the files are archives and try to unpack them
+    foreach($admin_template_files AS $admin_template_file)
+    {
+        $ext = JFile::getExt($admin_template_file);
+
+        if(!in_array($ext, array('zip', 'gzip', 'tar'))) {
+            continue;
+        }
+
+        // Extract the archive
+        $archive_name   = JFile::stripExt($admin_template_file);
+        $archive_source = JPath::clean($source_tmpl_path_admin.'/'.$admin_template_file);
+        $unpack_dir     = JPath::clean($source_tmpl_path_admin.'/'.$archive_name);
+
+        JArchive::extract($archive_source, $unpack_dir);
+    }
+
+    // Get all folders
     $backend_folders = (array) JFolder::folders($source_tmpl_path_admin);
 
     foreach($backend_folders AS $tmpl_name)

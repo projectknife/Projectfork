@@ -28,8 +28,8 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 $installer   = JInstaller::getInstance();
 $source_path = $installer->getPath('source');
 
-$source_mod_path_site  = $source_path.'/modules/site';
-$source_mod_path_admin = $source_path.'/modules/admin';
+$source_mod_path_site  = JPath::clean($source_path.'/modules/site');
+$source_mod_path_admin = JPath::clean($source_path.'/modules/admin');
 
 $site_modules_exist  = JFolder::exists($source_mod_path_site);
 $admin_modules_exist = JFolder::exists($source_mod_path_admin);
@@ -49,6 +49,27 @@ $db = JFactory::getDbo();
 
 // Find site modules
 if($site_modules_exist) {
+    // Find all files in the folder
+    $site_module_files = (array) JFolder::files($source_mod_path_site);
+
+    // Check if any of the files are archives and try to unpack them
+    foreach($site_module_files AS $site_module_file)
+    {
+        $ext = JFile::getExt($site_module_file);
+
+        if(!in_array($ext, array('zip', 'gzip', 'tar'))) {
+            continue;
+        }
+
+        // Extract the archive
+        $archive_name   = JFile::stripExt($site_module_file);
+        $archive_source = JPath::clean($source_mod_path_site.'/'.$site_module_file);
+        $unpack_dir     = JPath::clean($source_mod_path_site.'/'.$archive_name);
+
+        JArchive::extract($archive_source, $unpack_dir);
+    }
+
+    // Get all folders
     $frontend_folders = (array) JFolder::folders($source_mod_path_site);
 
     foreach($frontend_folders AS $module_name)
@@ -76,6 +97,27 @@ if($site_modules_exist) {
 
 // Find admin modules
 if($admin_modules_exist) {
+    // Find all files in the folder
+    $admin_module_files = (array) JFolder::files($source_mod_path_admin);
+
+    // Check if any of the files are archives and try to unpack them
+    foreach($admin_module_files AS $admin_module_file)
+    {
+        $ext = JFile::getExt($admin_module_file);
+
+        if(!in_array($ext, array('zip', 'gzip', 'tar'))) {
+            continue;
+        }
+
+        // Extract the archive
+        $archive_name   = JFile::stripExt($admin_module_file);
+        $archive_source = JPath::clean($source_mod_path_admin.'/'.$admin_module_file);
+        $unpack_dir     = JPath::clean($source_mod_path_admin.'/'.$archive_name);
+
+        JArchive::extract($archive_source, $unpack_dir);
+    }
+
+    // Get all folders
     $admin_folders = (array) JFolder::folders($source_mod_path_admin);
 
     foreach($admin_folders AS $module_name)
