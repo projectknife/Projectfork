@@ -50,9 +50,19 @@ else {
         $css_w = (substr($width, -1) == '%'  ? "width:".intval($width)."%;"   : "width:".intval($width)."px;");
         $css_h = (substr($height, -1) == '%' ? "height:".intval($height)."%;" : "height:".intval($height)."px;");
 
+        // Get the current option, view and user id
+        $option = JRequest::getCmd('option');
+        $view   = JRequest::getCmd('view');
+        $uid    = JRequest::getUint('id');
 
-        // Get current project and statistics
-        $stats = modPFstatsLoadHelper::getStats($params);
+        if($option == 'com_projectfork' && $view == 'user' && $uid > 0) {
+            // Get stats for the current user
+            $stats = modPFstatsLoadHelper::getStatsUser($params, $uid);
+        }
+        else {
+            // Get current project and statistics
+            $stats = modPFstatsLoadHelper::getStatsProjects($params);
+        }
 
         // Include layout
         if(count($stats) > 0) {
