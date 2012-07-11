@@ -73,6 +73,7 @@ class ProjectforkModelDashboard extends JModelItem
 		$pk = (!empty($pk)) ? $pk : (int) $this->getState('filter.project');
 
 		if ($this->_item === null) $this->_item = array();
+
         if(!$pk) {
            $this->_item[$pk] = null;
            return $this->_item[$pk];
@@ -86,7 +87,7 @@ class ProjectforkModelDashboard extends JModelItem
 
 				$query->select($this->getState(
 					    'item.select',
-                        'a.id, a.asset_id, a.title, a.alias, a.description, '
+                        'a.id, a.asset_id, a.title, a.alias, a.description AS text, '
 					    . 'a.created, a.created_by, a.modified_by, a.checked_out, a.checked_out_time, '
 					    . 'a.attribs, a.access, a.state, a.start_date, a.end_date'
 					)

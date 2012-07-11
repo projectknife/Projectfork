@@ -87,7 +87,7 @@ class ProjectforkModelTask extends JModelItem
 
 				$query->select($this->getState(
 					    'item.select',
-                        'a.id, a.asset_id, a.project_id, a.milestone_id, a.list_id, a.title, a.alias, a.description, '
+                        'a.id, a.asset_id, a.project_id, a.milestone_id, a.list_id, a.title, a.alias, a.description AS text, '
 					    . 'a.created, a.created_by, a.modified_by, a.checked_out, a.checked_out_time, '
 					    . 'a.attribs, a.access, a.state, a.ordering, a.start_date, a.end_date'
 					)

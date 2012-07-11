@@ -60,11 +60,6 @@ class ProjectforkViewTask extends JView
 			return false;
 		}
 
-
-		// Create a shortcut for $item.
-		$item = &$this->item;
-
-
 		// Merge item params.
 		$this->params = $this->state->get('params');
 		$active	      = $app->getMenu()->getActive();
@@ -74,36 +69,55 @@ class ProjectforkViewTask extends JView
 		if ($active) {
 			$currentLink = $active->link;
 
-			if (strpos($currentLink, 'view=task') && (strpos($currentLink, '&id='.(string) $item->id))) {
-				$item->params->merge($temp);
+			if (strpos($currentLink, 'view=task') && (strpos($currentLink, '&id='.(string) $this->item->id))) {
+				$this->item->params->merge($temp);
 				// Load layout from active query (in case it is an alternative menu item)
 				if (isset($active->query['layout'])) $this->setLayout($active->query['layout']);
 			}
 			else {
 				// Merge the menu item params with the milestone params so that the milestone params take priority
-				$temp->merge($item->params);
-				$item->params = $temp;
+				$temp->merge($this->item->params);
+				$this->item->params = $temp;
 
 				// Check for alternative layouts (since we are not in a menu item)
-				if ($layout = $item->params->get('task_layout')) $this->setLayout($layout);
+				if ($layout = $this->item->params->get('task_layout')) $this->setLayout($layout);
 			}
 		}
 		else {
 			// Merge so that item params take priority
-			$temp->merge($item->params);
-			$item->params = $temp;
+			$temp->merge($this->item->params);
+			$this->item->params = $temp;
 
 			// Check for alternative layouts (since we are not in a menu item)
-			if ($layout = $item->params->get('task_layout')) $this->setLayout($layout);
+			if ($layout = $this->item->params->get('task_layout')) $this->setLayout($layout);
 		}
 
 		$offset = $this->state->get('list.offset');
 
 		// Check the view access to the milestone (the model has already computed the values).
-		if ($item->params->get('access-view') != true && (($item->params->get('show_noauth') != true &&  $user->get('guest') ))) {
+		if ($this->item->params->get('access-view') != true && (($this->item->params->get('show_noauth') != true &&  $user->get('guest') ))) {
 		    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
+
+        // Fake some content item properties to avoid plugin issues
+        $this->item->introtext = '';
+        $this->item->fulltext  = '';
+
+		// Process the content plugins.
+		JPluginHelper::importPlugin('content');
+		$results = $dispatcher->trigger('onContentPrepare', array ('com_projectfork.task', &$this->item, &$this->params, $offset));
+
+		$this->item->event = new stdClass();
+		$results = $dispatcher->trigger('onContentAfterTitle', array('com_projectfork.task', &$this->item, &$this->params, $offset));
+		$this->item->event->afterDisplayTitle = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_projectfork.task', &$this->item, &$this->params, $offset));
+		$this->item->event->beforeDisplayContent = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_projectfork.task', &$this->item, &$this->params, $offset));
+		$this->item->event->afterDisplayContent = trim(implode("\n", $results));
+
 
 		// Escape strings for HTML output
 		$this->pageclass_sfx = htmlspecialchars($this->item->params->get('pageclass_sfx'));

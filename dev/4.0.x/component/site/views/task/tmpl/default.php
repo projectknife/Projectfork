@@ -100,13 +100,18 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
 			<!--<a href="#" class="btn"><i class="icon-print"></i> Print</a>
 			<a href="#" class="btn"><i class="icon-envelope"></i> Email</a>
 			<a href="#comments" class="btn"><i class="icon-comment"></i> Comment <span class="badge badge-warning">4</span></a>-->
+            <?php echo $item->event->afterDisplayTitle;?>
 		</div>
 	</div>
 
+    <?php echo $item->event->beforeDisplayContent;?>
+
 	<div class="item-description">
-		<?php echo $this->escape($item->description); ?>
+		<?php echo $this->escape($item->text); ?>
 	</div>
 	<hr />
+
+    <?php echo $item->event->afterDisplayContent;?>
     <!--
 	<div class="items-more" id="comments">
 		<h3>Comments</h3>
