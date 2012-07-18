@@ -1,11 +1,11 @@
 CREATE TABLE IF NOT EXISTS `#__pf_comments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Comment ID',
-  `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table',
+  `asset_id` int(10) unsigned NOT NULL COMMENT 'FK to the #__assets table',
   `project_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent project ID',
   `item_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent item ID',
   `context` varchar(32) NOT NULL COMMENT 'Context reference',
-  `title` varchar(128) NOT NULL COMMENT 'Comment title',
-  `content` text NOT NULL COMMENT 'Comment content',
+  `title` varchar(128) NOT NULL COMMENT 'The context item title',
+  `description` text NOT NULL COMMENT 'Comment content',
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Comment creation date',
   `created_by` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Comment author',
   `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Comment modify date',
@@ -13,14 +13,18 @@ CREATE TABLE IF NOT EXISTS `#__pf_comments` (
   `checked_out` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'User who is currently editing the comment',
   `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
   `attribs` text NOT NULL COMMENT 'Comment attributes in JSON format',
-  `access` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Comment ACL access level ID',
   `state` tinyint(3) NOT NULL DEFAULT '0' COMMENT 'Comment state: 1 = Active, 0 = Inactive, 2 = Archived, -2 = Trashed ',
+  `parent_id` int(10) unsigned NOT NULL COMMENT 'Adjacency List Reference ID',
+  `lft` int(11) NOT NULL COMMENT 'Nested set lft.',
+  `rgt` int(11) NOT NULL COMMENT 'Nested set rgt.',
   PRIMARY KEY (`id`),
   KEY `idx_projectid` (`project_id`),
-  KEY `idx_access` (`access`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`),
-  KEY `idx_contextitemid` (`context`,`item_id`)
+  KEY `idx_contextitemid` (`context`,`item_id`),
+  KEY `idx_state` (`state`),
+  KEY `idx_parentid` (`parent_id`),
+  KEY `idx_nested` (`lft`,`rgt`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork item comments';
 
 CREATE TABLE IF NOT EXISTS `#__pf_files` (

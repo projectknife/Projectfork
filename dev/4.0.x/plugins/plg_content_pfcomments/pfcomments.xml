@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="1.6" type="plugin" group="content" method="upgrade">
+	<name>plg_content_pfcomments</name>
+	<creationDate>July 2012</creationDate>
+	<author>Tobias Kuhn</author>
+	<copyright>(C) 2006 - 2012 Tobias Kuhn. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
+	<authorEmail>support@projectfork.net</authorEmail>
+	<authorUrl>www.projectfork.net</authorUrl>
+	<version>1.0.0</version>
+	<description>PLG_CONTENT_PFCOMMENTS_XML_DESCRIPTION</description>
+	<files>
+		<filename plugin="pfcomments">pfcomments.php</filename>
+        <filename>index.html</filename>
+		<filename>mod_pf_stats_load.xml</filename>
+	</files>
+    <languages>
+	    <language tag="en-GB">language/en-GB/en-GB.plg_content_pfcomments.ini</language>
+	    <language tag="en-GB">language/en-GB/en-GB.plg_content_pfcomments.sys.ini</language>
+	</languages>
+</extension>
