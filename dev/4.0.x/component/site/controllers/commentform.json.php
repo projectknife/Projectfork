@@ -235,7 +235,7 @@ class ProjectforkControllerCommentform extends JControllerForm
                 $item  = $model->getItem($this->id);
 
                 if(class_exists('plgContentPfcomments') && !is_null($item)) {
-                    $html = plgContentPfcomments::renderItem($item, 0, ($item->parent_children == 1 && $item->parent_id != 0));
+                    $html = plgContentPfcomments::renderItem($item, 0, ($item->parent_replies == 1 && $item->parent_id != 0));
                 }
             }
 

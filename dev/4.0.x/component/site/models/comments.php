@@ -180,8 +180,19 @@ class ProjectforkModelComments extends JModelList
 		$query->from('#__pf_comments AS a');
 
         // Add the level in the tree.
+        $context = $this->getState('filter.context');
+        $item_id = $this->getState('filter.id');
+
 		$query->select('COUNT(DISTINCT c2.id) AS level');
-		$query->join('LEFT OUTER', $db->quoteName('#__pf_comments').' AS c2 ON a.lft > c2.lft AND a.rgt < c2.rgt');
+		$query->join('LEFT OUTER', $db->quoteName('#__pf_comments') . ' AS c2 ON '
+                    . '(a.lft > c2.lft AND a.rgt < c2.rgt'
+                    . (($context != '')       ? ' AND c2.context = ' . $db->quote($context) : '')
+                    . ((is_numeric($item_id)) ? ' AND c2.item_id = ' . (int) $item_id       : '')
+                    . ')');
+
+        // Count the replies of each comment
+        $query->select('COUNT(r.id) AS replies');
+        $query->join('LEFT', $db->quoteName('#__pf_comments') . 'AS r on r.parent_id = a.id');
 
         // Join over the users for the checked out user.
 		$query->select('uc.name AS editor');
@@ -212,13 +223,11 @@ class ProjectforkModelComments extends JModelList
 		}
 
         // Filter by context
-		$context = $this->getState('filter.context');
 		if ($context != '') {
 			$query->where('a.context = '.$db->quote($context));
 		}
 
         // Filter by item id
-		$item_id = $this->getState('filter.id');
 		if (is_numeric($item_id)) {
 			$query->where('a.item_id = ' . (int) $item_id);
 		}
@@ -246,9 +255,10 @@ class ProjectforkModelComments extends JModelList
 		}
 
 		// Add the list ordering clause.
-        $query->group('a.id, a.lft, a.rgt, a.parent_id, a.context');
+        $query->group('a.id, a.lft, a.rgt, a.parent_id, a.created');
 		//$query->order($this->getState('list.ordering', 'a.parent_id, a.lft').' '.$this->getState('list.direction', 'ASC'));
-		$query->order('a.lft'.' '.$this->getState('list.direction', 'ASC'));
+		//$query->order('a.lft'.' '.$this->getState('list.direction', 'ASC'));
+		$query->order('a.lft  ASC');
 
 		return $query;
 	}

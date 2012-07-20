@@ -86,11 +86,11 @@ class ProjectforkModelCommentForm extends ProjectforkModelComment
 		$value->params = new JRegistry;
 		$value->params->loadString($value->attribs);
 
-        // Count parent children
-        $value->parent_children = $this->countChildren($value->parent_id);
+        // Count parent replies
+        $value->parent_replies = $this->countReplies($value->parent_id);
 
-        // Count children of this item
-        $value->children = $this->countChildren($value->id);
+        // Count replies of this item
+        $value->replies = $this->countReplies($value->id);
 
 		// Compute selected asset permissions.
 		$user	= JFactory::getUser();
@@ -151,7 +151,7 @@ class ProjectforkModelCommentForm extends ProjectforkModelComment
 	}
 
 
-    protected function countChildren($parent = 0)
+    protected function countReplies($parent = 0)
     {
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);

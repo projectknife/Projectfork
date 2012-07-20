@@ -68,10 +68,13 @@ var Projectfork =
     cancelComment: function(parent_id)
     {
         if (parent_id > 0) {
-            jQuery('#comment-editor-' + parent_id).hide("fast");
+            jQuery('#comment-editor-' + parent_id).remove();
+        }
+        else {
+            jQuery('#jform_description_' + parent_id).val('');
         }
 
-        jQuery('#jform_description_' + parent_id).val('');
+        
     },
 
 
@@ -118,7 +121,14 @@ var Projectfork =
                 }
             }
         });
+    },
 
-        //jQuery('#comment-editor-' + parent_id).show("fast");
+
+    editComment: function(id, parent_id)
+    {
+        var cform = jQuery(document.commentForm);
+
     }
+
+
 }
