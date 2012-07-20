@@ -12,7 +12,7 @@
 	<files>
 		<filename plugin="pfcomments">pfcomments.php</filename>
         <filename>index.html</filename>
-		<filename>mod_pf_stats_load.xml</filename>
+		<filename>pfcomments.xml</filename>
 	</files>
     <languages>
 	    <language tag="en-GB">language/en-GB/en-GB.plg_content_pfcomments.ini</language>
