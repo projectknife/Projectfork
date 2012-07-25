@@ -115,18 +115,35 @@ class plgContentPfcomments extends JPlugin
     }
 
 
-    public static function renderItem(&$item, $i = 0, $new_node = false)
+    public static function renderItem($item, $i = 0, $new_node = false)
     {
+        static $replies = array('0' => 0);
+
         $avatar = JFactory::getURI()->base(true) . '/components/com_projectfork/assets/projectfork/images/icons/avatar.jpg';
+
+        if(!isset($replies[$item->id])) {
+            $replies[$item->id] = (int) $item->replies;
+        }
+
+        if(!isset($replies[$item->parent_id])) {
+            $replies[$item->parent_id] = 1;
+        }
 
         if(!isset($item->author_name)) {
             $user = JFactory::getUser($item->created_by);
             $item->author_name = $user->name;
         }
 
-        $html   = array();
+        $html = array();
 
-        if($new_node) $html[] = '<ul class="well" id="comment-node-' . $item->parent_id . '">';
+        // Force new node?
+        if($new_node) {
+            $html[] = '<ul class="well" id="comment-node-' . $item->parent_id . '">';
+        }
+        else {
+            // Reduce replies counter so we know when to close the node
+            $replies[$item->parent_id] --;
+        }
 
         $html[] = '<li id="comment-item-' . $item->id . '">'
                 . '    <div class="comment-item">'
@@ -149,13 +166,29 @@ class plgContentPfcomments extends JPlugin
 				. '            </div>'
 				. '        </div>'
 				. '        <hr />'
-				. '    </div>'
-                . '</li>';
+				. '    </div>';
 
-        if($new_node) $html[] = '</ul>';
+        if($item->replies > 0) {
+            // This comment has replies. So we must open another node
+            $html[] = '<ul class="well" id="comment-node-' . $item->id . '">';
+        }
+        else {
+            // This comment has no replies. Close the node if the replies counter is 0
+            // And if the parent id is not root.
+            if($item->parent_id > 0 && $replies[$item->parent_id] == 0) {
+                $html[] = '</ul>';
+            }
 
+            // Close the list element
+            $html[] = '</li>';
+        }
 
-        return implode("\n", $html);
+        // Force new node end
+        if($new_node) {
+            $html[] = '</ul>';
+        }
+
+        return implode("", $html);
     }
 
 
@@ -193,6 +226,42 @@ class plgContentPfcomments extends JPlugin
     }
 
 
+    protected function display()
+    {
+        $count = count($this->items);
+
+        $html   = array();
+        $html[] = '<div class="items-more" id="comments">';
+        $html[] = '<form class="form-validate" name="commentForm" method="post" action="index.php">';
+        $html[] = '<h3>' . $count . ' ' . JText::_('COM_PROJECTFORK_COMMENTS') . '</h3>';
+        $html[] = '<ul class="well" id="comment-node-0">';
+
+        // Render comments
+        foreach($this->items AS $i => $item)
+        {
+            $html[] = plgContentPfcomments::renderItem($item, $i, false);
+        }
+
+        $html[] = '</ul>';
+        $html[] = plgContentPfcomments::renderEditor(0);
+        $html[] = '<input type="hidden" id="jform_context" name="jform[id]" value="0" />';
+        $html[] = '<input type="hidden" id="jform_context" name="jform[context]" value="' . $this->item_context . '" />';
+        $html[] = '<input type="hidden" id="jform_item_id" name="jform[item_id]" value="' . $this->item_id . '" />';
+        $html[] = '<input type="hidden" id="jform_title" name="jform[title]" value="' . htmlspecialchars($this->title, ENT_QUOTES, 'UTF-8') . '" />';
+        $html[] = '<input type="hidden" id="jform_parent_id" name="jform[parent_id]" value="0" />';
+        $html[] = '<input type="hidden" name="option" value="' . htmlspecialchars(JRequest::getVar('option'), ENT_QUOTES, 'UTF-8') . '" />';
+        $html[] = '<input type="hidden" name="task" value="commentform.apply" />';
+        $html[] = '' . JHtml::_('form.token');
+        $html[] = '<input type="hidden" name="tmpl" value="component" />';
+        $html[] = '<input type="hidden" name="format" value="json" />';
+        $html[] = '</form>';
+        $html[] = '</div>';
+
+
+        return implode("\n", $html);
+    }
+
+
     /**
      * Loads a list of comments
      *
@@ -217,71 +286,5 @@ class plgContentPfcomments extends JPlugin
         $items = (array) $comments->getItems();
 
         return $items;
-    }
-
-
-    protected function display()
-    {
-        //$form_action = htmlspecialchars(JFactory::getURI()->toString());
-        $form_action = JRoute::_('index.php');
-        $count       = count($this->items);
-        $level       = 0;
-        $ul_open     = false;
-
-        $html = array();
-        $html[] = '<div class="items-more" id="comments">';
-        $html[] = '    <form class="form-validate" name="commentForm" method="post" action="' . $form_action . '">';
-        $html[] = '        <h3>' . JText::_('COM_PROJECTFORK_COMMENTS') . '</h3>';
-        $html[] = '        <ul class="well" id="comment-node-0">';
-
-        // Render comments
-        foreach($this->items AS $i => $item)
-        {
-            if($item->level > $level) {
-                $html[]  = '<ul class="well" id="comment-node-' . $item->parent_id . '">';
-                $ul_open = true;
-                $level   = $item->level;
-            }
-            elseif($item->level < $level) {
-                while($level > $item->level)
-                {
-                    $html[] = '</ul>';
-                    $level --;
-                }
-
-                $ul_open = false;
-                $level   = $item->level;
-            }
-
-            $html[] = '            ' . plgContentPfcomments::renderItem($item, $i, false);
-        }
-
-        if($ul_open) {
-            while($level > 0)
-            {
-                $html[] = '</ul>';
-                $level --;
-            }
-
-            $ul_open = false;
-        }
-
-        $html[] = '        </ul>';
-        $html[] = plgContentPfcomments::renderEditor(0);
-        $html[] = '        <input type="hidden" id="jform_context" name="jform[id]" value="0" />';
-        $html[] = '        <input type="hidden" id="jform_context" name="jform[context]" value="' . $this->item_context . '" />';
-        $html[] = '        <input type="hidden" id="jform_item_id" name="jform[item_id]" value="' . $this->item_id . '" />';
-        $html[] = '        <input type="hidden" id="jform_title" name="jform[title]" value="' . htmlspecialchars($this->title, ENT_QUOTES, 'UTF-8') . '" />';
-        $html[] = '        <input type="hidden" id="jform_parent_id" name="jform[parent_id]" value="0" />';
-        $html[] = '        <input type="hidden" name="option" value="' . htmlspecialchars(JRequest::getVar('option'), ENT_QUOTES, 'UTF-8') . '" />';
-        $html[] = '        <input type="hidden" name="task" value="commentform.apply" />';
-        $html[] = '        ' . JHtml::_('form.token');
-        $html[] = '        <input type="hidden" name="tmpl" value="component" />';
-        $html[] = '        <input type="hidden" name="format" value="json" />';
-        $html[] = '    </form>';
-        $html[] = '</div>';
-
-
-        return implode("\n", $html);
     }
 }
