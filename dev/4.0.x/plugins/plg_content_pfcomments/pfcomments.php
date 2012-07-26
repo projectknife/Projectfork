@@ -119,19 +119,12 @@ class plgContentPfcomments extends JPlugin
     {
         static $replies = array('0' => 0);
 
-        $avatar = JFactory::getURI()->base(true) . '/components/com_projectfork/assets/projectfork/images/icons/avatar.jpg';
-
         if(!isset($replies[$item->id])) {
             $replies[$item->id] = (int) $item->replies;
         }
 
         if(!isset($replies[$item->parent_id])) {
             $replies[$item->parent_id] = 1;
-        }
-
-        if(!isset($item->author_name)) {
-            $user = JFactory::getUser($item->created_by);
-            $item->author_name = $user->name;
         }
 
         $html = array();
@@ -146,27 +139,7 @@ class plgContentPfcomments extends JPlugin
         }
 
         $html[] = '<li id="comment-item-' . $item->id . '">'
-                . '    <div class="comment-item">'
-				. '        <a class="pull-left thumbnail" href="#">'
-                . '            <img width="90" src="' . $avatar . '" alt="" />'
-                . '        </a>'
-				. '        <span class="item-title">'
-				. '            <a href="#" id="comment-' . ($i + 1) . '">' . $item->author_name . '</a>'
-				. '        </span>'
-				. '        <span class="item-date">'
-				. '            ' . JHtml::date($item->created)
-				. '        </span>'
-				. '        <div class="comment-content">'
-				. '            <p>' . nl2br($item->description) . '</p>'
-				. '            <div class="btn-group comment-item-actions">'
-				. '                <a class="btn" href="javascript:void(0)"><i class="icon-edit"></i>' . JText::_('COM_PROJECTFORK_ACTION_EDIT') . '</a>'
-				. '                <a class="btn" href="javascript:void(0)" onclick="Projectfork.showEditor(' . $item->id . ');"><i class="icon-comment"></i> '
-                .                      JText::_('COM_PROJECTFORK_ACTION_REPLY')
-                . '                </a>'
-				. '            </div>'
-				. '        </div>'
-				. '        <hr />'
-				. '    </div>';
+                . plgContentPfcomments::renderItemContent($item, $i);
 
         if($item->replies > 0) {
             // This comment has replies. So we must open another node
@@ -192,11 +165,53 @@ class plgContentPfcomments extends JPlugin
     }
 
 
-    public static function renderEditor($parent = 0, $close_list = true)
+    public static function renderItemContent($item, $i = 0)
+    {
+        $avatar = JFactory::getURI()->base(true) . '/components/com_projectfork/assets/projectfork/images/icons/avatar.jpg';
+
+        if(!isset($item->author_name)) {
+            $user = JFactory::getUser($item->created_by);
+            $item->author_name = $user->name;
+        }
+
+        $html[] = '<div class="comment-item">'
+				. '    <a class="pull-left thumbnail" href="#">'
+                . '        <img width="90" src="' . $avatar . '" alt="" />'
+                . '    </a>'
+				. '    <span class="item-title">'
+				. '        <a href="#" id="comment-' . ($i + 1) . '">' . $item->author_name . '</a>'
+				. '    </span>'
+				. '    <span class="item-date">'
+				. '        ' . JHtml::date($item->created)
+				. '    </span>'
+				. '    <div class="comment-content">'
+				. '        <p>' . nl2br($item->description) . '</p>'
+				. '        <div class="btn-group comment-item-actions">'
+				. '            <a class="btn" href="javascript:void(0)" onclick="Projectfork.showEditor(' . $item->id . ');"><i class="icon-comment"></i> '
+                .                  JText::_('COM_PROJECTFORK_ACTION_REPLY')
+                . '            </a>'
+                . '            <a class="btn" href="javascript:void(0);" onclick="Projectfork.editComment(' . $item->id . ');">'
+                . '                <i class="icon-edit"></i> ' . JText::_('COM_PROJECTFORK_ACTION_EDIT')
+                . '            </a>'
+                . '            <a class="btn" href="javascript:void(0);" onclick="Projectfork.trashComment(' . $item->id . ');">'
+                . '                <i class="icon-remove"></i> ' . JText::_('COM_PROJECTFORK_ACTION_DELETE')
+                . '            </a>'
+				. '        </div>'
+				. '    </div>'
+				. '    <hr />'
+				. '</div>';
+
+         return implode("", $html);
+    }
+
+
+    public static function renderEditor($parent = 0, $close_list = true, $item = null)
     {
         $user   = JFactory::getUser();
         $avatar = JFactory::getURI()->base(true) . '/components/com_projectfork/assets/projectfork/images/icons/avatar.jpg';
         $style  = ($parent > 0) ? ' style="display:none;"' : '';
+
+        $content = (is_object($item)) ? $item->description : '';
 
         $html   = array();
         $html[] = '<ul class="well" id="comment-editor-' . $parent . '"><li><div class="comment-editor">'
@@ -207,7 +222,7 @@ class plgContentPfcomments extends JPlugin
 				. '        ' . JText::_('COM_PROJECTFORK_WRITE_COMMENT')
 				. '    </span>'
 				. '    <div class="comment-editor-input">'
-				. '        <textarea id="jform_description_' . $parent . '" name="jform[description][' . $parent . ']"></textarea>'
+				. '        <textarea id="jform_description_' . $parent . '" name="jform[description][' . $parent . ']">' . $content . '</textarea>'
 				. '        <div class="btn-group comment-form-actions">'
 				. '            <a class="btn btn-info" href="javascript:void(0);" onclick="Projectfork.postComment(' . $parent . ');"><i class="icon-ok"></i> '
                 . '                ' . JText::_('COM_PROJECTFORK_ACTION_POST_COMMENT')
@@ -244,13 +259,13 @@ class plgContentPfcomments extends JPlugin
 
         $html[] = '</ul>';
         $html[] = plgContentPfcomments::renderEditor(0);
-        $html[] = '<input type="hidden" id="jform_context" name="jform[id]" value="0" />';
         $html[] = '<input type="hidden" id="jform_context" name="jform[context]" value="' . $this->item_context . '" />';
         $html[] = '<input type="hidden" id="jform_item_id" name="jform[item_id]" value="' . $this->item_id . '" />';
         $html[] = '<input type="hidden" id="jform_title" name="jform[title]" value="' . htmlspecialchars($this->title, ENT_QUOTES, 'UTF-8') . '" />';
         $html[] = '<input type="hidden" id="jform_parent_id" name="jform[parent_id]" value="0" />';
         $html[] = '<input type="hidden" name="option" value="' . htmlspecialchars(JRequest::getVar('option'), ENT_QUOTES, 'UTF-8') . '" />';
         $html[] = '<input type="hidden" name="task" value="commentform.apply" />';
+        $html[] = '<input type="hidden" name="id" value="0" />';
         $html[] = '' . JHtml::_('form.token');
         $html[] = '<input type="hidden" name="tmpl" value="component" />';
         $html[] = '<input type="hidden" name="format" value="json" />';

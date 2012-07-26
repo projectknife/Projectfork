@@ -103,10 +103,43 @@ class ProjectforkControllerCommentform extends JControllerForm
 	 */
 	public function cancel($key = 'id')
 	{
-		parent::cancel($key);
+	    JPluginHelper::importPlugin('content', 'pfcomments');
 
-		// Redirect to the return page.
-		$this->setRedirect($this->getReturnPage());
+        $data = array();
+        $id   = (int) JRequest::getVar($key);
+
+        if (!class_exists('plgContentPfcomments')) {
+            $data = array('success' => false, 'message' => JText::_('COM_PROJECTFORK_COMMENTS_PLUGIN_NOT_FOUND'));
+        }
+        else {
+            if (!$id) {
+                $data = array('success' => false, 'message' => JText::_('COM_PROJECTFORK_COMMENTS_COMMENT_NOT_FOUND'));
+            }
+            else {
+                $model = $this->getModel();
+                $item  = $model->getItem($id);
+
+                if (!$item) {
+                    $data = array('success' => false, 'message' => $model->getError());
+                }
+                else {
+                    $html = plgContentPfcomments::renderItemContent($item, 0);
+
+                    $data = array('success' => true, 'message' => '', 'data' => $html);
+                }
+            }
+        }
+
+        // Set the MIME type for JSON output.
+        JFactory::getDocument()->setMimeEncoding('application/json');
+
+        // Change the suggested filename.
+        JResponse::setHeader('Content-Disposition','attachment;filename="'.$this->view_item.'.json"');
+
+        // Output the JSON data.
+        echo json_encode($data);
+
+        JFactory::getApplication()->close();
 	}
 
 
@@ -119,9 +152,49 @@ class ProjectforkControllerCommentform extends JControllerForm
 	 */
 	public function edit($key = null, $urlVar = 'id')
 	{
-		$result = parent::edit($key, $urlVar);
+		JPluginHelper::importPlugin('content', 'pfcomments');
 
-		return $result;
+        $data   = array();
+        $id     = (int) JRequest::getVar('id');
+        $result = parent::edit($key, $urlVar);
+
+        if (!$result) {
+            $data = array('success' => false, 'message' => $this->getError());
+        }
+        else {
+            if (!class_exists('plgContentPfcomments')) {
+                $data = array('success' => false, 'message' => JText::_('COM_PROJECTFORK_COMMENTS_PLUGIN_NOT_FOUND'));
+            }
+            else {
+                if(!$id) {
+                    $data = array('success' => false, 'message' => JText::_('COM_PROJECTFORK_COMMENTS_COMMENT_NOT_FOUND'));
+                }
+                else {
+                    $model = $this->getModel();
+                    $item  = $model->getItem($id);
+
+                    if (!$item) {
+                        $data = array('success' => false, 'message' => $model->getError());
+                    }
+                    else {
+                        $html = plgContentPfcomments::renderEditor($item->id, true, $item);
+
+                        $data = array('success' => true, 'message' => '', 'data' => $html);
+                    }
+                }
+            }
+        }
+
+        // Set the MIME type for JSON output.
+        JFactory::getDocument()->setMimeEncoding('application/json');
+
+        // Change the suggested filename.
+        JResponse::setHeader('Content-Disposition','attachment;filename="'.$this->view_item.'.json"');
+
+        // Output the JSON data.
+        echo json_encode($data);
+
+        JFactory::getApplication()->close();
 	}
 
 
@@ -221,7 +294,9 @@ class ProjectforkControllerCommentform extends JControllerForm
 	 */
 	public function save($key = null, $urlVar = 'id')
 	{
+	    $id     = (int) JRequest::getVar($urlVar);
 	    $result = parent::save($key, $urlVar);
+
 
         if(!$result) {
             $data = array('success' => false, 'message' => JText::_($this->getError()));
@@ -235,7 +310,12 @@ class ProjectforkControllerCommentform extends JControllerForm
                 $item  = $model->getItem($this->id);
 
                 if(class_exists('plgContentPfcomments') && !is_null($item)) {
-                    $html = plgContentPfcomments::renderItem($item, 0, ($item->parent_replies == 1 && $item->parent_id != 0));
+                    if($id == $this->id) {
+                        $html = plgContentPfcomments::renderItemContent($item, 0);
+                    }
+                    else {
+                        $html = plgContentPfcomments::renderItem($item, 0, ($item->parent_replies == 1 && $item->parent_id != 0));
+                    }
                 }
             }
 

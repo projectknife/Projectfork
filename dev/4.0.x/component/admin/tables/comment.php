@@ -285,8 +285,57 @@ class PFTableComment extends JTable
 			}
 		}
 
+        // Get all comment children
+        $children = array();
+
+        foreach($pks AS $id)
+        {
+            $db    = $this->_db;
+            $query = $db->getQuery(true);
+
+            $query->select('id, lft, rgt, context, item_id')
+                  ->from($db->quoteName($this->_tbl))
+                  ->where('id = ' . (int) $id);
+
+            $db->setQuery($query->__toString());
+            $item = $db->loadObject();
+
+            if (!is_object($item)) {
+                continue;
+            }
+
+            $query->clear();
+    		$query->select('c.' . $k)
+    		      ->from($db->quoteName($this->_tbl) . 'AS c')
+    		      ->where($db->quoteName('c.lft') . ' >= ' . (int) $item->lft)
+    		      ->where($db->quoteName('c.rgt') . ' <= ' . (int) $item->rgt)
+                  ->where($db->quoteName('c.item_id') . ' = ' . (int) $item->item_id)
+                  ->where($db->quoteName('c.context') . ' = ' . $db->quote($item->context));
+
+    		$db->setQuery($query->__toString());
+    		$ids = (array) $db->loadColumn();
+
+            $query->clear();
+
+            if (count($ids)) {
+                $children = array_merge($children, $ids);
+            }
+        }
+
+        if (count($children)) {
+            $pks = array_merge($pks, $children);
+        }
+
+
+
+
 		// Build the WHERE clause for the primary keys.
-		$where = $k.'='.implode(' OR '.$k.'=', $pks);
+        if (count($pks) == 1) {
+            $where = $k . ' = ' . $pks[0];
+        }
+        else {
+            $where = $k . ' IN(' . implode(', ', $pks) . ')';
+        }
 
 		// Determine if there is checkin support for the table.
 		if (!property_exists($this, 'checked_out') || !property_exists($this, 'checked_out_time')) {
@@ -299,7 +348,7 @@ class PFTableComment extends JTable
 		$this->_db->setQuery(
 			'UPDATE '.$this->_db->quoteName($this->_tbl).
 			' SET '.$this->_db->quoteName('state').' = '.(int) $state .
-			' WHERE ('.$where.')' .
+			' WHERE '. $where .
 			$checkin
 		);
 		$this->_db->query();

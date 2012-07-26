@@ -23,7 +23,7 @@
 defined( '_JEXEC' ) or die( 'Restricted access' );
 
 // Base this model on the backend version.
-require_once JPATH_ADMINISTRATOR.'/components/com_projectfork/models/comment.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_projectfork/models/comment.php';
 
 
 /**
