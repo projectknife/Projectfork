@@ -1,42 +1,46 @@
 <?php
 /**
-* @package   Projectfork
-* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
+* @package      Projectfork
 *
-* This file is part of Projectfork.
-*
-* Projectfork is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*
-* Projectfork is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
+* @author       Tobias Kuhn (eaxs)
+* @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+* @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 **/
 
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die();
 
 
 jimport('joomla.application.component.controller');
 
+
+/**
+ * Projectfork main controller
+ *
+ * @see    JController
+ */
 class ProjectforkController extends JController
 {
-	function __construct($config = array())
-	{
-		parent::__construct($config);
-	}
+    /**
+     * Constructor
+     *
+     * @param    array    $config    Optional config options
+     */
+    function __construct($config = array())
+    {
+        parent::__construct($config);
+    }
 
-	public function display($cachable = false, $urlparams = false)
-	{
-	    jimport( 'joomla.application.component.helper' );
-        JHtml::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/html');
 
+    /**
+     * Displays the current view
+     *
+     * @param     boolean    $cachable    If true, the view output will be cached  (Not Used!)
+     * @param     array      $urlparams   An array of safe url parameters and their variable types (Not Used!)
+     *
+     * @return    JController             A JController object to support chaining.
+     */
+    public function display($cachable = false, $urlparams = false)
+    {
         // Load CSS and JS assets
         JHtml::_('projectfork.boostrapCSS');
         JHtml::_('projectfork.CSS');
@@ -48,25 +52,30 @@ class ProjectforkController extends JController
         JHtml::_('behavior.tooltip');
 
 
-        $cachable = true;
-        $safeurlparams = array('id' => 'INT',
-                               'cid' => 'ARRAY',
-                               'limit' => 'INT',
-                               'limitstart' => 'INT',
-			                   'showall' => 'INT',
-                               'return' => 'BASE64',
-                               'filter' => 'STRING',
-                               'filter_order' => 'CMD',
-                               'filter_order_Dir' => 'CMD',
-                               'filter_search' => 'STRING',
-                               'filter_published' => 'CMD',
-                               'filter_project' => 'CMD',
-                               'filter_milestone' => 'CMD',
-                               'filter_tasklist' => 'CMD',
-                               'filter_priority' => 'CMD'
-                              );
+        // Override method arguments
+        $cachable  = true;
+        $urlparams = array('id'               => 'INT',
+                           'cid'              => 'ARRAY',
+                           'limit'            => 'INT',
+                           'limitstart'       => 'INT',
+                           'showall'          => 'INT',
+                           'return'           => 'BASE64',
+                           'filter'           => 'STRING',
+                           'filter_order'     => 'CMD',
+                           'filter_order_Dir' => 'CMD',
+                           'filter_search'    => 'STRING',
+                           'filter_published' => 'CMD',
+                           'filter_project'   => 'CMD',
+                           'filter_milestone' => 'CMD',
+                           'filter_tasklist'  => 'CMD',
+                           'filter_priority'  => 'CMD'
+                           );
 
-		parent::display($cachable, $safeurlparams);
-		return $this;
-	}
+
+        // Display the view
+        parent::display($cachable, $urlparams);
+
+        // Return own instance for chaining
+        return $this;
+    }
 }
