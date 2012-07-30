@@ -23,7 +23,7 @@ class ProjectforkModelProjects extends JModelList
      * Constructor.
      *
      * @param    array          An optional associative array of configuration settings.
-     * @see      jcontroller    
+     * @see      jcontroller
      */
     public function __construct($config = array())
     {
@@ -53,7 +53,7 @@ class ProjectforkModelProjects extends JModelList
     /**
      * Get the master query for retrieving a list of items subject to the model state.
      *
-     * @return    jdatabasequery    
+     * @return    jdatabasequery
      */
     public function getListQuery()
     {
@@ -202,7 +202,7 @@ class ProjectforkModelProjects extends JModelList
     /**
      * Build a list of authors
      *
-     * @return    jdatabasequery    
+     * @return    jdatabasequery
      */
     public function getAuthors()
     {
@@ -269,7 +269,7 @@ class ProjectforkModelProjects extends JModelList
     /**
      * Build a list of publishing states
      *
-     * @return    jdatabasequery    
+     * @return    jdatabasequery
      */
     public function getPublishedStates()
     {
@@ -312,7 +312,7 @@ class ProjectforkModelProjects extends JModelList
     /**
      * Method to retrieve the query limit start
      *
-     * @return    integer    
+     * @return    integer
      */
     public function getStart()
     {
@@ -324,12 +324,12 @@ class ProjectforkModelProjects extends JModelList
      * Method to auto-populate the model state.
      * Note. Calling getState in this method will result in recursion.
      *
-     * @return    void    
+     * @return    void
      */
     protected function populateState($ordering = 'title', $direction = 'ASC')
     {
         // Query limit
-        $value = JRequest::getUInt('limit', $app->getCfg('list_limit', 0));
+        $value = JRequest::getUInt('limit', JFactory::getApplication()->getCfg('list_limit', 0));
         $this->setState('list.limit', $value);
 
         // Query limit start

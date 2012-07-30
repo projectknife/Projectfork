@@ -190,7 +190,7 @@ class ProjectforkModelTasklists extends JModelList
     protected function populateState($ordering = 'title', $direction = 'ASC')
     {
         // Query limit
-        $value = JRequest::getUInt('limit', $app->getCfg('list_limit', 0));
+        $value = JRequest::getUInt('limit', JFactory::getApplication()->getCfg('list_limit', 0));
         $this->setState('list.limit', $value);
 
         // Query limit start
