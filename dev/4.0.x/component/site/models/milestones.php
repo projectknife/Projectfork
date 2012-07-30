@@ -114,7 +114,6 @@ class ProjectforkModelMilestones extends JModelList
             $query->where('a.access IN (' . $groups.')');
         }
 
-
         // Filter fields
         $filters = array();
         $filters['a.state']        = array('STATE',       $this->getState('filter.published'));

@@ -54,9 +54,9 @@ class ProjectforkControllerMilestoneform extends JControllerForm
     /**
      * Method to cancel an edit.
      *
-     * @param     string    $key    The name of the primary key of the URL variable.
+     * @param     string     $key    The name of the primary key of the URL variable.
      *
-     * @return    boolean           True if access level checks pass, false otherwise.
+     * @return    boolean            True if access level checks pass, false otherwise.
      */
     public function cancel($key = 'id')
     {
@@ -105,10 +105,10 @@ class ProjectforkControllerMilestoneform extends JControllerForm
     /**
      * Method to save a record.
      *
-     * @param     string    $key        The name of the primary key of the URL variable.
-     * @param     string    $url_var    The name of the URL variable if different from the primary key.
+     * @param     string     $key        The name of the primary key of the URL variable.
+     * @param     string     $url_var    The name of the URL variable if different from the primary key.
      *
-     * @return    boolean               True if successful, false otherwise.
+     * @return    boolean                True if successful, false otherwise.
      */
     public function save($key = null, $url_var = 'id')
     {
@@ -146,10 +146,25 @@ class ProjectforkControllerMilestoneform extends JControllerForm
 
 
     /**
+     * Method to check if you can add a new record.
+     *
+     * @param     array      $data    An array of input data.
+     *
+     * @return    boolean
+     */
+    protected function allowAdd($data = array())
+    {
+        $access = ProjectforkHelperAccess::getActions(null, 0, true);
+
+        return $access->get('milestone.create');
+    }
+
+
+    /**
      * Method override to check if you can edit an existing record.
      *
-     * @param     array     $data    An array of input data.
-     * @param     string    $key     The name of the key for the primary key.
+     * @param     array      $data    An array of input data.
+     * @param     string     $key     The name of the key for the primary key.
      *
      * @return    boolean
      */
@@ -241,7 +256,7 @@ class ProjectforkControllerMilestoneform extends JControllerForm
     /**
      * Function that allows child controller access to model data after the data has been saved.
      *
-     * @param     JModel    $model    The data model object.
+     * @param     jmodel    $model    The data model object.
      * @param     array     $data     The validated data.
      *
      * @return    void

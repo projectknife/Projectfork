@@ -42,9 +42,8 @@ class ProjectforkViewMilestoneForm extends JView
 	public function display($tpl = null)
 	{
 		// Initialise variables.
-		$app  = JFactory::getApplication();
-		$user = JFactory::getUser();
-
+		$app    = JFactory::getApplication();
+		$user   = JFactory::getUser();
 
 		// Get model data.
 		$this->state	   = $this->get('State');
@@ -55,7 +54,8 @@ class ProjectforkViewMilestoneForm extends JView
 
         // Permission check.
 		if (empty($this->item->id)) {
-			$authorised = ($user->authorise('core.create', 'com_projectfork') || $user->authorise('milestone.create', 'com_projectfork'));
+		    $access = ProjectforkHelperAccess::getActions('milestone');
+			$authorised = $access->get('milestone.create');
 		}
 		else {
 			$authorised = $this->item->params->get('access-edit');
@@ -65,10 +65,6 @@ class ProjectforkViewMilestoneForm extends JView
 			JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
 			return false;
 		}
-
-
-        // Bind form data.
-		//if (!empty($this->item)) $this->form->bind($this->item);
 
 
 		// Check for errors.

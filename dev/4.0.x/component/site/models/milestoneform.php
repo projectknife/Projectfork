@@ -52,8 +52,8 @@ class ProjectforkModelMilestoneForm extends ProjectforkModelMilestone
         $value->params->loadString($value->attribs);
 
         // Compute selected asset permissions.
-        $uid    =  JFactory::getUser()->get('id');
-        $access = ProjectforkHelper::getActions('milestone', $value->id);
+        $uid    = JFactory::getUser()->get('id');
+        $access = ProjectforkHelperAccess::getActions('milestone', $value->id);
 
         // Check general edit permission first.
         if ($access->get('milestone.edit')) {
@@ -97,7 +97,7 @@ class ProjectforkModelMilestoneForm extends ProjectforkModelMilestone
      * Method to auto-populate the model state.
      * Note. Calling getState in this method will result in recursion.
      *
-     * @return    void    
+     * @return    void
      */
     protected function populateState()
     {
