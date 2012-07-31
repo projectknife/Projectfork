@@ -226,7 +226,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_task_lists` (
   `state` tinyint(3) NOT NULL DEFAULT '0' COMMENT 'Task list state: 1 = Active, 0 = Inactive, 2 = Archived, -2 = Trashed ',
   `ordering` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Task list ordering',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_alias` (`project_id`,`alias`),
+  UNIQUE KEY `idx_alias` (`project_id`,`alias`,`milestone_id`),
   KEY `idx_projectid` (`project_id`),
   KEY `idx_milestoneid` (`milestone_id`),
   KEY `idx_createdby` (`created_by`),
