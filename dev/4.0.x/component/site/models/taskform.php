@@ -55,10 +55,10 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
 
         // Compute selected asset permissions.
         $uid    = JFactory::getUser()->get('id');
-        $access = ProjectforkHelperAccess('task', $value->id);
+        $access = ProjectforkHelperAccess::getActions('task', $value->id);
 
         // Check general edit permission first.
-        if ($access->get('task.edit', $asset)) {
+        if ($access->get('task.edit')) {
             $value->params->set('access-edit', true);
         }
         // Now check if edit.own is available.
@@ -76,7 +76,7 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
         }
         else {
             // New item
-            $access = ProjectforkHelperAccess();
+            $access = ProjectforkHelperAccess::getActions();
             $value->params->set('access-change', $access->get('task.edit.state'));
         }
 
@@ -252,7 +252,7 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
      * Method to auto-populate the model state.
      * Note. Calling getState in this method will result in recursion.
      *
-     * @return    void    
+     * @return    void
      */
     protected function populateState()
     {
