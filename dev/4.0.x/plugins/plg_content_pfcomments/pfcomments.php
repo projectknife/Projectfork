@@ -132,7 +132,7 @@ class plgContentPfcomments extends JPlugin
 
         // Force new node?
         if($new_node) {
-            $html[] = '<ul class="well" id="comment-node-' . $item->parent_id . '">';
+            $html[] = '<ul class="unstyled" id="comment-node-' . $item->parent_id . '">';
         }
         else {
             // Reduce replies counter so we know when to close the node
@@ -144,7 +144,7 @@ class plgContentPfcomments extends JPlugin
 
         if($item->replies > 0) {
             // This comment has replies. So we must open another node
-            $html[] = '<ul class="well" id="comment-node-' . $item->id . '">';
+            $html[] = '<ul class="unstyled offset1" id="comment-node-' . $item->id . '">';
         }
         else {
             // This comment has no replies. Close the node if the replies counter is 0
@@ -176,30 +176,36 @@ class plgContentPfcomments extends JPlugin
         }
 
         $html[] = '<div class="comment-item">'
-				. '    <a class="pull-left thumbnail" href="#">'
-                . '        <img width="90" src="' . $avatar . '" alt="" />'
+				. '    <div class="row-fluid">'
+				. '    <div class="span1">'
+				. '    <a href="#">'
+                . '        <img class="thumbnail" width="90" src="' . $avatar . '" alt="" />'
                 . '    </a>'
+                . '    </div>'
+                . '    <div class="span11">'
 				. '    <span class="item-title">'
 				. '        <a href="#" id="comment-' . ($i + 1) . '">' . $item->author_name . '</a>'
 				. '    </span>'
-				. '    <span class="item-date">'
+				. '    <span class="item-date small pull-right">'
 				. '        ' . JHtml::date($item->created)
 				. '    </span>'
 				. '    <div class="comment-content">'
-				. '        <p>' . nl2br($item->description) . '</p>'
-				. '        <div class="btn-group comment-item-actions">'
-				. '            <a class="btn" href="javascript:void(0)" onclick="Projectfork.showEditor(' . $item->id . ');"><i class="icon-comment"></i> '
+				. '        <div class="well">' . nl2br($item->description)
+				. '        <div class="btn-group pull-right comment-item-actions">'
+				. '            <a class="btn btn-mini" href="javascript:void(0)" onclick="Projectfork.showEditor(' . $item->id . ');"><i class="icon-comment"></i> '
                 .                  JText::_('COM_PROJECTFORK_ACTION_REPLY')
                 . '            </a>'
-                . '            <a class="btn" href="javascript:void(0);" onclick="Projectfork.editComment(' . $item->id . ');">'
+                . '            <a class="btn btn-mini" href="javascript:void(0);" onclick="Projectfork.editComment(' . $item->id . ');">'
                 . '                <i class="icon-edit"></i> ' . JText::_('COM_PROJECTFORK_ACTION_EDIT')
                 . '            </a>'
-                . '            <a class="btn" href="javascript:void(0);" onclick="Projectfork.trashComment(' . $item->id . ');">'
+                . '            <a class="btn btn-mini" href="javascript:void(0);" onclick="Projectfork.trashComment(' . $item->id . ');">'
                 . '                <i class="icon-remove"></i> ' . JText::_('COM_PROJECTFORK_ACTION_DELETE')
                 . '            </a>'
 				. '        </div>'
+				. '        </div>'
 				. '    </div>'
-				. '    <hr />'
+				. '    </div>'
+				. '    </div>'
 				. '</div>';
 
          return implode("", $html);
@@ -215,26 +221,31 @@ class plgContentPfcomments extends JPlugin
         $content = (is_object($item)) ? $item->description : '';
 
         $html   = array();
-        $html[] = '<ul class="well" id="comment-editor-' . $parent . '"><li><div class="comment-editor">'
-				. '    <a class="pull-left thumbnail" href="#">'
-                . '        <img width="90" src="' . $avatar . '" alt="" />'
+        $html[] = '<ul class="unstyled" id="comment-editor-' . $parent . '"><li><div class="comment-editor">'
+        		. '    <div class="row-fluid">'
+        		. '    <div class="span1">'
+				. '    <a href="#">'
+                . '        <img class="pull-left thumbnail" width="90" src="' . $avatar . '" alt="" />'
                 . '    </a>'
+                . '    </div>'
+                . '    <div class="span11">'
                 . '    <span class="item-title editor-title">'
 				. '        ' . JText::_('COM_PROJECTFORK_WRITE_COMMENT')
 				. '    </span>'
 				. '    <div class="comment-editor-input">'
-				. '        <textarea id="jform_description_' . $parent . '" name="jform[description][' . $parent . ']">' . $content . '</textarea>'
-				. '        <div class="btn-group comment-form-actions">'
-				. '            <a class="btn btn-info" href="javascript:void(0);" onclick="Projectfork.postComment(' . $parent . ');"><i class="icon-ok"></i> '
+				. '        <textarea id="jform_description_' . $parent . '" class="input-xxlarge" name="jform[description][' . $parent . ']">' . $content . '</textarea>'
+				. '        <div class="comment-form-actions">'
+				. '            <a class="btn btn-mini btn-info" href="javascript:void(0);" onclick="Projectfork.postComment(' . $parent . ');"><i class="icon-ok icon-white"></i> '
                 . '                ' . JText::_('COM_PROJECTFORK_ACTION_POST_COMMENT')
                 . '            </a>'
-				. '            <a class="btn" href="javascript:void(0);" onclick="Projectfork.cancelComment(' . $parent . ');"><i class="icon-remove"></i> '
+				. '            <a class="btn btn-mini" href="javascript:void(0);" onclick="Projectfork.cancelComment(' . $parent . ');"><i class="icon-remove"></i> '
                 .                  JText::_('COM_PROJECTFORK_ACTION_CANCEL')
                 . '            </a>'
 				. '        </div>'
                 . '    </div>'
-                . '    <hr />'
-				. '</div></li>';
+                . '    </div>'
+                . '    </div>'
+				. '<hr /></div></li>';
 
         if ($close_list) $html[] = '</ul>';
 
@@ -249,8 +260,9 @@ class plgContentPfcomments extends JPlugin
         $html   = array();
         $html[] = '<div class="items-more" id="comments">';
         $html[] = '<form class="form-validate" name="commentForm" method="post" action="index.php">';
-        $html[] = '<h3>' . $count . ' ' . JText::_('COM_PROJECTFORK_COMMENTS') . '</h3>';
-        $html[] = '<ul class="well" id="comment-node-0">';
+        $html[] = '<h4>' . $count . ' ' . JText::_('COM_PROJECTFORK_COMMENTS') . '</h4>';
+        $html[] = '<hr />';
+        $html[] = '<ul class="unstyled" id="comment-node-0">';
 
         // Render comments
         foreach($this->items AS $i => $item)
