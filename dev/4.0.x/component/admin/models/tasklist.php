@@ -22,7 +22,7 @@ class ProjectforkModelTasklist extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string
+     * @var    string    
      */
     protected $text_prefix = 'COM_PROJECTFORK_TASKLIST';
 
@@ -30,7 +30,7 @@ class ProjectforkModelTasklist extends JModelAdmin
     /**
      * Returns a Table object, always creating it.
      *
-     * @param     type      The table type to instantiate
+     * @param     string    The table type to instantiate
      * @param     string    A prefix for the table class name. Optional.
      * @param     array     Configuration array for model. Optional.
      *
@@ -66,17 +66,16 @@ class ProjectforkModelTasklist extends JModelAdmin
     /**
      * Method to get the record form.
      *
-     * @param     array      $data        Data for the form.
-     * @param     boolean    $loadData    True if the form is to load its own data (default case), false if not.
+     * @param     array      Data for the form.
+     * @param     boolean    True if the form is to load its own data (default case), false if not.
      *
-     * @return    mixed                   A JForm object on success, false on failure
+     * @return    mixed      A JForm object on success, false on failure
      */
     public function getForm($data = array(), $loadData = true)
     {
         // Get the form.
         $form = $this->loadForm('com_projectfork.tasklist', 'tasklist', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) return false;
-
 
         // Check if a project id is already selected. If not, set the currently active project as value
         $project_id = (int) $form->getValue('project_id');
@@ -111,9 +110,9 @@ class ProjectforkModelTasklist extends JModelAdmin
     /**
      * Method to delete one or more records.
      *
-     * @param     array      $pks    An array of record primary keys.
+     * @param     array      An array of record primary keys.
      *
-     * @return    boolean            True if successful, false if an error occurs.
+     * @return    boolean    True if successful, false if an error occurs.
      */
     public function delete(&$pks)
     {
@@ -196,18 +195,18 @@ class ProjectforkModelTasklist extends JModelAdmin
 
 
     /**
-	 * Method to change the published state of one or more records.
-	 *
-	 * @param   array    &$pks   A list of the primary keys to change.
-	 * @param   integer  $value  The value of the published state.
-	 *
-	 * @return  boolean  True on success.
-	 */
+     * Method to change the published state of one or more records.
+     *
+     * @param     array      A list of the primary keys to change.
+     * @param     integer    The value of the published state.
+     *
+     * @return    boolean    True on success.
+     */
     public function publish(&$pks, $value = 1)
-	{
-	    $result = parent::publish($pks, $value);
+    {
+        $result = parent::publish($pks, $value);
 
-        if($result) {
+        if ($result) {
             // State change succeeded. Now update all children
             $tasks = JTable::getInstance('Task', 'PFTable');
 
@@ -218,7 +217,7 @@ class ProjectforkModelTasklist extends JModelAdmin
         }
 
         return $result;
-	}
+    }
 
 
     /**
@@ -235,12 +234,12 @@ class ProjectforkModelTasklist extends JModelAdmin
      * Method to change the title & alias.
      * Overloaded from JModelAdmin class
      *
-     * @param     string     $alias           The alias
-     * @param     string     $title           The title
-     * @param     integer    $project_id      The project id
-     * @param     integer    $milestone_id    The milestone id
+     * @param     string     The alias
+     * @param     string     The title
+     * @param     integer    The project id
+     * @param     integer    The milestone id
      *
-     * @return    array                       Contains the modified title and alias
+     * @return    array      Contains the modified title and alias
      */
     protected function generateNewTitle($alias, $title, $project_id, $milestone_id)
     {
@@ -272,12 +271,35 @@ class ProjectforkModelTasklist extends JModelAdmin
 
 
     /**
+     * Method to test whether a record can be deleted.
+     * Defaults to the permission set in the component.
+     *
+     * @param     object     A record object.
+     *
+     * @return    boolean    True if allowed to delete the record.
+     */
+    protected function canDelete($record)
+    {
+        if (!empty($record->id)) {
+            if ($record->state != -2) return false;
+
+            $access = ProjectforkHelperAccess::getActions('tasklist', $record->id);
+            return $access->get('tasklist.delete');
+        }
+        else {
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('tasklist.delete');
+        }
+    }
+
+
+    /**
      * Method to test whether a record can have its state edited.
      * Defaults to the permission set in the component.
      *
-     * @param     object     $record    A record object.
+     * @param     object     A record object.
      *
-     * @return    boolean               True if allowed to delete the record.
+     * @return    boolean    True if allowed to delete the record.
      */
     protected function canEditState($record)
     {
@@ -293,15 +315,16 @@ class ProjectforkModelTasklist extends JModelAdmin
 
 
     /**
-	 * Method to test whether a record can be edited.
-	 *
-	 * @param   object  $record  A record object.
-	 *
-	 * @return  boolean  True if allowed to edit the record. Defaults to the permission for the component.
-	 */
-	protected function canEdit($record)
-	{
-	    // Check for existing item.
+     * Method to test whether a record can be edited.
+     * Defaults to the permission for the component.
+     *
+     * @param     object     $record    A record object.
+     *
+     * @return    boolean               True if allowed to edit the record.
+     */
+    protected function canEdit($record)
+    {
+        // Check for existing item.
         if (!empty($record->id)) {
             $access = ProjectforkHelperAccess::getActions('tasklist', $record->id);
             return $access->get('tasklist.edit');
@@ -310,5 +333,5 @@ class ProjectforkModelTasklist extends JModelAdmin
             $access = ProjectforkHelperAccess::getActions();
             return $access->get('tasklist.edit');
         }
-	}
+    }
 }

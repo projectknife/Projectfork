@@ -20,7 +20,9 @@ jimport('joomla.application.component.modeladmin');
 class ProjectforkModelProject extends JModelAdmin
 {
     /**
-     * @var    string    The prefix to use with controller messages.
+     * The prefix to use with controller messages.
+     *
+     * @var    string    
      */
     protected $text_prefix = 'COM_PROJECTFORK_PROJECT';
 
@@ -28,7 +30,7 @@ class ProjectforkModelProject extends JModelAdmin
     /**
      * Returns a Table object, always creating it.
      *
-     * @param     type      The table type to instantiate
+     * @param     string    The table type to instantiate
      * @param     string    A prefix for the table class name. Optional.
      * @param     array     Configuration array for model. Optional.
      *
@@ -63,9 +65,9 @@ class ProjectforkModelProject extends JModelAdmin
     /**
      * Method to get the user groups of a project
      *
-     * @param     integer    $pk    The project id
+     * @param     integer    The project id
      *
-     * @return    array             The user groups
+     * @return    array      The user groups
      **/
     public function getUserGroups($pk = NULL, $children = true)
     {
@@ -92,10 +94,10 @@ class ProjectforkModelProject extends JModelAdmin
     /**
      * Method to get the record form.
      *
-     * @param     array      $data        Data for the form.
-     * @param     boolean    $loadData    True if the form is to load its own data (default case), false if not.
+     * @param     array      Data for the form.
+     * @param     boolean    True if the form is to load its own data (default case), false if not.
      *
-     * @return    mixed                   A JForm object on success, false on failure
+     * @return    mixed      A JForm object on success, false on failure
      */
     public function getForm($data = array(), $loadData = true)
     {
@@ -113,14 +115,9 @@ class ProjectforkModelProject extends JModelAdmin
 
         // Check for existing item.
         // Modify the form based on Edit State access controls.
-        if (($id != 0 && !$item_access->get('project.edit.state', 'com_projectfork.project.'.(int) $id))
-            || ($id == 0 && !$access->get('project.edit.state'))
-        ) {
+        if (($id != 0 && !$item_access->get('project.edit.state')) || ($id == 0 && !$access->get('project.edit.state'))) {
             // Disable fields for display.
             $form->setFieldAttribute('state', 'disabled', 'true');
-
-            // Disable fields while saving.
-            // The controller has already verified this is an item you can edit.
             $form->setFieldAttribute('state', 'filter', 'unset');
         }
 
@@ -246,16 +243,16 @@ class ProjectforkModelProject extends JModelAdmin
 
 
     /**
-	 * Method to change the published state of one or more records.
-	 *
-	 * @param   array    &$pks   A list of the primary keys to change.
-	 * @param   integer  $value  The value of the published state.
-	 *
-	 * @return  boolean  True on success.
-	 */
+     * Method to change the published state of one or more records.
+     *
+     * @param     array      A list of the primary keys to change.
+     * @param     integer    The value of the published state.
+     *
+     * @return    boolean    True on success.
+     */
     public function publish(&$pks, $value = 1)
-	{
-	    $result = parent::publish($pks, $value);
+    {
+        $result = parent::publish($pks, $value);
 
         if ($result) {
             // State change succeeded. Now update all children
@@ -272,7 +269,7 @@ class ProjectforkModelProject extends JModelAdmin
         }
 
         return $result;
-	}
+    }
 
 
     /**
@@ -319,9 +316,9 @@ class ProjectforkModelProject extends JModelAdmin
     /**
      * Method to delete one or more records.
      *
-     * @param     array      $pks    An array of record primary keys.
+     * @param     array      An array of record primary keys.
      *
-     * @return    boolean            True if successful, false if an error occurs.
+     * @return    boolean    True if successful, false if an error occurs.
      */
     public function delete(&$pks)
     {
@@ -366,10 +363,10 @@ class ProjectforkModelProject extends JModelAdmin
      * Method to change the title & alias.
      * Overloaded from JModelAdmin class
      *
-     * @param     string    $alias    The alias
-     * @param     string    $title    The title
+     * @param     string    The alias
+     * @param     string    The title
      *
-     * @return    array               Contains the modified title and alias
+     * @return    array     Contains the modified title and alias
      */
     protected function generateNewTitle($alias, $title)
     {
@@ -403,10 +400,10 @@ class ProjectforkModelProject extends JModelAdmin
     /**
     * Method to generate a new access level for a project
     *
-    * @param     string     $title        The project title
-    * @param     array      $tmp_rules    Optional associated user groups
+    * @param     string     The project title
+    * @param     array      Optional associated user groups
     *
-    * @return    integer                  The access level id
+    * @return    integer    The access level id
     **/
     protected function saveAccessLevel($title, $tmp_rules = array())
     {
@@ -439,17 +436,20 @@ class ProjectforkModelProject extends JModelAdmin
      * Method to test whether a record can be deleted.
      * Defaults to the permission set in the component.
      *
-     * @param     object     $record    A record object.
+     * @param     object     A record object.
      *
-     * @return    boolean               True if allowed to delete the record.
+     * @return    boolean    True if allowed to delete the record.
      */
     protected function canDelete($record)
     {
         if (!empty($record->id)) {
-            if ($record->state != -2) return ;
+            if ($record->state != -2) return false;
 
             $access = ProjectforkHelperAccess::getActions('project', $record->id);
-
+            return $access->get('project.delete');
+        }
+        else {
+            $access = ProjectforkHelperAccess::getActions();
             return $access->get('project.delete');
         }
     }
@@ -459,9 +459,9 @@ class ProjectforkModelProject extends JModelAdmin
      * Method to test whether a record can have its state edited.
      * Defaults to the permission set in the component.
      *
-     * @param     object     $record    A record object.
+     * @param     object     A record object.
      *
-     * @return    boolean               True if allowed to delete the record.
+     * @return    boolean    True if allowed to edit the state of the record.
      */
     protected function canEditState($record)
     {
@@ -472,6 +472,28 @@ class ProjectforkModelProject extends JModelAdmin
         }
         else {
             return parent::canEditState('com_projectfork');
+        }
+    }
+
+
+    /**
+     * Method to test whether a record can be edited.
+     * Defaults to the permission set in the component.
+     *
+     * @param     object     A record object.
+     *
+     * @return    boolean    True if allowed to edit the record.
+     */
+    protected function canEdit($record)
+    {
+        // Check for existing item.
+        if (!empty($record->id)) {
+            $access = ProjectforkHelperAccess::getActions('project', $record->id);
+            return $access->get('project.edit');
+        }
+        else {
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('project.edit');
         }
     }
 
