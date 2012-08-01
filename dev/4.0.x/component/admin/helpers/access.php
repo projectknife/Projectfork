@@ -106,6 +106,10 @@ class ProjectforkHelperAccess
         $map['tasklist']  = array('task', 'comment');
         $map['task']      = array('comment');
 
+        if (!array_key_exists($asset, $map)) {
+            return array();
+        }
+
         return $map[$asset];
     }
 }
