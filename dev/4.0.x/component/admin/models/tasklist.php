@@ -22,7 +22,7 @@ class ProjectforkModelTasklist extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string    
+     * @var    string
      */
     protected $text_prefix = 'COM_PROJECTFORK_TASKLIST';
 
@@ -109,6 +109,30 @@ class ProjectforkModelTasklist extends JModelAdmin
 
 
     /**
+     * Method to delete one or more records.
+     *
+     * @param     array      $pks    An array of record primary keys.
+     *
+     * @return    boolean            True if successful, false if an error occurs.
+     */
+    public function delete(&$pks)
+    {
+        // Delete the records
+        $success = parent::delete($pks);
+
+        // Cancel if something went wrong
+        if (!$success) return false;
+
+        $tasks = JTable::getInstance('Task', 'PFTable');
+
+        // Delete all other items referenced to each project
+        if (!$tasks->deleteByReference($pks, 'list_id')) $success = false;
+
+        return $success;
+    }
+
+
+    /**
      * Method to save the form data.
      *
      * @param     array      The form data
@@ -128,11 +152,73 @@ class ProjectforkModelTasklist extends JModelAdmin
             $data['alias'] = '';
         }
 
+        $id      = (int) $this->getState('tasklist.id');
+        $is_new  = ($id > 0) ? false : true;
+        $item    = null;
+
+        if (!$is_new) {
+            // Load the existing record before updating it
+            $item = $this->getTable();
+            $item->load($id);
+        }
+
         // Store the record
-        if (parent::save($data)) return true;
+        if (parent::save($data)) {
+            // To keep data integrity, update all child assets
+            if (!$is_new && is_object($item)) {
+                $updated = $this->getTable();
+                $tasks   = JTable::getInstance('Task', 'PFTable');
+
+                $parent_data = array();
+
+                // Load the just updated row
+                if ($updated->load($this->getState('tasklist.id')) === false) return false;
+
+                // Check if any relevant values have changed that need to be updated to children
+                if ($item->access != $updated->access) {
+                    $parent_data['access'] = $updated->access;
+                }
+
+                if ($item->state != $updated->state) {
+                    $parent_data['state'] = $updated->state;
+                }
+
+                if (count($parent_data)) {
+                    $tasks->updateByReference($id, 'list_id', $parent_data);
+                }
+            }
+
+            return true;
+        }
 
         return false;
     }
+
+
+    /**
+	 * Method to change the published state of one or more records.
+	 *
+	 * @param   array    &$pks   A list of the primary keys to change.
+	 * @param   integer  $value  The value of the published state.
+	 *
+	 * @return  boolean  True on success.
+	 */
+    public function publish(&$pks, $value = 1)
+	{
+	    $result = parent::publish($pks, $value);
+
+        if($result) {
+            // State change succeeded. Now update all children
+            $tasks = JTable::getInstance('Task', 'PFTable');
+
+            $parent_data = array();
+            $parent_data['state'] = $value;
+
+            $tasks->updateByReference($pks, 'milestone_id', $parent_data);
+        }
+
+        return $result;
+	}
 
 
     /**
@@ -183,4 +269,46 @@ class ProjectforkModelTasklist extends JModelAdmin
 
         return array($title, $alias);
     }
+
+
+    /**
+     * Method to test whether a record can have its state edited.
+     * Defaults to the permission set in the component.
+     *
+     * @param     object     $record    A record object.
+     *
+     * @return    boolean               True if allowed to delete the record.
+     */
+    protected function canEditState($record)
+    {
+        // Check for existing item.
+        if (!empty($record->id)) {
+            $access = ProjectforkHelperAccess::getActions('tasklist', $record->id);
+            return $access->get('tasklist.edit.state');
+        }
+        else {
+            return parent::canEditState('com_projectfork');
+        }
+    }
+
+
+    /**
+	 * Method to test whether a record can be edited.
+	 *
+	 * @param   object  $record  A record object.
+	 *
+	 * @return  boolean  True if allowed to edit the record. Defaults to the permission for the component.
+	 */
+	protected function canEdit($record)
+	{
+	    // Check for existing item.
+        if (!empty($record->id)) {
+            $access = ProjectforkHelperAccess::getActions('tasklist', $record->id);
+            return $access->get('tasklist.edit');
+        }
+        else {
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('tasklist.edit');
+        }
+	}
 }

@@ -185,14 +185,14 @@ class ProjectforkModelProject extends JModelAdmin
         $data['rules'] = $rules;
 
 
-        $id      = (int) $data['id'];
+        $id      = (int) $this->getState('project.id');
         $is_new  = ($id > 0) ? false : true;
-        $project = null;
+        $item    = null;
 
         if (!$is_new) {
-            // Load the existing project record before updating it
-            $project = $this->getTable();
-            $project->load($id);
+            // Load the existing record before updating it
+            $item = $this->getTable();
+            $item->load($id);
         }
 
 
@@ -201,7 +201,7 @@ class ProjectforkModelProject extends JModelAdmin
             $this->setActive(array('id' => $this->getState('project.id')));
 
             // To keep data integrity, update all child assets
-            if (!$is_new && is_object($project)) {
+            if (!$is_new && is_object($item)) {
                 $updated    = $this->getTable();
                 $milestones = JTable::getInstance('Milestone', 'PFTable');
                 $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
@@ -214,19 +214,19 @@ class ProjectforkModelProject extends JModelAdmin
                 if ($updated->load($this->getState('project.id')) === false) return false;
 
                 // Check if any relevant values have changed that need to be updated to children
-                if ($project->access != $updated->access) {
+                if ($item->access != $updated->access) {
                     $parent_data['access'] = $updated->access;
                 }
 
-                if ($project->start_date != $updated->start_date && $project->start_date != $null_date) {
+                if ($item->start_date != $updated->start_date && $item->start_date != $null_date) {
                     $parent_data['start_date'] = $updated->start_date;
                 }
 
-                if ($project->start_date != $updated->end_date && $project->end_date != $null_date) {
+                if ($item->start_date != $updated->end_date && $item->end_date != $null_date) {
                     $parent_data['end_date'] = $updated->end_date;
                 }
 
-                if ($project->state != $updated->state) {
+                if ($item->state != $updated->state) {
                     $parent_data['state'] = $updated->state;
                 }
 
@@ -243,6 +243,36 @@ class ProjectforkModelProject extends JModelAdmin
 
         return false;
     }
+
+
+    /**
+	 * Method to change the published state of one or more records.
+	 *
+	 * @param   array    &$pks   A list of the primary keys to change.
+	 * @param   integer  $value  The value of the published state.
+	 *
+	 * @return  boolean  True on success.
+	 */
+    public function publish(&$pks, $value = 1)
+	{
+	    $result = parent::publish($pks, $value);
+
+        if ($result) {
+            // State change succeeded. Now update all children
+            $milestones = JTable::getInstance('Milestone', 'PFTable');
+            $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
+            $tasks      = JTable::getInstance('Task', 'PFTable');
+
+            $parent_data = array();
+            $parent_data['state'] = $value;
+
+            $milestones->updateByReference($pks, 'project_id', $parent_data);
+            $tasklists->updateByReference($pks, 'project_id', $parent_data);
+            $tasks->updateByReference($pks, 'project_id', $parent_data);
+        }
+
+        return $result;
+	}
 
 
     /**
@@ -295,31 +325,27 @@ class ProjectforkModelProject extends JModelAdmin
      */
     public function delete(&$pks)
     {
-        $original_pks = $pks;
-
         // Delete the records
         $success = parent::delete($pks);
 
         // Cancel if something went wrong
         if (!$success) return false;
 
-
         $app        = JFactory::getApplication();
         $milestones = JTable::getInstance('Milestone', 'PFTable');
         $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
         $tasks      = JTable::getInstance('Task', 'PFTable');
 
+        // Delete all other items referenced to each project
+        if (!$milestones->deleteByReference($pks, 'project_id')) $success = false;
+        if (!$tasklists->deleteByReference($pks, 'project_id'))  $success = false;
+        if (!$tasks->deleteByReference($pks, 'project_id'))      $success = false;
+
         $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
 
-        foreach ($pks as $i => $pk)
-        {
-            // Delete all other items referenced to each project
-            if (!$milestones->deleteByReference($pk, 'project_id')) $success = false;
-            if (!$tasklists->deleteByReference($pk, 'project_id'))  $success = false;
-            if (!$tasks->deleteByReference($pk, 'project_id'))      $success = false;
-
-            // The active project has been delete?
-            if ($active_id == $pk) $this->setActive( array('id' => 0) );
+        // The active project has been delete?
+        if (in_array($active_id, $pks)) {
+            $this->setActive(array('id' => 0));
         }
 
         return $success;

@@ -405,31 +405,33 @@ class PFTableTask extends JTable
 
 
     /**
-	 * Deletes all items by a reference field
+     * Deletes all items by a reference field
      *
+     * @param     mixed      $id       The parent item id(s)
+     * @param     string     $field    The parent field name
      *
-     * @return    boolean    True on success, False on error
-	 */
+     * @return    boolean              True on success, False on error
+     */
     public function deleteByReference($id, $field)
     {
-        $success = true;
+        $db    = $this->_db;
+        $query = $db->getQuery(true);
 
-        // Get the list of items to delete
-        $this->_db->setQuery(
-			'SELECT '.$this->_tbl_key.' FROM '.$this->_db->quoteName($this->_tbl).
-			' WHERE '.$this->_db->quoteName($field).' = '.(int) $id
-		);
+        // Generate the WHERE clause
+        $where = $db->quoteName($field) . (is_array($id) ? ' IN(' . implode(', ', $id) . ')' : ' = ' . (int) $id );
 
-		// Return the result
-		$list = (array) $this->_db->loadResultArray();
-
-
-        foreach($list AS $pk)
-        {
-            if(!$this->delete($pk)) $success = false;
+        if (is_array($id) && count($id) === 1) {
+            $where = $db->quoteName($field) . ' = ' . (int) $id[0];
         }
 
-        return $success;
+        // Delete the records. Note that the assets have already been deleted
+        $query->delete($this->_db->quoteName($this->_tbl))
+              ->where($where);
+
+        $db->setQuery((string) $query);
+        $db->query();
+
+        return true;
     }
 
 
@@ -443,10 +445,9 @@ class PFTableTask extends JTable
 	 */
     public function updateByReference($id, $field, $data)
     {
-        require_once(JPATH_ADMINISTRATOR.'/components/com_projectfork/helpers/projectfork.php');
-
+        $db        = $this->_db;
         $fields    = array_keys($data);
-        $null_date = $this->_db->getNullDate();
+        $null_date = $db->getNullDate();
         $pk        = $this->_tbl_key;
 
 
@@ -461,22 +462,29 @@ class PFTableTask extends JTable
 
         $tbl_fields = implode(', ', array_keys($data));
 
-
         // Find access children if access field is in the data
         $access_children = array();
         if(in_array('access', $fields)) {
             $access_children = array_keys(ProjectforkHelper::getChildrenOfAccess($data['access']));
         }
 
-
         // Get the items we have to update
-        $this->_db->setQuery(
-			'SELECT '.$this->_tbl_key.', '.$tbl_fields.' FROM '.$this->_db->quoteName($this->_tbl).
-			' WHERE '.$this->_db->quoteName($field).' = '.(int) $id
-		);
+        // Get the items we have to update
+        $where = $db->quoteName($field) . (is_array($id) ? ' IN(' . implode(', ', $id) . ')' : ' = ' . (int) $id );
+
+        if(is_array($id) && count($id) === 1) {
+            $where = $db->quoteName($field) . ' = ' . (int) $id[0];
+        }
+
+        $query = $db->getQuery(true);
+        $query->select($this->_tbl_key . ', ' . $tbl_fields)
+              ->from($db->quoteName($this->_tbl))
+              ->where($where);
+
+        $db->setQuery((string) $query);
 
         // Get the result
-		$list = (array) $this->_db->loadObjectList();
+		$list = (array) $db->loadObjectList();
 
 
         // Update each item
@@ -493,7 +501,7 @@ class PFTableTask extends JTable
                         $tmp_val_2 = strtotime($item->$key);
                         if($tmp_val_1 > 0) {
                             if(($tmp_val_1 > $tmp_val_2) && $tmp_val_2 > 0) {
-                                $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
+                                $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
                             }
                         }
                         break;
@@ -503,41 +511,44 @@ class PFTableTask extends JTable
                         $tmp_val_2 = strtotime($item->$key);
                         if($tmp_val_1 > 0) {
                             if(($tmp_val_1 < $tmp_val_2)) {
-                                $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
+                                $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
                             }
                         }
                         break;
 
                     case 'access':
-                        if($val != $item->$key) {
-                            if(!in_array($item->$key, $access_children)) $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
+                        if($val != $item->$key && !in_array($item->$key, $access_children)) {
+                            $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
                         }
                         break;
 
                     case 'state':
-                        if($val != $item->$key) {
+                        if ($val != $item->$key) {
                             // Do not publish/unpublish items that are currently archived or trashed
-                            if(($item->key == '2' || $item->key == '-2') && ($val == '0' || $val == '1')) {
+                            // Also, do not publish items that are unpublished
+                            if (($item->$key == '2' || $item->$key == '-2' || $item->$key == '0') && ($val == '0' || $val == '1')) {
                                 continue;
                             }
 
-                            $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
+                            $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
                         }
                         break;
 
                     default:
-                        if($item->$key != $val) $updates[$key] = $this->_db->quoteName($key).' = '.$this->_db->quote($val);
+                        if($item->$key != $val) $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
                         break;
                 }
             }
 
             if(count($updates)) {
-                $this->_db->setQuery(
-			         'UPDATE '.$this->_db->quoteName($this->_tbl).' SET '.implode(', ', $updates).
-			         ' WHERE '.$this->_db->quoteName($this->_tbl_key).' = '.(int) $item->$pk
-		            );
+                $query->clear();
 
-                $this->_db->query();
+                $query->update($db->quoteName($this->_tbl))
+                      ->set(implode(', ', $updates))
+                      ->where($db->quoteName($this->_tbl_key) . ' = ' . (int) $item->$pk);
+
+                $db->setQuery((string) $query);
+                $db->query();
             }
         }
     }

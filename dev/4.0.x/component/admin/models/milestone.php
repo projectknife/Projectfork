@@ -114,6 +114,32 @@ class ProjectforkModelMilestone extends JModelAdmin
 	}
 
 
+    /**
+     * Method to delete one or more records.
+     *
+     * @param     array      $pks    An array of record primary keys.
+     *
+     * @return    boolean            True if successful, false if an error occurs.
+     */
+    public function delete(&$pks)
+    {
+        // Delete the records
+        $success = parent::delete($pks);
+
+        // Cancel if something went wrong
+        if (!$success) return false;
+
+        $tasklists = JTable::getInstance('Tasklist', 'PFTable');
+        $tasks     = JTable::getInstance('Task', 'PFTable');
+
+        // Delete all other items referenced to each project
+        if (!$tasklists->deleteByReference($pks, 'milestone_id')) $success = false;
+        if (!$tasks->deleteByReference($pks, 'milestone_id'))     $success = false;
+
+        return $success;
+    }
+
+
 	/**
 	 * Method to save the form data.
 	 *
@@ -133,10 +159,86 @@ class ProjectforkModelMilestone extends JModelAdmin
             $data['alias'] = '';
         }
 
+        $id      = (int) $this->getState('milestone.id');
+        $is_new  = ($id > 0) ? false : true;
+        $item    = null;
+
+        if (!$is_new) {
+            // Load the existing record before updating it
+            $item = $this->getTable();
+            $item->load($id);
+        }
+
         // Store the record
-		if (parent::save($data)) return true;
+		if (parent::save($data)) {
+		    // To keep data integrity, update all child assets
+            if (!$is_new && is_object($item)) {
+                $updated   = $this->getTable();
+                $tasklists = JTable::getInstance('Tasklist', 'PFTable');
+                $tasks     = JTable::getInstance('Task', 'PFTable');
+
+                $parent_data = array();
+                $null_date   = JFactory::getDbo()->getNullDate();
+
+                // Load the just updated row
+                if ($updated->load($this->getState('milestone.id')) === false) return false;
+
+                // Check if any relevant values have changed that need to be updated to children
+                if ($item->access != $updated->access) {
+                    $parent_data['access'] = $updated->access;
+                }
+
+                if ($item->start_date != $updated->start_date && $item->start_date != $null_date) {
+                    $parent_data['start_date'] = $updated->start_date;
+                }
+
+                if ($item->start_date != $updated->end_date && $item->end_date != $null_date) {
+                    $parent_data['end_date'] = $updated->end_date;
+                }
+
+                if ($item->state != $updated->state) {
+                    $parent_data['state'] = $updated->state;
+                }
+
+
+                if (count($parent_data)) {
+                    $tasklists->updateByReference($id, 'milestone_id', $parent_data);
+                    $tasks->updateByReference($id, 'milestone_id', $parent_data);
+                }
+            }
+
+            return true;
+		}
 
 		return false;
+	}
+
+
+    /**
+	 * Method to change the published state of one or more records.
+	 *
+	 * @param   array    &$pks   A list of the primary keys to change.
+	 * @param   integer  $value  The value of the published state.
+	 *
+	 * @return  boolean  True on success.
+	 */
+    public function publish(&$pks, $value = 1)
+	{
+	    $result = parent::publish($pks, $value);
+
+        if ($result) {
+            // State change succeeded. Now update all children
+            $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
+            $tasks      = JTable::getInstance('Task', 'PFTable');
+
+            $parent_data = array();
+            $parent_data['state'] = $value;
+
+            $tasklists->updateByReference($pks, 'milestone_id', $parent_data);
+            $tasks->updateByReference($pks, 'milestone_id', $parent_data);
+        }
+
+        return $result;
 	}
 
 
@@ -177,5 +279,47 @@ class ProjectforkModelMilestone extends JModelAdmin
 		}
 
 		return array($title, $alias);
+	}
+
+
+    /**
+     * Method to test whether a record can have its state edited.
+     * Defaults to the permission set in the component.
+     *
+     * @param     object     $record    A record object.
+     *
+     * @return    boolean               True if allowed to delete the record.
+     */
+    protected function canEditState($record)
+    {
+        // Check for existing item.
+        if (!empty($record->id)) {
+            $access = ProjectforkHelperAccess::getActions('milestone', $record->id);
+            return $access->get('milestone.edit.state');
+        }
+        else {
+            return parent::canEditState('com_projectfork');
+        }
+    }
+
+
+    /**
+	 * Method to test whether a record can be edited.
+	 *
+	 * @param   object  $record  A record object.
+	 *
+	 * @return  boolean  True if allowed to edit the record. Defaults to the permission for the component.
+	 */
+	protected function canEdit($record)
+	{
+	    // Check for existing item.
+        if (!empty($record->id)) {
+            $access = ProjectforkHelperAccess::getActions('milestone', $record->id);
+            return $access->get('milestone.edit');
+        }
+        else {
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('milestone.edit');
+        }
 	}
 }

@@ -249,17 +249,43 @@ class ProjectforkModelTask extends JModelAdmin
 
 
     /**
-	 * Method to test whether a record can be deleted.
+     * Method to test whether a record can have its state edited.
+     * Defaults to the permission set in the component.
+     *
+     * @param     object     $record    A record object.
+     *
+     * @return    boolean               True if allowed to delete the record.
+     */
+    protected function canEditState($record)
+    {
+        // Check for existing item.
+        if (!empty($record->id)) {
+            $access = ProjectforkHelperAccess::getActions('task', $record->id);
+            return $access->get('task.edit.state');
+        }
+        else {
+            return parent::canEditState('com_projectfork');
+        }
+    }
+
+
+    /**
+	 * Method to test whether a record can be edited.
 	 *
 	 * @param   object  $record  A record object.
 	 *
-	 * @return  boolean  True if allowed to change the state of the record. Defaults to the permission for the component.
-	 *
-	 * @since   11.1
+	 * @return  boolean  True if allowed to edit the record. Defaults to the permission for the component.
 	 */
 	protected function canEdit($record)
 	{
-		$user = JFactory::getUser();
-		return ($user->authorise('core.edit', $this->option) || $user->authorise('task.edit', $this->option));
+	    // Check for existing item.
+        if (!empty($record->id)) {
+            $access = ProjectforkHelperAccess::getActions('task', $record->id);
+            return $access->get('task.edit');
+        }
+        else {
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('task.edit');
+        }
 	}
 }
