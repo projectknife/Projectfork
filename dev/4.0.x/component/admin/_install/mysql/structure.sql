@@ -176,7 +176,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   `project_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent project ID',
   `list_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent task list ID',
   `milestone_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent milestone ID',
-  `catid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Calculated category ID for ordering',
+  `catid` varchar(255) NOT NULL COMMENT 'Category ID for ordering',
   `title` varchar(128) NOT NULL COMMENT 'Task title',
   `alias` varchar(128) NOT NULL COMMENT 'Title alias. Used in SEF URL''s',
   `description` text NOT NULL COMMENT 'Task description',
