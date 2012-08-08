@@ -22,7 +22,7 @@ class ProjectforkModelProject extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string    
+     * @var    string
      */
     protected $text_prefix = 'COM_PROJECTFORK_PROJECT';
 
@@ -203,6 +203,8 @@ class ProjectforkModelProject extends JModelAdmin
                 $milestones = JTable::getInstance('Milestone', 'PFTable');
                 $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
                 $tasks      = JTable::getInstance('Task', 'PFTable');
+                $topics     = JTable::getInstance('Topic', 'PFTable');
+                $replies    = JTable::getInstance('Reply', 'PFTable');
 
                 $parent_data = array();
                 $null_date   = JFactory::getDbo()->getNullDate();
@@ -232,6 +234,8 @@ class ProjectforkModelProject extends JModelAdmin
                     $milestones->updateByReference($id, 'project_id', $parent_data);
                     $tasklists->updateByReference($id, 'project_id', $parent_data);
                     $tasks->updateByReference($id, 'project_id', $parent_data);
+                    $topics->updateByReference($id, 'project_id', $parent_data);
+                    $replies->updateByReference($id, 'project_id', $parent_data);
                 }
             }
 
@@ -259,6 +263,8 @@ class ProjectforkModelProject extends JModelAdmin
             $milestones = JTable::getInstance('Milestone', 'PFTable');
             $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
             $tasks      = JTable::getInstance('Task', 'PFTable');
+            $topics     = JTable::getInstance('Topic', 'PFTable');
+            $replies    = JTable::getInstance('Reply', 'PFTable');
 
             $parent_data = array();
             $parent_data['state'] = $value;
@@ -266,6 +272,8 @@ class ProjectforkModelProject extends JModelAdmin
             $milestones->updateByReference($pks, 'project_id', $parent_data);
             $tasklists->updateByReference($pks, 'project_id', $parent_data);
             $tasks->updateByReference($pks, 'project_id', $parent_data);
+            $topics->updateByReference($pks, 'project_id', $parent_data);
+            $replies->updateByReference($pks, 'project_id', $parent_data);
         }
 
         return $result;
@@ -332,11 +340,15 @@ class ProjectforkModelProject extends JModelAdmin
         $milestones = JTable::getInstance('Milestone', 'PFTable');
         $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
         $tasks      = JTable::getInstance('Task', 'PFTable');
+        $topics     = JTable::getInstance('Topics', 'PFTable');
+        $replies    = JTable::getInstance('Reply', 'PFTable');
 
         // Delete all other items referenced to each project
         if (!$milestones->deleteByReference($pks, 'project_id')) $success = false;
         if (!$tasklists->deleteByReference($pks, 'project_id'))  $success = false;
         if (!$tasks->deleteByReference($pks, 'project_id'))      $success = false;
+        if (!$topics->deleteByReference($pks, 'project_id'))     $success = false;
+        if (!$replies->deleteByReference($pks, 'project_id'))    $success = false;
 
         $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
 

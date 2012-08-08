@@ -59,6 +59,24 @@ class ProjectforkHelper
             'index.php?option=com_projectfork&view=tasks',
             ($view == 'tasks')
         );
+        JSubMenuHelper::addEntry(
+            JText::_('COM_PROJECTFORK_SUBMENU_DISCUSSIONS'),
+            'index.php?option=com_projectfork&view=topics',
+            ($view == 'topics')
+        );
+
+        if ($view == 'replies') {
+            $topic  = JRequest::getUint('filter_topic', 0);
+            $append = '';
+
+            if ($append) $append .= '&filter_topic=' . $topic;
+
+            JSubMenuHelper::addEntry(
+                JText::_('COM_PROJECTFORK_SUBMENU_REPLIES'),
+                'index.php?option=com_projectfork&view=replies' . $append,
+                ($view == 'replies')
+            );
+        }
     }
 
 

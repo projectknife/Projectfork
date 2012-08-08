@@ -241,3 +241,50 @@ CREATE TABLE IF NOT EXISTS `#__pf_task_map` (
   KEY `idx_taskid` (`task_id`),
   KEY `idx_dependency` (`dependency`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task dependency';
+
+CREATE TABLE IF NOT EXISTS `#__pf_topics` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Topic ID',
+  `asset_id` int(10) NOT NULL COMMENT 'FK to the #__assets table',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Parent project ID',
+  `title` varchar(124) NOT NULL COMMENT 'Topic title',
+  `alias` varchar(124) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'Title alias. Used in SEF URL''s',
+  `description` text NOT NULL COMMENT 'Topic content text',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Topic creation date',
+  `created_by` int(10) unsigned NOT NULL COMMENT 'Topic author',
+  `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Topic modify date',
+  `modified_by` int(10) unsigned NOT NULL COMMENT 'Last user to modify the topic',
+  `checked_out` int(10) unsigned NOT NULL COMMENT 'User who is currently editing the topic',
+  `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
+  `attribs` text NOT NULL COMMENT 'Topic attributes in JSON format',
+  `access` int(10) unsigned NOT NULL COMMENT 'Topic ACL access level ID',
+  `state` tinyint(3) NOT NULL COMMENT 'Topic state: 1 = Active, 0 = Inactive, 2 = Archived, -2 = Trashed',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_alias` (`project_id`,`alias`),
+  KEY `idx_projectid` (`project_id`),
+  KEY `idx_access` (`access`),
+  KEY `idx_createdby` (`created_by`),
+  KEY `idx_checkedout` (`checked_out`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork discussion topics';
+
+CREATE TABLE IF NOT EXISTS `#__pf_replies` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Topic ID',
+  `asset_id` int(10) NOT NULL COMMENT 'FK to the #__assets table',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Parent project ID',
+  `topic_id` int(10) unsigned NOT NULL COMMENT 'Parent topic ID',
+  `description` text NOT NULL COMMENT 'Reply content text',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Reply creation date',
+  `created_by` int(10) unsigned NOT NULL COMMENT 'Reply author',
+  `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Reply modify date',
+  `modified_by` int(10) unsigned NOT NULL COMMENT 'Last user to modify the reply',
+  `checked_out` int(10) unsigned NOT NULL COMMENT 'User who is currently editing the reply',
+  `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
+  `attribs` text NOT NULL COMMENT 'Reply attributes in JSON format',
+  `access` int(10) unsigned NOT NULL COMMENT 'Reply ACL access level ID',
+  `state` tinyint(3) NOT NULL COMMENT 'Reply state: 1 = Active, 0 = Inactive, 2 = Archived, -2 = Trashed',
+  PRIMARY KEY (`id`),
+  KEY `idx_projectid` (`project_id`),
+  KEY `idx_topicid` (`topic_id`),
+  KEY `idx_access` (`access`),
+  KEY `idx_createdby` (`created_by`),
+  KEY `idx_checkedout` (`checked_out`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork discussion replies';

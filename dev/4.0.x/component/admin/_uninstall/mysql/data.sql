@@ -10,3 +10,4 @@ DELETE FROM `#__pf_tags`;
 DELETE FROM `#__pf_tasks`;
 DELETE FROM `#__pf_task_lists`;
 DELETE FROM `#__pf_task_map`;
+DELETE FROM `#__pf_topics`;
