@@ -288,3 +288,31 @@ CREATE TABLE IF NOT EXISTS `#__pf_replies` (
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork discussion replies';
+
+CREATE TABLE IF NOT EXISTS `#__pf_timesheet` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `asset_id` int(10) unsigned NOT NULL COMMENT 'FK to the #__assets table',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Parent project ID',
+  `task_id` int(10) unsigned NOT NULL COMMENT 'Parent task ID',
+  `title` varchar(128) NOT NULL COMMENT 'The task title',
+  `alias` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'Title alias used in SEF URL''s',
+  `description` varchar(255) NOT NULL COMMENT 'Description text',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Creation date',
+  `created_by` int(10) unsigned NOT NULL COMMENT 'Time author',
+  `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Time modify date',
+  `modified_by` int(10) unsigned NOT NULL COMMENT 'Last user to modify the record',
+  `checked_out` int(10) unsigned NOT NULL COMMENT 'User who is currently editing this record',
+  `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
+  `attribs` text NOT NULL COMMENT 'Record attributes in JSON format',
+  `access` int(10) unsigned NOT NULL COMMENT 'Record ACL access level ID',
+  `state` tinyint(3) NOT NULL COMMENT 'Record state: 1 = Active, 0 = Inactive, 2 = Archived, -2 = Trashed ',
+  `log_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Time log date',
+  `log_time` int(10) unsigned NOT NULL COMMENT 'Time log seconds',
+  PRIMARY KEY (`id`),
+  KEY `idx_project` (`project_id`),
+  KEY `idx_task` (`task_id`),
+  KEY `idx_createdby` (`created_by`),
+  KEY `idx_checkedout` (`checked_out`),
+  KEY `idx_access` (`access`),
+  KEY `idx_state` (`state`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork time spent on tasks';
