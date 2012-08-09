@@ -104,6 +104,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_milestones` (
   UNIQUE KEY `idx_alias` (`alias`,`project_id`),
   KEY `idx_projectid` (`project_id`),
   KEY `idx_access` (`access`),
+  KEY `idx_state` (`state`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork milestone data';
@@ -139,6 +140,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_projects` (
   UNIQUE KEY `idx_alias` (`alias`),
   KEY `idx_catid` (`catid`),
   KEY `idx_access` (`access`),
+  KEY `idx_state` (`state`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork project data';
@@ -204,7 +206,9 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`),
   KEY `idx_priority` (`priority`),
-  KEY `idx_complete` (`complete`)
+  KEY `idx_complete` (`complete`),
+  KEY `idx_state` (`state`),
+  KEY `idx_access` (`access`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task data';
 
 CREATE TABLE IF NOT EXISTS `#__pf_task_lists` (
@@ -230,7 +234,9 @@ CREATE TABLE IF NOT EXISTS `#__pf_task_lists` (
   KEY `idx_projectid` (`project_id`),
   KEY `idx_milestoneid` (`milestone_id`),
   KEY `idx_createdby` (`created_by`),
-  KEY `idx_checkedout` (`checked_out`)
+  KEY `idx_checkedout` (`checked_out`),
+  KEY `idx_state` (`state`),
+  KEY `idx_access` (`access`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task list data';
 
 CREATE TABLE IF NOT EXISTS `#__pf_task_map` (
@@ -262,6 +268,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_topics` (
   UNIQUE KEY `idx_alias` (`project_id`,`alias`),
   KEY `idx_projectid` (`project_id`),
   KEY `idx_access` (`access`),
+  KEY `idx_state` (`state`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork discussion topics';
@@ -285,6 +292,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_replies` (
   KEY `idx_projectid` (`project_id`),
   KEY `idx_topicid` (`topic_id`),
   KEY `idx_access` (`access`),
+  KEY `idx_state` (`state`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`)
 ) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork discussion replies';
