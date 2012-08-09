@@ -209,6 +209,64 @@ function ProjectforkBuildRoute(&$query)
     }
 
 
+    // Handle topics query
+    if($view == 'topics') {
+        if (!$menu_item_given) $segments[] = $view;
+        unset($query['view']);
+
+        // Get project filter
+        if (isset($query['filter_project'])) {
+            if (strpos($query['filter_project'], ':') === false) {
+                $query['filter_project'] = ProjectforkMakeSlug($query['filter_project'], '#__pf_projects');
+            }
+        }
+        else {
+            $query['filter_project'] = ProjectforkMakeSlug('0', '#__pf_projects');
+        }
+
+        $segments[] = $query['filter_project'];
+        unset($query['filter_project']);
+
+        return $segments;
+    }
+
+
+    // Handle replies query
+    if($view == 'replies') {
+        if (!$menu_item_given) $segments[] = $view;
+        unset($query['view']);
+
+        // Get project filter
+        if (isset($query['filter_project'])) {
+            if (strpos($query['filter_project'], ':') === false) {
+                $query['filter_project'] = ProjectforkMakeSlug($query['filter_project'], '#__pf_projects');
+            }
+        }
+        else {
+            $query['filter_project'] = ProjectforkMakeSlug('0', '#__pf_projects');
+        }
+
+        $segments[] = $query['filter_project'];
+        unset($query['filter_project']);
+
+        // Get topic filter
+        if (isset($query['filter_topic'])) {
+            if (strpos($query['filter_topic'], ':') === false) {
+                $query['filter_topic'] = ProjectforkMakeSlug($query['filter_topic'], '#__pf_topics');
+            }
+        }
+        else {
+            $query['filter_topic'] = ProjectforkMakeSlug('0', '#__pf_topics');
+        }
+
+        $segments[] = $query['filter_topic'];
+        unset($query['filter_topic']);
+
+        return $segments;
+    }
+
+
+
     // Handle the layout
     if (isset($query['layout'])) {
         if ($menu_item_given && isset($menuItem->query['layout'])) {
@@ -352,6 +410,33 @@ function ProjectforkParseRoute($segments)
     if ($vars['view'] == 'user') {
         if ($count == 1) {
             $vars['id'] = ProjectforkParseSlug($segments[0]);
+        }
+
+        return $vars;
+    }
+
+
+    // Handle Topics
+    if ($vars['view'] == 'topics') {
+        if ($count == 1) {
+            $vars['filter_project'] = ProjectforkParseSlug($segments[0]);
+        }
+        if ($count > 1) {
+            $vars['view'] = 'replies';
+            $vars['filter_topic'] = ProjectforkParseSlug($segments[1]);
+        }
+
+        return $vars;
+    }
+
+
+    // Handle Replies
+    if ($vars['view'] == 'replies') {
+        if ($count >= 1) {
+            $vars['filter_project'] = ProjectforkParseSlug($segments[0]);
+        }
+        if ($count >= 2) {
+            $vars['filter_topic'] = ProjectforkParseSlug($segments[1]);
         }
 
         return $vars;

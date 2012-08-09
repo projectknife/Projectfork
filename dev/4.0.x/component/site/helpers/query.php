@@ -77,7 +77,7 @@ class ProjectforkHelperQuery
                     break;
 
                 case 'INT-NOTZERO':
-            		if(is_numeric($value) && $value != 0) $query->where($field. ' = '.(int) $value);
+            		if(is_numeric($value) || intval($value) != 0) $query->where($field. ' = '.(int) $value);
                     break;
 
                 case 'INT':

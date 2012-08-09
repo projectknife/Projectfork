@@ -244,7 +244,6 @@ class ProjectforkModelReply extends JModelAdmin
                     ProjectforkHelper::setActiveProject($project);
                 }
             }
-
         }
 
 		// Load the parameters.
