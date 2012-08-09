@@ -9,6 +9,7 @@
 
 defined('_JEXEC') or die();
 
+
 jimport('joomla.database.tableasset');
 
 
@@ -21,8 +22,7 @@ class PFTableTasklist extends JTable
     /**
      * Constructor
      *
-     * @param     database         $db    A database connector object
-     * @return    jtableproject
+     * @param    database    $db    A database connector object
      */
     public function __construct(&$db)
     {
@@ -60,12 +60,13 @@ class PFTableTasklist extends JTable
      *
      * @param     jtable     $table    A JTable object for the asset parent
      * @param     integer    $id
+     *
      * @return    integer
      */
     protected function _getAssetParentId($table = null, $id = null)
     {
         // Initialise variables.
-        $assetId = null;
+        $asset_id = null;
         $db      = $this->getDbo();
         $query   = $db->getQuery(true);
 
@@ -77,7 +78,7 @@ class PFTableTasklist extends JTable
 
             // Get the asset id from the database.
             $this->_db->setQuery($query);
-            if ($result = $this->_db->loadResult()) $assetId = (int) $result;
+            if ($result = $this->_db->loadResult()) $asset_id = (int) $result;
         }
         else {
             // This is a task list list under a project.
@@ -89,12 +90,12 @@ class PFTableTasklist extends JTable
 
                 // Get the asset id from the database.
                 $this->_db->setQuery($query);
-                if ($result = $this->_db->loadResult()) $assetId = (int) $result;
+                if ($result = $this->_db->loadResult()) $asset_id = (int) $result;
             }
         }
 
         // Return the asset id.
-        if ($assetId) return $assetId;
+        if ($asset_id) return $asset_id;
 
         return parent::_getAssetParentId($table, $id);
     }
@@ -104,8 +105,8 @@ class PFTableTasklist extends JTable
      * Overloaded bind function
      *
      * @param     array    $array     Named array
-     * @param     mixed    $ignore    An optional array or space separated list of properties
-     * to ignore while binding.
+     * @param     mixed    $ignore    An optional array or space separated list of properties to ignore while binding.
+     *
      * @return    mixed               Null if operation was satisfactory, otherwise returns an error string
      */
     public function bind($array, $ignore = '')
@@ -157,6 +158,7 @@ class PFTableTasklist extends JTable
      * Overrides JTable::store to set modified data and user id.
      *
      * @param     boolean    True to update fields even if they are null.
+     *
      * @return    boolean    True on success.
      */
     public function store($updateNulls = false)
@@ -178,7 +180,7 @@ class PFTableTasklist extends JTable
 
         // Verify that the alias is unique
         $table = JTable::getInstance('Tasklist', 'PFTable');
-        $data  = array('alias'=>$this->alias, 'project_id' => $this->project_id, 'milestone_id' => $this->milestone_id);
+        $data  = array('alias' => $this->alias, 'project_id' => $this->project_id, 'milestone_id' => $this->milestone_id);
 
         if ($table->load($data) && ($table->id != $this->id || $this->id==0)) {
             $this->setError(JText::_('JLIB_DATABASE_ERROR_TASKLIST_UNIQUE_ALIAS'));
@@ -194,29 +196,29 @@ class PFTableTasklist extends JTable
      * table. The method respects checked out rows by other users and will attempt
      * to checkin rows that it can after adjustments are made.
      *
-     * @param     mixed      $pks       An optional array of primary key values to update.  If not
-     * set the instance property value is used.
-     * @param     integer    $state     The state. eg. [0 = Inactive, 1 = Active, 2 = Archived, -2 = Trashed]
-     * @param     integer    $userId    The user id of the user performing the operation.
-     * @return    boolean               True on success.
+     * @param     mixed      $pks      An optional array of primary key values to update.  If not set the instance property value is used.
+     * @param     integer    $state    The state. eg. [0 = Inactive, 1 = Active, 2 = Archived, -2 = Trashed]
+     * @param     integer    $uid      The user id of the user performing the operation.
+     *
+     * @return    boolean              True on success.
      */
-    public function setState($pks = null, $state = 1, $userId = 0)
+    public function setState($pks = null, $state = 1, $uid = 0)
     {
         // Initialise variables.
         $k = $this->_tbl_key;
 
         // Sanitize input.
         JArrayHelper::toInteger($pks);
-        $userId = (int) $userId;
-        $state  = (int) $state;
+        $uid   = (int) $uid;
+        $state = (int) $state;
 
         // If there are no primary keys set check to see if the instance key is set.
         if (empty($pks)) {
             if ($this->$k) {
                 $pks = array($this->$k);
             }
-            // Nothing to set state on, return false.
             else {
+                // Nothing to set state on, return false.
                 $this->setError(JText::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'));
                 return false;
             }
@@ -229,7 +231,7 @@ class PFTableTasklist extends JTable
         if (!property_exists($this, 'checked_out') || !property_exists($this, 'checked_out_time')) {
             $checkin = '';
         } else {
-            $checkin = ' AND (checked_out = 0 OR checked_out = ' . (int) $userId.')';
+            $checkin = ' AND (checked_out = 0 OR checked_out = ' . (int) $uid.')';
         }
 
         // Update the state for rows with the given primary keys.
@@ -307,6 +309,7 @@ class PFTableTasklist extends JTable
      * @param     integer    $id       The parent item id
      * @param     string     $field    The parent field name
      * @param     array      $data     The parent data
+     *
      * @return    boolean              True on success, False on error
      */
     public function updateByReference($id, $field, $data)
@@ -316,21 +319,25 @@ class PFTableTasklist extends JTable
         $null_date = $db->getNullDate();
         $pk        = $this->_tbl_key;
 
-
         // Check if the fields exist
         foreach($fields AS $i => $tbl_field)
         {
-            if(!property_exists($this, $tbl_field)) {
+            if (!property_exists($this, $tbl_field)) {
                 unset($fields[$i]);
                 unset($data[$tbl_field]);
             }
+        }
+
+        // Return if no fields are left
+        if (count($fields) == 0) {
+            return true;
         }
 
         $tbl_fields = implode(', ', array_keys($data));
 
         // Find access children if access field is in the data
         $access_children = array();
-        if(in_array('access', $fields)) {
+        if (in_array('access', $fields)) {
             $access_children = array_keys(ProjectforkHelper::getChildrenOfAccess($data['access']));
         }
 
@@ -338,7 +345,7 @@ class PFTableTasklist extends JTable
         // Get the items we have to update
         $where = $db->quoteName($field) . (is_array($id) ? ' IN(' . implode(', ', $id) . ')' : ' = ' . (int) $id );
 
-        if(is_array($id) && count($id) === 1) {
+        if (is_array($id) && count($id) === 1) {
             $where = $db->quoteName($field) . ' = ' . (int) $id[0];
         }
 
@@ -350,7 +357,7 @@ class PFTableTasklist extends JTable
         $db->setQuery((string) $query);
 
         // Get the result
-		$list = (array) $db->loadObjectList();
+        $list = (array) $db->loadObjectList();
 
 
         // Update each item
@@ -362,28 +369,8 @@ class PFTableTasklist extends JTable
             {
                 switch($key)
                 {
-                    case 'start_date':
-                        $tmp_val_1 = strtotime($val);
-                        $tmp_val_2 = strtotime($item->$key);
-                        if($tmp_val_1 > 0) {
-                            if(($tmp_val_1 > $tmp_val_2) && $tmp_val_2 > 0) {
-                                $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
-                            }
-                        }
-                        break;
-
-                    case 'end_date':
-                        $tmp_val_1 = strtotime($val);
-                        $tmp_val_2 = strtotime($item->$key);
-                        if($tmp_val_1 > 0) {
-                            if(($tmp_val_1 < $tmp_val_2)) {
-                                $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
-                            }
-                        }
-                        break;
-
                     case 'access':
-                        if($val != $item->$key && !in_array($item->$key, $access_children)) {
+                        if ($val != $item->$key && !in_array($item->$key, $access_children)) {
                             $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
                         }
                         break;
@@ -401,12 +388,12 @@ class PFTableTasklist extends JTable
                         break;
 
                     default:
-                        if($item->$key != $val) $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
+                        if ($item->$key != $val) $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
                         break;
                 }
             }
 
-            if(count($updates)) {
+            if (count($updates)) {
                 $query->clear();
 
                 $query->update($db->quoteName($this->_tbl))
@@ -441,4 +428,3 @@ class PFTableTasklist extends JTable
         return parent::toXML($mapKeysToText);
     }
 }
-?>

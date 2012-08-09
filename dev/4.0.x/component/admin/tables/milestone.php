@@ -22,8 +22,7 @@ class PFTableMilestone extends JTable
     /**
      * Constructor
      *
-     * @param     database         $db    A database connector object
-     * @return    jtableproject
+     * @param    database    $db    A database connector object
      */
     public function __construct(&$db)
     {
@@ -61,32 +60,31 @@ class PFTableMilestone extends JTable
      *
      * @param     jtable     $table    A JTable object for the asset parent
      * @param     integer    $id
+     *
      * @return    integer
      */
     protected function _getAssetParentId($table = null, $id = null)
     {
-        // Initialise variables.
-        $assetId = null;
-        $db = $this->getDbo();
-
+        $asset_id = null;
+        $query    = $this->_db->getQuery(true);
 
         // This is a milestone under a project.
         if ($this->project_id) {
             // Build the query to get the asset id for the parent project.
-            $query = $db->getQuery(true);
-
-            $query->select('asset_id');
-            $query->from('#__pf_projects');
-            $query->where('id = '.(int) $this->project_id);
+            $query->select('asset_id')
+                  ->from('#__pf_projects')
+                  ->where('id = '.(int) $this->project_id);
 
             // Get the asset id from the database.
             $this->_db->setQuery($query);
-            if ($result = $this->_db->loadResult()) $assetId = (int) $result;
+            $result = $this->_db->loadResult();
+
+            if ($result) $asset_id = (int) $result;
         }
 
 
         // Return the asset id.
-        if ($assetId) return $assetId;
+        if ($asset_id) return $asset_id;
         return parent::_getAssetParentId($table, $id);
     }
 
@@ -103,9 +101,9 @@ class PFTableMilestone extends JTable
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $query->select('access');
-        $query->from('#__pf_projects');
-        $query->where('id = '.(int) $this->project_id);
+        $query->select('access')
+              ->from('#__pf_projects')
+              ->where('id = '.(int) $this->project_id);
 
         $db->setQuery($query);
         $access = (int) $db->loadResult();
@@ -120,8 +118,8 @@ class PFTableMilestone extends JTable
      * Overloaded bind function
      *
      * @param     array    $array     Named array
-     * @param     mixed    $ignore    An optional array or space separated list of properties
-     * to ignore while binding.
+     * @param     mixed    $ignore    An optional array or space separated list of properties to ignore while binding.
+     *
      * @return    mixed               Null if operation was satisfactory, otherwise returns an error string
      */
     public function bind($array, $ignore = '')
@@ -159,9 +157,7 @@ class PFTableMilestone extends JTable
         $this->alias = JApplication::stringURLSafe($this->alias);
         if (trim(str_replace('-','', $this->alias)) == '') $this->alias = JFactory::getDate()->format('Y-m-d-H-i-s');
 
-
         if (trim(str_replace('&nbsp;', '', $this->description)) == '') $this->description = '';
-
 
         // Check if a project is selected
         if ((int) $this->project_id == 0) {
@@ -169,10 +165,8 @@ class PFTableMilestone extends JTable
             return false;
         }
 
-
         // Check for selected access level
         if ($this->access == 0) $this->access = $this->_getAccessProjectId();
-
 
         // Check the start date is not earlier than the end date.
         if ($this->end_date > $this->_db->getNullDate() && $this->end_date < $this->start_date) {
@@ -181,7 +175,6 @@ class PFTableMilestone extends JTable
             $this->start_date = $this->end_date;
             $this->end_date   = $temp;
         }
-
 
         // Check if the start and end dates are in bounds of the parent dates
         $project = JTable::getInstance('project', 'PFTable');
@@ -195,9 +188,6 @@ class PFTableMilestone extends JTable
         if ($a_start > $b_start) $this->start_date = $project->start_date;
         if ($a_end < $b_end)     $this->end_date   = $project->end_date;
 
-
-
-
         return true;
     }
 
@@ -206,6 +196,7 @@ class PFTableMilestone extends JTable
      * Overrides JTable::store to set modified data and user id.
      *
      * @param     boolean    True to update fields even if they are null.
+     *
      * @return    boolean    True on success.
      */
     public function store($updateNulls = false)
@@ -213,10 +204,9 @@ class PFTableMilestone extends JTable
         $date = JFactory::getDate();
         $user = JFactory::getUser();
 
-
         if ($this->id) {
             // Existing item
-            $this->modified       = $date->toMySQL();
+            $this->modified    = $date->toMySQL();
             $this->modified_by = $user->get('id');
         }
         else {
@@ -228,6 +218,7 @@ class PFTableMilestone extends JTable
 
         // Verify that the alias is unique
         $table = JTable::getInstance('Milestone', 'PFTable');
+
         if ($table->load(array('alias' => $this->alias, 'project_id' => $this->project_id)) && ($table->id != $this->id || $this->id==0)) {
             $this->setError(JText::_('JLIB_DATABASE_ERROR_MILESTONE_UNIQUE_ALIAS'));
             return false;
@@ -241,48 +232,44 @@ class PFTableMilestone extends JTable
      * table. The method respects checked out rows by other users and will attempt
      * to checkin rows that it can after adjustments are made.
      *
-     * @param     mixed      $pks       An optional array of primary key values to update.  If not
-     * set the instance property value is used.
-     * @param     integer    $state     The state. eg. [0 = Inactive, 1 = Active, 2 = Archived, -2 = Trashed]
-     * @param     integer    $userId    The user id of the user performing the operation.
-     * @return    boolean               True on success.
+     * @param     mixed      $pks      An optional array of primary key values to update.  If not set the instance property value is used.
+     * @param     integer    $state    The state. eg. [0 = Inactive, 1 = Active, 2 = Archived, -2 = Trashed]
+     * @param     integer    $uid      The user id of the user performing the operation.
+     *
+     * @return    boolean              True on success.
      */
-    public function setState($pks = null, $state = 1, $userId = 0)
+    public function setState($pks = null, $state = 1, $uid = 0)
     {
         // Initialise variables.
         $k = $this->_tbl_key;
 
-
         // Sanitize input.
         JArrayHelper::toInteger($pks);
-        $userId = (int) $userId;
-        $state  = (int) $state;
-
+        $uid   = (int) $uid;
+        $state = (int) $state;
 
         // If there are no primary keys set check to see if the instance key is set.
         if (empty($pks)) {
             if ($this->$k) {
                 $pks = array($this->$k);
             }
-            // Nothing to set state on, return false.
             else {
+                // Nothing to set state on, return false.
                 $this->setError(JText::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'));
                 return false;
             }
         }
 
-
         // Build the WHERE clause for the primary keys.
-        $where = $k.'='.implode(' OR ' . $k.'=', $pks);
-
+        $where = $k . '=' . implode(' OR ' . $k . '=', $pks);
 
         // Determine if there is checkin support for the table.
         if (!property_exists($this, 'checked_out') || !property_exists($this, 'checked_out_time')) {
             $checkin = '';
-        } else {
-            $checkin = ' AND (checked_out = 0 OR checked_out = '.(int) $userId.')';
         }
-
+        else {
+            $checkin = ' AND (checked_out = 0 OR checked_out = ' . (int) $uid . ')';
+        }
 
         // Update the state for rows with the given primary keys.
         $this->_db->setQuery(
@@ -293,22 +280,20 @@ class PFTableMilestone extends JTable
         );
         $this->_db->query();
 
-
         // Check for a database error.
         if ($this->_db->getErrorNum()) {
             $this->setError($this->_db->getErrorMsg());
             return false;
         }
 
-
         // If checkin is supported and all rows were adjusted, check them in.
         if ($checkin && (count($pks) == $this->_db->getAffectedRows())) {
             // Checkin the rows.
-            foreach($pks as $pk) {
+            foreach($pks as $pk)
+            {
                 $this->checkin($pk);
             }
         }
-
 
         // If the JTable instance value is in the list of primary keys that were set, set the instance.
         if (in_array($this->$k, $pks)) $this->state = $state;
@@ -375,7 +360,6 @@ class PFTableMilestone extends JTable
         $null_date = $db->getNullDate();
         $pk        = $this->_tbl_key;
 
-
         // Check if the fields exist
         foreach($fields AS $i => $tbl_field)
         {
@@ -383,6 +367,11 @@ class PFTableMilestone extends JTable
                 unset($fields[$i]);
                 unset($data[$tbl_field]);
             }
+        }
+
+        // Return if no fields are left
+        if (count($fields) == 0) {
+            return true;
         }
 
         $tbl_fields = implode(', ', array_keys($data));
@@ -409,7 +398,6 @@ class PFTableMilestone extends JTable
 
         // Get the result
         $list = (array) $db->loadObjectList();
-
 
         // Update each item
         foreach($list AS $item)

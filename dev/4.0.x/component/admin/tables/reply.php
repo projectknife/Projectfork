@@ -23,7 +23,6 @@ class PFTableReply extends JTable
      * Constructor
      *
      * @param     database         $db    A database connector object
-     * @return    jtableproject
      */
     public function __construct(&$db)
     {
@@ -41,7 +40,7 @@ class PFTableReply extends JTable
     protected function _getAssetName()
     {
         $k = $this->_tbl_key;
-        return 'com_projectfork.reply.'.(int) $this->$k;
+        return 'com_projectfork.reply.' . (int) $this->$k;
     }
 
 
@@ -75,7 +74,7 @@ class PFTableReply extends JTable
             // Build the query to get the asset id for the parent topic.
             $query->select('asset_id')
                   ->from('#__pf_topics')
-                  ->where('id = '.(int) $this->topic_id);
+                  ->where('id = ' . (int) $this->topic_id);
 
             // Get the asset id from the database.
             $this->_db->setQuery((string) $query);
@@ -87,7 +86,7 @@ class PFTableReply extends JTable
             // Build the query to get the asset id for the parent project.
             $query->select('asset_id')
                   ->from('#__pf_projects')
-                  ->where('id = '.(int) $this->project_id);
+                  ->where('id = ' . (int) $this->project_id);
 
             // Get the asset id from the database.
             $this->_db->setQuery((string) $query);
@@ -200,20 +199,21 @@ class PFTableReply extends JTable
             if ($this->$k) {
                 $pks = array($this->$k);
             }
-            // Nothing to set state on, return false.
             else {
+                // Nothing to set state on, return false.
                 $this->setError(JText::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'));
                 return false;
             }
         }
 
         // Build the WHERE clause for the primary keys.
-        $where = $k.'=' . implode(' OR ' . $k . '=', $pks);
+        $where = $k . '=' . implode(' OR ' . $k . '=', $pks);
 
         // Determine if there is checkin support for the table.
         if (!property_exists($this, 'checked_out') || !property_exists($this, 'checked_out_time')) {
             $checkin = '';
-        } else {
+        }
+        else {
             $checkin = ' AND (checked_out = 0 OR checked_out = ' . (int) $uid . ')';
         }
 
