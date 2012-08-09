@@ -11,3 +11,5 @@ DROP TABLE `#__pf_tasks`;
 DROP TABLE `#__pf_task_lists`;
 DROP TABLE `#__pf_task_map`;
 DROP TABLE `#__pf_topics`;
+DROP TABLE `#__pf_replies`;
+DROP TABLE `#__pf_timesheet`;
