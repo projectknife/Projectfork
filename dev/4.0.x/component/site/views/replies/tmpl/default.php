@@ -79,6 +79,64 @@ $action_count = count($this->actions);
                     </div>
                 </div>
             <?php endif; ?>
+            
+            <!-- Start topic placeholder -->
+            <div class="page-header">
+				<h2>Discussion Title</h2>
+			</div>
+			<dl class="article-info dl-horizontal pull-right">
+				<dt class="project-title">
+					Project:
+				</dt>
+				<dd class="project-data">
+					<a href="#">Project Name</a>
+				</dd>
+				<dt class="start-title">
+					Start Date:
+				</dt>
+				<dd class="start-data">
+					Saturday, 01 September 2012			
+				</dd>
+				<dt class="due-title">
+					Deadline:
+				</dt>
+				<dd class="due-data">
+					Wednesday, 31 October 2012			
+				</dd>
+				<dt class="owner-title">
+					Created By:
+				</dt>
+				<dd class="owner-data">
+					 Super User		
+				</dd>
+			</dl>
+			<div class="actions btn-toolbar">
+				<div class="btn-group">
+				   <a class="btn" href="#"><i class="icon-edit"></i> Edit</a>
+					<a class="btn" href="#comments"><i class="icon-comment"></i> 5 comments</a>
+        		</div>
+			</div>
+			<div class="item-description">
+				<p><strong>Pellentesque habitant morbi tristique</strong> senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. <em>Aenean ultricies mi vitae est.</em> Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, <code>commodo vitae</code>, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. <a href="#">Donec non enim</a> in turpis pulvinar facilisis. Ut felis.</p>
+				
+				<h2>Header Level 2</h2>
+					       
+				<ol>
+				   <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
+				   <li>Aliquam tincidunt mauris eu risus.</li>
+				</ol>
+				
+				<blockquote><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus magna. Cras in mi at felis aliquet congue. Ut a est eget ligula molestie gravida. Curabitur massa. Donec eleifend, libero at sagittis mollis, tellus est malesuada tellus, at luctus turpis elit sit amet quam. Vivamus pretium ornare est.</p></blockquote>	
+			</div>
+			<hr />
+			<div class="items-more" id="comments">
+				<form>
+					<h4>5 Comments</h4>
+					<hr />
+					
+				</form>
+			</div>
+            <!-- End topic placeholder -->
 
             <?php
             $k = 0;
