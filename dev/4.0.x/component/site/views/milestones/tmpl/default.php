@@ -41,7 +41,7 @@ $action_count = count($this->actions);
     <div class="cat-items">
 
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=milestones'); ?>" method="post">
-            <div class="btn-toolbar">
+            <div class="btn-toolbar btn-toolbar-top">
                 <div class="btn-group">
                         <?php echo $this->toolbar;?>
                 </div>
