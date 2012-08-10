@@ -84,7 +84,7 @@ class ProjectforkViewTasks extends JView
             JToolBarHelper::deleteList('', 'tasks.delete','JTOOLBAR_EMPTY_TRASH');
             JToolBarHelper::divider();
         }
-        elseif ($canDo->get('core.edit.state') || $canDo->get('task.edit.state')) {
+        elseif ($access->get('task.edit.state')) {
             JToolBarHelper::trash('tasks.trash');
             JToolBarHelper::divider();
         }
