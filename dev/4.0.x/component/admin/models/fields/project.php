@@ -111,6 +111,10 @@ class JFormFieldProject extends JFormField
             }
 		}
 
+        if ($this->value == 0) {
+            $this->value = '';
+        }
+
 
 		// Create a dummy text field with the project title.
 		$html[] = '<div class="fltlft">';

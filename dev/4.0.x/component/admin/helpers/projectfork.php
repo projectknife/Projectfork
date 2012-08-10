@@ -60,6 +60,11 @@ class ProjectforkHelper
             ($view == 'tasks')
         );
         JSubMenuHelper::addEntry(
+            JText::_('COM_PROJECTFORK_SUBMENU_TIME_TRACKING'),
+            'index.php?option=com_projectfork&view=timesheet',
+            ($view == 'timesheet')
+        );
+        JSubMenuHelper::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_DISCUSSIONS'),
             'index.php?option=com_projectfork&view=topics',
             ($view == 'topics')
