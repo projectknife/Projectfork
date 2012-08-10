@@ -46,7 +46,7 @@ JHtml::_('projectfork.ajaxCompleteTask');
 
 		<form id="adminForm" name="adminForm" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>">
 
-			<div class="btn-toolbar">
+			<div class="btn-toolbar btn-toolbar-top">
 				<div class="btn-group">
 				    <?php echo $this->toolbar;?>
 				</div>

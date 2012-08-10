@@ -29,7 +29,7 @@ $action_count = count($this->actions);
 
     <div class="grid">
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(ProjectforkHelperRoute::getProjectsRoute()); ?>" method="post">
-            <div class="btn-toolbar">
+            <div class="btn-toolbar btn-toolbar-top">
                 <div class="btn-group">
                     <?php echo $this->toolbar;?>
                 </div>

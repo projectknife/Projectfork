@@ -38,7 +38,7 @@ $modules = &$this->modules;
 
         <form id="adminForm" name="adminForm" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>">
 
-            <fieldset class="filters btn-toolbar">
+            <fieldset class="filters btn-toolbar btn-toolbar-top">
                     <div class="filter-project btn-group">
                         <?php echo JHtml::_('projectfork.filterProject');?>
                         <?php if($item) echo $item->event->afterDisplayTitle; ?>

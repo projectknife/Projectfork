@@ -38,7 +38,7 @@ $uid	    = $user->get('id');
 
     <div class="grid">
         <form name="adminForm" id="adminForm" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post">
-            <div class="filters btn-toolbar">
+            <div class="filters btn-toolbar btn-toolbar-top">
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('projectfork.filterProject');?>
                 </div>
