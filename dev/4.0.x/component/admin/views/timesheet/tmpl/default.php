@@ -99,11 +99,11 @@ $total_time = 0;
                     <?php echo JHtml::_('grid.id', $i, $item->id); ?>
                 </td>
                 <td class="center">
-                    <?php echo JHtml::_('jgrid.published', $item->state, $i, 'topics.', $can_change, 'cb'); ?>
+                    <?php echo JHtml::_('jgrid.published', $item->state, $i, 'timesheet.', $can_change, 'cb'); ?>
                 </td>
                 <td>
                     <?php if ($item->checked_out) : ?>
-                        <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'topics.', $can_checkin); ?>
+                        <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'timesheet.', $can_checkin); ?>
                     <?php endif; ?>
                     <?php if ($can_edit || $can_edit_own) : ?>
                         <a href="<?php echo JRoute::_('index.php?option=com_projectfork&task=time.edit&id=' . $item->id);?>">

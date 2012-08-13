@@ -298,6 +298,32 @@ abstract class ProjectforkHelperRoute
 
 
     /**
+     * Creates a link to the timesheet overview
+     *
+     * @param     string    $project      The project slug. Optional
+     *
+     * @return    string    $link         The link
+     */
+    public static function getTimesheetRoute($project = '')
+    {
+        $link  = 'index.php?option=com_projectfork&view=timesheet';
+        $link .= '&filter_project=' . $project;
+
+        $needles = array('filter_project'   => array((int) $project)
+                        );
+
+        if ($item = self::_findItem($needles, 'timesheet')) {
+            $link .= '&Itemid=' . $item;
+        }
+        elseif ($item = self::_findItem(null, 'timesheet')) {
+            $link .= '&Itemid=' . $item;
+        }
+
+        return $link;
+    }
+
+
+    /**
      * This method will try to find a menu item for the given view and
      * URL params ($needles)
      *

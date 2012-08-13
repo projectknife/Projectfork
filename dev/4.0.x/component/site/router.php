@@ -266,6 +266,28 @@ function ProjectforkBuildRoute(&$query)
     }
 
 
+    // Handle timesheet query
+    if($view == 'timesheet') {
+        if (!$menu_item_given) $segments[] = $view;
+        unset($query['view']);
+
+        // Get project filter
+        if (isset($query['filter_project'])) {
+            if (strpos($query['filter_project'], ':') === false) {
+                $query['filter_project'] = ProjectforkMakeSlug($query['filter_project'], '#__pf_projects');
+            }
+        }
+        else {
+            $query['filter_project'] = ProjectforkMakeSlug('0', '#__pf_projects');
+        }
+
+        $segments[] = $query['filter_project'];
+        unset($query['filter_project']);
+
+        return $segments;
+    }
+
+
 
     // Handle the layout
     if (isset($query['layout'])) {
@@ -437,6 +459,16 @@ function ProjectforkParseRoute($segments)
         }
         if ($count >= 2) {
             $vars['filter_topic'] = ProjectforkParseSlug($segments[1]);
+        }
+
+        return $vars;
+    }
+
+
+    // Handle Timesheet
+    if ($vars['view'] == 'timesheet') {
+        if ($count == 1) {
+            $vars['filter_project'] = ProjectforkParseSlug($segments[0]);
         }
 
         return $vars;

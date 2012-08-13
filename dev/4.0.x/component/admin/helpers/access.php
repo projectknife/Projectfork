@@ -101,7 +101,7 @@ class ProjectforkHelperAccess
     {
         $map = array();
         $map['core']      = array('project', 'milestone', 'tasklist', 'task', 'comment', 'topic', 'reply', 'time');
-        $map['project']   = array('milestone', 'tasklist', 'task', 'comment', 'topic', 'reply');
+        $map['project']   = array('milestone', 'tasklist', 'task', 'comment', 'topic', 'reply', 'time');
         $map['milestone'] = array('tasklist', 'task', 'comment');
         $map['tasklist']  = array('task', 'comment');
         $map['task']      = array('comment', 'time');
