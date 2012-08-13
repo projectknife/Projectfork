@@ -207,8 +207,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   KEY `idx_checkedout` (`checked_out`),
   KEY `idx_priority` (`priority`),
   KEY `idx_complete` (`complete`),
-  KEY `idx_state` (`state`),
-  KEY `idx_access` (`access`)
+  KEY `idx_state` (`state`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task data';
 
 CREATE TABLE IF NOT EXISTS `#__pf_task_lists` (
