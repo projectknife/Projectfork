@@ -57,7 +57,7 @@ class ProjectforkHelperQuery
             				$query->where($field.'.id = '.(int) substr($value, 4));
             			}
             			elseif (stripos($value, 'author:') === 0) {
-            				$search = $db->Quote('%'.$db->getEscaped(trim(substr($value, 8)), true).'%');
+            				$value = $db->Quote('%'.$db->getEscaped(trim(substr($value, 8)), true).'%');
             				$query->where('(u.name LIKE '.$value.' OR u.username LIKE '.$value.')');
             			}
             			else {
@@ -77,7 +77,7 @@ class ProjectforkHelperQuery
                     break;
 
                 case 'INT-NOTZERO':
-            		if(is_numeric($value) || intval($value) != 0) $query->where($field. ' = '.(int) $value);
+            		if(is_numeric($value) && intval($value) != 0) $query->where($field. ' = '.(int) $value);
                     break;
 
                 case 'INT':
