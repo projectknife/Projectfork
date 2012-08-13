@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
  * Feed list view class.
  *
  */
-class ProjectforkViewProjects extends JView
+class ProjectforkViewTopics extends JView
 {
     /**
      * Generates a list of RSS feed items.
@@ -43,7 +43,7 @@ class ProjectforkViewProjects extends JView
         foreach($rows as $row)
         {
             // URL link to item
-            $link = JRoute::_(ProjectforkHelperRoute::getDashboardRoute($row->slug));
+            $link = JRoute::_(ProjectforkHelperRoute::getTopicRoute($row->slug, $row->project_slug));
 
             // Strip html from feed item title
             $title = $this->escape($row->title);
@@ -64,9 +64,9 @@ class ProjectforkViewProjects extends JView
             $item->authorEmail = ($feed_email == 'site') ? $site_email : $row->author_email;
 
             // Categorize the item
-            if ($row->catid > 0) {
+            if ($row->project_id > 0) {
                 // Strip html from feed item title
-                $category = $this->escape($row->category_title);
+                $category = $this->escape($row->project_title);
                 $category = html_entity_decode($category, ENT_COMPAT, 'UTF-8');
 
                 $item->category = array($category);

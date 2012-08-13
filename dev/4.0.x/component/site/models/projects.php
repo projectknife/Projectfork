@@ -65,7 +65,7 @@ class ProjectforkModelProjects extends JModelList
         // Select the required fields from the table.
         $query->select(
             $this->getState('list.select',
-                'a.id, a.asset_id, a.title, a.alias, a.description, a.created,'
+                'a.id, a.asset_id, a.catid, a.title, a.alias, a.description, a.created,'
                 . 'a.created_by, a.modified, a.modified_by, a.checked_out,'
                 . 'a.checked_out_time, a.attribs, a.access, a.state, a.start_date,'
                 . 'a.end_date'

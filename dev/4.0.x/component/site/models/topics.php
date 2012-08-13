@@ -142,8 +142,8 @@ class ProjectforkModelTopics extends JModelList
             $items[$i]->params = clone $this->getState('params');
 
             // Create slugs
-            $items[$i]->slug         = $items[$i]->alias ? ($items[$i]->id.':' . $items[$i]->alias) : $items[$i]->id;
-            $items[$i]->project_slug = $items[$i]->project_alias ? ($items[$i]->project_id.':' . $items[$i]->project_alias) : $items[$i]->project_id;
+            $items[$i]->slug         = $items[$i]->alias ? ($items[$i]->id . ':' . $items[$i]->alias) : $items[$i]->id;
+            $items[$i]->project_slug = $items[$i]->project_alias ? ($items[$i]->project_id . ':' . $items[$i]->project_alias) : $items[$i]->project_id;
         }
 
         return $items;
@@ -169,7 +169,7 @@ class ProjectforkModelTopics extends JModelList
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
             $groups    = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('a.access IN (' . $groups.')');
+            $query->where('a.access IN (' . $groups . ')');
         }
 
         // Filter fields
@@ -189,11 +189,11 @@ class ProjectforkModelTopics extends JModelList
             }
             elseif (stripos($search, 'author:') === 0) {
                 $search = $db->Quote('%' . $db->getEscaped(trim(substr($search, 8)), true).'%');
-                $query->where('(u.name LIKE ' . $search.' OR u.username LIKE ' . $search.')');
+                $query->where('(u.name LIKE ' . $search . ' OR u.username LIKE ' . $search.')');
             }
             else {
                 $search = $db->Quote('%' . $db->getEscaped($search, true).'%');
-                $query->where('(a.title LIKE ' . $search.' OR a.alias LIKE ' . $search.')');
+                $query->where('(a.title LIKE ' . $search . ' OR a.alias LIKE ' . $search.')');
             }
         }
 
@@ -208,7 +208,7 @@ class ProjectforkModelTopics extends JModelList
 
         for($i = 0; $i < $count; $i++)
         {
-            $items[$i]->text .= ' (' . $items[$i]->count.')';
+            $items[$i]->text .= ' (' . $items[$i]->count . ')';
             unset($items[$i]->count);
         }
 
