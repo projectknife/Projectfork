@@ -10,6 +10,7 @@
 defined('_JEXEC') or die();
 
 
+// Base this on the backend users model
 require_once JPATH_ADMINISTRATOR . '/components/com_users/models/users.php';
 
 
@@ -21,6 +22,21 @@ require_once JPATH_ADMINISTRATOR . '/components/com_users/models/users.php';
 class ProjectforkModelUsers extends UsersModelUsers
 {
     /**
+     * Constructor.
+     *
+     * @param    array          $config    An optional associative array of configuration settings.
+     *
+     * @see      jcontroller
+     */
+    public function __construct($config = array())
+    {
+        JLoader::register('ProjectforkHelper', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
+
+        parent::__construct($config);
+    }
+
+
+    /**
      * Method to auto-populate the model state.
      * Note. Calling getState in this method will result in recursion.
      *
@@ -30,19 +46,15 @@ class ProjectforkModelUsers extends UsersModelUsers
     {
         parent::populateState($ordering, $direction);
 
-        JModel::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/models');
-
         $app    = JFactory::getApplication();
         $user   = JFactory::getUser();
         $model  = JModel::getInstance('Project', 'ProjectforkModel');
         $groups = array();
 
-
         // Filter - Project
-        $pid = (int) $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $pid = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
         $this->setState('filter.project', $pid);
         ProjectforkHelper::setActiveProject($pid);
-
 
         // Override group filter by active project
         if ($pid) {
