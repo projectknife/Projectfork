@@ -184,7 +184,7 @@ class ProjectforkModelProjects extends JModelList
     {
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
-        $user  = $user = JFactory::getUser();
+        $user  = JFactory::getUser();
 
         // Construct the query
         $query->select('u.id AS value, u.name AS text, COUNT(DISTINCT a.id) AS count');
