@@ -110,9 +110,9 @@ JHtml::_('projectfork.ajaxCompleteTask');
 
                 foreach($this->items AS $i => $item) :
                 ?>
-                    <?php if ($current_list !== $item->tasklist_title) :
+                    <?php if ($current_list !== $item->list_title) :
                         JHtml::_('projectfork.ajaxReorder', 'tasklist_' . $i, 'tasks', $k);
-                        if ($item->tasklist_title) :
+                        if ($item->list_title) :
                             $asset_name = 'com_projectfork.tasklist.' . $item->list_id;
 
                             $canCreate    = ($user->authorise('core.create', $asset_name) || $user->authorise('tasklist.create', $asset_name));
@@ -143,13 +143,13 @@ JHtml::_('projectfork.ajaxCompleteTask');
                                                </span>
                                            </div>-->
                                        <?php endif; ?>
-                                    <?php if ($item->tasklist_title) : ?>
+                                    <?php if ($item->list_title) : ?>
                                            <div class="btn-group">
                                                <h3>
                                                 <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_slug, $item->milestone_slug, $item->list_slug));?>">
-                                                    <?php echo $this->escape($item->tasklist_title);?>
+                                                    <?php echo $this->escape($item->list_title);?>
                                                 </a>
-                                                <small><?php echo $this->escape($item->tasklist_description);?></small>
+                                                <small><?php echo $this->escape($item->list_description);?></small>
                                             </h3>
                                         </div>
                                         <?php
@@ -166,7 +166,7 @@ JHtml::_('projectfork.ajaxCompleteTask');
                     <?php
                         $k            = 1 - $k;
                         $list_open    = true;
-                        $current_list = $item->tasklist_title;
+                        $current_list = $item->list_title;
                         $x++;
                         endif;
                     ?>

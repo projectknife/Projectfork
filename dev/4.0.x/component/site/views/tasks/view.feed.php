@@ -84,7 +84,7 @@ class ProjectforkViewTasks extends JView
 
             if ($row->list_id > 0) {
                 // Strip html from feed item title
-                $category = $this->escape($row->tasklist_title);
+                $category = $this->escape($row->list_title);
                 $category = html_entity_decode($category, ENT_COMPAT, 'UTF-8');
 
                 $item->category[] = $category;
