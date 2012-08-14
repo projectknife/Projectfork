@@ -38,7 +38,7 @@ class ProjectforkViewTasks extends JView
     /**
      * Display the view
      *
-     * @return    void
+     * @return    void    
      */
     public function display($tpl = null)
     {
@@ -97,6 +97,7 @@ class ProjectforkViewTasks extends JView
     /**
      * Prepares the document
      *
+     * @return    void    
      */
     protected function prepareDocument()
     {
@@ -167,7 +168,6 @@ class ProjectforkViewTasks extends JView
     {
         $access = ProjectforkHelper::getActions(NULL, 0, true);
         $tb     = new ProjectforkHelperToolbar();
-
 
         $create_list = $access->get('tasklist.create');
         $create_task = $access->get('task.create');
