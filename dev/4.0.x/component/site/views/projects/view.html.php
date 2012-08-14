@@ -27,7 +27,6 @@ class ProjectforkViewProjects extends JView
     protected $state;
     protected $actions;
     protected $toolbar;
-    protected $authors;
     protected $access;
     protected $menu;
 
@@ -45,7 +44,6 @@ class ProjectforkViewProjects extends JView
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->state      = $this->get('State');
-        $this->authors    = $this->get('Authors');
         $this->params     = $this->state->get('params');
         $this->actions    = $this->getActions();
         $this->toolbar    = $this->getToolbar();

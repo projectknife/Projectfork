@@ -182,40 +182,6 @@ class ProjectforkModelProjects extends JModelList
 
 
     /**
-     * Build a list of authors
-     *
-     * @return    jdatabasequery
-     */
-    public function getAuthors()
-    {
-        $db    = $this->getDbo();
-        $query = $db->getQuery(true);
-        $user  = JFactory::getUser();
-
-        // Construct the query
-        $query->select('u.id AS value, u.name AS text');
-        $query->from('#__users AS u');
-        $query->join('INNER', '#__pf_projects AS a ON a.created_by = u.id');
-
-        // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
-            $groups = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('a.access IN (' . $groups . ')');
-        }
-
-        // Group and order
-        $query->group('u.id');
-        $query->order('u.name ASC');
-
-        $db->setQuery((string) $query);
-        $items = (array) $db->loadObjectList();
-
-        // Return the items
-        return $items;
-    }
-
-
-    /**
      * Method to auto-populate the model state.
      * Note. Calling getState in this method will result in recursion.
      *

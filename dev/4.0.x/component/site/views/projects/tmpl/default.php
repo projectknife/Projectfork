@@ -60,12 +60,6 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                             <?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_projectfork'), 'value', 'text', $this->state->get('filter.category'));?>
                         </select>
                     </div>
-                    <div class="filter-author btn-group pull-right">
-                        <select name="filter_author" class="inputbox input-medium" onchange="this.form.submit()">
-                            <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                            <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'));?>
-                        </select>
-                    </div>
                     <?php if (!$this->access->get('project.edit.state') && !$this->access->get('project.edit')) : ?>
                         <div class="filter-author btn-group pull-right">
                             <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">

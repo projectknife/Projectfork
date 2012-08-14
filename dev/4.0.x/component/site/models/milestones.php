@@ -180,6 +180,15 @@ class ProjectforkModelMilestones extends JModelList
             $query->where('a.access IN (' . $groups . ')');
         }
 
+        // Filter fields
+        $filters = array();
+        $filters['a.state']      = array('STATE',       $this->getState('filter.published'));
+        $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
+        $filters['a']            = array('SEARCH',      $this->getState('filter.search'));
+
+        // Apply Filter
+        ProjectforkHelperQuery::buildFilter($query, $filters);
+
         // Group and order
         $query->group('u.id');
         $query->order('u.name ASC');
@@ -224,9 +233,9 @@ class ProjectforkModelMilestones extends JModelList
         }
 
         // Filter - Project
-        $value = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
-        $this->setState('filter.project', $value);
-        ProjectforkHelper::setActiveProject($value);
+        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $this->setState('filter.project', $project);
+        ProjectforkHelper::setActiveProject($project);
 
         // Filter - Search
         $value = JRequest::getString('filter_search', '');
@@ -235,6 +244,11 @@ class ProjectforkModelMilestones extends JModelList
         // Filter - Author
         $author = $app->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', '');
         $this->setState('filter.author', $author);
+
+        // Do not allow to filter by author if no project is selected
+        if (!is_numeric($project)) {
+            $this->setState('filter.author', '');
+        }
 
         // Filter - Is set
         $this->setState('filter.isset', (is_numeric($state) || !empty($search) || is_numeric($author)));
