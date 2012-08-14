@@ -49,7 +49,7 @@ class ProjectforkViewMilestones extends JView
         $this->params     = $this->state->params;
         $this->actions    = $this->getActions();
         $this->toolbar    = $this->getToolbar();
-        $this->access     = ProjectforkHelperAccess::getActions();
+        $this->access     = ProjectforkHelperAccess::getActions(null, 0, true);
         $this->nulldate   = JFactory::getDbo()->getNullDate();
         $this->menu       = new ProjectforkHelperContextMenu();
 

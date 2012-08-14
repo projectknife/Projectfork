@@ -30,7 +30,7 @@ class ProjectforkModelMilestones extends JModelList
     public function __construct($config = array())
     {
         // Register dependencies
-        JLoader::register('ProjectforkHelperQuery',  JPATH_BASE . '/components/com_projectfork/helpers/query.php');
+        JLoader::register('ProjectforkHelperQuery',  JPATH_SITE . '/components/com_projectfork/helpers/query.php');
         JLoader::register('ProjectforkHelper',       JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
         JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
 
@@ -165,9 +165,16 @@ class ProjectforkModelMilestones extends JModelList
      */
     public function getAuthors()
     {
-        $db    = $this->getDbo();
-        $query = $db->getQuery(true);
-        $user  = $user = JFactory::getUser();
+        $db     = $this->getDbo();
+        $query  = $db->getQuery(true);
+        $user   = $user = JFactory::getUser();
+        $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
+
+        // Return empty array if no project is select
+        $project = (int) $this->getState('filter.project');
+        if ($project < 0) {
+            return array();
+        }
 
         // Construct the query
         $query->select('u.id AS value, u.name AS text');
@@ -182,9 +189,11 @@ class ProjectforkModelMilestones extends JModelList
 
         // Filter fields
         $filters = array();
-        $filters['a.state']      = array('STATE',       $this->getState('filter.published'));
         $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
-        $filters['a']            = array('SEARCH',      $this->getState('filter.search'));
+
+        if (!$access->get('milestone.edit.state') && !$access->get('milestone.edit')) {
+            $filters['a.state'] = array('STATE', '1');
+        }
 
         // Apply Filter
         ProjectforkHelperQuery::buildFilter($query, $filters);
@@ -209,7 +218,8 @@ class ProjectforkModelMilestones extends JModelList
      */
     protected function populateState($ordering = 'a.title', $direction = 'ASC')
     {
-        $app = JFactory::getApplication();
+        $app    = JFactory::getApplication();
+        $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
 
         // Adjust the context to support modal layouts.
         $layout = JRequest::getCmd('layout');
@@ -227,27 +237,28 @@ class ProjectforkModelMilestones extends JModelList
         $this->setState('filter.published', $state);
 
         // Filter on published for those who do not have edit or edit.state rights.
-        $access = ProjectforkHelperAccess::getActions();
         if (!$access->get('milestone.edit.state') && !$access->get('milestone.edit')){
             $this->setState('filter.published', 1);
+            $state = '';
         }
+
+        // Filter - Search
+        $search = JRequest::getString('filter_search', '');
+        $this->setState('filter.search', $search);
 
         // Filter - Project
         $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
         $this->setState('filter.project', $project);
         ProjectforkHelper::setActiveProject($project);
 
-        // Filter - Search
-        $value = JRequest::getString('filter_search', '');
-        $this->setState('filter.search', $value);
-
         // Filter - Author
         $author = $app->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', '');
         $this->setState('filter.author', $author);
 
         // Do not allow to filter by author if no project is selected
-        if (!is_numeric($project)) {
+        if (!is_numeric($project) || intval($project) == 0) {
             $this->setState('filter.author', '');
+            $author = '';
         }
 
         // Filter - Is set

@@ -29,7 +29,7 @@ class ProjectforkModelProjects extends JModelList
     public function __construct($config = array())
     {
         // Register dependencies
-        JLoader::register('ProjectforkHelperQuery',  JPATH_BASE . '/components/com_projectfork/helpers/query.php');
+        JLoader::register('ProjectforkHelperQuery',  JPATH_SITE . '/components/com_projectfork/helpers/query.php');
         JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
 
         // Set field filter
@@ -210,6 +210,7 @@ class ProjectforkModelProjects extends JModelList
         $access = ProjectforkHelperAccess::getActions();
         if (!$access->get('project.edit.state') && !$access->get('project.edit')) {
             $this->setState('filter.published', 1);
+            $state = '';
         }
 
         // Filter - Search
