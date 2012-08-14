@@ -10,7 +10,6 @@
 defined('_JEXEC') or die();
 
 
-$access     = ProjectforkHelperAccess::getActions();
 $function   = JRequest::getCmd('function', 'pfSelectActiveProject');
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
@@ -29,15 +28,11 @@ $uid        = $user->get('id');
                     <button type="submit" class="btn"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
                     <button type="button" class="btn" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
                 </span>
-                <?php if ($access->get('project.edit.state') || $access->get('project.edit')) : ?>
+                <?php if ($this->access->get('project.edit.state') || $this->access->get('project.edit')) : ?>
                     <span class="filter-published">
                         <select id="filter_published" name="filter_published" class="inputbox" onchange="this.form.submit()">
                             <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-                            <?php echo JHtml::_('select.options', $this->states,
-                                                'value', 'text', $this->state->get('filter.published'),
-                                                true
-                                               );
-                            ?>
+                            <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
                         </select>
                     </span>
                 <?php endif; ?>
@@ -47,18 +42,12 @@ $uid        = $user->get('id');
                         <?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_projectfork'), 'value', 'text', $this->state->get('filter.category'));?>
                     </select>
                 </span>
-                <?php if ($user->authorise('core.admin') && count($this->authors)) : ?>
-                    <span class="filter-author">
-                        <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
-                            <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                            <?php echo JHtml::_('select.options', $this->authors,
-                                                'value', 'text', $this->state->get('filter.author'),
-                                                true
-                                               );
-                            ?>
-                        </select>
-                    </span>
-                <?php endif; ?>
+                <span class="filter-author">
+                    <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
+                        <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+                        <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'), true);?>
+                    </select>
+                </span>
                 <span class="filter-limit">
                     <?php echo $this->pagination->getLimitBox(); ?>
                 </span>
@@ -68,18 +57,18 @@ $uid        = $user->get('id');
                 <thead>
                     <tr>
                         <th id="tableOrdering0" class="list-title">
-                            <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
+                            <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'category_title, a.title', $list_dir, $list_order); ?>
                         </th>
                         <th id="tableOrdering1" class="list-category">
-                            <?php echo JHtml::_('grid.sort', 'JCATEGORY', 'c.title', $list_dir, $list_order); ?>
+                            <?php echo JHtml::_('grid.sort', 'JCATEGORY', 'category_title', $list_dir, $list_order); ?>
                         </th>
-                           <th id="tableOrdering2" class="list-milestones">
+                        <th id="tableOrdering2" class="list-milestones">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONES', 'milestones', $list_dir, $list_order); ?>
                         </th>
-                           <th id="tableOrdering3" class="list-tasks">
+                        <th id="tableOrdering3" class="list-tasks">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKLISTS_AND_TASKS', 'tasks', $list_dir, $list_order); ?>
                         </th>
-                           <th id="tableOrdering4" class="list-deadline">
+                        <th id="tableOrdering4" class="list-deadline">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
                         </th>
                     </tr>

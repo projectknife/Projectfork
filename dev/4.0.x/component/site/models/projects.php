@@ -11,6 +11,7 @@ defined('_JEXEC') or die();
 
 
 jimport('joomla.application.component.modellist');
+jimport('joomla.application.component.helper');
 
 
 /**
@@ -27,14 +28,16 @@ class ProjectforkModelProjects extends JModelList
      */
     public function __construct($config = array())
     {
-        // Include query helper class
-        require_once JPATH_BASE . '/components/com_projectfork/helpers/query.php';
+        // Register dependencies
+        JLoader::register('ProjectforkHelperQuery',  JPATH_BASE . '/components/com_projectfork/helpers/query.php');
+        JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
 
+        // Set field filter
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
                 'a.id', 'category_title, a.title',
-                'a.created', 'a.modified', 'a.state',
-                'a.start_date', 'a.end_date',
+                'category_title', 'a.created', 'a.modified',
+                'a.state', 'a.start_date', 'a.end_date',
                 'author_name', 'editor', 'access_level',
                 'milestones', 'tasks', 'tasklists'
             );
@@ -111,14 +114,17 @@ class ProjectforkModelProjects extends JModelList
         $catid = $this->getState('filter.category');
         if (is_numeric($catid)) {
             $cat_tbl = JTable::getInstance('Category', 'JTable');
-            $cat_tbl->load($catid);
 
-            $rgt       = $cat_tbl->rgt;
-            $lft       = $cat_tbl->lft;
-            $baselevel = (int) $cat_tbl->level;
+            if ($cat_tbl) {
+                if ($cat_tbl->load($catid)) {
+                    $rgt       = $cat_tbl->rgt;
+                    $lft       = $cat_tbl->lft;
+                    $baselevel = (int) $cat_tbl->level;
 
-            $query->where('c.lft >= ' . (int) $lft);
-            $query->where('c.rgt <= ' . (int) $rgt);
+                    $query->where('c.lft >= ' . (int) $lft);
+                    $query->where('c.rgt <= ' . (int) $rgt);
+                }
+            }
         }
         elseif (is_array($catid)) {
             JArrayHelper::toInteger($catid);
@@ -140,7 +146,7 @@ class ProjectforkModelProjects extends JModelList
         $query->group('a.id');
 
         // Add the list ordering clause.
-        $query->order($this->getState('list.ordering', 'a.title') . ' ' . $this->getState('list.direction', 'ASC'));
+        $query->order($this->getState('list.ordering', 'category_title, a.title') . ' ' . $this->getState('list.direction', 'ASC'));
 
         return $query;
     }
@@ -187,7 +193,7 @@ class ProjectforkModelProjects extends JModelList
         $user  = JFactory::getUser();
 
         // Construct the query
-        $query->select('u.id AS value, u.name AS text, COUNT(DISTINCT a.id) AS count');
+        $query->select('u.id AS value, u.name AS text');
         $query->from('#__users AS u');
         $query->join('INNER', '#__pf_projects AS a ON a.created_by = u.id');
 
@@ -199,7 +205,7 @@ class ProjectforkModelProjects extends JModelList
 
         // Group and order
         $query->group('u.id');
-        $query->order('u.name, count ASC');
+        $query->order('u.name ASC');
 
         $db->setQuery((string) $query);
         $items = (array) $db->loadObjectList();
@@ -227,7 +233,7 @@ class ProjectforkModelProjects extends JModelList
         if ($layout) $this->context .= '.' . $layout;
 
         // Params
-        $value = JFactory::getApplication()->getParams();
+        $value = $app->getParams();
         $this->setState('params', $value);
 
         // State

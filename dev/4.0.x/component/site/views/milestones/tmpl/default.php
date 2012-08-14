@@ -1,26 +1,13 @@
 <?php
 /**
-* @package   Projectfork
-* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
-*
-* This file is part of Projectfork.
-*
-* Projectfork is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*
-* Projectfork is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
-**/
+ * @package      Projectfork
+ *
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ */
 
-defined('_JEXEC') or die;
+defined('_JEXEC') or die();
 
 
 $list_order = $this->escape($this->state->get('list.ordering'));
@@ -29,6 +16,7 @@ $user       = JFactory::getUser();
 $uid        = $user->get('id');
 
 $action_count = count($this->actions);
+$filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-milestones">
 
@@ -39,8 +27,7 @@ $action_count = count($this->actions);
     <div class="clearfix"></div>
 
     <div class="cat-items">
-
-        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_('index.php?option=com_projectfork&view=milestones'); ?>" method="post">
+        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute()); ?>" method="post">
             <div class="btn-toolbar btn-toolbar-top">
                 <div class="btn-group">
                         <?php echo $this->toolbar;?>
@@ -48,50 +35,38 @@ $action_count = count($this->actions);
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('projectfork.filterProject');?>
                 </div>
-                <?php if ($uid) : ?>
-                    <div class="btn-group">
-                        <a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
-                    </div>
-                <?php endif; ?>
-            </div>
-            <div class="clearfix"> </div>
-            <?php if ($uid) : ?>
-                <div class="collapse" id="filters">
-                    <div class="well btn-toolbar">
-                        <div class="filter-search btn-group pull-left">
-                            <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
-                        </div>
-                        <div class="filter-search-buttons btn-group pull-left">
-                            <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
-                            <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
-                        </div>
-                        <?php if ($this->access->get('milestone.edit.state') || $this->access->get('milestone.edit')) : ?>
-                            <div class="filter-published btn-group pull-left">
-                                <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
-                                    <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-                                    <?php echo JHtml::_('select.options', $this->states,
-                                                        'value', 'text', $this->state->get('filter.published'),
-                                                        true
-                                                       );
-                                    ?>
-                                </select>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (intval($this->state->get('filter.project')) != 0 && count($this->authors)) : ?>
-                            <div class="filter-author btn-group pull-left">
-                                <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
-                                    <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                                    <?php echo JHtml::_('select.options', $this->authors,
-                                                        'value', 'text', $this->state->get('filter.author'),
-                                                        true
-                                                       );
-                                    ?>
-                                </select>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+                <div class="btn-group">
+                    <a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
                 </div>
-            <?php endif; ?>
+            </div>
+
+            <div class="clearfix"> </div>
+
+            <div class="<?php echo $filter_in;?>collapse" id="filters">
+                <div class="well btn-toolbar">
+                    <div class="filter-search btn-group pull-left">
+                        <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
+                    </div>
+                    <div class="filter-search-buttons btn-group pull-left">
+                        <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+                        <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
+                    </div>
+                    <div class="filter-author btn-group pull-right">
+                        <select id="filter_author" name="filter_author" class="inputbox input-medium" onchange="this.form.submit()">
+                            <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+                            <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'), true);?>
+                        </select>
+                    </div>
+                    <?php if ($this->access->get('milestone.edit.state') || $this->access->get('milestone.edit')) : ?>
+                        <div class="filter-published btn-group pull-right">
+                            <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
+                                <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+                                <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
+                            </select>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
 
             <?php
             $k = 0;

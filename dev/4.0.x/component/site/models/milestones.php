@@ -11,6 +11,7 @@ defined('_JEXEC') or die();
 
 
 jimport('joomla.application.component.modellist');
+jimport('joomla.application.component.helper');
 
 
 /**
@@ -28,26 +29,19 @@ class ProjectforkModelMilestones extends JModelList
      */
     public function __construct($config = array())
     {
-        // Include query helper class
-        require_once JPATH_BASE . '/components/com_projectfork/helpers/query.php';
+        // Register dependencies
+        JLoader::register('ProjectforkHelperQuery',  JPATH_BASE . '/components/com_projectfork/helpers/query.php');
+        JLoader::register('ProjectforkHelper',       JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
+        JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
 
+        // Set field filter
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'id', 'a.id',
-                'title', 'a.title',
-                'created', 'a.created',
-                'modified', 'a.modified',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
-                'state', 'a.state',
-                'start_date', 'a.start_date',
-                'end_date', 'a.end_date',
-                'author_name',
-                'editor',
-                'access_level',
-                'project_title', 'p.title',
-                'tasklists',
-                'tasks'
+                'a.id', 'a.title', 'a.created', 'a.modified',
+                'a.checked_out', 'a.checked_out_time',
+                'a.state', 'a.start_date', 'a.end_date',
+                'author_name', 'editor', 'access_level',
+                'project_title', 'tasklists', 'tasks'
             );
         }
 
@@ -74,7 +68,7 @@ class ProjectforkModelMilestones extends JModelList
                 'a.id, a.asset_id, a.project_id, a.title, a.alias, a.description, a.created,'
                 . 'a.created_by, a.modified, a.modified_by, a.checked_out,'
                 . 'a.checked_out_time, a.attribs, a.access, a.state, a.start_date,'
-                . 'a.end_date, p.alias AS project_alias'
+                . 'a.end_date'
             )
         );
 
@@ -92,8 +86,8 @@ class ProjectforkModelMilestones extends JModelList
         $query->select('ua.name AS author_name, ua.email AS author_email');
         $query->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
-        // Join over the projects for project title
-        $query->select('p.title AS project_title');
+        // Join over the projects for project title and alias
+        $query->select('p.title AS project_title, p.alias AS project_alias');
         $query->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
 
         // Join over the tasks for task count
@@ -110,23 +104,25 @@ class ProjectforkModelMilestones extends JModelList
 
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
-            $groups    = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('a.access IN (' . $groups.')');
+            $groups = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('a.access IN (' . $groups . ')');
         }
 
         // Filter fields
         $filters = array();
-        $filters['a.state']        = array('STATE',       $this->getState('filter.published'));
-        $filters['a.project_id']   = array('INT-NOTZERO', $this->getState('filter.project'));
-        $filters['a.created_by']   = array('INT-NOTZERO', $this->getState('filter.author'));
-        $filters['a']              = array('SEARCH',      $this->getState('filter.search'));
+        $filters['a.state']      = array('STATE',       $this->getState('filter.published'));
+        $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
+        $filters['a.created_by'] = array('INT-NOTZERO', $this->getState('filter.author'));
+        $filters['a']            = array('SEARCH',      $this->getState('filter.search'));
 
         // Apply Filter
         ProjectforkHelperQuery::buildFilter($query, $filters);
 
-        // Add the list ordering clause.
+        // Group by ID
         $query->group('a.id');
-        $query->order($this->getState('list.ordering', 'a.title').' ' . $this->getState('list.direction', 'ASC'));
+
+        // Add the list ordering clause.
+        $query->order($this->getState('list.ordering', 'a.title') . ' ' . $this->getState('list.direction', 'ASC'));
 
         return $query;
     }
@@ -154,8 +150,8 @@ class ProjectforkModelMilestones extends JModelList
             $items[$i]->params = clone $this->getState('params');
 
             // Create slugs
-            $items[$i]->slug         = $items[$i]->alias ? ($items[$i]->id.':' . $items[$i]->alias) : $items[$i]->id;
-            $items[$i]->project_slug = $items[$i]->project_alias ? ($items[$i]->project_id.':' . $items[$i]->project_alias) : $items[$i]->project_id;
+            $items[$i]->slug         = $items[$i]->alias ? ($items[$i]->id . ':' . $items[$i]->alias) : $items[$i]->id;
+            $items[$i]->project_slug = $items[$i]->project_alias ? ($items[$i]->project_id . ':' . $items[$i]->project_alias) : $items[$i]->project_id;
         }
 
         return $items;
@@ -165,7 +161,7 @@ class ProjectforkModelMilestones extends JModelList
     /**
      * Build a list of authors
      *
-     * @return    jdatabasequery
+     * @return    array
      */
     public function getAuthors()
     {
@@ -174,113 +170,25 @@ class ProjectforkModelMilestones extends JModelList
         $user  = $user = JFactory::getUser();
 
         // Construct the query
-        $query->select('u.id AS value, u.name AS text, COUNT(DISTINCT a.id) AS count');
+        $query->select('u.id AS value, u.name AS text');
         $query->from('#__users AS u');
         $query->join('INNER', '#__pf_milestones AS a ON a.created_by = u.id');
 
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
-            $groups    = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('a.access IN (' . $groups.')');
-        }
-
-        // Filter fields
-        $filters = array();
-        $filters['a.state']      = array('STATE',       $this->getState('filter.published'));
-        $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
-
-        // Apply Filter
-        ProjectforkHelperQuery::buildFilter($query, $filters);
-
-
-        // Filter by search in title.
-        $search = $this->getState('filter.search');
-        if (!empty($search)) {
-            if (stripos($search, 'id:') === 0) {
-                $query->where('a.id = '.(int) substr($search, 4));
-            }
-            elseif (stripos($search, 'author:') === 0) {
-                $search = $db->Quote('%' . $db->getEscaped(trim(substr($search, 8)), true).'%');
-                $query->where('(u.name LIKE ' . $search.' OR u.username LIKE ' . $search.')');
-            }
-            else {
-                $search = $db->Quote('%' . $db->getEscaped($search, true).'%');
-                $query->where('(a.title LIKE ' . $search.' OR a.alias LIKE ' . $search.')');
-            }
+            $groups = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('a.access IN (' . $groups . ')');
         }
 
         // Group and order
         $query->group('u.id');
-        $query->order('u.name, count');
+        $query->order('u.name ASC');
 
         $db->setQuery((string) $query);
-
         $items = (array) $db->loadObjectList();
-        $count = count($items);
-
-        for($i = 0; $i < $count; $i++)
-        {
-            $items[$i]->text .= ' (' . $items[$i]->count.')';
-            unset($items[$i]->count);
-        }
-
 
         // Return the items
         return $items;
-    }
-
-
-    /**
-     * Build a list of publishing states
-     *
-     * @return    jdatabasequery
-     */
-    public function getPublishedStates()
-    {
-        $db     = $this->getDbo();
-        $states = JHtml::_('jgrid.publishedOptions');
-        $count  = count($states);
-
-        $query_select = $this->getState('list.select');
-        $query_state  = $this->getState('filter.published');
-
-        for($i = 0; $i < $count; $i++)
-        {
-            if ($states[$i]->disable == true) {
-                $states[$i]->text = JText::_($states[$i]->text).' (0)';
-                continue;
-            }
-            if ($states[$i]->value == '*') {
-                unset($states[$i]);
-                continue;
-            }
-
-            $this->setState('list.select', 'COUNT(DISTINCT a.id)');
-            $this->setState('filter.published', $states[$i]->value);
-
-            $query = $this->getListQuery();
-            $db->setQuery((string) $query);
-
-            $found = (int) $db->loadResult();
-
-            $states[$i]->text = JText::_($states[$i]->text).' (' . $found.')';
-        }
-
-        $this->setState('list.select', $query_select);
-        $this->setState('filter.published', $query_state);
-
-        return $states;
-    }
-
-
-    /**
-     * Method to retrieve the query list limit start value
-     *
-     * @return    integer
-     **/
-    public function getStart()
-    {
-        return $this->getState('list.start');
     }
 
 
@@ -290,55 +198,49 @@ class ProjectforkModelMilestones extends JModelList
      *
      * @return    void
      */
-    protected function populateState($ordering = 'title', $direction = 'ASC')
+    protected function populateState($ordering = 'a.title', $direction = 'ASC')
     {
-        // Query limit
-        $value = JRequest::getUInt('limit', JFactory::getApplication()->getCfg('list_limit', 0));
-        $this->setState('list.limit', $value);
+        $app = JFactory::getApplication();
 
-        // Query limit start
-        $value = JRequest::getUInt('limitstart', 0);
-        $this->setState('list.start', $value);
+        // Adjust the context to support modal layouts.
+        $layout = JRequest::getCmd('layout');
 
-        // Query order field
-        $value = JRequest::getCmd('filter_order', 'a.title');
-        if (!in_array($value, $this->filter_fields)) $value = 'a.title';
-        $this->setState('list.ordering', $value);
-
-        // Query order direction
-        $value = JRequest::getCmd('filter_order_Dir', 'ASC');
-        if (!in_array(strtoupper($value), array('ASC', 'DESC', ''))) $value = 'ASC';
-        $this->setState('list.direction', $value);
+        // View Layout
+        $this->setState('layout', $layout);
+        if ($layout) $this->context .= '.' . $layout;
 
         // Params
-        $value = JFactory::getApplication()->getParams();
+        $value = $app->getParams();
         $this->setState('params', $value);
 
         // State
-        $value = JRequest::getCmd('filter_published', '');
-        $this->setState('filter.published', $value);
+        $state = $app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+        $this->setState('filter.published', $state);
 
         // Filter on published for those who do not have edit or edit.state rights.
-        $access = ProjectforkHelper::getActions();
+        $access = ProjectforkHelperAccess::getActions();
         if (!$access->get('milestone.edit.state') && !$access->get('milestone.edit')){
             $this->setState('filter.published', 1);
         }
+
+        // Filter - Project
+        $value = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $this->setState('filter.project', $value);
+        ProjectforkHelper::setActiveProject($value);
 
         // Filter - Search
         $value = JRequest::getString('filter_search', '');
         $this->setState('filter.search', $value);
 
-        // Filter - Project
-        $value = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
-        $this->setState('filter.project', $value);
-        ProjectforkHelper::setActiveProject($value);
-
         // Filter - Author
-        $value = JRequest::getCmd('filter_author', '');
-        $this->setState('filter.author', $value);
+        $author = $app->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', '');
+        $this->setState('filter.author', $author);
 
-        // View Layout
-        $this->setState('layout', JRequest::getCmd('layout'));
+        // Filter - Is set
+        $this->setState('filter.isset', (is_numeric($state) || !empty($search) || is_numeric($author)));
+
+        // Call parent method
+        parent::populateState($ordering, $direction);
     }
 
 
@@ -357,8 +259,8 @@ class ProjectforkModelMilestones extends JModelList
         // Compile the store id.
         $id .= ':' . $this->getState('filter.published');
         $id .= ':' . $this->getState('filter.project');
-        $id .= ':' . $this->getState('filter.search');
         $id .= ':' . $this->getState('filter.author');
+        $id .= ':' . $this->getState('filter.search');
 
         return parent::getStoreId($id);
     }
