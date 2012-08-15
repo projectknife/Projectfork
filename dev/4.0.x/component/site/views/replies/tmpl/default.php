@@ -19,6 +19,7 @@ $project = (int) $this->state->get('filter.project');
 $topic   = (int) $this->state->get('filter.topic');
 
 $action_count = count($this->actions);
+$filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-replies">
 
@@ -33,109 +34,99 @@ $action_count = count($this->actions);
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(ProjectforkHelperRoute::getRepliesRoute($topic, $project)); ?>" method="post">
             <div class="btn-toolbar btn-toolbar-top">
                 <div class="btn-group">
-                        <?php echo $this->toolbar;?>
+                    <?php echo $this->toolbar;?>
                 </div>
-                <?php if ($uid) : ?>
-                    <div class="btn-group">
-                        <a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
-                    </div>
-                <?php endif; ?>
+                <div class="btn-group">
+                    <a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
+                </div>
             </div>
+
             <div class="clearfix"> </div>
-            <?php if ($uid) : ?>
-                <div class="collapse" id="filters">
-                    <div class="well btn-toolbar">
-                        <div class="filter-search btn-group pull-left">
-                            <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
-                        </div>
-                        <div class="filter-search-buttons btn-group pull-left">
-                            <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
-                            <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
-                        </div>
-                        <?php if ($this->access->get('reply.edit.state') || $this->access->get('reply.edit')) : ?>
-                            <div class="filter-published btn-group pull-left">
-                                <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
-                                    <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-                                    <?php echo JHtml::_('select.options', $this->states,
-                                                        'value', 'text', $this->state->get('filter.published'),
-                                                        true
-                                                       );
-                                    ?>
-                                </select>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (intval($this->state->get('filter.project')) != 0 && count($this->authors)) : ?>
-                            <div class="filter-author btn-group pull-left">
-                                <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
-                                    <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                                    <?php echo JHtml::_('select.options', $this->authors,
-                                                        'value', 'text', $this->state->get('filter.author'),
-                                                        true
-                                                       );
-                                    ?>
-                                </select>
-                            </div>
-                        <?php endif; ?>
+
+            <div class="<?php echo $filter_in;?>collapse" id="filters">
+                <div class="well btn-toolbar">
+                    <div class="filter-search btn-group pull-left">
+                        <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
                     </div>
+                    <div class="filter-search-buttons btn-group pull-left">
+                        <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+                        <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
+                    </div>
+                    <?php if ($this->access->get('reply.edit.state') || $this->access->get('reply.edit')) : ?>
+                        <div class="filter-published btn-group pull-right">
+                            <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
+                                <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+                                <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
+                            </select>
+                        </div>
+                    <?php endif; ?>
+                    <?php if (is_numeric($this->state->get('filter.project'))) : ?>
+                        <div class="filter-author btn-group pull-right">
+                            <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
+                                <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+                                <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'), true);?>
+                            </select>
+                        </div>
+                    <?php endif; ?>
                 </div>
-            <?php endif; ?>
-            
+            </div>
+
             <!-- Start topic placeholder -->
             <div class="page-header">
-				<h2>Discussion Title</h2>
-			</div>
-			<dl class="article-info dl-horizontal pull-right">
-				<dt class="project-title">
-					Project:
-				</dt>
-				<dd class="project-data">
-					<a href="#">Project Name</a>
-				</dd>
-				<dt class="start-title">
-					Start Date:
-				</dt>
-				<dd class="start-data">
-					Saturday, 01 September 2012			
-				</dd>
-				<dt class="due-title">
-					Deadline:
-				</dt>
-				<dd class="due-data">
-					Wednesday, 31 October 2012			
-				</dd>
-				<dt class="owner-title">
-					Created By:
-				</dt>
-				<dd class="owner-data">
-					 Super User		
-				</dd>
-			</dl>
-			<div class="actions btn-toolbar">
-				<div class="btn-group">
-				   <a class="btn" href="#"><i class="icon-edit"></i> Edit</a>
-					<a class="btn" href="#comments"><i class="icon-comment"></i> 5 comments</a>
-        		</div>
-			</div>
-			<div class="item-description">
-				<p><strong>Pellentesque habitant morbi tristique</strong> senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. <em>Aenean ultricies mi vitae est.</em> Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, <code>commodo vitae</code>, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. <a href="#">Donec non enim</a> in turpis pulvinar facilisis. Ut felis.</p>
-				
-				<h2>Header Level 2</h2>
-					       
-				<ol>
-				   <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
-				   <li>Aliquam tincidunt mauris eu risus.</li>
-				</ol>
-				
-				<blockquote><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus magna. Cras in mi at felis aliquet congue. Ut a est eget ligula molestie gravida. Curabitur massa. Donec eleifend, libero at sagittis mollis, tellus est malesuada tellus, at luctus turpis elit sit amet quam. Vivamus pretium ornare est.</p></blockquote>	
-			</div>
-			<hr />
-			<div class="items-more" id="comments">
-				<form>
-					<h4>5 Comments</h4>
-					<hr />
-					
-				</form>
-			</div>
+                <h2>Discussion Title</h2>
+            </div>
+            <dl class="article-info dl-horizontal pull-right">
+                <dt class="project-title">
+                    Project:
+                </dt>
+                <dd class="project-data">
+                    <a href="#">Project Name</a>
+                </dd>
+                <dt class="start-title">
+                    Start Date:
+                </dt>
+                <dd class="start-data">
+                    Saturday, 01 September 2012
+                </dd>
+                <dt class="due-title">
+                    Deadline:
+                </dt>
+                <dd class="due-data">
+                    Wednesday, 31 October 2012
+                </dd>
+                <dt class="owner-title">
+                    Created By:
+                </dt>
+                <dd class="owner-data">
+                     Super User
+                </dd>
+            </dl>
+            <div class="actions btn-toolbar">
+                <div class="btn-group">
+                   <a class="btn" href="#"><i class="icon-edit"></i> Edit</a>
+                    <a class="btn" href="#comments"><i class="icon-comment"></i> 5 comments</a>
+                </div>
+            </div>
+            <div class="item-description">
+                <p><strong>Pellentesque habitant morbi tristique</strong> senectus et netus et malesuada fames ac turpis egestas. Vestibulum tortor quam, feugiat vitae, ultricies eget, tempor sit amet, ante. Donec eu libero sit amet quam egestas semper. <em>Aenean ultricies mi vitae est.</em> Mauris placerat eleifend leo. Quisque sit amet est et sapien ullamcorper pharetra. Vestibulum erat wisi, condimentum sed, <code>commodo vitae</code>, ornare sit amet, wisi. Aenean fermentum, elit eget tincidunt condimentum, eros ipsum rutrum orci, sagittis tempus lacus enim ac dui. <a href="#">Donec non enim</a> in turpis pulvinar facilisis. Ut felis.</p>
+
+                <h2>Header Level 2</h2>
+
+                <ol>
+                   <li>Lorem ipsum dolor sit amet, consectetuer adipiscing elit.</li>
+                   <li>Aliquam tincidunt mauris eu risus.</li>
+                </ol>
+
+                <blockquote><p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Vivamus magna. Cras in mi at felis aliquet congue. Ut a est eget ligula molestie gravida. Curabitur massa. Donec eleifend, libero at sagittis mollis, tellus est malesuada tellus, at luctus turpis elit sit amet quam. Vivamus pretium ornare est.</p></blockquote>
+            </div>
+            <hr />
+            <div class="items-more" id="comments">
+                <form>
+                    <h4>5 Comments</h4>
+                    <hr />
+
+                </form>
+            </div>
             <!-- End topic placeholder -->
 
             <?php
