@@ -16,6 +16,7 @@ $user       = JFactory::getUser();
 $uid        = $user->get('id');
 
 $action_count = count($this->actions);
+$filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-milestones">
 
@@ -30,55 +31,45 @@ $action_count = count($this->actions);
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(ProjectforkHelperRoute::getTopicsRoute()); ?>" method="post">
             <div class="btn-toolbar btn-toolbar-top">
                 <div class="btn-group">
-                        <?php echo $this->toolbar;?>
+                    <?php echo $this->toolbar;?>
                 </div>
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('projectfork.filterProject');?>
                 </div>
-                <?php if ($uid) : ?>
-                    <div class="btn-group">
-                        <a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
-                    </div>
-                <?php endif; ?>
-            </div>
-            <div class="clearfix"> </div>
-            <?php if ($uid) : ?>
-                <div class="collapse" id="filters">
-                    <div class="well btn-toolbar">
-                        <div class="filter-search btn-group pull-left">
-                            <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
-                        </div>
-                        <div class="filter-search-buttons btn-group pull-left">
-                            <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
-                            <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
-                        </div>
-                        <?php if ($this->access->get('milestone.edit.state') || $this->access->get('milestone.edit')) : ?>
-                            <div class="filter-published btn-group pull-left">
-                                <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
-                                    <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-                                    <?php echo JHtml::_('select.options', $this->states,
-                                                        'value', 'text', $this->state->get('filter.published'),
-                                                        true
-                                                       );
-                                    ?>
-                                </select>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (intval($this->state->get('filter.project')) != 0 && count($this->authors)) : ?>
-                            <div class="filter-author btn-group pull-left">
-                                <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
-                                    <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                                    <?php echo JHtml::_('select.options', $this->authors,
-                                                        'value', 'text', $this->state->get('filter.author'),
-                                                        true
-                                                       );
-                                    ?>
-                                </select>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+                <div class="btn-group">
+                    <a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
                 </div>
-            <?php endif; ?>
+            </div>
+
+            <div class="clearfix"> </div>
+
+            <div class="<?php echo $filter_in;?>collapse" id="filters">
+                <div class="well btn-toolbar">
+                    <div class="filter-search btn-group pull-left">
+                        <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
+                    </div>
+                    <div class="filter-search-buttons btn-group pull-left">
+                        <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+                        <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
+                    </div>
+                    <?php if (is_numeric($this->state->get('filter.project'))) : ?>
+                        <div class="filter-author btn-group pull-left">
+                            <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
+                                <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+                                <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'), true);?>
+                            </select>
+                        </div>
+                    <?php endif; ?>
+                    <?php if ($this->access->get('topic.edit.state') || $this->access->get('topic.edit')) : ?>
+                        <div class="filter-published btn-group pull-left">
+                            <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
+                                <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+                                <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
+                            </select>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
 
             <?php
             $k = 0;
@@ -137,7 +128,7 @@ $action_count = count($this->actions);
                                 <?php echo JHtml::_('date', $item->created, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>
                             </span>
                         </div>
-                        <div class="clearfix"></div>
+                        <div class="clearfix"> </div>
                     </div>
                     <hr />
                 </div>
