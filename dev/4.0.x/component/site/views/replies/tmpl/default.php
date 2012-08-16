@@ -20,6 +20,9 @@ $topic   = (int) $this->state->get('filter.topic');
 
 $action_count = count($this->actions);
 $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
+
+$return_page     = base64_encode(JFactory::getURI()->toString());
+$link_edit_topic = ProjectforkHelperRoute::getRepliesRoute($topic, $project) . '&task=topicform.edit&id=' . $this->topic->id . '&return=' . $return_page;
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-replies">
 
@@ -98,8 +101,9 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
             </dl>
             <div class="actions btn-toolbar">
                 <div class="btn-group">
-                   <a class="btn" href="#"><i class="icon-edit"></i> Edit</a>
-                    <a class="btn" href="#comments"><i class="icon-comment"></i> 5 comments</a>
+                   <?php if ($this->access->get('topic.edit')) : ?>
+                       <a class="btn" href="<?php echo JRoute::_($link_edit_topic);?>"><i class="icon-edit"></i> Edit</a>
+                   <?php endif; ?>
                 </div>
             </div>
             <div class="item-description">
