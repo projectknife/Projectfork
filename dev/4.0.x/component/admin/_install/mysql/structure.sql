@@ -309,6 +309,8 @@ CREATE TABLE IF NOT EXISTS `#__pf_timesheet` (
   `checked_out` int(10) unsigned NOT NULL COMMENT 'User who is currently editing this record',
   `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
   `attribs` text NOT NULL COMMENT 'Record attributes in JSON format',
+  `billable` tinyint(1) NOT NULL COMMENT '1 = Billable, 0 = Unbillable',
+  `rate` decimal(4,2) NOT NULL COMMENT 'Hourly rate',
   `access` int(10) unsigned NOT NULL COMMENT 'Record ACL access level ID',
   `state` tinyint(3) NOT NULL COMMENT 'Record state: 1 = Active, 0 = Inactive, 2 = Archived, -2 = Trashed ',
   `log_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Time log date',
@@ -319,5 +321,6 @@ CREATE TABLE IF NOT EXISTS `#__pf_timesheet` (
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`),
   KEY `idx_access` (`access`),
-  KEY `idx_state` (`state`)
+  KEY `idx_state` (`state`),
+  KEY `idx_billable` (`billable`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork time spent on tasks';
