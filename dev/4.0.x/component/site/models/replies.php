@@ -149,6 +149,70 @@ class ProjectforkModelReplies extends JModelList
 
 
     /**
+     * Gets the current topic data
+     *
+     * @return jdatabasequery
+     */
+    public function getTopic()
+    {
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true);
+        $user  = JFactory::getUser();
+        $id    = (int) $this->getState('filter.topic');
+
+        if ($id == 0) return false;
+
+        $query->select(
+            'a.id, a.asset_id, a.project_id, a.title, a.alias, a.description, a.created,'
+            . 'a.created_by, a.modified, a.modified_by, a.checked_out, '
+            . 'a.checked_out_time, a.attribs, a.access, a.state');
+
+        $query->from('#__pf_topics AS a');
+
+        $query->where('a.id = ' . $id);
+
+        // Join over the users for the checked out user
+        $query->select('uc.name AS editor');
+        $query->join('LEFT', '#__users AS uc ON uc.id = a.checked_out');
+
+        // Join over the asset groups
+        $query->select('ag.title AS access_level');
+        $query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
+
+        // Join over the users for the owner
+        $query->select('ua.name AS author_name, ua.email AS author_email');
+        $query->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
+
+        // Join over the projects for project title
+        $query->select('p.title AS project_title, p.alias AS project_alias');
+        $query->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
+
+        // Join over the replies for reply count
+        $query->select('COUNT(DISTINCT r.id) AS replies');
+        $query->join('LEFT', '#__pf_replies AS r ON r.topic_id = a.id');
+
+        // Implement View Level Access
+        if (!$user->authorise('core.admin')) {
+            $groups = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('a.access IN (' . $groups . ')');
+        }
+
+        $db->setQuery((string) $query);
+        $item = $db->loadObject();
+
+        if ($db->getErrorMsg()) {
+            $this->setError($db->getErrorMsg());
+            return false;
+        }
+
+        // Empty result?
+        if (!is_object($item)) return false;
+
+        return $item;
+    }
+
+
+    /**
      * Build a list of authors
      *
      * @return    jdatabasequery
@@ -157,7 +221,7 @@ class ProjectforkModelReplies extends JModelList
     {
         $db     = $this->getDbo();
         $query  = $db->getQuery(true);
-        $user   = $user = JFactory::getUser();
+        $user   = JFactory::getUser();
         $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
 
         // Construct the query

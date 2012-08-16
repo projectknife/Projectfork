@@ -21,6 +21,7 @@ class ProjectforkViewReplies extends JView
 {
     protected $pageclass_sfx;
     protected $items;
+    protected $topic;
     protected $nulldate;
     protected $pagination;
     protected $params;
@@ -44,23 +45,20 @@ class ProjectforkViewReplies extends JView
 
         // Check if the provided topic exists and if we have access
         $this->state = $this->get('State');
+        $this->topic = $this->get('Topic');
 
         if (!is_numeric($this->state->get('filter.topic'))) {
             JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return;
         }
         else {
-            $user  = JFactory::getUser();
-            $topic = JModel::getInstance('Topicform', 'ProjectforkModel', array('ignore_request' => true));
-            $item  = $topic->getItem((int) $this->state->get('filter.topic'));
-
-            if ($item === false || empty($item->id)) {
+            if ($this->topic === false) {
                 JError::raiseError(500, $topic->getError());
                 return;
             }
 
-            if (!$user->authorise('core.admin')) {
-                if (!in_array($item->access, $user->getAuthorisedViewLevels())) {
+            if (!JFactory::getUser()->authorise('core.admin')) {
+                if (!in_array($this->topic->access, $user->getAuthorisedViewLevels())) {
                     JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
                     return;
                 }
