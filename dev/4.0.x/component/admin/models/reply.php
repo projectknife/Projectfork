@@ -114,6 +114,24 @@ class ProjectforkModelReply extends JModelAdmin
      */
     public function save($data)
     {
+        if ($this->getState('task') == 'quicksave') {
+            // On quick-save, access and publishing state are missing
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+            $topic = (int) $data['topic_id'];
+
+            $data['state'] = '1';
+
+            if ($topic) {
+                $query->select('access')
+                      ->from('#__pf_topics')
+                      ->where('id = ' . $topic);
+
+                $db->setQuery((string) $query);
+                $data['access'] = (int) $db->loadResult();
+            }
+        }
+
         // Store the record
         return parent::save($data);
     }

@@ -45,17 +45,6 @@ class PFTableReply extends JTable
 
 
     /**
-     * Method to return the title to use for the asset table.
-     *
-     * @return    string
-     */
-    protected function _getAssetTitle()
-    {
-        return $this->title;
-    }
-
-
-    /**
      * Method to get the parent asset id for the record
      *
      * @param     jtable     $table    A JTable object for the asset parent

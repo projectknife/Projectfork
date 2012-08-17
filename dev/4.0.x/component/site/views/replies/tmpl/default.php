@@ -23,7 +23,17 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 
 $return_page     = base64_encode(JFactory::getURI()->toString());
 $link_edit_topic = ProjectforkHelperRoute::getRepliesRoute($topic, $project) . '&task=topicform.edit&id=' . $this->topic->id . '&return=' . $return_page;
+$editor          = JFactory::getEditor();
 ?>
+<script type="text/javascript">
+Joomla.submitbutton = function(task)
+{
+	if (task == 'replyform.quicksave') {
+		<?php echo $editor->save(); ?>
+		Joomla.submitform(task);
+	}
+}
+</script>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-replies">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -180,11 +190,28 @@ $link_edit_topic = ProjectforkHelperRoute::getRepliesRoute($topic, $project) . '
                 </div>
             </div>
 
+            <?php if ($this->access->get('reply.create')) : ?>
+                <hr />
+                <h3><?php echo JText::_('COM_PROJECTFORK_QUICK_REPLY');?></h3>
+                <div class="well well-reply">
+                    <?php echo $editor->display('jform[description]', '', '100%', '250', 0, 0, false, 'jform_description'); ?>
+                    <div class="clearfix"> </div>
+                    <div class="btn-group">
+                        <button class="button btn btn-primary" onclick="Joomla.submitbutton('replyform.quicksave');">
+                            <?php echo JText::_('COM_PROJECTFORK_ACTION_SEND');?>
+                        </button>
+                    </div>
+                    <input type="hidden" name="jform[project_id]" value="<?php echo $project;?>" />
+                    <input type="hidden" name="jform[topic_id]" value="<?php echo $topic;?>" />
+                </div>
+            <?php endif; ?>
+
             <input type="hidden" name="boxchecked" value="0" />
             <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
             <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
-            <input type="hidden" name="filter_project" value="<?php echo (int) $this->state->get('filter.project');?>" />
-            <input type="hidden" name="filter_topic" value="<?php echo (int) $this->state->get('filter.topic');?>" />
+            <input type="hidden" name="filter_project" value="<?php echo $project;?>" />
+            <input type="hidden" name="filter_topic" value="<?php echo $topic;?>" />
+
             <input type="hidden" name="task" value="" />
             <?php echo JHtml::_('form.token'); ?>
         </form>

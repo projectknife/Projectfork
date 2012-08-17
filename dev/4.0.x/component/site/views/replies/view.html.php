@@ -47,7 +47,7 @@ class ProjectforkViewReplies extends JView
         $this->state = $this->get('State');
         $this->topic = $this->get('Topic');
 
-        if (!is_numeric($this->state->get('filter.topic'))) {
+        if (intval($this->state->get('filter.topic') == 0)) {
             JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return;
         }
@@ -179,7 +179,7 @@ class ProjectforkViewReplies extends JView
         $state  = $this->get('State');
 
         if ($access->get('reply.create') && $state->get('filter.topic')) {
-            $tb->button('COM_PROJECTFORK_ACTION_NEW', 'replyform.add');
+            $tb->button('COM_PROJECTFORK_ACTION_REPLY', 'replyform.add');
         }
 
         return $tb->__toString();

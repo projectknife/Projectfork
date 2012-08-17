@@ -35,6 +35,22 @@ class ProjectforkControllerReplyform extends JControllerForm
 
 
     /**
+     * Constructor.
+     *
+     * @param    array          $config    An optional associative array of configuration settings.
+     *
+     * @see      jcontroller
+     */
+    public function __construct($config = array())
+    {
+        parent::__construct($config);
+
+        // Register quick-save as "save" action
+        $this->registerTask('quicksave', 'save');
+    }
+
+
+    /**
      * Method to add a new record.
      *
      * @return    boolean    True if the item can be added, false if not.
@@ -112,10 +128,12 @@ class ProjectforkControllerReplyform extends JControllerForm
      */
     public function save($key = null, $url_var = 'id')
     {
-        $result = parent::save($key, $url_var);
+        $result  = parent::save($key, $url_var);
+        $project = JRequest::getUint('filter_project', 0);
+        $topic   = JRequest::getUint('filter_topic', 0);
 
         // If ok, redirect to the return page.
-        if ($result) $this->setRedirect($this->getReturnPage());
+        if ($result) $this->setRedirect($this->getReturnPage($topic, $project));
 
         return $result;
     }
