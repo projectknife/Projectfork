@@ -29,9 +29,12 @@ $editor          = JFactory::getEditor();
 Joomla.submitbutton = function(task)
 {
 	if (task == 'replyform.quicksave') {
-		<?php echo $editor->save(); ?>
+		<?php echo $editor->save('jform_description'); ?>
 		Joomla.submitform(task);
 	}
+    else {
+        Joomla.submitform(task);
+    }
 }
 </script>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-replies">
