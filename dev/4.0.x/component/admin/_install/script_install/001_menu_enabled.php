@@ -73,7 +73,7 @@ $menu_items[] = array('title' => 'Tasks',
                       'link'  => $base_link.'&view=tasks');
 $menu_items[] = array('title' => 'Discussions',
                       'alias' => 'discussions',
-                      'link'  => $base_link.'&view=tasks');
+                      'link'  => $base_link.'&view=topics');
 $menu_items[] = array('title' => 'Users',
                       'alias' => 'project-members',
                       'link'  => $base_link.'&view=users');
