@@ -71,6 +71,9 @@ $menu_items[] = array('title' => 'Milestones',
 $menu_items[] = array('title' => 'Tasks',
                       'alias' => 'tasks',
                       'link'  => $base_link.'&view=tasks');
+$menu_items[] = array('title' => 'Timesheet',
+                      'alias' => 'timesheet',
+                      'link'  => $base_link.'&view=timesheet');
 $menu_items[] = array('title' => 'Discussions',
                       'alias' => 'discussions',
                       'link'  => $base_link.'&view=topics');
