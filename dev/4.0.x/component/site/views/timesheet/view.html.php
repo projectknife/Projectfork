@@ -15,30 +15,59 @@ jimport('joomla.application.component.view');
 
 class ProjectforkViewTimesheet extends JView
 {
+    protected $pageclass_sfx;
+    protected $items;
+    protected $nulldate;
+    protected $pagination;
+    protected $params;
+    protected $state;
+    protected $actions;
+    protected $toolbar;
+    protected $authors;
+    protected $tasks;
+    protected $access;
+    protected $menu;
+    protected $total_time_billable;
+    protected $total_time_unbillable;
+    protected $total_billable;
+
     /**
      * Display the view
      *
      */
     public function display($tpl = null)
     {
-        $app        = JFactory::getApplication();
-        $null_date  = JFactory::getDbo()->getNullDate();
-        $user       = JFactory::getUser();
-        $items      = $this->get('Items');
-        $pagination = $this->get('Pagination');
-        $state      = $this->get('State');
-        $authors    = $this->get('Authors');
-        $states     = $this->get('PublishedStates');
-        $params     = $state->params;
-        $actions    = $this->getActions();
-        $toolbar    = $this->getToolbar();
-        $access     = ProjectforkHelperAccess::getActions();
-        $menu       = new ProjectforkHelperContextMenu();
+        $app     = JFactory::getApplication();
+        $state   = $this->get('State');
+        $layout  = $this->getLayout();
+        $project = (int) $state->get('filter.project');
+        $active  = $app->getMenu()->getActive();
 
+        // Check for layout override
+        if (isset($active->query['layout']) && (JRequest::getCmd('layout') == '')) {
+            $this->setLayout($active->query['layout']);
+        }
+
+        $this->items      = $this->get('Items');
+        $this->pagination = $this->get('Pagination');
+        $this->state      = $this->get('State');
+        $this->authors    = $this->get('Authors');
+        $this->tasks      = $this->get('Tasks');
+        $this->params     = $this->state->params;
+        $this->actions    = $this->getActions();
+        $this->toolbar    = $this->getToolbar();
+        $this->access     = ProjectforkHelper::getActions(NULL, 0, true);
+        $this->nulldate   = JFactory::getDbo()->getNullDate();
+        $this->menu       = new ProjectforkHelperContextMenu();
 
         // Escape strings for HTML output
-        $this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
+        $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
 
+        // Get project total values
+        $this->total_billable        = $this->get('ProjectCost');
+        $this->total_time_billable   = $this->get('BillableProjectTime');
+        $this->total_time_unbillable = $this->get('UnbillableProjectTime');
+        $this->total_time = ($this->total_time_billable + $this->total_time_unbillable);
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
@@ -46,39 +75,14 @@ class ProjectforkViewTimesheet extends JView
             return false;
         }
 
-
         // Check for empty search result
-        if ((count($items) == 0) && ($state->get('filter.search') != '' || $state->get('filter.author') != ''
-            || $state->get('filter.published') != '')
-          ) {
+        if ((count($this->items) == 0) && $this->state->get('filter.isset')) {
             $app->enqueueMessage(JText::_('COM_PROJECTFORK_EMPTY_SEARCH_RESULT'));
         }
 
 
-        // Check for layout override
-        $active = $app->getMenu()->getActive();
-        if (isset($active->query['layout']) && (JRequest::getCmd('layout') == '')) {
-            $this->setLayout($active->query['layout']);
-        }
-
-
-        // Assign references
-        $this->assignRef('items',      $items);
-        $this->assignRef('pagination', $pagination);
-        $this->assignRef('params',     $params);
-        $this->assignRef('state',      $state);
-        $this->assignRef('nulldate',   $null_date);
-        $this->assignRef('actions',    $actions);
-        $this->assignRef('toolbar',    $toolbar);
-        $this->assignRef('authors',    $authors);
-        $this->assignRef('states',     $states);
-        $this->assignRef('access',     $access);
-        $this->assignRef('menu',       $menu);
-
-
         // Prepare the document
         $this->prepareDocument();
-
 
         // Display the view
         parent::display($tpl);

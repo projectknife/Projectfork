@@ -15,7 +15,15 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
 $uid        = $user->get('id');
 
+$list_total_time = 0;
+$list_total_billable = 0.00;
+
+// Calculate un/billable time percentage
+$billable_percent   = ($this->total_time == 0) ? 0 : round($this->total_time_billable * (100 / $this->total_time));
+$unbillable_percent = ($this->total_time == 0) ? 0 : round($this->total_time_unbillable * (100 / $this->total_time));
+
 $action_count = count($this->actions);
+$filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-timesheet">
 
@@ -35,100 +43,106 @@ $action_count = count($this->actions);
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('projectfork.filterProject');?>
                 </div>
-                <?php if ($uid) : ?>
-                    <div class="btn-group">
-                        <a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
-                    </div>
-                <?php endif; ?>
+                <div class="btn-group">
+                    <a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
+                </div>
             </div>
+
             <div class="clearfix"> </div>
-            <?php if ($uid) : ?>
-                <div class="collapse" id="filters">
-                    <div class="well btn-toolbar">
-                        <div class="filter-search btn-group pull-left">
-                            <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
-                        </div>
-                        <div class="filter-search-buttons btn-group pull-left">
-                            <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
-                            <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
-                        </div>
-                        <?php if ($this->access->get('milestone.edit.state') || $this->access->get('milestone.edit')) : ?>
-                            <div class="filter-published btn-group pull-left">
-                                <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
-                                    <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-                                    <?php echo JHtml::_('select.options', $this->states,
-                                                        'value', 'text', $this->state->get('filter.published'),
-                                                        true
-                                                       );
-                                    ?>
-                                </select>
-                            </div>
-                        <?php endif; ?>
-                        <?php if (intval($this->state->get('filter.project')) != 0 && count($this->authors)) : ?>
-                            <div class="filter-author btn-group pull-left">
-                                <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
-                                    <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                                    <?php echo JHtml::_('select.options', $this->authors,
-                                                        'value', 'text', $this->state->get('filter.author'),
-                                                        true
-                                                       );
-                                    ?>
-                                </select>
-                            </div>
-                        <?php endif; ?>
+
+            <div class="<?php echo $filter_in;?>collapse" id="filters">
+                <div class="well btn-toolbar">
+                    <div class="filter-search btn-group pull-left">
+                        <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
                     </div>
+                    <div class="filter-search-buttons btn-group pull-left">
+                        <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
+                        <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
+                    </div>
+                    <?php if ($this->access->get('time.edit.state') || $this->access->get('time.edit')) : ?>
+                        <div class="filter-published btn-group pull-left">
+                            <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
+                                <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+                                <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
+                            </select>
+                        </div>
+                    <?php endif; ?>
+                    <?php if (intval($this->state->get('filter.project')) > 0) : ?>
+                        <div class="filter-author btn-group pull-left">
+                            <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
+                                <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+                                <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'), true);?>
+                            </select>
+                        </div>
+                        <div class="filter-task btn-group pull-left">
+                            <select id="filter_task" name="filter_task" class="inputbox" onchange="this.form.submit()">
+                                <option value=""><?php echo JText::_('COM_PROJECTFORK_OPTION_SELECT_TASK');?></option>
+                                <?php echo JHtml::_('select.options', $this->tasks, 'value', 'text', $this->state->get('filter.task'), true);?>
+                            </select>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            </div>
+
+            <?php if (intval($this->state->get('filter.project')) > 0) : ?>
+                <h3><?php echo ProjectforkHelper::getActiveProjectTitle();?></h3>
+
+                <div class="row-fluid">
+                	<div class="span3">
+                		<div class="thumbnail thumbnail-timesheet">
+                			<h6><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTAL_HOURS');?></h6>
+                			<h1><?php echo JHtml::_('timesheet.format', $this->total_time, 'decimal');?></h1>
+                			<h5><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (124.0)</h5>
+                		</div>
+                	</div>
+                	<div class="span6">
+                		<div class="thumbnail thumbnail-timesheet">
+                			<h6><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTAL_HOURS');?></h6>
+                			<div class="row-fluid">
+                				<div class="span6">
+                					<div class="progress progress-success">
+    									<div class="bar" style="width: <?php echo $billable_percent;?>%;"></div>
+    								</div>
+    								<div class="progress">
+    									<div class="bar" style="width: <?php echo $unbillable_percent;?>%;"></div>
+    								</div>
+                				</div>
+                				<div class="span6">
+                					<h2>
+                                        <?php echo JHtml::_('timesheet.format', $this->total_time_billable, 'decimal');?>
+                                        <span class="label label-success"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE');?></span>
+                                    </h2>
+                					<h2>
+                                        <?php echo JHtml::_('timesheet.format', $this->total_time_unbillable, 'decimal');?>
+                                        <span class="label label-info"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_UNBILLABLE');?></span>
+                                    </h2>
+                				</div>
+                			</div>
+                		</div>
+                	</div>
+                	<div class="span3">
+                		<div class="thumbnail thumbnail-timesheet">
+                			<h6><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE_TOTAL');?></h6>
+                			<h2><?php echo number_format($this->total_billable, 2);?></h2>
+                			<h5><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (2,500.00)</h5>
+                		</div>
+                	</div>
                 </div>
             <?php endif; ?>
-            
-            <h3>Project Title <?php echo $this->escape($this->params->get('page_heading')); ?></h3>
-            
-            <div class="row-fluid">
-            	<div class="span3">
-            		<div class="thumbnail thumbnail-timesheet">
-            			<h6>Total Hours</h6>
-            			<h1>100.0</h1>
-            			<h5>Estimated (124.0)</h5>
-            		</div>
-            	</div>
-            	<div class="span6">
-            		<div class="thumbnail thumbnail-timesheet">
-            			<h6>Total Hours</h6>
-            			<div class="row-fluid">
-            				<div class="span6">
-            					<div class="progress progress-success">
-									<div class="bar" style="width: 60%;"></div>
-								</div>
-								<div class="progress">
-									<div class="bar" style="width: 40%;"></div>
-								</div>
-            				</div>
-            				<div class="span6">
-            					<h2>60.0 <span class="label label-success">Billable</span></h2>
-            					<h2>40.0 <span class="label label-info">Unbillable</span></h2>
-            				</div>
-            			</div>
-            		</div>
-            	</div>
-            	<div class="span3">
-            		<div class="thumbnail thumbnail-timesheet">
-            			<h6>Billable Total</h6>
-            			<h2>$2,000.00</h2>
-            			<h5>Estimated (2,500.00)</h5>
-            		</div>
-            	</div>
-            </div>
+
             <hr />
+
             <table class="table table-striped">
             	<thead>
             		<tr>
-            			<th>Task</th>
+            			<th><?php echo JText::_('JGRID_HEADING_TASK');?></th>
             			<th width="5%"></th>
-            			<th width="10%">Time</th>
+            			<th width="10%"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TIME');?></th>
             			<th width="20%"></th>
-            			<th width="10%">Author</th>
-            			<th width="10%">Date</th>
-            			<th width="10%">Rate</th>
-            			<th width="10%">Billable</th>
+            			<th width="10%"><?php echo JText::_('JGRID_HEADING_AUTHOR');?></th>
+            			<th width="10%"><?php echo JText::_('JGRID_HEADING_DATE');?></th>
+            			<th width="10%"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_RATE');?></th>
+            			<th width="10%"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE');?></th>
             		</tr>
             	</thead>
             	<tbody>
@@ -136,29 +150,29 @@ $action_count = count($this->actions);
 			        $k = 0;
 			        foreach($this->items AS $i => $item) :
 			            $access = ProjectforkHelperAccess::getActions('time', $item->id);
-			
+
 			            $can_create   = $access->get('time.create');
 			            $can_edit     = $access->get('time.edit');
 			            $can_change   = $access->get('time.edit.state');
 			            $can_edit_own = ($access->get('time.edit.own') && $item->created_by == $uid);
-			
-			            /**
-			             * Available data:
-			             *
-			             * $item->id;
-			             * $item->project_title
-			             * $item->task_title
-			             * $item->description
-			             * $item->author_name
-			             * $item->access_level
-			             * $item->log_date
-			             * JHtml::_('date', $item->log_date, JText::_('DATE_FORMAT_LC4'))
-			             * JHtml::_('timesheet.format', $item->log_time)
-			             */
+
+                        if ($item->log_time > 0) {
+                            $list_total_time += (int) $item->log_time;
+                        }
+
+                        if ((float) $item->billable_total > 0.00) {
+                            $list_total_billable += (float) $item->billable_total;
+                        }
 			        ?>
 			        <tr>
 			        	<td>
-			        		<a href="#" rel="popover" title="<?php echo $item->task_title; ?>" data-content="<?php echo $item->description; ?>"><?php echo $item->task_title; ?></a>
+			        		<a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskRoute($item->task_slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>"
+                                rel="popover"
+                                title="<?php echo $this->escape($item->task_title); ?>"
+                                data-content="<?php echo $this->escape($item->description); ?>"
+                            >
+                                <?php echo $this->escape($item->task_title); ?>
+                            </a>
 			        	</td>
 			        	<td>
 			        		<?php
@@ -185,13 +199,13 @@ $action_count = count($this->actions);
 			        		<?php echo JHtml::_('date', $item->log_date, JText::_('DATE_FORMAT_LC4')); ?>
 			        	</td>
 			        	<td>
-			        		$100.00
+			        		<?php echo number_format($item->rate, 2);?>
 			        	</td>
 			        	<td>
-			        		$200.00
+			        		<?php echo number_format($item->billable_total, 2);?>
 			        	</td>
 			        </tr>
-			
+
 			        <?php
 			        $k = 1 - $k;
 			        endforeach;
@@ -199,15 +213,14 @@ $action_count = count($this->actions);
             	</tbody>
             	<tfoot>
             		<tr>
-            			<th>Totals</th>
+            			<th><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTALS');?></th>
             			<th></th>
-            			<th>100.00</th>
+            			<th><?php echo JHtml::_('timesheet.format', $list_total_time); ?></th>
             			<th></th>
             			<th></th>
-            			<th>
-	            		</th>
+            			<th></th>
 	            		<th></th>
-	            		<th>$2,000.00</th>
+	            		<th><?php echo number_format($list_total_billable, 2);?></th>
             		</tr>
             	</tfoot>
             </table>

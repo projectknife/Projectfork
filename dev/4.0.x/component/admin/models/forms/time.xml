@@ -20,6 +20,16 @@
 			label="COM_PROJECTFORK_FIELD_LOG_TIME_LABEL" description="COM_PROJECTFORK_FIELD_LOG_TIME_DESC"
 			size="10" default="1"
         />
+        <field name="billable" type="radio" label="COM_PROJECTFORK_FIELD_BILLABLE_LABEL"
+			description="COM_PROJECTFORK_FIELD_BILLABLE_DESC" class="inputbox"
+			filter="intval" size="1" default="1"
+		>
+            <option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+        <field name="rate" type="price"
+			label="COM_PROJECTFORK_FIELD_RATE_LABEL" description="COM_PROJECTFORK_FIELD_RATE_DESC"
+        />
 		<field name="state" type="list" label="JSTATUS"
 			description="JFIELD_PUBLISHED_DESC" class="inputbox"
 			filter="intval" size="1" default="1"

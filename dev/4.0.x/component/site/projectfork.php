@@ -16,6 +16,7 @@ jimport('joomla.application.component.helper');
 
 // Load the backend language file into the frontend
 JFactory::getLanguage()->load('com_projectfork', JPATH_ADMINISTRATOR);
+JFactory::getLanguage()->load('com_projectfork', JPATH_ADMINISTRATOR . '/components/com_projectfork');
 
 // Register classes to autoload
 JLoader::register('ProjectforkHelper',            JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');

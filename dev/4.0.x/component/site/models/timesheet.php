@@ -33,21 +33,13 @@ class ProjectforkModelTimesheet extends JModelList
 
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'id', 'a.id',
-                'project_id', 'a.project_id', 'project_title',
-                'task_id', 'a.task_id', 'task_title',
-                'description', 'a.description',
-                'created', 'a.created',
-                'created_by', 'a.created_by',
-                'modified', 'a.modified',
-                'modified_by', 'a.modified_by',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
-                'attribs', 'a.attribs',
-                'access', 'a.access', 'access_level',
-                'state', 'a.state',
-                'log_date', 'a.log_date',
-                'log_time', 'a.log_time'
+                'a.id', 'a.project_id', 'project_title',
+                'a.task_id', 'task_title', 'a.description',
+                'a.created', 'a.created_by', 'a.modified',
+                'a.modified_by', 'a.checked_out',
+                'a.checked_out_time', 'a.attribs',
+                'a.access', 'access_level', 'a.state',
+                'a.log_date', 'a.log_time'
             );
         }
 
@@ -73,7 +65,7 @@ class ProjectforkModelTimesheet extends JModelList
             $this->getState(
                 'list.select',
                 'a.id, a.project_id, a.task_id, a.description, '
-                . 'a.checked_out, a.checked_out_time, a.state, a.access, '
+                . 'a.checked_out, a.checked_out_time, a.state, a.access, a.rate, a.billable,'
                 . 'a.created, a.created_by, a.log_date, a.log_time, a.attribs'
             )
         );
@@ -100,11 +92,25 @@ class ProjectforkModelTimesheet extends JModelList
         $query->select('t.title AS task_title, t.alias AS task_alias');
         $query->join('LEFT', '#__pf_tasks AS t ON t.id = a.task_id');
 
+        // Join over the milestones for the milestone alias.
+        $query->select('m.id AS milestone_id, m.alias AS milestone_alias');
+        $query->join('LEFT', '#__pf_milestones AS m ON m.id = t.milestone_id');
+
+        // Join over the task lists for the list alias.
+        $query->select('l.id AS list_id, l.alias AS list_alias');
+        $query->join('LEFT', '#__pf_task_lists AS l ON l.id = t.list_id');
+
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
         }
+
+        // Calculate billable amount
+        $query->select('CASE WHEN (a.billable = 1 AND a.rate > 0 AND a.log_time > 0) '
+                       . 'THEN ((a.log_time / 60) * (a.rate / 60)) '
+                       . 'ELSE "0.00"'
+                       . 'END AS billable_total');
 
         // Filter fields
         $filters = array();
@@ -113,7 +119,7 @@ class ProjectforkModelTimesheet extends JModelList
         $filters['a.task_id']    = array('INT-NOTZERO', $this->getState('filter.task'));
         $filters['a.access']     = array('INT-NOTZERO', $this->getState('filter.access'));
         $filters['a.created_by'] = array('INT-NOTZERO', $this->getState('filter.author'));
-        $filters['a']            = array('SEARCH',      $this->getState('filter.search'));
+        $filters['t']            = array('SEARCH',      $this->getState('filter.search'));
 
         // Apply Filter
         ProjectforkHelperQuery::buildFilter($query, $filters);
@@ -148,9 +154,11 @@ class ProjectforkModelTimesheet extends JModelList
             $items[$i]->params = clone $this->getState('params');
 
             // Create slugs
-            $items[$i]->slug         = $items[$i]->id . ':record';
-            $items[$i]->project_slug = $items[$i]->project_alias ? ($items[$i]->project_id.':' . $items[$i]->project_alias) : $items[$i]->project_id;
-            $items[$i]->task_slug    = $items[$i]->task_alias ? ($items[$i]->task_id.':' . $items[$i]->task_alias) : $items[$i]->task_id;
+            $items[$i]->slug           = $items[$i]->id;
+            $items[$i]->project_slug   = $items[$i]->project_alias ? ($items[$i]->project_id . ':' . $items[$i]->project_alias) : $items[$i]->project_id;
+            $items[$i]->task_slug      = $items[$i]->task_alias ? ($items[$i]->task_id . ':' . $items[$i]->task_alias) : $items[$i]->task_id;
+            $items[$i]->milestone_slug = $items[$i]->milestone_alias ? ($items[$i]->milestone_id . ':' . $items[$i]->milestone_alias) : $items[$i]->milestone_id;
+            $items[$i]->list_slug      = $items[$i]->list_alias ? ($items[$i]->list_id . ':' . $items[$i]->list_alias) : $items[$i]->list_id;
         }
 
         return $items;
@@ -164,61 +172,46 @@ class ProjectforkModelTimesheet extends JModelList
      */
     public function getAuthors()
     {
-        $db    = $this->getDbo();
-        $query = $db->getQuery(true);
-        $user  = $user = JFactory::getUser();
+        $db     = $this->getDbo();
+        $query  = $db->getQuery(true);
+        $user   = JFactory::getUser();
+        $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
+
+        // Return empty array if no project is select
+        $project = (int) $this->getState('filter.project');
+        if ($project < 0) {
+            return array();
+        }
 
         // Construct the query
-        $query->select('u.id AS value, u.name AS text, COUNT(DISTINCT a.id) AS count');
+        $query->select('u.id AS value, u.name AS text');
         $query->from('#__users AS u');
         $query->join('INNER', '#__pf_timesheet AS a ON a.created_by = u.id');
 
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('a.access IN (' . $groups.')');
+            $query->where('a.access IN (' . $groups . ')');
         }
 
         // Filter fields
         $filters = array();
-        $filters['a.state']      = array('STATE',       $this->getState('filter.published'));
         $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
-        $filters['a.task_id']    = array('INT-NOTZERO', $this->getState('filter.task'));
+
+        if (!$access->get('time.edit.state') && !$access->get('time.edit')) {
+            $filters['a.state'] = array('STATE', '1');
+        }
 
         // Apply Filter
         ProjectforkHelperQuery::buildFilter($query, $filters);
 
-        // Filter by search in title.
-        $search = $this->getState('filter.search');
-        if (!empty($search)) {
-            if (stripos($search, 'id:') === 0) {
-                $query->where('a.id = '.(int) substr($search, 4));
-            }
-            elseif (stripos($search, 'author:') === 0) {
-                $search = $db->Quote('%' . $db->getEscaped(trim(substr($search, 8)), true).'%');
-                $query->where('(u.name LIKE ' . $search.' OR u.username LIKE ' . $search.')');
-            }
-            else {
-                $search = $db->Quote('%' . $db->getEscaped($search, true).'%');
-                $query->where('(a.title LIKE ' . $search.' OR a.alias LIKE ' . $search.')');
-            }
-        }
-
         // Group and order
         $query->group('u.id');
-        $query->order('u.name, count');
+        $query->order('u.name ASC');
 
+        // Get the results
         $db->setQuery((string) $query);
-
         $items = (array) $db->loadObjectList();
-        $count = count($items);
-
-        for($i = 0; $i < $count; $i++)
-        {
-            $items[$i]->text .= ' (' . $items[$i]->count.')';
-            unset($items[$i]->count);
-        }
-
 
         // Return the items
         return $items;
@@ -226,56 +219,151 @@ class ProjectforkModelTimesheet extends JModelList
 
 
     /**
-     * Build a list of publishing states
+     * Build a list of tasks
      *
      * @return    jdatabasequery
      */
-    public function getPublishedStates()
+    public function getTasks()
     {
         $db     = $this->getDbo();
-        $states = JHtml::_('jgrid.publishedOptions');
-        $count  = count($states);
+        $query  = $db->getQuery(true);
+        $user   = JFactory::getUser();
+        $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
 
-        $query_select = $this->getState('list.select');
-        $query_state  = $this->getState('filter.published');
-
-        for($i = 0; $i < $count; $i++)
-        {
-            if ($states[$i]->disable == true) {
-                $states[$i]->text = JText::_($states[$i]->text).' (0)';
-                continue;
-            }
-            if ($states[$i]->value == '*') {
-                unset($states[$i]);
-                continue;
-            }
-
-            $this->setState('list.select', 'COUNT(DISTINCT a.id)');
-            $this->setState('filter.published', $states[$i]->value);
-
-            $query = $this->getListQuery();
-            $db->setQuery((string) $query);
-
-            $found = (int) $db->loadResult();
-
-            $states[$i]->text = JText::_($states[$i]->text).' (' . $found.')';
+        // Return empty array if no project is select
+        $project = (int) $this->getState('filter.project');
+        if ($project < 0) {
+            return array();
         }
 
-        $this->setState('list.select', $query_select);
-        $this->setState('filter.published', $query_state);
+        // Construct the query
+        $query->select('t.id AS value, t.title AS text');
+        $query->from('#__pf_tasks AS t');
+        $query->join('INNER', '#__pf_timesheet AS a ON a.task_id = t.id');
 
-        return $states;
+        // Implement View Level Access
+        if (!$user->authorise('core.admin')) {
+            $groups = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('t.access IN (' . $groups . ')');
+        }
+
+        // Filter fields
+        $filters = array();
+        $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
+
+        if (!$access->get('time.edit.state') && !$access->get('time.edit')) {
+            $filters['a.state'] = array('STATE', '1');
+        }
+
+        // Apply Filter
+        ProjectforkHelperQuery::buildFilter($query, $filters);
+
+        // Group and order
+        $query->group('t.id');
+        $query->order('t.title ASC');
+
+        // Get the results
+        $db->setQuery((string) $query);
+        $items = (array) $db->loadObjectList();
+
+        // Return the items
+        return $items;
     }
 
 
     /**
-     * Method to retrieve the query list limit start value
+     * Gets the total time spent on a project
      *
-     * @return    integer
-     **/
-    public function getStart()
+     * @param     integer    $billable    0 = unbillable time, 1 = billable time
+     * @return    integer    $sum
+     */
+    public function getProjectTime($billable = 0)
     {
-        return $this->getState('list.start');
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        // Return 0 if no project is selected
+        if ((int) $this->getState('filter.project') == 0) {
+            return 0;
+        }
+
+        // Construct the query
+        $query->select('SUM(a.log_time)')
+              ->from('#__pf_timesheet AS a')
+              ->where('a.billable = ' . (int) $billable)
+              ->where('a.state = 1');
+
+        $filters = array();
+        $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
+
+        // Apply Filter
+        ProjectforkHelperQuery::buildFilter($query, $filters);
+
+        // Get the result
+        $db->setQuery((string) $query);
+        $sum = (int) $db->loadResult();
+
+        // Return the items
+        return $sum;
+    }
+
+
+    /**
+     * Gets the total billable time spent on a project
+     *
+     * @see getProjectTime
+     */
+    public function getBillableProjectTime()
+    {
+        return $this->getProjectTime(1);
+    }
+
+
+    /**
+     * Gets the total unbillable time spent on a project
+     *
+     * @see getProjectTime
+     */
+    public function getUnbillableProjectTime()
+    {
+        return $this->getProjectTime(0);
+    }
+
+
+    /**
+     * Gets the current cost of a project
+     *
+     * @return    integer    $sum
+     */
+    public function getProjectCost()
+    {
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        // Return 0 if no project is selected
+        if ((int) $this->getState('filter.project') == 0) {
+            return 0.00;
+        }
+
+        // Construct the query
+        $query->select('SUM(a.log_time / 60) * (a.rate / 60)')
+              ->from('#__pf_timesheet AS a')
+              ->where('a.billable = 1')
+              ->where('a.state = 1')
+              ->where('a.rate > 0');
+
+        $filters = array();
+        $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
+
+        // Apply Filter
+        ProjectforkHelperQuery::buildFilter($query, $filters);
+
+        // Get the result
+        $db->setQuery((string) $query);
+        $sum = (int) $db->loadResult();
+
+        // Return the items
+        return $sum;
     }
 
 
@@ -287,57 +375,64 @@ class ProjectforkModelTimesheet extends JModelList
      */
     protected function populateState($ordering = 'a.log_date', $direction = 'DESC')
     {
-        // Query limit
-        $value = JRequest::getUInt('limit', JFactory::getApplication()->getCfg('list_limit', 0));
-        $this->setState('list.limit', $value);
+        $app    = JFactory::getApplication();
+        $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
 
-        // Query limit start
-        $value = JRequest::getUInt('limitstart', 0);
-        $this->setState('list.start', $value);
+        // Adjust the context to support modal layouts.
+        $layout = JRequest::getCmd('layout');
 
-        // Query order field
-        $value = JRequest::getCmd('filter_order', 'a.log_date');
-        if (!in_array($value, $this->filter_fields)) $value = 'a.created';
-        $this->setState('list.ordering', $value);
-
-        // Query order direction
-        $value = JRequest::getCmd('filter_order_Dir', 'DESC');
-        if (!in_array(strtoupper($value), array('ASC', 'DESC', ''))) $value = 'DESC';
-        $this->setState('list.direction', $value);
+        // View Layout
+        $this->setState('layout', $layout);
+        if ($layout) $this->context .= '.' . $layout;
 
         // Params
-        $value = JFactory::getApplication()->getParams();
+        $value = $app->getParams();
         $this->setState('params', $value);
 
         // State
-        $value = JRequest::getCmd('filter_published', '');
-        $this->setState('filter.published', $value);
+        $state = $app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+        $this->setState('filter.published', $state);
 
         // Filter on published for those who do not have edit or edit.state rights.
-        $access = ProjectforkHelper::getActions();
         if (!$access->get('time.edit.state') && !$access->get('time.edit')){
             $this->setState('filter.published', 1);
+            $state = '';
         }
 
         // Filter - Search
-        $value = JRequest::getString('filter_search', '');
-        $this->setState('filter.search', $value);
+        $search = JRequest::getString('filter_search', '');
+        $this->setState('filter.search', $search);
 
         // Filter - Project
-        $value = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
-        $this->setState('filter.project', $value);
-        ProjectforkHelper::setActiveProject($value);
+        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $this->setState('filter.project', $project);
+        ProjectforkHelper::setActiveProject($project);
 
         // Filter - Task
-        $value = JRequest::getCmd('filter_task', '');
-        $this->setState('filter.task', $value);
+        $task = $app->getUserStateFromRequest($this->context . '.filter.task', 'filter_task', '');
+        $this->setState('filter.task', $task);
 
         // Filter - Author
-        $value = JRequest::getCmd('filter_author', '');
-        $this->setState('filter.author', $value);
+        $author = $app->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', '');
+        $this->setState('filter.author', $author);
 
-        // View Layout
-        $this->setState('layout', JRequest::getCmd('layout'));
+        // Do not allow some filters if no project is selected
+        if (intval($project) == 0) {
+            $this->setState('filter.author', '');
+            $this->setState('filter.task', '');
+
+            $author = '';
+            $task   = '';
+        }
+
+        // Filter - Is set
+        $this->setState('filter.isset',
+            (is_numeric($state) || !empty($search) || is_numeric($author) ||
+            is_numeric($task))
+        );
+
+        // Call parent method
+        parent::populateState($ordering, $direction);
     }
 
 

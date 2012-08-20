@@ -20,13 +20,13 @@ JHtml::_('behavior.formvalidation');
 $params = $this->state->get('params');
 ?>
 <script type="text/javascript">
-    Joomla.submitbutton = function(task) {
-        if (task == 'timeform.cancel' || task == 'timeform.setProject' || task == 'timeform.setTask' || document.formvalidator.isValid(document.id('adminForm'))) {
-            Joomla.submitform(task);
-        } else {
-            alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
-        }
+Joomla.submitbutton = function(task) {
+    if (task == 'timeform.cancel' || task == 'timeform.setProject' || task == 'timeform.setTask' || document.formvalidator.isValid(document.id('adminForm'))) {
+        Joomla.submitform(task);
+    } else {
+        alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
     }
+}
 </script>
 <div class="edit item-page<?php echo $this->pageclass_sfx; ?>">
 <?php if ($params->get('show_page_heading', 0)) : ?>
@@ -83,6 +83,22 @@ $params = $this->state->get('params');
             </div>
             <div class="controls">
                 <?php echo $this->form->getInput('log_time'); ?>
+            </div>
+        </div>
+        <div class="formelm control-group">
+            <div class="control-label">
+                <?php echo $this->form->getLabel('billable'); ?>
+            </div>
+            <div class="controls">
+                <?php echo $this->form->getInput('billable'); ?>
+            </div>
+        </div>
+        <div class="formelm control-group">
+            <div class="control-label">
+                <?php echo $this->form->getLabel('rate'); ?>
+            </div>
+            <div class="controls">
+                <?php echo $this->form->getInput('rate'); ?>
             </div>
         </div>
     </fieldset>

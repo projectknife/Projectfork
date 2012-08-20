@@ -51,6 +51,11 @@ class ProjectforkModelTimeForm extends ProjectforkModelTime
         $value->params = new JRegistry;
         $value->params->loadString($value->attribs);
 
+        // Convert seconds back to minutes
+        if ($value->log_time > 0) {
+            $value->log_time = round($value->log_time / 60);
+        }
+
         // Compute selected asset permissions.
         $uid    = JFactory::getUser()->get('id');
         $access = ProjectforkHelperAccess::getActions('time', $value->id);
