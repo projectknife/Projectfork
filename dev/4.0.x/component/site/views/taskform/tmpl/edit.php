@@ -147,6 +147,22 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
     	    	<?php echo $this->form->getInput('end_date'); ?>
     	    </div>
     	</div>
+        <div class="formelm control-group">
+    		<div class="control-label">
+    	    	<?php echo $this->form->getLabel('rate'); ?>
+    	    </div>
+    	    <div class="controls">
+    	    	<?php echo $this->form->getInput('rate'); ?>
+    	    </div>
+    	</div>
+        <div class="formelm control-group">
+    		<div class="control-label">
+    	    	<?php echo $this->form->getLabel('estimate'); ?>
+    	    </div>
+    	    <div class="controls">
+    	    	<?php echo $this->form->getInput('estimate'); ?>
+    	    </div>
+    	</div>
     	<?php if ($this->item->modified_by) : ?>
 	    	<div class="formelm control-group">
 	    		<div class="control-label">

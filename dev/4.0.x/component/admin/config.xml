@@ -22,9 +22,9 @@
 		    <option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-		
+
 	</fieldset>
-	
+
     <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field
 			name="rules"
@@ -34,8 +34,8 @@
 			validate="rules"
 			filter="rules"
 			component="com_projectfork"
-			section="component" 
+			section="component"
         />
 	</fieldset>
-	
+
 </config>

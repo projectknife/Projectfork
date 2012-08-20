@@ -92,7 +92,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                 		<div class="thumbnail thumbnail-timesheet">
                 			<h6><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTAL_HOURS');?></h6>
                 			<h1><?php echo JHtml::_('timesheet.format', $this->total_time, 'decimal');?></h1>
-                			<h5><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (124.0)</h5>
+                			<h5><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (<?php echo JHtml::_('timesheet.format', $this->total_estimated_time, 'decimal');?>)</h5>
                 		</div>
                 	</div>
                 	<div class="span6">
@@ -124,7 +124,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                 		<div class="thumbnail thumbnail-timesheet">
                 			<h6><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE_TOTAL');?></h6>
                 			<h2><?php echo number_format($this->total_billable, 2);?></h2>
-                			<h5><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (2,500.00)</h5>
+                			<h5><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (<?php echo number_format($this->total_estimated_cost, 2);?>)</h5>
                 		</div>
                 	</div>
                 </div>
@@ -163,6 +163,17 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                         if ((float) $item->billable_total > 0.00) {
                             $list_total_billable += (float) $item->billable_total;
                         }
+
+                        $percentage = ($item->estimate == 0) ? 0 : round($item->log_time * (100 / $item->estimate));
+                        $percentage_class = 'progress';
+
+                        if ($percentage > 100) {
+                            $percentage = 100;
+                            $percentage_class .= ' progress-danger';
+                        }
+                        else {
+                            $percentage_class .= ($item->billable == 1) ? ' progress-success' : '';
+                        }
 			        ?>
 			        <tr>
 			        	<td>
@@ -188,8 +199,8 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 			        		<?php echo JHtml::_('timesheet.format', $item->log_time); ?>
 			        	</td>
 			        	<td>
-							<div class="progress">
-								<div class="bar" style="width: 60%;"></div>
+							<div class="<?php echo $percentage_class;?>">
+								<div class="bar" style="width: <?php echo $percentage;?>%;"></div>
 							</div>
 			        	</td>
 			        	<td>

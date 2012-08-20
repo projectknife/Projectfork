@@ -57,6 +57,11 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
         $uid    = JFactory::getUser()->get('id');
         $access = ProjectforkHelperAccess::getActions('task', $value->id);
 
+        // Convert seconds back to minutes
+        if ($value->estimate > 0) {
+            $value->estimate = round($value->estimate / 60);
+        }
+
         // Check general edit permission first.
         if ($access->get('task.edit')) {
             $value->params->set('access-edit', true);

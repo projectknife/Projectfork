@@ -22,7 +22,7 @@ class ProjectforkModelTask extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string    
+     * @var    string
      */
     protected $text_prefix = 'COM_PROJECTFORK_TASK';
 
@@ -57,6 +57,11 @@ class ProjectforkModelTask extends JModelAdmin
             $item->attribs = $registry->toArray();
 
             $item->users = $this->getUsers($pk);
+
+            // Convert seconds back to minutes
+            if ($item->estimate > 0) {
+                $item->estimate = round($item->estimate / 60);
+            }
         }
 
         return $item;
@@ -161,7 +166,7 @@ class ProjectforkModelTask extends JModelAdmin
      *
      * @param     jtable    A JTable object.
      *
-     * @return    void      
+     * @return    void
      */
     protected function prepareTable(&$table)
     {
@@ -195,6 +200,21 @@ class ProjectforkModelTask extends JModelAdmin
             $data['alias'] = '';
         }
 
+        // Try to convert estimate string to time
+        if (!is_numeric($data['estimate'])) {
+            $estimate_time = strtotime($data['estimate']);
+
+            if ($estimate_time === false || $estimate_time < 0) {
+                $data['estimate'] = 1;
+            }
+            else {
+                $data['estimate'] = $estimate_time - time();
+            }
+        }
+        else {
+            // not a literal time, so convert minutes to secs
+            $data['estimate'] = $data['estimate'] * 60;
+        }
 
         // Store the record
         return parent::save($data);

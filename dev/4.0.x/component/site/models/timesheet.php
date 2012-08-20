@@ -89,7 +89,7 @@ class ProjectforkModelTimesheet extends JModelList
         $query->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
 
         // Join over the tasks for the task title.
-        $query->select('t.title AS task_title, t.alias AS task_alias');
+        $query->select('t.title AS task_title, t.alias AS task_alias, t.estimate');
         $query->join('LEFT', '#__pf_tasks AS t ON t.id = a.task_id');
 
         // Join over the milestones for the milestone alias.
@@ -350,7 +350,80 @@ class ProjectforkModelTimesheet extends JModelList
               ->from('#__pf_timesheet AS a')
               ->where('a.billable = 1')
               ->where('a.state = 1')
-              ->where('a.rate > 0');
+              ->where('a.rate > 0')
+              ->where('a.log_time > 0');
+
+        $filters = array();
+        $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
+
+        // Apply Filter
+        ProjectforkHelperQuery::buildFilter($query, $filters);
+
+        // Get the result
+        $db->setQuery((string) $query);
+        $sum = (int) $db->loadResult();
+
+        // Return the items
+        return $sum;
+    }
+
+
+    /**
+     * Gets the estimated project completition time
+     *
+     * @return    integer    $sum
+     */
+    public function getProjectEstimatedTime()
+    {
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        // Return 0 if no project is selected
+        if ((int) $this->getState('filter.project') == 0) {
+            return 0.00;
+        }
+
+        // Construct the query
+        $query->select('SUM(a.estimate)')
+              ->from('#__pf_tasks AS a')
+              ->where('a.state = 1');
+
+        $filters = array();
+        $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
+
+        // Apply Filter
+        ProjectforkHelperQuery::buildFilter($query, $filters);
+
+        // Get the result
+        $db->setQuery((string) $query);
+        $sum = (int) $db->loadResult();
+
+        // Return the items
+        return $sum;
+    }
+
+
+    /**
+     * Gets the estimated project cost
+     *
+     * @return    integer    $sum
+     */
+    public function getProjectEstimatedCost()
+    {
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        // Return 0 if no project is selected
+        if ((int) $this->getState('filter.project') == 0) {
+            return 0.00;
+        }
+
+        // Construct the query
+        $query->select('SUM(a.estimate / 60) * (a.rate / 60)')
+              ->from('#__pf_tasks AS a')
+              ->where('a.state = 1')
+              ->where('a.rate > 0')
+              ->where('a.estimate > 0');
 
         $filters = array();
         $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));

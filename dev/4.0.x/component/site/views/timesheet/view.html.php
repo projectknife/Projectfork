@@ -30,6 +30,8 @@ class ProjectforkViewTimesheet extends JView
     protected $total_time_billable;
     protected $total_time_unbillable;
     protected $total_billable;
+    protected $total_estimated_time;
+    protected $total_estimated_cost;
 
     /**
      * Display the view
@@ -67,6 +69,8 @@ class ProjectforkViewTimesheet extends JView
         $this->total_billable        = $this->get('ProjectCost');
         $this->total_time_billable   = $this->get('BillableProjectTime');
         $this->total_time_unbillable = $this->get('UnbillableProjectTime');
+        $this->total_estimated_time  = $this->get('ProjectEstimatedTime');
+        $this->total_estimated_cost  = $this->get('ProjectEstimatedCost');
         $this->total_time = ($this->total_time_billable + $this->total_time_unbillable);
 
         // Check for errors.
