@@ -19,7 +19,7 @@ $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $save_order = ($list_order == 'a.ordering');
 ?>
-<form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=topics'); ?>" method="post" name="adminForm" id="adminForm">
+<form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=replies&filter_topic=' . (int) $this->state->get('filter.topic')); ?>" method="post" name="adminForm" id="adminForm">
 
     <fieldset id="filter-bar">
         <div class="filter-search fltlft">
