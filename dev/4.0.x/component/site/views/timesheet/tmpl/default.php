@@ -184,12 +184,15 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                             >
                                 <?php echo $this->escape($item->task_title); ?>
                             </a>
+                            <div style="display: none !important;">
+                                <?php echo JHtml::_('grid.id', $i, $item->id); ?>
+                            </div>
 			        	</td>
 			        	<td>
 			        		<?php
                             $this->menu->start(array('class' => 'btn-mini'));
                             $this->menu->itemEdit('timeform', $item->id, ($can_edit || $can_edit_own));
-                            $this->menu->itemTrash('time', $i, $can_change);
+                            $this->menu->itemTrash('timesheet', $i, $can_change);
                             $this->menu->end();
 
                             echo $this->menu->render(array('class' => 'btn-mini'));
