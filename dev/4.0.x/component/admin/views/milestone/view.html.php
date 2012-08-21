@@ -70,7 +70,7 @@ class ProjectforkViewMilestone extends JView
         }
         else {
             // Can't save the record if it's checked out.
-            if (!$checkedOut) {
+            if (!$checked_out) {
                 if ($access->get('milestone.edit') || ($access->get('milestone.edit.own') && $this->item->created_by == $uid)) {
                     JToolBarHelper::apply('milestone.apply');
                     JToolBarHelper::save('milestone.save');
