@@ -42,12 +42,6 @@ $uid        = $user->get('id');
                         <?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_projectfork'), 'value', 'text', $this->state->get('filter.category'));?>
                     </select>
                 </span>
-                <span class="filter-author">
-                    <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
-                        <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                        <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'), true);?>
-                    </select>
-                </span>
                 <span class="filter-limit">
                     <?php echo $this->pagination->getLimitBox(); ?>
                 </span>
