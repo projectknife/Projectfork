@@ -107,7 +107,7 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
     <?php echo $item->event->beforeDisplayContent;?>
 
 	<div class="item-description">
-		<?php echo $this->escape($item->text); ?>
+		<?php echo $item->text; ?>
 	</div>
 	<hr />
 

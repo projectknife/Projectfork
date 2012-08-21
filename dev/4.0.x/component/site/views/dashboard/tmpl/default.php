@@ -63,7 +63,7 @@ $modules = &$this->modules;
                     <div class="well btn-toolbar">
                         <div class="item-description">
 
-                            <?php echo $this->escape($item->text); ?>
+                            <?php echo $item->text; ?>
 
                             <dl class="article-info dl-horizontal pull-right">
                         		<?php if($item->start_date != JFactory::getDBO()->getNullDate()): ?>

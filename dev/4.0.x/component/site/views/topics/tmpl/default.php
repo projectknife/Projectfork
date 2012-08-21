@@ -122,7 +122,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                                 <i class="icon-user icon-white"></i> <?php echo $this->escape($item->access_level);?>
                             </span>
 
-                            <?php echo $this->escape($item->description);?>
+                            <?php echo $item->description;?>
 
                             <span class="list-created">
                                 <?php echo JHtml::_('date', $item->created, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>
