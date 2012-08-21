@@ -26,6 +26,7 @@ if (!$editoroptions) $params->show_urls_images_frontend = '0';
 <script type="text/javascript">
     Joomla.submitbutton = function(task) {
         if (task == 'topicform.cancel' || task == 'topicform.setProject' || document.formvalidator.isValid(document.id('adminForm'))) {
+            <?php echo $this->form->getField('description')->save(); ?>
             Joomla.submitform(task);
         } else {
             alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');

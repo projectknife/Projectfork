@@ -3,6 +3,7 @@
 	<fieldset>
 		<field name="description" type="editor" class="inputbox" buttons="true"
 			label="COM_PROJECTFORK_FIELD_DESCRIPTION_LABEL" description="COM_PROJECTFORK_FIELD_DESCRIPTION_DESC"
+            filter="JComponentHelper::filterText"
 		/>
 		<field name="state" type="list" label="JSTATUS"
 			description="JFIELD_PUBLISHED_DESC" class="inputbox"

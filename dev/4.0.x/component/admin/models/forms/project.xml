@@ -3,11 +3,11 @@
 	<fieldset>
 		<field name="title" type="text" label="JGLOBAL_TITLE"
 			description="JFIELD_TITLE_DESC" class="inputbox" size="30"
-			required="true" 
+			required="true"
         />
 		<field name="description" type="editor" class="inputbox"
 			label="COM_PROJECTFORK_FIELD_DESCRIPTION_LABEL" description="COM_PROJECTFORK_FIELD_DESCRIPTION_DESC"
-			buttons="true" 
+			buttons="true" filter="JComponentHelper::filterText"
 		/>
 		<field name="state" type="list" label="JSTATUS"
 			description="JFIELD_PUBLISHED_DESC" class="inputbox"
@@ -19,7 +19,7 @@
 			<option value="-2">JTRASHED</option>
 		</field>
 		<field name="catid" type="category" extension="com_projectfork"
-			label="JCATEGORY" 
+			label="JCATEGORY"
 			description="COM_PROJECTFORK_FIELD_CATEGORY_DESC"
 			class="inputbox" show_root="true">
 		</field>
@@ -28,15 +28,15 @@
         />
 		<field name="start_date" type="calendar" class="inputbox"
 			label="COM_PROJECTFORK_FIELD_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_START_DATE_OPTIONAL_DESC"
-			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
+			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
         />
         <field name="end_date" type="calendar" class="inputbox"
 			label="COM_PROJECTFORK_FIELD_DEADLINE_LABEL" description="COM_PROJECTFORK_FIELD_DEADLINE_OPTIONAL_LABEL"
-			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
+			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
         />
 		<field name="modified" type="calendar" class="readonly"
-			label="JGLOBAL_FIELD_MODIFIED_LABEL" 
-			size="22" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
+			label="JGLOBAL_FIELD_MODIFIED_LABEL"
+			size="22" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
         />
 		<field name="modified_by" type="user"
 		    label="JGLOBAL_FIELD_MODIFIED_BY_LABEL"
@@ -47,9 +47,9 @@
 		<field name="access" type="pfaccesslevel" label="JFIELD_ACCESS_LABEL"
 			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" permissions="true" create="true"
         />
-        <field name="access_new" type="text" class="inputbox" size="30" 
+        <field name="access_new" type="text" class="inputbox" size="30"
 			label="COM_PROJECTFORK_FIELD_ACCESS_NEW_LABEL" description="COM_PROJECTFORK_FIELD_ACCESS_NEW_DESC"
-			buttons="true" 
+			buttons="true"
 		/>
 		<field
 			name="rules"
@@ -58,7 +58,7 @@
 			class="inputbox"
 
 			component="com_projectfork"
-			section="project" 
+			section="project"
 			cb="true"
         />
 		<field name="id" type="hidden" readonly="true"/>
@@ -73,15 +73,15 @@
 	    <fieldset name="basic" label="COM_PROJECTFORK_PROJECT_ATTRIBS_FIELDSET_LABEL">
 	        <field name="website" type="text" label="COM_PROJECTFORK_FIELD_WEBSITE_LABEL"
 			    description="COM_PROJECTFORK_FIELD_PROJECT_WEBSITE_DESC" class="inputbox" size="30"
-			    filter="url" 
+			    filter="url"
             />
             <field name="email" type="text" label="COM_PROJECTFORK_FIELD_EMAIL_LABEL"
 			    description="COM_PROJECTFORK_FIELD_PROJECT_EMAIL_DESC" class="inputbox" size="30"
-			    filter="email" 
+			    filter="email"
             />
             <field name="phone" type="text" label="COM_PROJECTFORK_FIELD_PHONE_LABEL"
 			    description="COM_PROJECTFORK_FIELD_PROJECT_PHONE_DESC" class="inputbox" size="30"
-			    filter="tel" 
+			    filter="tel"
             />
 	    </fieldset>
 	</fields>

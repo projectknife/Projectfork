@@ -22,6 +22,7 @@ Joomla.submitbutton = function(task) {
         task == 'topic.setAccess' ||
         document.formvalidator.isValid(document.id('item-form'))
        ) {
+        <?php echo $this->form->getField('description')->save(); ?>
         Joomla.submitform(task, document.getElementById('item-form'));
     }
     else {

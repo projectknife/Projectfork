@@ -3,7 +3,7 @@
 	<fieldset>
 		<field name="description" type="textarea" class="inputbox"
 			label="COM_PROJECTFORK_FIELD_DESCRIPTION_LABEL" description="COM_PROJECTFORK_FIELD_DESCRIPTION_DESC"
-			buttons="true"
+			buttons="true" filter="JComponentHelper::filterText"
 		/>
 		<field name="state" type="list" label="JSTATUS"
 			description="JFIELD_PUBLISHED_DESC" class="inputbox"
