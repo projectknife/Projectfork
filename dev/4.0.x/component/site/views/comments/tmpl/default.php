@@ -20,7 +20,11 @@ $state = $this->state;
         <?php echo $this->loadTemplate('items'); ?>
     </ul>
 
-    <?php echo $this->loadTemplate('editor'); ?>
+    <?php
+        if ($this->access->get('comment.create')) :
+            echo $this->loadTemplate('editor');
+        endif;
+    ?>
 
     <input type="hidden" id="jform_context" name="jform[context]" value="<?php echo $this->escape($state->get('filter.context')); ?>" />
     <input type="hidden" id="jform_item_id" name="jform[item_id]" value="<?php echo $this->escape($state->get('filter.item_id')); ?>" />

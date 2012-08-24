@@ -38,7 +38,25 @@ class ProjectforkViewComments extends JView
         $this->items  = $this->get('Items');
         $this->state  = $this->get('State');
         $this->params = $this->state->params;
-        $this->access = ProjectforkHelperAccess::getActions(NULL, 0, true);
+
+        // Try to find the asset
+        $asset   = null;
+        $context = $this->state->get('filter.context');
+        $item_id = (int) $this->state->get('filter.item_id');
+
+        if ($context) {
+            $context_parts = explode('.', $context);
+            $asset = end($context_parts);
+
+            if ($asset == 'user') {
+                $asset = null;
+            }
+        }
+        else {
+            $item_id = 0;
+        }
+
+        $this->access = ProjectforkHelperAccess::getActions($asset, $item_id, true);
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {

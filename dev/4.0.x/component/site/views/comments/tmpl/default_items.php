@@ -9,9 +9,11 @@
 
 defined('_JEXEC') or die();
 
-$avatar  = JFactory::getURI()->base(true) . '/components/com_projectfork/assets/projectfork/images/icons/avatar.jpg';
-$ul_open = false;
-$level   = 1;
+$user     = JFactory::getUser();
+$avatar   = JFactory::getURI()->base(true) . '/components/com_projectfork/assets/projectfork/images/icons/avatar.jpg';
+$ul_open  = false;
+$level    = 1;
+$uid      = $user->get('id');
 ?>
 <?php
 foreach($this->items AS $i => $item) :
@@ -34,11 +36,11 @@ foreach($this->items AS $i => $item) :
         }
     endif;
     $level = $item->level;
+
+    $can_create = $this->access->get('comment.create');
+    $can_trash  = ($this->access->get('comment.edit.state') || ($this->access->get('comment.edit.own') && $item->created_by == $uid));
     ?>
     <li id="comment-item-<?php echo $i; ?>">
-        <div style="display: none;">
-            <?php echo JHtml::_('grid.id', $i, $item->id); ?>
-        </div>
         <div class="comment-item">
 	        <div class="row-fluid">
 	            <div class="span1">
@@ -55,12 +57,19 @@ foreach($this->items AS $i => $item) :
 	                    <div class="well">
                             <?php echo nl2br($item->description); ?>
 	                        <div class="btn-group pull-right comment-item-actions">
-	                            <a class="btn btn-mini btn-add-reply" href="javascript:void(0)">
-                                    <i class="icon-comment"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_REPLY'); ?>
-	                            </a>
-	                            <a class="btn btn-mini btn-trash-reply" href="javascript:void(0);">
-                                    <i class="icon-remove"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_DELETE'); ?>
-	                            </a>
+	                            <?php if ($can_create) : ?>
+                                    <a class="btn btn-mini btn-add-reply" href="javascript:void(0)">
+                                        <i class="icon-comment"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_REPLY'); ?>
+    	                            </a>
+                                <?php endif; ?>
+                                <?php if ($can_trash) : ?>
+    	                            <a class="btn btn-mini btn-trash-reply" href="javascript:void(0);">
+                                        <i class="icon-remove"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_DELETE'); ?>
+    	                            </a>
+                                    <div style="display: none !important;">
+                                        <?php echo JHtml::_('grid.id', $i, $item->id); ?>
+                                    </div>
+                                <?php endif; ?>
 	                        </div>
 	                    </div>
 	                </div>
