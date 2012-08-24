@@ -252,6 +252,7 @@ class ProjectforkModelComments extends JModelList
         // Construct the query
         $query->select('DISTINCT a.context')
               ->from('#__pf_comments AS a')
+              ->where('a.alias != ' . $db->quote('root'))
               ->order('a.context ASC');
 
         // Setup the query
