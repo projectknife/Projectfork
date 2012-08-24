@@ -94,70 +94,127 @@ class ProjectforkModelComment extends JModelAdmin
     }
 
 
+    /**
+     * Method to save a comment
+     *
+     * @param     array      $data    The comment data
+     *
+     * @return    boolean             True on success, False on error
+     */
     public function save($data)
     {
         // Initialise variables;
-		$table = $this->getTable();
-		$pk    = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
+        $table = $this->getTable();
+        $pk    = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
         $date  = JFactory::getDate();
-		$isNew = true;
+        $isNew = true;
 
-		// Load the row if saving an existing category.
-		if ($pk > 0) {
-			$table->load($pk);
-			$isNew = false;
-		}
+        // Load the row if saving an existing comment.
+        if ($pk > 0) {
+            $table->load($pk);
+            $isNew = false;
+        }
 
-		// Set the new parent id if parent id not matched OR while New/Save as Copy .
-		if ($table->parent_id != $data['parent_id'] || $data['id'] == 0) {
-			$table->setLocation($data['parent_id'], 'last-child');
-		}
+        // Set the new parent id if parent id not matched OR while New/Save as Copy.
+        if ($table->parent_id != $data['parent_id'] || $data['id'] == 0) {
+            $table->setLocation($data['parent_id'], 'last-child');
+        }
 
+        // Get title if not set
+        if (!isset($data['title'])) {
+            $data['title'] = $this->generateNewTitle($data['item_id'], $data['context']);
+        }
+        elseif (empty($data['title'])) {
+            $data['title'] = $this->generateNewTitle($data['item_id'], $data['context']);
+        }
+
+        // Generate an alias if not set
         if (!isset($data['alias'])) {
             $data['alias'] = $date->toSql();
         }
-
-        if (empty($data['alias'])) {
+        elseif (empty($data['alias'])) {
             $data['alias'] = $date->toSql();
         }
 
-		// Bind the data.
-		if (!$table->bind($data)) {
-			$this->setError($table->getError());
-			return false;
-		}
+        // Bind the data.
+        if (!$table->bind($data)) {
+            $this->setError($table->getError());
+            return false;
+        }
 
-		// Check the data.
-		if (!$table->check()) {
-			$this->setError($table->getError());
-			return false;
-		}
+        // Check the data.
+        if (!$table->check()) {
+            $this->setError($table->getError());
+            return false;
+        }
 
-		// Store the data.
-		if (!$table->store()) {
-			$this->setError($table->getError());
-			return false;
-		}
+        // Store the data.
+        if (!$table->store()) {
+            $this->setError($table->getError());
+            return false;
+        }
 
-		// Rebuild the path for the comment:
-		if (!$table->rebuildPath($table->id)) {
-			$this->setError($table->getError());
-			return false;
-		}
+        // Rebuild the path for the comment:
+        if (!$table->rebuildPath($table->id)) {
+            $this->setError($table->getError());
+            return false;
+        }
 
-		// Rebuild the paths of the comment children:
-		if (!$table->rebuild($table->id, $table->lft, $table->level, $table->path)) {
-			$this->setError($table->getError());
-			return false;
-		}
+        // Rebuild the paths of the comment children:
+        if (!$table->rebuild($table->id, $table->lft, $table->level, $table->path)) {
+            $this->setError($table->getError());
+            return false;
+        }
 
-		$this->setState($this->getName() . '.id', $table->id);
+        $this->setState($this->getName() . '.id', $table->id);
 
-		// Clear the cache
-		$this->cleanCache();
+        // Clear the cache
+        $this->cleanCache();
 
-		return true;
+        return true;
     }
+
+
+    /**
+	 * Method to change the title.
+	 *
+	 * @param   integer  $item_id  The id of the context item.
+	 * @param   string   $context        The context.
+	 *
+	 * @return	string  Contains the new title
+	 */
+	protected function generateNewTitle($item_id, $context)
+	{
+	    $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $asset = $context . '.' . $item_id;
+
+        // Handle user profile comments exception
+        if ($context == 'com_projectfork.user') {
+            $query->select('name')
+                  ->from('#__users')
+                  ->where('id = ' . $db->quote($item_id));
+
+            $db->setQuery((string) $query);
+            $title = $db->loadResult();
+        }
+        else {
+            // Lookup the assets table for the title
+            $query->select('title')
+                  ->from('#__assets')
+                  ->where('name = ' . $db->quote($asset));
+
+            $db->setQuery((string) $query);
+            $title = $db->loadResult();
+        }
+
+        if(empty($title)) {
+            // No title found.
+            $title = $asset;
+        }
+
+		return $title;
+	}
 
 
     /**
@@ -244,7 +301,7 @@ class ProjectforkModelComment extends JModelAdmin
     protected function loadFormData()
     {
         // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.comment.data', array());
+        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.' . $this->getName() . '.data', array());
 
         if (empty($data)) $data = $this->getItem();
 
