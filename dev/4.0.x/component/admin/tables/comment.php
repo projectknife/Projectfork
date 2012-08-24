@@ -66,20 +66,19 @@ class PFTableComment extends JTableNested
     protected function _getAssetParentId($table = null, $id = null)
     {
         $asset_id = null;
+        $result   = null;
         $query    = $this->_db->getQuery(true);
 
         // This is a comment under another comment.
         if ($this->parent_id > 1) {
             // Build the query to get the asset id for the parent comment.
             $query->select($this->_db->quoteName('asset_id'))
-                  ->from($this->_db->quoteName('#__categories'))
+                  ->from($this->_db->quoteName('#__pf_comments'))
                   ->where($this->_db->quoteName('id') . ' = ' . $this->parent_id);
 
             // Get the asset id from the database.
             $this->_db->setQuery($query);
-            if ($result = $this->_db->loadResult()) {
-                $asset_id = (int) $result;
-            }
+            $result = $this->_db->loadResult();
         }
         elseif ($asset_id === null) {
             // This is a comment that needs to parent with the context item.
@@ -90,9 +89,11 @@ class PFTableComment extends JTableNested
 
             // Get the asset id from the database.
             $this->_db->setQuery($query);
-            if ($result = $this->_db->loadResult()) {
-                $asset_id = (int) $result;
-            }
+            $result = $this->_db->loadResult();
+        }
+
+        if (!empty($result)) {
+            $asset_id = $result;
         }
 
         // Return the asset id.
