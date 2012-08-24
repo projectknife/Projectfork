@@ -288,7 +288,7 @@ class PFTableComment extends JTableNested
 
 		if ($this->id) {
 			// Existing category
-			$this->modified = $date->toSql();
+			$this->modified    = $date->toSql();
 			$this->modified_by = $user->get('id');
 		}
 		else {

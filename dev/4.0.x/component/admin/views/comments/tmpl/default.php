@@ -38,6 +38,13 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                 <?php echo JHtml::_('select.options', $this->contexts, 'value', 'text', $this->state->get('filter.context'), true);?>
             </select>
 
+            <?php if ((int) $this->state->get('filter.project') > 0 && $this->state->get('filter.context') != '') : ?>
+                <select name="filter_item_id" class="inputbox" onchange="this.form.submit()">
+                    <option value=""><?php echo JText::_('JOPTION_SELECT_CONTEXT_ITEM');?></option>
+                    <?php echo JHtml::_('select.options', $this->cntxt_items, 'value', 'text', $this->state->get('filter.item_id'));?>
+                </select>
+            <?php endif; ?>
+
             <?php if ((int) $this->state->get('filter.project') > 0) : ?>
                 <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
                     <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
@@ -59,16 +66,16 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                 <th width="5%">
                     <?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $list_dir, $list_order); ?>
                 </th>
-                <th width="20%">
+                <th>
                     <?php echo JText::_('JGRID_HEADING_COMMENT');?>
+                </th>
+                <th width="12%">
+                    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'project_title', $list_dir, $list_order); ?>
                 </th>
                 <th width="5%">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CONTEXT', 'a.context', $list_dir, $list_order); ?>
                 </th>
                 <th width="12%">
-                    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'project_title', $list_dir, $list_order); ?>
-                </th>
-                <th>
                     <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                 </th>
                 <th width="10%">
@@ -116,10 +123,10 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                     <?php endif; ?>
                 </td>
                 <td>
-                    <?php echo $this->escape(JText::_($context)); ?>
+                    <?php echo $this->escape($item->project_title); ?>
                 </td>
                 <td>
-                    <?php echo $this->escape($item->project_title); ?>
+                    <?php echo $this->escape(JText::_($context)); ?>
                 </td>
                 <td>
                     <?php echo $this->escape($item->title); ?>

@@ -90,6 +90,21 @@ class ProjectforkModelComment extends JModelAdmin
             $form->setFieldAttribute('state', 'filter', 'unset');
         }
 
+        // Check if the project, context and context item are given
+        $project_id = (int) $form->getValue('project_id');
+        $item_id    = $form->getValue('item_id');
+        $context    = $form->getValue('context');
+
+        if (!$project_id) {
+            $form->setValue('project_id', null, $this->getState($this->getName() . '.project'));
+        }
+        if (!$item_id) {
+            $form->setValue('item_id', null, $this->getState($this->getName() . '.item_id'));
+        }
+        if (!$context) {
+            $form->setValue('context', null, $this->getState($this->getName() . '.context'));
+        }
+
         return $form;
     }
 
@@ -176,16 +191,16 @@ class ProjectforkModelComment extends JModelAdmin
 
 
     /**
-	 * Method to change the title.
-	 *
-	 * @param   integer  $item_id  The id of the context item.
-	 * @param   string   $context        The context.
-	 *
-	 * @return	string  Contains the new title
-	 */
-	protected function generateNewTitle($item_id, $context)
-	{
-	    $db    = JFactory::getDbo();
+     * Method to change the title.
+     *
+     * @param     integer    $item_id    The id of the context item.
+     * @param     string     $context    The context.
+     *
+     * @return    string                 Contains the new title
+     */
+    protected function generateNewTitle($item_id, $context)
+    {
+        $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
         $asset = $context . '.' . $item_id;
 
@@ -208,13 +223,13 @@ class ProjectforkModelComment extends JModelAdmin
             $title = $db->loadResult();
         }
 
-        if(empty($title)) {
+        if (empty($title)) {
             // No title found.
             $title = $asset;
         }
 
-		return $title;
-	}
+        return $title;
+    }
 
 
     /**
@@ -306,5 +321,59 @@ class ProjectforkModelComment extends JModelAdmin
         if (empty($data)) $data = $this->getItem();
 
         return $data;
+    }
+
+
+    /**
+     * Method to auto-populate the model state.
+     * Note: Calling getState in this method will result in recursion.
+     *
+     * @return    void
+     */
+    protected function populateState()
+    {
+        // Initialise variables.
+        $app   = JFactory::getApplication();
+		$table = $this->getTable();
+		$key   = $table->getKeyName();
+
+		// Get the pk of the record from the request.
+		$pk = JRequest::getInt($key);
+		$this->setState($this->getName() . '.id', $pk);
+
+        if ($pk) {
+            $table = $this->getTable();
+
+            if ($table->load($pk)) {
+                $project = (int) $table->project_id;
+                $this->setState($this->getName() . '.project', $project);
+                ProjectforkHelper::setActiveProject($project);
+
+                $item_id = (int) $table->item_id;
+                $this->setState($this->getName() . '.item_id', $item_id);
+
+                $context = $table->context;
+                $this->setState($this->getName() . '.context', $context);
+            }
+        }
+        else {
+            $item_id = JRequest::getUInt('filter_item_id', 0);
+            $this->setState($this->getName() . '.item_id', $item_id);
+
+            $context = JRequest::getCmd('filter_context', '');
+            $this->setState($this->getName() . '.context', $context);
+
+            $project = (int) $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+
+            if ($project) {
+                $this->setState($this->getName() . '.project', $project);
+                ProjectforkHelper::setActiveProject($project);
+            }
+
+        }
+
+		// Load the parameters.
+		$value = JComponentHelper::getParams($this->option);
+		$this->setState('params', $value);
     }
 }

@@ -51,6 +51,13 @@ class ProjectforkViewComments extends JView
     protected $contexts;
 
     /**
+     * A list of context item options
+     *
+     * @var    array
+     */
+    protected $cntxt_items;
+
+    /**
      *
      * @var    string
      */
@@ -66,11 +73,12 @@ class ProjectforkViewComments extends JView
     public function display($tpl = null)
     {
         // Get data from model
-        $this->items      = $this->get('Items');
-        $this->pagination = $this->get('Pagination');
-        $this->state      = $this->get('State');
-        $this->authors    = $this->get('Authors');
-        $this->contexts   = $this->get('Contexts');
+        $this->items       = $this->get('Items');
+        $this->pagination  = $this->get('Pagination');
+        $this->state       = $this->get('State');
+        $this->authors     = $this->get('Authors');
+        $this->contexts    = $this->get('Contexts');
+        $this->cntxt_items = $this->get('ContextItems');
 
         // Get database null date
         $this->nulldate = JFactory::getDbo()->getNullDate();
@@ -95,10 +103,11 @@ class ProjectforkViewComments extends JView
     protected function addToolbar()
     {
         $access = ProjectforkHelperAccess::getActions();
+        $state  = $this->get('State');
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_COMMENTS_TITLE'), 'article.png');
 
-        if ($access->get('comment.create')) {
+        if ($access->get('comment.create') && is_numeric($state->get('filter.item_id')) && $state->get('filter.context')) {
             JToolBarHelper::addNew('comment.add');
         }
 

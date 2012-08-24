@@ -119,12 +119,12 @@ class ProjectforkModelComments extends JModelList
         // Filter by item_id
         $item_id = $this->getState('filter.item_id');
         if (is_numeric($item_id)) {
-            $query->where('a.item_id = ' . $db->quote($context));
+            $query->where('a.item_id = ' . $db->quote($item_id));
         }
 
         // Filter by search in title.
         $search = $this->getState('filter.search');
-        if (!empty($search) && !is_numeric($item_id)) {
+        if (!empty($search)) {
             if (stripos($search, 'id:') === 0) {
                 $query->where('a.id = '.(int) substr($search, 3));
             }
@@ -225,6 +225,43 @@ class ProjectforkModelComments extends JModelList
 
 
     /**
+     * Build a list of context options
+     *
+     * @return    jdatabasequery
+     */
+    public function getContextItems()
+    {
+        // Create a new query object.
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $context = $this->getState('filter.context');
+        $project = $this->getState('filter.project');
+
+        // Context and project filters must be set.
+        if (empty($context) || intval($project) == 0) {
+            return array();
+        }
+
+        // Construct the query
+        $query->select('a.item_id AS value, a.title AS text')
+              ->from('#__pf_comments AS a')
+              ->where('a.context = ' . $db->quote($context))
+              ->where('a.project_id = ' . $db->quote($project))
+              ->where('a.alias != ' . $db->quote('root'))
+              ->group('a.item_id')
+              ->order('a.title ASC');
+
+        // Setup the query
+        $db->setQuery((string) $query);
+        $options = (array) $db->loadObjectList();
+
+        // Return the result
+        return $options;
+    }
+
+
+    /**
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
@@ -241,14 +278,6 @@ class ProjectforkModelComments extends JModelList
         $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
 
-        if (is_numeric($search)) {
-            $this->setState('filter.search', '');
-            $this->setState('filter.item_id', $search);
-        }
-        else {
-            $this->setState('filter.item_id', '');
-        }
-
         $author_id = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
         $this->setState('filter.author_id', $author_id);
 
@@ -261,6 +290,15 @@ class ProjectforkModelComments extends JModelList
         $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
         $this->setState('filter.project', $project);
         ProjectforkHelper::setActiveProject($project);
+
+        $item_id = $this->getUserStateFromRequest($this->context . '.filter.item_id', 'filter_item_id', '');
+        $this->setState('filter.item_id', $item_id);
+
+        // Do no allow to filter by item id if no context or project is given
+        if (empty($context) || intval($project) == 0) {
+            $item_id = '';
+            $this->setState('filter.item_id', $item_id);
+        }
 
         // List state information.
         parent::populateState($ordering, $direction);
