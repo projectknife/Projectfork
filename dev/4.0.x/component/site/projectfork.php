@@ -29,6 +29,9 @@ JLoader::register('ProjectforkHelperContextMenu', JPATH_BASE . '/components/com_
 JTable::addIncludePath(JPATH_ADMINISTRATOR . 'components/com_projectfork/tables');
 JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/html');
 
+JLoader::registerPrefix('Projectfork', JPATH_SITE . '/components/com_projectfork/libraries/projectfork');
+
+
 $controller = JController::getInstance('Projectfork');
 $controller->execute(JRequest::getCmd('task'));
 $controller->redirect();

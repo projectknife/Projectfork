@@ -325,6 +325,7 @@ abstract class JHtmlProjectfork
 
             if ($doc->getType() == 'html') {
                 $doc->addScript($uri->base(true).'/components/com_projectfork/assets/projectfork/js/projectfork.js');
+                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/projectfork/js/comments.js');
             }
 
             define('COM_PROJECTFORK_JS', 1);

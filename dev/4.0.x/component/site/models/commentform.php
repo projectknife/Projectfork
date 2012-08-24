@@ -29,7 +29,7 @@ class ProjectforkModelCommentForm extends ProjectforkModelComment
     public function getItem($id = null)
     {
         // Initialise variables.
-        $id = (int) (!empty($id)) ? $id : $this->getState('comment.id');
+        $id = (int) (!empty($id)) ? $id : $this->getState($this->getName() . '.id');
 
         // Get a row instance.
         $table = $this->getTable();
@@ -108,7 +108,7 @@ class ProjectforkModelCommentForm extends ProjectforkModelComment
     {
         // Load state from the request.
         $pk = JRequest::getInt('id');
-        $this->setState('comment.id', $pk);
+        $this->setState($this->getName() . '.id', $pk);
 
         $return = JRequest::getVar('return', null, 'default', 'base64');
         $this->setState('return_page', base64_decode($return));
@@ -118,45 +118,5 @@ class ProjectforkModelCommentForm extends ProjectforkModelComment
         $this->setState('params', $params);
 
         $this->setState('layout', JRequest::getCmd('layout'));
-    }
-
-
-    /**
-     * Method to get the data that should be injected in the form.
-     *
-     * @return    mixed    The data for the form.
-     */
-    protected function loadFormData()
-    {
-        // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.commentform.data', array());
-
-        if (empty($data)) $data = $this->getItem();
-
-        return $data;
-    }
-
-
-    /**
-     * Counts the replies of a parent comment item
-     *
-     * @param     integer    $parent    The parent comment id
-     *
-     * @return    integer    $count     The comment count
-     */
-    protected function countReplies($parent = 0)
-    {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        $query->select('COUNT(id)')
-              ->from('#__pf_comments')
-              ->where('parent_id = ' . (int) $parent);
-
-        $db->setQuery((string) $query);
-
-        $count = (int) $db->loadResult();
-
-        return $count;
     }
 }

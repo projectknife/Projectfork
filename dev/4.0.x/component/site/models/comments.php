@@ -14,7 +14,7 @@ jimport('joomla.application.component.modellist');
 
 
 /**
- * This models supports retrieving lists of comments.
+ * This models supports retrieving a list of comments.
  *
  */
 class ProjectforkModelComments extends JModelList
@@ -62,26 +62,23 @@ class ProjectforkModelComments extends JModelList
                 'a.id, a.project_id, a.item_id, a.title, a.context, '
               . 'a.description, a.created,  a.created_by, a.modified, a.modified_by, '
               . 'a.checked_out,  a.checked_out_time, a.attribs, a.state, '
-              . 'a.parent_id, a.lft, a.rgt'
+              . 'a.parent_id, a.lft, a.rgt, a.level'
             )
         );
 
         $query->from('#__pf_comments AS a');
 
         // Add the level in the tree.
-        $context = $this->getState('filter.context');
-        $item_id = $this->getState('filter.id');
-
-        $query->select('COUNT(DISTINCT c2.id) AS level');
+        /*$query->select('COUNT(DISTINCT c2.id) AS level');
         $query->join('LEFT OUTER', $db->quoteName('#__pf_comments') . ' AS c2 ON '
                     . '(a.lft > c2.lft AND a.rgt < c2.rgt'
                     . (($context != '')       ? ' AND c2.context = ' . $db->quote($context) : '')
                     . ((is_numeric($item_id)) ? ' AND c2.item_id = ' . (int) $item_id       : '')
-                    . ')');
+                    . ')');*/
 
         // Count the replies of each comment
-        $query->select('COUNT(r.id) AS replies');
-        $query->join('LEFT', $db->quoteName('#__pf_comments') . 'AS r on r.parent_id = a.id');
+        /*$query->select('COUNT(r.id) AS replies');
+        $query->join('LEFT', $db->quoteName('#__pf_comments') . 'AS r on r.parent_id = a.id');*/
 
         // Join over the users for the checked out user.
         $query->select('uc.name AS editor');
@@ -104,19 +101,14 @@ class ProjectforkModelComments extends JModelList
             $query->where('(a.state = 0 OR a.state = 1)');
         }
 
-        // Filter by author
-        $author_id = $this->getState('filter.author');
-        if (is_numeric($author_id)) {
-            $type = $this->getState('filter.author_id.include', true) ? '= ' : '<>';
-            $query->where('a.created_by ' . $type . (int) $author_id);
-        }
-
         // Filter by context
+        $context = $this->getState('filter.context');
         if ($context != '') {
             $query->where('a.context = ' . $db->quote($context));
         }
 
         // Filter by item id
+        $item_id = $this->getState('filter.item_id');
         if (is_numeric($item_id)) {
             $query->where('a.item_id = ' . (int) $item_id);
         }
@@ -127,24 +119,8 @@ class ProjectforkModelComments extends JModelList
             $query->where('a.project_id = ' . (int) $project);
         }
 
-        // Filter by search in title.
-        $search = $this->getState('filter.search');
-        if (!empty($search)) {
-            if (stripos($search, 'id:') === 0) {
-                $query->where('a.id = ' . (int) substr($search, 4));
-            }
-            elseif (stripos($search, 'author:') === 0) {
-                $search = $db->Quote('%' . $db->getEscaped(trim(substr($search, 8)), true).'%');
-                $query->where('(ua.name LIKE ' . $search . ' OR ua.username LIKE ' . $search.')');
-            }
-            else {
-                $search = $db->Quote('%' . $db->getEscaped($search, true).'%');
-                $query->where('(a.item_title LIKE ' . $search . ')');
-            }
-        }
-
         // Add the list ordering clause.
-        $query->group('a.id, a.lft, a.rgt, a.parent_id, a.created');
+        $query->group('a.id');
         $query->order($this->getState('list.ordering', 'a.lft') . ' ' . $this->getState('list.direction', 'ASC'));
 
         return $query;
@@ -173,21 +149,11 @@ class ProjectforkModelComments extends JModelList
             $items[$i]->params = clone $params;
 
             // Create slug
-            $items[$i]->slug = $items[$i]->title ? ($items[$i]->id . ':' . JApplication::stringURLSafe($items[$i]->title)) : $items[$i]->id;
+            // $items[$i]->slug = $items[$i]->title ? ($items[$i]->id . ':' . JApplication::stringURLSafe($items[$i]->title)) : $items[$i]->id;
+            $items[$i]->slug = $items[$i]->id;
         }
 
         return $items;
-    }
-
-
-    /**
-     * Method to get the list start offset
-     *
-     * @return    integer    The list start offset
-     */
-    public function getStart()
-    {
-        return $this->getState('list.start');
     }
 
 
@@ -199,57 +165,38 @@ class ProjectforkModelComments extends JModelList
      */
     protected function populateState($ordering = 'a.lft', $direction = 'ASC')
     {
+        $app = JFactory::getApplication();
+
         // Query limit
-        $value = JRequest::getUInt('limit', $app->getCfg('list_limit', 0));
-        $this->setState('list.limit', $value);
+        $this->setState('list.limit', 0);
 
         // Query limit start
-        $value = JRequest::getUInt('limitstart', 0);
-        $this->setState('list.start', $value);
+        $this->setState('list.start', 0);
 
         // Query order field
-        $value = JRequest::getCmd('filter_order', 'a.lft');
-        if (!in_array($value, $this->filter_fields)) $value = 'a.lft';
-        $this->setState('list.ordering', $value);
+        $this->setState('list.ordering', $ordering);
 
         // Query order direction
-        $value = JRequest::getCmd('filter_order_Dir', 'ASC');
-        if (!in_array(strtoupper($value), array('ASC', 'DESC', ''))) $value = 'ASC';
-        $this->setState('list.direction', $value);
+        $this->setState('list.direction', $direction);
 
         // Params
-        $value = JFactory::getApplication()->getParams();
+        $value = $app->getParams();
         $this->setState('params', $value);
 
         // State
-        $value = JRequest::getCmd('filter_published', '');
-        $this->setState('filter.published', $value);
-
-        $access = ProjectforkHelperAccess::getActions();
-        if (!$access->get('comment.edit.state') && ! $access->get('comment.edit')) {
-            // Filter on published for those who do not have edit or edit.state rights.
-            $this->setState('filter.published', 1);
-        }
-
-        // Filter - Search
-        $value = JRequest::getString('filter_search', '');
-        $this->setState('filter.search', $value);
-
-        // Filter - Author
-        $value = JRequest::getCmd('filter_author', '');
-        $this->setState('filter.author', $value);
+        $this->setState('filter.published', 1);
 
         // Filter - Project
-        $value = JRequest::getUInt('filter_project', '');
+        $value = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
         $this->setState('filter.project', $value);
 
         // Filter - Context
-        $value = JRequest::getCmd('filter_context', '');
+        $value = $app->getUserStateFromRequest($this->context . '.filter.context', 'filter_context', '');
         $this->setState('filter.context', $value);
 
         // Filter - Item ID
-        $value = JRequest::getUInt('filter_item_id', '');
-        $this->setState('filter.id', $value);
+        $value = $app->getUserStateFromRequest($this->context . '.filter.item_id', 'filter_item_id', '');
+        $this->setState('filter.item_id', $value);
 
         // View Layout
         $this->setState('layout', JRequest::getCmd('layout'));
@@ -271,11 +218,9 @@ class ProjectforkModelComments extends JModelList
     {
         // Compile the store id
         $id .= ':' . $this->getState('filter.published');
-        $id .= ':' . $this->getState('filter.author');
         $id .= ':' . $this->getState('filter.project');
         $id .= ':' . $this->getState('filter.context');
         $id .= ':' . $this->getState('filter.id');
-        $id .= ':' . $this->getState('filter.search');
 
         return parent::getStoreId($id);
     }

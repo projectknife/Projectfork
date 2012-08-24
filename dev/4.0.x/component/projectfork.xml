@@ -13,6 +13,7 @@
 	<install folder="admin">
 		<sql>
 			<file driver="mysql" charset="utf8">_install/mysql/structure.sql</file>
+			<file driver="mysql" charset="utf8">_install/mysql/data.sql</file>
 		</sql>
 	</install>
 	<uninstall folder="admin">

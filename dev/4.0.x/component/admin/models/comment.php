@@ -22,7 +22,7 @@ class ProjectforkModelComment extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string    
+     * @var    string
      */
     protected $text_prefix = 'COM_PROJECTFORK_COMMENT';
 
@@ -73,7 +73,7 @@ class ProjectforkModelComment extends JModelAdmin
     public function getForm($data = array(), $loadData = true)
     {
         // Get the form.
-        $form = $this->loadForm('com_projectfork.comment', 'comment', array('control' => 'jform', 'load_data' => $loadData));
+        $form = $this->loadForm('com_projectfork.' . $this->getName(), 'comment', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) return false;
 
         $jinput = JFactory::getApplication()->input;
@@ -91,6 +91,72 @@ class ProjectforkModelComment extends JModelAdmin
         }
 
         return $form;
+    }
+
+
+    public function save($data)
+    {
+        // Initialise variables;
+		$table = $this->getTable();
+		$pk    = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
+        $date  = JFactory::getDate();
+		$isNew = true;
+
+		// Load the row if saving an existing category.
+		if ($pk > 0) {
+			$table->load($pk);
+			$isNew = false;
+		}
+
+		// Set the new parent id if parent id not matched OR while New/Save as Copy .
+		if ($table->parent_id != $data['parent_id'] || $data['id'] == 0) {
+			$table->setLocation($data['parent_id'], 'last-child');
+		}
+
+        if (!isset($data['alias'])) {
+            $data['alias'] = $date->toSql();
+        }
+
+        if (empty($data['alias'])) {
+            $data['alias'] = $date->toSql();
+        }
+
+		// Bind the data.
+		if (!$table->bind($data)) {
+			$this->setError($table->getError());
+			return false;
+		}
+
+		// Check the data.
+		if (!$table->check()) {
+			$this->setError($table->getError());
+			return false;
+		}
+
+		// Store the data.
+		if (!$table->store()) {
+			$this->setError($table->getError());
+			return false;
+		}
+
+		// Rebuild the path for the comment:
+		if (!$table->rebuildPath($table->id)) {
+			$this->setError($table->getError());
+			return false;
+		}
+
+		// Rebuild the paths of the comment children:
+		if (!$table->rebuild($table->id, $table->lft, $table->level, $table->path)) {
+			$this->setError($table->getError());
+			return false;
+		}
+
+		$this->setState($this->getName() . '.id', $table->id);
+
+		// Clear the cache
+		$this->cleanCache();
+
+		return true;
     }
 
 

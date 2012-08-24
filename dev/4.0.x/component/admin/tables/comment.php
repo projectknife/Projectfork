@@ -10,14 +10,14 @@
 defined('_JEXEC') or die();
 
 
-jimport('joomla.database.tableasset');
+jimport('joomla.database.tablenested');
 
 
 /**
- * Project table
+ * Comment table
  *
  */
-class PFTableComment extends JTable
+class PFTableComment extends JTableNested
 {
     /**
      * Constructor
@@ -40,7 +40,7 @@ class PFTableComment extends JTable
     protected function _getAssetName()
     {
         $k = $this->_tbl_key;
-        return 'com_projectfork.comment.'.(int) $this->$k;
+        return 'com_projectfork.comment.' . (int) $this->$k;
     }
 
 
@@ -65,25 +65,43 @@ class PFTableComment extends JTable
      */
     protected function _getAssetParentId($table = null, $id = null)
     {
-        // Initialise variables.
         $asset_id = null;
         $query    = $this->_db->getQuery(true);
 
-        // Build the query to get the asset id for the parent category.
-        $query->select($this->_db->quoteName('id'))
-              ->from($this->_db->quoteName('#__assets'))
-              ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_projectfork"));
+        // This is a comment under another comment.
+        if ($this->parent_id > 1) {
+            // Build the query to get the asset id for the parent comment.
+            $query->select($this->_db->quoteName('asset_id'))
+                  ->from($this->_db->quoteName('#__categories'))
+                  ->where($this->_db->quoteName('id') . ' = ' . $this->parent_id);
 
-        // Get the asset id from the database.
-        $this->_db->setQuery($query);
-        $result = $this->_db->loadResult();
+            // Get the asset id from the database.
+            $this->_db->setQuery($query);
+            if ($result = $this->_db->loadResult()) {
+                $asset_id = (int) $result;
+            }
+        }
+        elseif ($asset_id === null) {
+            // This is a comment that needs to parent with the context item.
+            // Build the query to get the asset id for the parent comment.
+            $query->select($this->_db->quoteName('id'))
+                  ->from($this->_db->quoteName('#__assets'))
+                  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote($this->context . '.' . $this->item_id));
 
-        if ($result) $asset_id = (int) $result;
+            // Get the asset id from the database.
+            $this->_db->setQuery($query);
+            if ($result = $this->_db->loadResult()) {
+                $asset_id = (int) $result;
+            }
+        }
 
         // Return the asset id.
-        if ($asset_id) return $asset_id;
-
-        return parent::_getAssetParentId($table, $id);
+        if ($asset_id) {
+            return $asset_id;
+        }
+        else {
+            return parent::_getAssetParentId($table, $id);
+        }
     }
 
 
@@ -101,16 +119,6 @@ class PFTableComment extends JTable
             $registry = new JRegistry;
             $registry->loadArray($array['attribs']);
             $array['attribs'] = (string) $registry;
-        }
-
-        if (isset($array['description']) && is_array($array['description'])) {
-            if (isset($array['parent_id']) && array_key_exists($array['parent_id'], $array['description'])) {
-                $key = $array['parent_id'];
-                $array['description'] = $array['description'][$key];
-            }
-            else {
-                $array['description'] = '';
-            }
         }
 
         if (!isset($array['state'])) {
@@ -142,98 +150,6 @@ class PFTableComment extends JTable
         return true;
     }
 
-
-    /**
-     * Method to recursively rebuild the nested set tree.
-     *
-     * @param     integer    $parent_id    The root of the tree to rebuild.
-     * @param     integer    $left         The left id to start with in building the tree.
-     *
-     * @return    boolean                  True on success
-     */
-    public function rebuild($context, $item_id, $parent_id = 0, $left = 0)
-    {
-        // Get the database object
-        $db    = &$this->_db;
-        $query = $db->getQuery(true);
-
-        $query->select('id')
-              ->from($this->_tbl)
-              ->where('context   = '. $db->quote($context))
-              ->where('parent_id = ' . (int) $parent_id)
-              ->where('item_id   = '. (int) $item_id)
-              ->order('parent_id, created');
-
-        // Get all children of this node
-        $db->setQuery((string) $query);
-        $children = $db->loadColumn();
-
-        // The right value of this node is the left value + 1
-        $right = $left + 1;
-
-        // Execute this function recursively over all children
-        for ($i = 0, $n = count($children); $i < $n; $i++)
-        {
-            // $right is the current right value, which is incremented on recursion return
-            $right = $this->rebuild($context, $item_id, $children[$i], $right);
-
-            // Ff there is an update failure, return false to break out of the recursion
-            if ($right === false) {
-                return false;
-            }
-        }
-
-        // We've got the left value, and now that we've processed
-        // the children of this node we also know the right value
-        $query->clear();
-        $query->update($this->_tbl)
-              ->set('lft = ' . (int) $left)
-              ->set('rgt = ' . (int) $right)
-              ->where('id   = '. $parent_id);
-
-        $db->setQuery((string) $query);
-
-        // If there is an update failure, return false to break out of the recursion
-        if (!$db->query()) {
-            return false;
-        }
-
-        // return the right value of this node + 1
-        return $right + 1;
-    }
-
-    /**
-     * Overrides JTable::store to set modified data and user id.
-     *
-     * @param     boolean    True to update fields even if they are null.
-     *
-     * @return    boolean    True on success.
-     */
-    public function store($updateNulls = false)
-    {
-        $date = JFactory::getDate();
-        $user = JFactory::getUser();
-
-        if ($this->id) {
-            // Existing item
-            $this->modified    = $date->toMySQL();
-            $this->modified_by = $user->get('id');
-        }
-        else {
-            // New item. A project created_by field can be set by the user,
-            // so we don't touch it if set.
-            $this->created = $date->toMySQL();
-            if (empty($this->created_by)) $this->created_by = $user->get('id');
-        }
-
-        $result = parent::store($updateNulls);
-
-        if ($result) {
-            $this->rebuild($this->context, $this->item_id);
-        }
-
-        return $result;
-    }
 
     /**
      * Method to set the state for a row or list of rows in the database
@@ -357,6 +273,34 @@ class PFTableComment extends JTable
     }
 
 
+    /**
+	 * Overridden JTable::store to set created/modified and user id.
+	 *
+	 * @param   boolean  $updateNulls  True to update fields even if they are null.
+	 *
+	 * @return  boolean  True on success.
+	 */
+	public function store($updateNulls = false)
+	{
+		$date = JFactory::getDate();
+		$user = JFactory::getUser();
+
+		if ($this->id) {
+			// Existing category
+			$this->modified = $date->toSql();
+			$this->modified_by = $user->get('id');
+		}
+		else {
+			// New category
+			$this->created    = $date->toSql();
+			$this->created_by = $user->get('id');
+		}
+        //return false;
+
+		return parent::store($updateNulls);
+	}
+
+
     public function publish($pks = null, $state = 1, $userId = 0)
     {
         return $this->setState($pks, $state, $userId);
@@ -369,7 +313,7 @@ class PFTableComment extends JTable
      * @param     boolean    $mapKeysToText    Map foreign keys to text values
      * @return    string                       Record in XML format
      */
-    function toXML($mapKeysToText = false)
+    public function toXML($mapKeysToText = false)
     {
         $db = JFactory::getDbo();
 

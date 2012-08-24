@@ -30,15 +30,16 @@
 
         <field name="asset_id" type="hidden" filter="unset"/>
 		<field name="id" type="hidden"/>
-		<field name="project_id" type="hidden"/>
-		<field name="title" type="hidden"/>
-		<field name="item_id" type="hidden"/>
-		<field name="context" type="hidden"/>
+		<field name="project_id" type="hidden" readonly="true"/>
+		<field name="title" type="hidden" readonly="true"/>
+		<field name="item_id" type="hidden" readonly="true"/>
+		<field name="context" type="hidden" readonly="true"/>
 		<field name="created" type="hidden"/>
-        <field name="parent_id" type="hidden" />
-		<field name="lft" type="hidden"/>
-		<field name="rgt" type="hidden"/>
+        <field name="parent_id" type="hidden" readonly="true"/>
 
+		<field name="lft" type="hidden" filter="unset"/>
+		<field name="rgt" type="hidden" filter="unset"/>
+		<field name="level" type="hidden" filter="unset"/>
 		<field name="checked_out" type="hidden" filter="unset" />
 		<field name="checked_out_time" type="hidden" filter="unset" />
 

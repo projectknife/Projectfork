@@ -10,14 +10,14 @@
 defined('_JEXEC') or die();
 
 
-jimport('joomla.application.component.controllerform');
+jimport('projectfork.application.json.controllerform');
 
 
 /**
  * Projectfork Comment Form Controller
  *
  */
-class ProjectforkControllerCommentform extends JControllerForm
+class ProjectforkControllerCommentform extends ProjectforkControllerFormJSON
 {
     /**
      * The item view name.
@@ -32,13 +32,6 @@ class ProjectforkControllerCommentform extends JControllerForm
      * @var    string
      **/
     protected $view_list = 'comments';
-
-    /**
-     * The id of the current item.
-     *
-     * @var    integer
-     **/
-    protected $id = 0;
 
 
     /**
@@ -165,7 +158,7 @@ class ProjectforkControllerCommentform extends JControllerForm
      *
      * @return    void
      */
-    public function save($key = null, $url_var = 'id')
+    /*public function save($key = null, $url_var = 'id')
     {
         $id     = (int) JRequest::getVar($url_var);
         $result = parent::save($key, $url_var);
@@ -203,7 +196,7 @@ class ProjectforkControllerCommentform extends JControllerForm
         echo json_encode($data);
 
         JFactory::getApplication()->close();
-    }
+    }*/
 
 
     /**

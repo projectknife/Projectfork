@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_comments` (
   `item_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent item ID',
   `context` varchar(32) NOT NULL COMMENT 'Context reference',
   `title` varchar(128) NOT NULL COMMENT 'The context item title',
+  `alias` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `description` text NOT NULL COMMENT 'Comment content',
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Comment creation date',
   `created_by` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Comment author',
@@ -17,6 +18,8 @@ CREATE TABLE IF NOT EXISTS `#__pf_comments` (
   `parent_id` int(10) unsigned NOT NULL COMMENT 'Adjacency List Reference ID',
   `lft` int(11) NOT NULL COMMENT 'Nested set lft.',
   `rgt` int(11) NOT NULL COMMENT 'Nested set rgt.',
+  `level` int(10) unsigned NOT NULL COMMENT 'Nested comment level',
+  `path` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_projectid` (`project_id`),
   KEY `idx_createdby` (`created_by`),
@@ -25,7 +28,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_comments` (
   KEY `idx_state` (`state`),
   KEY `idx_parentid` (`parent_id`),
   KEY `idx_nested` (`lft`,`rgt`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork item comments';
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork item comments';
 
 CREATE TABLE IF NOT EXISTS `#__pf_files` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'File ID',

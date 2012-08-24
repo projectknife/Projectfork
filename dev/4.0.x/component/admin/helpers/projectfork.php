@@ -34,36 +34,45 @@ class ProjectforkHelper
             'index.php?option=com_projectfork&view=dashboard',
             ($view == 'dashboard')
         );
-        JSubMenuHelper::addEntry(
-        JText::_('COM_PROJECTFORK_SUBMENU_CATEGORIES'),
-        'index.php?option=com_categories&extension=com_projectfork',
-        ($view == 'categories')
-        );
+
         JSubMenuHelper::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_PROJECTS'),
             'index.php?option=com_projectfork&view=projects',
             ($view == 'projects')
         );
+
+        if ($view == 'projects' || $view == 'categories') {
+                JSubMenuHelper::addEntry(
+                JText::_('COM_PROJECTFORK_SUBMENU_CATEGORIES'),
+                'index.php?option=com_categories&extension=com_projectfork',
+                ($view == 'categories')
+            );
+        }
+
         JSubMenuHelper::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_MILESTONES'),
             'index.php?option=com_projectfork&view=milestones',
             ($view == 'milestones')
         );
+
         JSubMenuHelper::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS'),
             'index.php?option=com_projectfork&view=tasklists',
             ($view == 'tasklists')
         );
+
         JSubMenuHelper::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_TASKS'),
             'index.php?option=com_projectfork&view=tasks',
             ($view == 'tasks')
         );
+
         JSubMenuHelper::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_TIME_TRACKING'),
             'index.php?option=com_projectfork&view=timesheet',
             ($view == 'timesheet')
         );
+
         JSubMenuHelper::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_DISCUSSIONS'),
             'index.php?option=com_projectfork&view=topics',
@@ -82,6 +91,12 @@ class ProjectforkHelper
                 ($view == 'replies')
             );
         }
+
+        JSubMenuHelper::addEntry(
+            JText::_('COM_PROJECTFORK_SUBMENU_COMMENTS'),
+            'index.php?option=com_projectfork&view=comments',
+            ($view == 'comments')
+        );
     }
 
 
