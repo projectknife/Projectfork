@@ -36,70 +36,11 @@ class ProjectforkModelComments extends JModelList
                 'a.modified_by', 'a.checked_out',
                 'a.checked_out_time', 'a.attribs',
                 'a.access', 'access_level',
-                'a.state, a.context'
+                'a.state, a.context, a.lft'
             );
         }
 
         parent::__construct($config);
-    }
-
-
-    /**
-     * Method to auto-populate the model state.
-     * Note: Calling getState in this method will result in recursion.
-     *
-     * @return    void
-     */
-    protected function populateState($ordering = 'a.created', $direction = 'desc')
-    {
-        // Initialise variables.
-        $app = JFactory::getApplication();
-
-        // Adjust the context to support modal layouts.
-        if ($layout = JRequest::getVar('layout')) $this->context .= '.' . $layout;
-
-        $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
-        $this->setState('filter.search', $search);
-
-        $author_id = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
-        $this->setState('filter.author_id', $author_id);
-
-        $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
-        $this->setState('filter.published', $published);
-
-        $context = $this->getUserStateFromRequest($this->context . '.filter.context', 'filter_context', '');
-        $this->setState('filter.context', $context);
-
-        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
-        $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
-
-        // List state information.
-        parent::populateState($ordering, $direction);
-    }
-
-
-    /**
-     * Method to get a store id based on model configuration state.
-     *
-     * This is necessary because the model is used by the component and
-     * different modules that might need different sets of data or different
-     * ordering requirements.
-     *
-     * @param     string    $id    A prefix for the store id.
-     *
-     * @return    string           A store id.
-     */
-    protected function getStoreId($id = '')
-    {
-        // Compile the store id.
-        $id .= ':' . $this->getState('filter.search');
-        $id .= ':' . $this->getState('filter.published');
-        $id .= ':' . $this->getState('filter.access');
-        $id .= ':' . $this->getState('filter.author_id');
-        $id .= ':' . $this->getState('filter.project');
-
-        return parent::getStoreId($id);
     }
 
 
@@ -175,9 +116,15 @@ class ProjectforkModelComments extends JModelList
             $query->where('a.context = ' . $db->quote($context));
         }
 
+        // Filter by item_id
+        $item_id = $this->getState('filter.item_id');
+        if (is_numeric($item_id)) {
+            $query->where('a.item_id = ' . $db->quote($context));
+        }
+
         // Filter by search in title.
         $search = $this->getState('filter.search');
-        if (!empty($search)) {
+        if (!empty($search) && !is_numeric($item_id)) {
             if (stripos($search, 'id:') === 0) {
                 $query->where('a.id = '.(int) substr($search, 3));
             }
@@ -274,5 +221,72 @@ class ProjectforkModelComments extends JModelList
 
         // Return the result
         return $options;
+    }
+
+
+    /**
+     * Method to auto-populate the model state.
+     * Note: Calling getState in this method will result in recursion.
+     *
+     * @return    void
+     */
+    protected function populateState($ordering = 'a.created', $direction = 'desc')
+    {
+        // Initialise variables.
+        $app = JFactory::getApplication();
+
+        // Adjust the context to support modal layouts.
+        if ($layout = JRequest::getVar('layout')) $this->context .= '.' . $layout;
+
+        $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
+        $this->setState('filter.search', $search);
+
+        if (is_numeric($search)) {
+            $this->setState('filter.search', '');
+            $this->setState('filter.item_id', $search);
+        }
+        else {
+            $this->setState('filter.item_id', '');
+        }
+
+        $author_id = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
+        $this->setState('filter.author_id', $author_id);
+
+        $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+        $this->setState('filter.published', $published);
+
+        $context = $this->getUserStateFromRequest($this->context . '.filter.context', 'filter_context', '');
+        $this->setState('filter.context', $context);
+
+        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $this->setState('filter.project', $project);
+        ProjectforkHelper::setActiveProject($project);
+
+        // List state information.
+        parent::populateState($ordering, $direction);
+    }
+
+
+    /**
+     * Method to get a store id based on model configuration state.
+     *
+     * This is necessary because the model is used by the component and
+     * different modules that might need different sets of data or different
+     * ordering requirements.
+     *
+     * @param     string    $id    A prefix for the store id.
+     *
+     * @return    string           A store id.
+     */
+    protected function getStoreId($id = '')
+    {
+        // Compile the store id.
+        $id .= ':' . $this->getState('filter.search');
+        $id .= ':' . $this->getState('filter.published');
+        $id .= ':' . $this->getState('filter.access');
+        $id .= ':' . $this->getState('filter.author_id');
+        $id .= ':' . $this->getState('filter.project');
+
+        return parent::getStoreId($id);
     }
 }
