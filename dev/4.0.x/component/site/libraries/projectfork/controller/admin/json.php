@@ -26,17 +26,17 @@ class ProjectforkControllerAdminJSON extends JControllerAdmin
      */
     public function publish()
     {
-        $data = array();
-        $data['success']  = "true";
-        $data['messages'] = array();
-        $data['data']     = array();
+        $rdata = array();
+        $rdata['success']  = "true";
+        $rdata['messages'] = array();
+        $rdata['data']     = array();
 
         // Check for request forgeries
         if (!JSession::checkToken()) {
-            $data['success']    = false;
-            $data['messages'][] = JText::_('JINVALID_TOKEN');
+            $rdata['success']    = false;
+            $rdata['messages'][] = JText::_('JINVALID_TOKEN');
 
-            $this->sendResponse($data);
+            $this->sendResponse($rdata);
         }
 
         // Get items to publish from the request.
@@ -46,8 +46,8 @@ class ProjectforkControllerAdminJSON extends JControllerAdmin
         $value = JArrayHelper::getValue($data, $task, 0, 'int');
 
         if (empty($cid)) {
-            $data['success']    = "false";
-            $data['messages'][] = JText::_($this->text_prefix . '_NO_ITEM_SELECTED');
+            $rdata['success']    = "false";
+            $rdata['messages'][] = JText::_($this->text_prefix . '_NO_ITEM_SELECTED');
         }
         else {
             // Get the model.
@@ -58,8 +58,8 @@ class ProjectforkControllerAdminJSON extends JControllerAdmin
 
             // Publish the items.
             if (!$model->publish($cid, $value)) {
-                 $data['success']    = "false";
-                 $data['messages'][] = $model->getError();
+                 $rdata['success']    = "false";
+                 $rdata['messages'][] = $model->getError();
             }
             else {
                 if ($value == 1) {
@@ -75,12 +75,12 @@ class ProjectforkControllerAdminJSON extends JControllerAdmin
                     $ntext = $this->text_prefix . '_N_ITEMS_TRASHED';
                 }
 
-                $data['success']    = "true";
-                $data['messages'][] = JText::plural($ntext, count($cid));
+                $rdata['success']    = "true";
+                $rdata['messages'][] = JText::plural($ntext, count($cid));
             }
         }
 
-        $this->sendResponse($data);
+        $this->sendResponse($rdata);
     }
 
 
@@ -189,6 +189,15 @@ class ProjectforkControllerAdminJSON extends JControllerAdmin
 
         // Change the suggested filename.
         JResponse::setHeader('Content-Disposition', 'attachment;filename="' . $this->view_list . '.json"');
+
+        foreach($data AS $key => $value)
+        {
+            if (is_array($value)) {
+                if(count($value) == 0) {
+                    unset($data[$key]);
+                }
+            }
+        }
 
         // Output the JSON data.
         echo json_encode($data);

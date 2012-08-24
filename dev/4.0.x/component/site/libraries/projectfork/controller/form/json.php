@@ -74,8 +74,6 @@ class ProjectforkControllerFormJSON extends JControllerForm
      * @param     string     $key    The name of the primary key of the URL variable.
      *
      * @return    boolean            True if access level checks pass, false otherwise.
-     *
-     * @since     11.1
      */
     public function cancel($key = null)
     {
@@ -93,11 +91,11 @@ class ProjectforkControllerFormJSON extends JControllerForm
         }
 
         // Initialise variables.
-        $app = JFactory::getApplication();
-        $model = $this->getModel();
-        $table = $model->getTable();
+        $app     = JFactory::getApplication();
+        $model   = $this->getModel();
+        $table   = $model->getTable();
         $checkin = property_exists($table, 'checked_out');
-        $context = "$this->option.edit . $this->context";
+        $context = "$this->option.edit.$this->context";
 
         if (empty($key)) {
             $key = $table->getKeyName();
@@ -112,7 +110,6 @@ class ProjectforkControllerFormJSON extends JControllerForm
                 // Somehow the person just went to the form - we don't allow that.
                 $data['success']    = "false";
                 $data['messages'][] = JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $recordId);
-                $data['messages'][] = $this->getError();
 
                 $this->sendResponse($data);
             }
@@ -122,7 +119,6 @@ class ProjectforkControllerFormJSON extends JControllerForm
                     // Check-in failed, go back to the record and display a notice.
                     $data['success']    = "false";
                     $data['messages'][] = JText::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError());
-                    $data['messages'][] = $this->getError();
 
                     $this->sendResponse($data);
                 }
@@ -166,7 +162,7 @@ class ProjectforkControllerFormJSON extends JControllerForm
         $table = $model->getTable();
         $data  = JRequest::getVar('jform', array(), 'post', 'array');
         $checkin = property_exists($table, 'checked_out');
-        $context = "$this->option.edit . $this->context";
+        $context = "$this->option.edit.$this->context";
         $task = $this->getTask();
 
         // Determine the name of the primary key for the data.
