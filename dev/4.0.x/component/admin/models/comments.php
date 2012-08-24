@@ -126,6 +126,9 @@ class ProjectforkModelComments extends JModelList
         );
         $query->from('#__pf_comments AS a');
 
+        // Do not include the root node
+        $query->where('a.alias != ' . $db->quote('root'));
+
         // Join over the users for the checked out user.
         $query->select('uc.name AS editor');
         $query->join('LEFT', '#__users AS uc ON uc.id = a.checked_out');
