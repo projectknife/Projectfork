@@ -61,9 +61,7 @@ $uid	    = $user->get('id');
 			            <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
     			        <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
     			    </div>
-                    <?php if($uid) : ?>
-
-                    <?php endif; ?>
+                    <div class="clearfix"> </div>
 				</div>
 			</div>
 

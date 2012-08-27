@@ -54,20 +54,21 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                             <i class="icon-remove"></i>
                         </button>
                     </div>
-                    <div class="filter-category btn-group pull-right">
+                    <div class="filter-category btn-group">
                         <select name="filter_category" class="inputbox input-medium" onchange="this.form.submit()">
                             <option value=""><?php echo JText::_('JOPTION_SELECT_CATEGORY');?></option>
                             <?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_projectfork'), 'value', 'text', $this->state->get('filter.category'));?>
                         </select>
                     </div>
                     <?php if (!$this->access->get('project.edit.state') && !$this->access->get('project.edit')) : ?>
-                        <div class="filter-author btn-group pull-right">
+                        <div class="filter-author btn-group">
                             <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
                                 <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
                             </select>
                         </div>
                     <?php endif; ?>
+                    <div class="clearfix"> </div>
                 </div>
             </div>
 
