@@ -67,7 +67,7 @@ foreach($folders AS $plg_folder_name)
     unset($elements[0]);
     unset($elements[1]);
 
-    $plg_name = implode('_', $plg_folder_name);
+    $plg_name = implode('_', $elements);
 
     $manifest_path = $source_plg_path .'/' . $plg_folder_name . '/' . $plg_name . '.xml';
 
