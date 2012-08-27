@@ -135,12 +135,13 @@ abstract class modPFstatsDistHelper
             // Calculate the amount of unassigned tasks
             $unassigned = $total - $assigned;
 
+            if ($unassigned) {
+                $obj_unassigned = new stdclass();
+                $obj_unassigned->data  = $unassigned;
+                $obj_unassigned->label = JText::_('MOD_PF_STATS_DIST_UNASSIGNED');
 
-            $obj_unassigned = new stdclass();
-            $obj_unassigned->data  = $unassigned;
-            $obj_unassigned->label = JText::_('MOD_PF_STATS_DIST_UNASSIGNED');
-
-            $data[] = $obj_unassigned;
+                $data[] = $obj_unassigned;
+            }
         }
 
 
@@ -278,11 +279,13 @@ abstract class modPFstatsDistHelper
             // Calculate the amount of unassigned tasks
             $unassigned = $total - $assigned;
 
-            $obj_unassigned = new stdclass();
-            $obj_unassigned->data  = $unassigned;
-            $obj_unassigned->label = JText::_('MOD_PF_STATS_DIST_UNASSIGNED');
+            if ($unassigned) {
+                $obj_unassigned = new stdclass();
+                $obj_unassigned->data  = $unassigned;
+                $obj_unassigned->label = JText::_('MOD_PF_STATS_DIST_UNASSIGNED');
 
-            $data[] = $obj_unassigned;
+                $data[] = $obj_unassigned;
+            }
         }
 
 
