@@ -2,7 +2,7 @@
 <extension type="component" version="1.6" method="upgrade">
 	<name>com_projectfork</name>
 	<author>Tobias Kuhn</author>
-	<creationDate>July 2012</creationDate>
+	<creationDate>August 2012</creationDate>
 	<copyright>(C) 2006 - 2012 Tobias Kuhn. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>support@projectfork.net</authorEmail>
@@ -31,6 +31,7 @@
 		<folder>assets</folder>
 		<folder>controllers</folder>
 		<folder>helpers</folder>
+		<folder>libraries</folder>
 		<folder>models</folder>
 		<folder>views</folder>
 	</files>
