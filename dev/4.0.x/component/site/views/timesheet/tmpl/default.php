@@ -124,8 +124,8 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                 	<div class="span3">
                 		<div class="thumbnail thumbnail-timesheet">
                 			<h6><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE_TOTAL');?></h6>
-                			<h2><?php echo number_format($this->total_billable, 2);?></h2>
-                			<h5><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (<?php echo number_format($this->total_estimated_cost, 2);?>)</h5>
+                			<h2><?php echo JHtml::_('projectfork.moneyFormat', $this->total_billable);?></h2>
+                			<h5><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (<?php echo JHtml::_('projectfork.moneyFormat', $this->total_estimated_cost);?>)</h5>
                 		</div>
                 	</div>
                 </div>
@@ -214,10 +214,10 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 			        		<?php echo JHtml::_('date', $item->log_date, JText::_('DATE_FORMAT_LC4')); ?>
 			        	</td>
 			        	<td>
-			        		<?php echo number_format($item->rate, 2);?>
+                            <?php echo JHtml::_('projectfork.moneyFormat', $item->rate);?>
 			        	</td>
 			        	<td>
-			        		<?php echo number_format($item->billable_total, 2);?>
+                            <?php echo JHtml::_('projectfork.moneyFormat', $item->billable_total);?>
 			        	</td>
 			        </tr>
 
@@ -235,7 +235,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
             			<th></th>
             			<th></th>
 	            		<th></th>
-	            		<th><?php echo number_format($list_total_billable, 2);?></th>
+	            		<th><?php echo JHtml::_('projectfork.moneyFormat', $list_total_billable);?></th>
             		</tr>
             	</tfoot>
             </table>

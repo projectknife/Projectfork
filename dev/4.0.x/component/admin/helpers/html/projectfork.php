@@ -19,10 +19,10 @@ abstract class JHtmlProjectfork
     /**
      * Renders an input field with a select button for choosing a project
      *
-     * @param     int     $value         The state value
-     * @param     bool    $can_change
+     * @param     int       $value         The state value
+     * @param     bool      $can_change    
      *
-     * @return    string                 The input field html
+     * @return    string                   The input field html
      */
     public static function filterProject($value = 0, $can_change = true)
     {
@@ -84,9 +84,9 @@ abstract class JHtmlProjectfork
     /**
      * Translates a numerical priority value to a string label
      *
-     * @param    int      $value         The priority
+     * @param     int       $value    The priority
      *
-     * @return   string   $html          The corresponding string label
+     * @return    string    $html     The corresponding string label
      */
     public static function priorityToString($value = 0)
     {
@@ -132,7 +132,7 @@ abstract class JHtmlProjectfork
     /**
      * Returns priority select list option objects
      *
-     * @return   array   $options    The object list
+     * @return    array    $options    The object list
      */
     public static function priorityOptions()
     {
@@ -148,12 +148,45 @@ abstract class JHtmlProjectfork
 
 
     /**
+     * Method to format a floating point value according the configured monetary settings
+     *
+     * @param     float    $value      The amount of money
+     * @param     int      $project    Optional project id from which to use the settings
+     *
+     * @return    array    $options    The object list
+     */
+    public static function moneyFormat($value = 0.00, $project = 0)
+    {
+        $value  = (float) $value;
+        $params = ProjectforkHelper::getProjectParams((int) $project);
+
+        $nf_dec   = $params->get('decimal_delimiter', '.');
+        $nf_th    = $params->get('thousands_delimiter', ',');
+        $currency = $params->get('currency_sign', '$');
+
+        $html = array();
+
+        if ($params->get('currency_position') == '0') {
+            $html[] = $currency . '&nbsp;';
+        }
+
+        $html[] = number_format($value, 2, $nf_dec, $nf_th);
+
+        if ($params->get('currency_position') == '1') {
+            $html[] = '&nbsp;' . $currency;
+        }
+
+        return implode('', $html);
+    }
+
+
+    /**
      * Returns a truncated text. Also strips html tags
      *
-     * @param    string    $text     The text to truncate
-     * @param    int       $chars    The new length of the string
+     * @param     string    $text     The text to truncate
+     * @param     int       $chars    The new length of the string
      *
-     * @return   string              The truncated string
+     * @return    string              The truncated string
      */
     public static function truncate($text = '', $chars = 40)
     {
@@ -170,10 +203,10 @@ abstract class JHtmlProjectfork
      * Adds a JS script declaration to the doc header which enables
      * ajax reordering of list items.
      *
-     * @param    string    $list     The CSS list id selector
-     * @param    string    $view     The component view
+     * @param     string    $list    The CSS list id selector
+     * @param     string    $view    The component view
      *
-     * @return   void
+     * @return    void               
      */
     public static function ajaxReorder($list, $view)
     {
@@ -238,7 +271,7 @@ abstract class JHtmlProjectfork
      * Adds a JS script declaration to the doc header which enables
      * ajax based task completition through checkboxes.
      *
-     * @return   void
+     * @return    void    
      */
     public static function ajaxCompleteTask()
     {
@@ -290,7 +323,7 @@ abstract class JHtmlProjectfork
     /**
      * Loads projectfork CSS files
      *
-     * @return   void
+     * @return    void    
      */
     public static function CSS()
     {
@@ -313,7 +346,7 @@ abstract class JHtmlProjectfork
     /**
      * Loads projectfork JS files
      *
-     * @return   void
+     * @return    void    
      */
     public static function JS()
     {
@@ -336,7 +369,7 @@ abstract class JHtmlProjectfork
     /**
      * Loads bootstrap CSS files
      *
-     * @return   void
+     * @return    void    
      */
     public static function boostrapCSS()
     {
@@ -358,7 +391,7 @@ abstract class JHtmlProjectfork
     /**
      * Loads bootstrap JS files
      *
-     * @return   void
+     * @return    void    
      */
     public static function boostrapJS()
     {
@@ -379,7 +412,7 @@ abstract class JHtmlProjectfork
     /**
      * Loads bootstrap JS files
      *
-     * @return   void
+     * @return    void    
      */
     public static function jQuery()
     {
@@ -401,7 +434,7 @@ abstract class JHtmlProjectfork
     /**
      * Loads jquery-flot JS files
      *
-     * @return   void
+     * @return    void    
      */
     public static function jQueryFlot()
     {

@@ -6,7 +6,7 @@
         <field type="spacer" hr="true"/>
         <field type="text" name="currency_code" label="COM_PROJECTFORK_CONFIG_CURRENCY_CODE_LABEL" description="COM_PROJECTFORK_CONFIG_CURRENCY_CODE_DESC" default="USD" maxlength="3" size="10"/>
         <field type="text" name="currency_sign" label="COM_PROJECTFORK_CONFIG_CURRENCY_SIGN_LABEL" description="COM_PROJECTFORK_CONFIG_CURRENCY_SIGN_DESC" default="$" maxlength="1" size="10"/>
-        <field name="currency_position" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_CURRENCY_POS_LABEL" description="COM_PROJECTFORK_CONFIG_CURRENCY_POS_DESC">
+        <field name="currency_position" type="radio" default="0" label="COM_PROJECTFORK_CONFIG_CURRENCY_POS_LABEL" description="COM_PROJECTFORK_CONFIG_CURRENCY_POS_DESC">
 		    <option value="0">COM_PROJECTFORK_CONFIG_CURRENCY_POS_BEFORE_OPTION</option>
 			<option value="1">COM_PROJECTFORK_CONFIG_CURRENCY_POS_AFTER_OPTION</option>
 		</field>

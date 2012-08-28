@@ -27,7 +27,7 @@
             <option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-        <field name="rate" type="price"
+        <field name="rate" type="money"
 			label="COM_PROJECTFORK_FIELD_RATE_LABEL" description="COM_PROJECTFORK_FIELD_RATE_DESC"
         />
 		<field name="state" type="list" label="JSTATUS"

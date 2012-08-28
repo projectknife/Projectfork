@@ -43,7 +43,7 @@
         <field name="estimate" type="text" size="10" default="1"
 			label="COM_PROJECTFORK_FIELD_TIME_ESTIMATE" description="COM_PROJECTFORK_FIELD_TASK_TIME_ESTIMATE_DESC"
         />
-        <field name="rate" type="price"
+        <field name="rate" type="money"
 			label="COM_PROJECTFORK_FIELD_RATE_LABEL" description="COM_PROJECTFORK_FIELD_RATE_DESC"
         />
 		<field name="modified" type="calendar" class="readonly"

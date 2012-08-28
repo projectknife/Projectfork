@@ -100,6 +100,44 @@ class ProjectforkHelper
     }
 
 
+    public function getProjectParams($id = 0)
+    {
+        static $cache = array();
+
+        $project = ($id > 0) ? (int) $id : ProjectforkHelper::getActiveProjectId();
+
+        if (array_key_exists($id, $cache)) {
+            return $cache[$project];
+        }
+
+        $params = JComponentHelper::GetParams('com_projectfork');
+
+        // Get the project parameters if they exist
+        if ($project) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('attribs')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . $db->quote($project));
+
+            $db->setQuery((string) $query);
+            $attribs = $db->loadResult();
+
+            if (!empty($attribs)) {
+                $registry = new JRegistry();
+                $registry->loadString($attribs);
+
+                $params->merge($registry);
+            }
+        }
+
+        $cache[$project] = $params;
+
+        return $cache[$project];
+    }
+
+
     /**
      * Calculates and returns all available actions for the given asset
      *
