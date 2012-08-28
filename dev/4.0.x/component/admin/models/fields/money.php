@@ -11,17 +11,17 @@ defined('_JEXEC') or die();
 
 
 /**
- * Field to enter a price (decimal value).
+ * Field to enter a monetary, decimal value.
  *
  */
-class JFormFieldPrice extends JFormField
+class JFormFieldMoney extends JFormField
 {
     /**
      * The form field type.
      *
      * @var    string
      */
-    public $type = 'Price';
+    public $type = 'Money';
 
 
     /**
@@ -38,7 +38,7 @@ class JFormFieldPrice extends JFormField
 
         if ($js_loaded === false) {
             // Create js function
-            $js[] = "function setPriceFieldValue(fid)";
+            $js[] = "function setMoneyFieldValue(fid)";
             $js[] = "{";
             $js[] = "    var v1 = document.id(fid + '_v1').get('value');";
             $js[] = "    var v2 = document.id(fid + '_v2').get('value');";
@@ -65,22 +65,34 @@ class JFormFieldPrice extends JFormField
         // Initialize some field attributes.
         $readonly  = ((string) $this->element['readonly'] == 'true') ? ' readonly="readonly"' : '';
         $disabled  = ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"' : '';
-        $currency  = ((string) $this->element['currency'] != '') ? $this->element['currency'] : '&#36;';
         $maxlength = ((int) $this->element['maxlength'] != '') ? $this->element['maxlength'] : 4;
 
         if ($readonly == '' && $disabled == '') {
-            $onchange = ' onchange="setPriceFieldValue(\'' . $this->id  . '\');"';
+            $onchange = ' onchange="setMoneyFieldValue(\'' . $this->id  . '\');"';
         }
         else {
             $onchange = '';
         }
 
+        // Get params
+        $params = ProjectforkHelper::getProjectParams();
+        $currency = $params->get('currency_sign');
+        $decimal  = $params->get('decimal_delimiter');
+
+
         // Prepare HTML
+        if ($params->get('currency_position') == '0') {
+            $html[] = '<span style="float:left;margin: 5px 0px 0px 0;">'  . $currency . '</span>';
+        }
+
         $html[] = '<input type="text" name="' . $this->name . '_v1" id="' . $this->id . '_v1" size="10" maxlength="' . $maxlength . '" value="' . $v1 . '" ' . $onchange . $disabled . $readonly . '/>';
-        $html[] = '<span style="float:left;margin: 5px 0px 0px 0;"><strong>,</strong>&nbsp;&nbsp;</span>';
+        $html[] = '<span style="float:left;margin: 5px 0px 0px 0;"><strong>' . $decimal . '</strong>&nbsp;&nbsp;</span>';
         $html[] = '<input type="text" name="' . $this->name . '_v2" id="' . $this->id . '_v2" size="10" maxlength="2" value="' . $v2 . '" ' . $onchange . $disabled . $readonly . '/>';
         $html[] = '<input type="hidden" name="' . $this->name . '" id="' . $this->id . '" value="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '" ' . $disabled . $readonly . '/>';
-        $html[] = '<span style="float:left;margin: 5px 0px 0px 0;">'  . $currency . '</span>';
+
+        if ($params->get('currency_position') == '1') {
+            $html[] = '<span style="float:left;margin: 5px 0px 0px 0;">'  . $currency . '</span>';
+        }
 
         // Return HTML
         return implode("\n", $html);
