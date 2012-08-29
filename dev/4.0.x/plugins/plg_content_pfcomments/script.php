@@ -69,9 +69,6 @@ class plgContentPfcommentsInstallerScript
             $db->setQuery((string) $query);
             $id = (int) $db->loadResult();
 
-            $app = JFactory::getApplication();
-            $app->enqueueMessage("ID = " . $id . " :: QUERY = " . $query);
-
             if (!$id) return true;
 
             // Update params
