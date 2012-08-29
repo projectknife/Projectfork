@@ -191,7 +191,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 			        	</td>
 			        	<td>
 			        		<?php
-                            $this->menu->start(array('class' => 'btn-mini'));
+                            $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
                             $this->menu->itemEdit('timeform', $item->id, ($can_edit || $can_edit_own));
                             $this->menu->itemTrash('timesheet', $i, $can_change);
                             $this->menu->end();

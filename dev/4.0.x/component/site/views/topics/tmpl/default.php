@@ -83,16 +83,14 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                 $can_edit_own = ($access->get('topic.edit.own') && $item->created_by == $uid);
             ?>
                 <div class="well well-<?php echo $k;?>">
-                    <div class="btn-group pull-right">
-                        <?php
-                            $this->menu->start(array('class' => 'btn-mini'));
-                            $this->menu->itemEdit('topicform', $item->id, ($can_edit || $can_edit_own));
-                            $this->menu->itemTrash('topics', $i, $can_change);
-                            $this->menu->end();
+                    <?php
+                        $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
+                        $this->menu->itemEdit('topicform', $item->id, ($can_edit || $can_edit_own));
+                        $this->menu->itemTrash('topics', $i, $can_change);
+                        $this->menu->end();
 
-                            echo $this->menu->render(array('class' => 'btn-mini'));
-                        ?>
-                    </div>
+                        echo $this->menu->render(array('class' => 'btn-mini'));
+                    ?>
                     <div style="display: none !important;">
                         <?php echo JHtml::_('grid.id', $i, $item->id); ?>
                     </div>
