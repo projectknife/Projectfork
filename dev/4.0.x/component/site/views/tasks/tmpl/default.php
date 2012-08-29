@@ -88,7 +88,7 @@ JHtml::_('projectfork.ajaxCompleteTask');
                     <?php  else : ?>
                         <input type="hidden" name="filter_assigned" id="filter_assigned" value="<?php echo $this->escape($this->state->get('filter.assigned'));?>"/>
                     <?php endif; ?>
-                    <?php if ($this->access->get('task.edit.state') || $this->access->authorise('task.edit')) : ?>
+                    <?php if ($this->access->get('task.edit.state') || $this->access->get('task.edit')) : ?>
                         <div class="filter-status btn-group">
                                 <select onchange="this.form.submit()" class="inputbox" name="filter_published" id="filter_published">
                                     <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
