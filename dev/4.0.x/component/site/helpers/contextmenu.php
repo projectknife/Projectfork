@@ -41,14 +41,20 @@ class ProjectforkHelperContextMenu
     }
 
 
-    public function render()
+    public function render($disabled_options = array())
     {
+        $class = '';
+
+        if(isset($disabled_options['class']) && $disabled_options['class'] != '') {
+            $class = ' '.$disabled_options['class'];
+        }
+
         if(count($this->items) <= 2) {
             $this->items = array();
 
             $html = array();
             $html[] = '<div class="btn-group">';
-            $html[] = '    <a class="btn disabled" href="javascript: void(0);"><span class="caret"></span></a>';
+            $html[] = '    <a class="btn disabled' . $class . '" href="javascript: void(0);"><span class="caret"></span></a>';
             $html[] = '</div>';
 
             return implode("\n", $html);
@@ -67,6 +73,7 @@ class ProjectforkHelperContextMenu
     {
         $class  = '';
         $title  = '';
+        $pull   = '';
         $single = false;
 
         if(isset($options['class']) && $options['class'] != '') {
@@ -81,10 +88,14 @@ class ProjectforkHelperContextMenu
             $single = (bool) $options['single-button'];
         }
 
+        if(isset($options['pull']) && $options['pull'] != '') {
+            $pull = ' pull-' . $options['pull'];
+        }
+
         $html = array();
 
         if(!$single) {
-            $html[] = '<div class="btn-group">';
+            $html[] = '<div class="btn-group' . $pull . '">';
             $html[] = '    <a class="btn dropdown-toggle'.$class.'" data-toggle="dropdown" href="#">'.$title.'<span class="caret"></span></a>';
             $html[] = '    <ul class="dropdown-menu">';
         }

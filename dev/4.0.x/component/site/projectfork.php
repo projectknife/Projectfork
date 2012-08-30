@@ -1,39 +1,35 @@
 <?php
 /**
-* @package   Projectfork
-* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
-*
-* This file is part of Projectfork.
-*
-* Projectfork is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*
-* Projectfork is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
-**/
+ * @package      Projectfork
+ *
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ */
 
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die();
 
 
 // Include dependancies
 jimport('joomla.application.component.controller');
+jimport('joomla.application.component.helper');
 
-require_once(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'helpers'.DS.'projectfork.php');
-require_once JPATH_COMPONENT.DS.'helpers'.DS.'route.php';
-require_once(JPATH_COMPONENT.DS.'helpers'.DS.'toolbar.php');
-require_once(JPATH_COMPONENT.DS.'helpers'.DS.'contextmenu.php');
+// Load the backend language file into the frontend
+JFactory::getLanguage()->load('com_projectfork', JPATH_ADMINISTRATOR);
+JFactory::getLanguage()->load('com_projectfork', JPATH_ADMINISTRATOR . '/components/com_projectfork');
 
+// Register classes to autoload
+JLoader::register('ProjectforkHelper',            JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
+JLoader::register('ProjectforkHelperAccess',      JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+JLoader::register('ProjectforkHelperRoute',       JPATH_BASE . '/components/com_projectfork/helpers/route.php');
+JLoader::register('ProjectforkHelperToolbar',     JPATH_BASE . '/components/com_projectfork/helpers/toolbar.php');
+JLoader::register('ProjectforkHelperContextMenu', JPATH_BASE . '/components/com_projectfork/helpers/contextmenu.php');
 
 // Add include paths
-JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'tables');
+JTable::addIncludePath(JPATH_ADMINISTRATOR . 'components/com_projectfork/tables');
+JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/html');
+
+JLoader::registerPrefix('Projectfork', JPATH_SITE . '/components/com_projectfork/libraries/projectfork');
 
 
 $controller = JController::getInstance('Projectfork');

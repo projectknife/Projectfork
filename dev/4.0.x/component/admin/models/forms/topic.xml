@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+		<field name="project_id" type="project" label="COM_PROJECTFORK_FIELD_PROJECT_LABEL"
+			description="COM_PROJECTFORK_FIELD_PROJECT_DESC" class="inputbox" size="30"
+			required="true" view="task" submit="true" session="true"
+        />
+        <field name="title" type="text" label="JGLOBAL_TITLE"
+			description="JFIELD_TITLE_DESC" class="inputbox" size="30"
+			required="true"
+        />
+		<field name="description" type="editor" class="inputbox" buttons="true"
+			label="COM_PROJECTFORK_FIELD_DESCRIPTION_LABEL" description="COM_PROJECTFORK_FIELD_DESCRIPTION_DESC"
+            filter="JComponentHelper::filterText"
+		/>
+		<field name="state" type="list" label="JSTATUS"
+			description="JFIELD_PUBLISHED_DESC" class="inputbox"
+			filter="intval" size="1" default="1"
+		>
+			<option value="1">JPUBLISHED</option>
+			<option value="0">JUNPUBLISHED</option>
+			<option value="2">JARCHIVED</option>
+			<option value="-2">JTRASHED</option>
+		</field>
+		<field name="access" type="pfaccesslevel" label="JFIELD_ACCESS_LABEL"
+			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" permissions="true"
+			submit="true"
+        />
+        <field name="created_by" type="user"
+			label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_CREATED_BY_DESC"
+        />
+		<field name="modified" type="calendar" class="readonly"
+			label="JGLOBAL_FIELD_MODIFIED_LABEL"
+			size="22" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
+        />
+		<field name="modified_by" type="user"
+		    label="JGLOBAL_FIELD_MODIFIED_BY_LABEL"
+		    class="readonly"
+		    readonly="true"
+		    filter="unset"
+		/>
+		<field
+			name="rules"
+			type="permissions"
+			label="JCONFIG_PERMISSIONS_LABEL"
+			class="inputbox"
+			component="com_projectfork"
+			section="topic"
+        />
+		<field name="id" type="hidden" readonly="true"/>
+		<field name="asset_id" type="hidden" filter="unset"/>
+		<field name="alias" type="hidden" readonly="true"/>
+		<field name="created" type="hidden" readonly="true"/>
+		<field name="checked_out" type="hidden" filter="unset" />
+		<field name="checked_out_time" type="hidden" filter="unset" />
+	</fieldset>
+	<fields name="attribs">
+	    <fieldset name="basic" label="COM_PROJECTFORK_TOPIC_ATTRIBS_FIELDSET_LABEL">
+
+	    </fieldset>
+	</fields>
+</form>

@@ -48,8 +48,14 @@ else {
     // Something went wrong. Delete the menu items and the menu
 
     // Get the Menu model
-    JModel::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_menus/models', 'MenusModel');
-    $menu_model = JModel::getInstance('Menu', 'MenusModel', array('ignore_request' => true));
+    JLoader::register('MenusModelMenu', JPATH_ADMINISTRATOR . '/components/com_menus/models/menu.php');
+
+    if (!class_exists('JModel')) {
+        $menu_model = new MenusModelMenu();
+    }
+    else {
+        $menu_model = JModel::getInstance('Menu', 'MenusModel', array('ignore_request' => true));
+    }
 
     // Find the menu id
     $query = $db->getQuery(true);

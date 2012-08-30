@@ -32,7 +32,9 @@ class ProjectforkViewUser extends JView
 	    $state   = $this->get('State');
         $item    = $this->get('Item');
         $params	 = $state->params;
-        $modules = JFactory::getDocument()->loadRenderer('modules');
+
+        $modules    = JFactory::getDocument()->loadRenderer('modules');
+        $dispatcher	= JDispatcher::getInstance();
 
 
         // Escape strings for HTML output
@@ -44,6 +46,27 @@ class ProjectforkViewUser extends JView
 			JError::raiseError(500, implode("\n", $errors));
 			return false;
 		}
+
+        // Process the content plugins.
+        if ($item) {
+            $item->title = $item->username;
+
+    		// Import comment plugin only
+    		JPluginHelper::importPlugin('content', 'pfcomments');
+
+            // Trigger events
+    		$results = $dispatcher->trigger('onContentPrepare', array ('com_projectfork.user', &$item, &$params, 0));
+
+    		$item->event = new stdClass();
+    		$results = $dispatcher->trigger('onContentAfterTitle', array('com_projectfork.user', &$item, &$params, 0));
+    		$item->event->afterDisplayTitle = trim(implode("\n", $results));
+
+    		$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_projectfork.user', &$item, &$params, 0));
+    		$item->event->beforeDisplayContent = trim(implode("\n", $results));
+
+    		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_projectfork.user', &$item, &$params, 0));
+    		$item->event->afterDisplayContent = trim(implode("\n", $results));
+        }
 
 
         // Assign references

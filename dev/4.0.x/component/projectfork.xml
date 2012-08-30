@@ -2,17 +2,18 @@
 <extension type="component" version="1.6" method="upgrade">
 	<name>com_projectfork</name>
 	<author>Tobias Kuhn</author>
-	<creationDate>July 2012</creationDate>
+	<creationDate>August 2012</creationDate>
 	<copyright>(C) 2006 - 2012 Tobias Kuhn. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>support@projectfork.net</authorEmail>
 	<authorUrl>www.projectfork.net</authorUrl>
-	<version>4.0.0 CEA2</version>
+	<version>4.0.0 CEA3</version>
 	<description>COM_PROJECTFORK_XML_DESCRIPTION</description>
     <scriptfile>com_projectfork.script.php</scriptfile>
 	<install folder="admin">
 		<sql>
 			<file driver="mysql" charset="utf8">_install/mysql/structure.sql</file>
+			<file driver="mysql" charset="utf8">_install/mysql/data.sql</file>
 		</sql>
 	</install>
 	<uninstall folder="admin">
@@ -30,6 +31,7 @@
 		<folder>assets</folder>
 		<folder>controllers</folder>
 		<folder>helpers</folder>
+		<folder>libraries</folder>
 		<folder>models</folder>
 		<folder>views</folder>
 	</files>

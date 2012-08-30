@@ -24,9 +24,9 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 
 // Create shortcuts to some parameters.
 $item    = &$this->item;
+$user	 = &$this->user;
 $params	 = $item->params;
 $canEdit = $item->params->get('access-edit');
-$user	 = JFactory::getUser();
 $uid	 = $user->get('id');
 
 $asset_name = 'com_projectfork.milestone.'.$item->id;
@@ -83,13 +83,18 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
 			<?php endif; ?>
 			<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($this->item->project_slug, $this->item->slug));?>"><i class="icon-th-list"></i> <?php echo $this->item->lists;?> <?php echo JText::_('JGRID_HEADING_TASKLISTS');?></a>
 			<a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($this->item->project_slug, $this->item->slug));?>"><i class="icon-ok"></i> <?php echo $this->item->tasks;?> <?php echo JText::_('JGRID_HEADING_TASKS');?></a>
+            <?php echo $item->event->afterDisplayTitle;?>
 		</div>
 	</div>
 
+    <?php echo $item->event->beforeDisplayContent;?>
+
 	<div class="item-description">
-		<?php echo $this->escape($item->description); ?>
+		<?php echo $this->escape($item->text); ?>
 	</div>
 	<hr />
+
+    <?php echo $item->event->afterDisplayContent;?>
 
     <!--
 	<div class="items-more">

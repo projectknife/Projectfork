@@ -38,7 +38,7 @@ $uid	    = $user->get('id');
 
     <div class="grid">
         <form name="adminForm" id="adminForm" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post">
-            <div class="filters btn-toolbar">
+            <div class="filters btn-toolbar btn-toolbar-top">
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('projectfork.filterProject');?>
                 </div>
@@ -61,9 +61,7 @@ $uid	    = $user->get('id');
 			            <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
     			        <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
     			    </div>
-                    <?php if($uid) : ?>
-
-                    <?php endif; ?>
+                    <div class="clearfix"> </div>
 				</div>
 			</div>
 

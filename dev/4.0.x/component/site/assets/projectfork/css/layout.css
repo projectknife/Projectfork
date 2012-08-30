@@ -101,3 +101,8 @@
 .thumbnail.pull-right{
 	margin: 0 0 10px 10px;
 }
+
+/* Timesheet */
+.thumbnail-timesheet{
+	height: 90px;
+}

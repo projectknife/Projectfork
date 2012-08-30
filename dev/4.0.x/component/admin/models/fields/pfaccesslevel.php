@@ -62,6 +62,8 @@ class JFormFieldPFaccesslevel extends JFormFieldList
         $project_id   = (int) $this->form->getValue('project_id');
         $milestone_id = (int) $this->form->getValue('milestone_id');
         $tasklist_id  = (int) $this->form->getValue('list_id');
+        $topic_id     = (int) $this->form->getValue('topic_id');
+        $task_id      = (int) $this->form->getValue('task_id');
 
 
 		// Initialize some field attributes.
@@ -139,7 +141,7 @@ class JFormFieldPFaccesslevel extends JFormFieldList
 
 
         // Get the field options
-        $options = $this->getOptions($project_id, $milestone_id, $tasklist_id);
+        $options = $this->getOptions($project_id, $milestone_id, $tasklist_id, $topic_id, $task_id);
 
 
 		// Generate the list
@@ -155,7 +157,7 @@ class JFormFieldPFaccesslevel extends JFormFieldList
      * @param     int    $tasklist_id     The parent tasklist id
 	 * @return    array    The list options markup.
 	 */
-    protected function getOptions($project_id = 0, $milestone_id = 0, $tasklist_id = 0)
+    protected function getOptions($project_id = 0, $milestone_id = 0, $tasklist_id = 0, $topic_id = 0, $task_id = 0)
 	{
 	    // Setup vars
         $user      = JFactory::getUser();
@@ -175,6 +177,14 @@ class JFormFieldPFaccesslevel extends JFormFieldList
         if($tasklist_id) {
             $parent_el = 'tasklist';
             $parent_id = $tasklist_id;
+        }
+        if($topic_id) {
+            $parent_el = 'topic';
+            $parent_id = $topic_id;
+        }
+        if($task_id) {
+            $parent_el = 'task';
+            $parent_id = $task_id;
         }
 
 

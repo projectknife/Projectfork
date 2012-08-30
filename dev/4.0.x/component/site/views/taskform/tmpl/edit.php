@@ -1,27 +1,14 @@
 <?php
 /**
-* @package   Projectfork
-* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
-*
-* This file is part of Projectfork.
-*
-* Projectfork is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*
-* Projectfork is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
-**/
+ * @package      Projectfork
+ *
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ */
 
-// no direct access
-defined('_JEXEC') or die;
+defined('_JEXEC') or die();
+
 
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
@@ -42,7 +29,8 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
 		if (task == 'taskform.cancel' || task == 'taskform.setProject' ||
             task == 'taskform.setMilestone' || task == 'taskform.setTasklist' ||
             task == 'taskform.setAccess' || document.formvalidator.isValid(document.id('adminForm'))) {
-			Joomla.submitform(task);
+			<?php echo $this->form->getField('description')->save(); ?>
+            Joomla.submitform(task);
 		} else {
 			alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 		}
@@ -145,6 +133,22 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
     	    </div>
     	    <div class="controls">
     	    	<?php echo $this->form->getInput('end_date'); ?>
+    	    </div>
+    	</div>
+        <div class="formelm control-group">
+    		<div class="control-label">
+    	    	<?php echo $this->form->getLabel('rate'); ?>
+    	    </div>
+    	    <div class="controls">
+    	    	<?php echo $this->form->getInput('rate'); ?>
+    	    </div>
+    	</div>
+        <div class="formelm control-group">
+    		<div class="control-label">
+    	    	<?php echo $this->form->getLabel('estimate'); ?>
+    	    </div>
+    	    <div class="controls">
+    	    	<?php echo $this->form->getInput('estimate'); ?>
     	    </div>
     	</div>
     	<?php if ($this->item->modified_by) : ?>

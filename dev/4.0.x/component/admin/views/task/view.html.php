@@ -1,77 +1,83 @@
 <?php
-// No direct access
-defined('_JEXEC') or die;
+/**
+ * @package      Projectfork
+ *
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ */
+
+defined('_JEXEC') or die();
+
 
 jimport('joomla.application.component.view');
+
 
 class ProjectforkViewTask extends JView
 {
     protected $form;
-	protected $item;
-	protected $state;
+    protected $item;
+    protected $state;
 
 
-	/**
-	 * Display the view
+    /**
+     * Display the view
      *
-	 */
-	public function display($tpl = null)
-	{
+     */
+    public function display($tpl = null)
+    {
+        // Initialiase variables.
+        $this->form  = $this->get('Form');
+        $this->item  = $this->get('Item');
+        $this->state = $this->get('State');
 
-		// Initialiase variables.
-		$this->form	 = $this->get('Form');
-		$this->item	 = $this->get('Item');
-		$this->state = $this->get('State');
+        // Check for errors.
+        if (count($errors = $this->get('Errors'))) {
+            JError::raiseError(500, implode("\n", $errors));
+            return false;
+        }
 
-		// Check for errors.
-		if (count($errors = $this->get('Errors'))) {
-			JError::raiseError(500, implode("\n", $errors));
-			return false;
-		}
+        $this->addToolbar();
 
-		$this->addToolbar();
-		parent::display($tpl);
-	}
+        parent::display($tpl);
+    }
 
 
-	/**
-	 * Add the page title and toolbar.
-	 *
-	 */
-	protected function addToolbar()
-	{
+    /**
+     * Add the page title and toolbar.
+     *
+     */
+    protected function addToolbar()
+    {
         JRequest::setVar('hidemainmenu', true);
 
-		$user		= JFactory::getUser();
-		$userId		= $user->get('id');
-		$isNew		= ($this->item->id == 0);
-		$checkedOut	= !($this->item->checked_out == 0 || $this->item->checked_out == $userId);
-        $canDo		= ProjectforkHelper::getActions('task', $this->item->id);
-		JToolBarHelper::title(JText::_('COM_PROJECTFORK_PAGE_'.($checkedOut ? 'VIEW_TASK' : ($isNew ? 'ADD_TASK' : 'EDIT_TASK'))), 'article-add.png');
+        $uid         = JFactory::getUser()->get('id');
+        $access      = ProjectforkHelper::getActions('task', $this->item->id);
+        $checked_out = !($this->item->checked_out == 0 || $this->item->checked_out == $uid);
+        $is_new      = ($this->item->id == 0);
 
-		// Build the actions for new and existing records.
-		// For new records, check the create permission.
-		if ($isNew) {
-			JToolBarHelper::apply('task.apply');
-			JToolBarHelper::save('task.save');
-			JToolBarHelper::save2new('task.save2new');
-			JToolBarHelper::cancel('task.cancel');
-		}
-		else {
-			// Can't save the record if it's checked out.
-			if (!$checkedOut) {
-				if (($canDo->get('core.edit') || $canDo->get('task.edit')) ||
-                    (($canDo->get('core.edit.own') || $canDo->get('task.edit.own')) &&
-                    $this->item->created_by == $userId))
-                {
-					JToolBarHelper::apply('task.apply');
-					JToolBarHelper::save('task.save');
+        JToolBarHelper::title(JText::_('COM_PROJECTFORK_PAGE_' . ($checked_out ? 'VIEW_TASK' : ($is_new ? 'ADD_TASK' : 'EDIT_TASK'))), 'article-add.png');
+
+        // Build the actions for new and existing records.
+        // For new records, check the create permission.
+        if ($is_new) {
+            JToolBarHelper::apply('task.apply');
+            JToolBarHelper::save('task.save');
+            JToolBarHelper::save2new('task.save2new');
+            JToolBarHelper::cancel('task.cancel');
+        }
+        else {
+            // Can't save the record if it's checked out.
+            if (!$checked_out) {
+                if ($access->get('task.edit') || ($access->get('task.edit.own') && $this->item->created_by == $uid)) {
+                    JToolBarHelper::apply('task.apply');
+                    JToolBarHelper::save('task.save');
                     JToolBarHelper::save2new('task.save2new');
-				}
-			}
+                }
+            }
 
-			JToolBarHelper::save2copy('task.save2copy');
-			JToolBarHelper::cancel('task.cancel', 'JTOOLBAR_CLOSE');
-		}
-	}
+            JToolBarHelper::save2copy('task.save2copy');
+            JToolBarHelper::cancel('task.cancel', 'JTOOLBAR_CLOSE');
+        }
+    }
 }

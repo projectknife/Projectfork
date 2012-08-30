@@ -7,7 +7,7 @@
         />
         <field name="title" type="text" label="JGLOBAL_TITLE"
 			description="JFIELD_TITLE_DESC" class="inputbox" size="30"
-			required="true" 
+			required="true"
         />
 		<field name="description" type="text" class="inputbox" size="60" maxlength="255"
 			label="COM_PROJECTFORK_FIELD_DESCRIPTION_LABEL" description="COM_PROJECTFORK_FIELD_DESCRIPTION_DESC"
@@ -29,15 +29,15 @@
         />
 		<field name="start_date" type="calendar" class="inputbox"
 			label="COM_PROJECTFORK_FIELD_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_START_DATE_OPTIONAL_DESC"
-			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
+			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
         />
         <field name="end_date" type="calendar" class="inputbox"
 			label="COM_PROJECTFORK_FIELD_DEADLINE_LABEL" description="COM_PROJECTFORK_FIELD_DEADLINE_OPTIONAL_LABEL"
-			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
+			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
         />
 		<field name="modified" type="calendar" class="readonly"
-			label="JGLOBAL_FIELD_MODIFIED_LABEL" 
-			size="22" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc" 
+			label="JGLOBAL_FIELD_MODIFIED_LABEL"
+			size="22" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
         />
 		<field name="modified_by" type="user"
 		    label="JGLOBAL_FIELD_MODIFIED_BY_LABEL"
@@ -53,7 +53,7 @@
 			validate="rules"
 			filter="rules"
 			component="com_projectfork"
-			section="milestone" 
+			section="milestone"
         />
 		<field name="id" type="hidden" readonly="true"/>
 		<field name="asset_id" type="hidden" filter="unset"/>
@@ -64,7 +64,7 @@
 	</fieldset>
 	<fields name="attribs">
 	    <fieldset name="basic" label="COM_PROJECTFORK_MILESTONE_ATTRIBS_FIELDSET_LABEL">
-	        
+
 	    </fieldset>
 	</fields>
 </form>

@@ -44,43 +44,42 @@ class ProjectforkViewMilestone extends JView
 	{
 		// Initialise variables.
 		$app		= JFactory::getApplication();
+        $dispatcher	= JDispatcher::getInstance();
 		$user		= JFactory::getUser();
-		$userId		= $user->get('id');
-		$dispatcher	= JDispatcher::getInstance();
 
-		$this->item	 = $this->get('Item');
-		$this->print = JRequest::getBool('print');
-		$this->state = $this->get('State');
-		$this->user  = $user;
+		$uid  = $user->get('id');
+		$item  = $this->get('Item');
+		$state = $this->get('State');
+        $print = JRequest::getBool('print');
 
 		// Check for errors.
-		if (count($errors = $this->get('Errors'))) {
+		if (count($errors = $this->get('Errors')))
+        {
 			JError::raiseWarning(500, implode("\n", $errors));
-
 			return false;
 		}
 
 
-		// Create a shortcut for $item.
-		$item = &$this->item;
-
-
 		// Merge milestone params. If this is single-milestone view, menu params override milestone params
 		// Otherwise, milestone params override menu item params
-		$this->params = $this->state->get('params');
-		$active	      = $app->getMenu()->getActive();
-		$temp	      = clone ($this->params);
+		$params = $state->get('params');
+		$active	= $app->getMenu()->getActive();
+		$temp	= clone ($params);
 
 		// Check to see which parameters should take priority
-		if ($active) {
-			$currentLink = $active->link;
+		if ($active)
+        {
+			$current_link = $active->link;
 
-			if (strpos($currentLink, 'view=milestone') && (strpos($currentLink, '&id='.(string) $item->id))) {
+			if (strpos($current_link, 'view=milestone') && (strpos($current_link, '&id='.(string) $item->id)))
+            {
 				$item->params->merge($temp);
+
 				// Load layout from active query (in case it is an alternative menu item)
 				if (isset($active->query['layout'])) $this->setLayout($active->query['layout']);
 			}
-			else {
+			else
+            {
 				// Merge the menu item params with the milestone params so that the milestone params take priority
 				$temp->merge($item->params);
 				$item->params = $temp;
@@ -89,7 +88,8 @@ class ProjectforkViewMilestone extends JView
 				if ($layout = $item->params->get('milestone_layout')) $this->setLayout($layout);
 			}
 		}
-		else {
+		else
+        {
 			// Merge so that milestone params take priority
 			$temp->merge($item->params);
 			$item->params = $temp;
@@ -98,16 +98,43 @@ class ProjectforkViewMilestone extends JView
 			if ($layout = $item->params->get('milestone_layout')) $this->setLayout($layout);
 		}
 
-		$offset = $this->state->get('list.offset');
+		$offset = $state->get('list.offset');
 
 		// Check the view access to the milestone (the model has already computed the values).
-		if ($item->params->get('access-view') != true && (($item->params->get('show_noauth') != true &&  $user->get('guest') ))) {
+		if ($item->params->get('access-view') != true && (($item->params->get('show_noauth') != true &&  $user->get('guest') )))
+        {
 		    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
-			return;
+			return false;
 		}
 
+
+        // Fake some content item properties to avoid plugin issues
+        $item->introtext = '';
+        $item->fulltext  = '';
+
+		// Process the content plugins.
+		JPluginHelper::importPlugin('content');
+		$results = $dispatcher->trigger('onContentPrepare', array ('com_projectfork.task', &$item, &$params, $offset));
+
+		$item->event = new stdClass();
+		$results = $dispatcher->trigger('onContentAfterTitle', array('com_projectfork.task', &$item, &$params, $offset));
+		$item->event->afterDisplayTitle = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentBeforeDisplay', array('com_projectfork.task', &$item, &$params, $offset));
+		$item->event->beforeDisplayContent = trim(implode("\n", $results));
+
+		$results = $dispatcher->trigger('onContentAfterDisplay', array('com_projectfork.task', &$item, &$params, $offset));
+		$item->event->afterDisplayContent = trim(implode("\n", $results));
+
 		// Escape strings for HTML output
-		$this->pageclass_sfx = htmlspecialchars($this->item->params->get('pageclass_sfx'));
+		$this->pageclass_sfx = htmlspecialchars($item->params->get('pageclass_sfx'));
+
+        // Assign references
+        $this->assignRef('params', $params);
+        $this->assignRef('state',  $state);
+        $this->assignRef('user',   $user);
+        $this->assignRef('item',   $item);
+        $this->assignRef('print',  $print);
 
 		$this->_prepareDocument();
 
@@ -129,10 +156,12 @@ class ProjectforkViewMilestone extends JView
 
 		// Because the application sets a default page title,
 		// we need to get it from the menu item itself
-		if ($menu) {
+		if ($menu)
+        {
 			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
 		}
-		else {
+		else
+        {
 			$this->params->def('page_heading', JText::_('COM_PROJECTFORK_MILESTONE'));
 		}
 
@@ -140,35 +169,45 @@ class ProjectforkViewMilestone extends JView
 		$id    = (int) @$menu->query['id'];
 
 		// If the menu item does not concern this item
-		if($menu && ($menu->query['option'] != 'com_projectfork' || $menu->query['view'] != 'milestone' || $id != $this->item->id)) {
+		if($menu && ($menu->query['option'] != 'com_projectfork' || $menu->query['view'] != 'milestone' || $id != $this->item->id))
+        {
 			// If this is not a single milestone menu item, set the page title to the milestone title
-			if($this->item->title) $title = $this->item->title;
+			if ($this->item->title) $title = $this->item->title;
 
             $pid    = $this->item->project_id;
             $palias = $this->item->project_alias;
 
-			$path   = array(array('title' => $this->item->title, 'link' => ''));
-            $path[] = array('title' => $this->item->project_title, 'link' => JRoute::_("index.php?option=com_projectfork&view=dashboard&id=$pid:$palias"));
+			$path   = array(array('title' => $this->item->title,
+                                  'link'  => '')
+                                 );
+            $path[] = array('title' => $this->item->project_title,
+                            'link'  => JRoute::_("index.php?option=com_projectfork&view=dashboard&id=$pid:$palias")
+                           );
 
 			$path = array_reverse($path);
 
-			foreach($path as $item)
+			foreach ($path as $item)
 			{
 				$pathway->addItem($item['title'], $item['link']);
 			}
 		}
 
 		// Check for empty title and add site name if param is set
-		if (empty($title)) {
+		if (empty($title))
+        {
 			$title = $app->getCfg('sitename');
 		}
-		elseif ($app->getCfg('sitename_pagetitles', 0) == 1) {
+		elseif ($app->getCfg('sitename_pagetitles', 0) == 1)
+        {
 			$title = JText::sprintf('JPAGETITLE', $app->getCfg('sitename'), $title);
 		}
-		elseif ($app->getCfg('sitename_pagetitles', 0) == 2) {
+		elseif ($app->getCfg('sitename_pagetitles', 0) == 2)
+        {
 			$title = JText::sprintf('JPAGETITLE', $title, $app->getCfg('sitename'));
 		}
-		if (empty($title)) {
+
+		if (empty($title))
+        {
 			$title = $this->item->title;
 		}
 

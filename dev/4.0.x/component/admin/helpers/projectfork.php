@@ -1,114 +1,171 @@
 <?php
 /**
-* @package   Projectfork
-* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
-*
-* This file is part of Projectfork.
-*
-* Projectfork is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*
-* Projectfork is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
-**/
+ * @package      Projectfork
+ *
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ */
 
-// No direct access
-defined('_JEXEC') or die;
+defined('_JEXEC') or die();
 
 
 class ProjectforkHelper
 {
-	public static $extension = 'com_projectfork';
-
-
-	/**
-	 * Configure the Linkbar.
-	 *
-	 * @param	string	$vName	The name of the active view.
-	 * @return	void
-	 */
-	public static function addSubmenu($vName)
-	{
-        JSubMenuHelper::addEntry(
-			JText::_('COM_PROJECTFORK_SUBMENU_DASHBOARD'),
-			'index.php?option=com_projectfork&view=dashboard',
-			($vName == 'dashboard')
-		);
-        JSubMenuHelper::addEntry(
-        JText::_('COM_PROJECTFORK_SUBMENU_CATEGORIES'),
-        'index.php?option=com_categories&extension=com_projectfork',
-        ($vName == 'categories')
-        );
-		JSubMenuHelper::addEntry(
-			JText::_('COM_PROJECTFORK_SUBMENU_PROJECTS'),
-			'index.php?option=com_projectfork&view=projects',
-			($vName == 'projects')
-        );
-        JSubMenuHelper::addEntry(
-			JText::_('COM_PROJECTFORK_SUBMENU_MILESTONES'),
-			'index.php?option=com_projectfork&view=milestones',
-			($vName == 'milestones')
-        );
-        JSubMenuHelper::addEntry(
-			JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS'),
-			'index.php?option=com_projectfork&view=tasklists',
-			($vName == 'tasklists')
-        );
-        JSubMenuHelper::addEntry(
-			JText::_('COM_PROJECTFORK_SUBMENU_TASKS'),
-			'index.php?option=com_projectfork&view=tasks',
-			($vName == 'tasks')
-        );
-	}
+    /**
+     * The component name
+     *
+     * @var    string
+     */
+    public static $extension = 'com_projectfork';
 
 
     /**
-	 * Returns all available actions
-	 *
-	 * @return	object
-	 */
-    public static function getActions($asset_name = NULL, $asset_id = 0)
-	{
-		$user	= JFactory::getUser();
-		$result	= new JObject;
-		$asset  = 'com_projectfork';
+     * Configure the Linkbar.
+     *
+     * @param     string    $view    The name of the active view.
+     *
+     * @return    void
+     */
+    public static function addSubmenu($view)
+    {
+        JSubMenuHelper::addEntry(
+            JText::_('COM_PROJECTFORK_SUBMENU_DASHBOARD'),
+            'index.php?option=com_projectfork&view=dashboard',
+            ($view == 'dashboard')
+        );
 
-        if($asset_name) $asset .= '.'.$asset_name;
-        if($asset_id)   $asset .= '.'.$asset_id;
+        JSubMenuHelper::addEntry(
+            JText::_('COM_PROJECTFORK_SUBMENU_PROJECTS'),
+            'index.php?option=com_projectfork&view=projects',
+            ($view == 'projects')
+        );
 
-		$actions = array('create', 'edit', 'edit.own', 'edit.state', 'delete');
-        $assets  = array('core', 'project', 'milestone', 'tasklist', 'task');
+        if ($view == 'projects' || $view == 'categories') {
+                JSubMenuHelper::addEntry(
+                JText::_('COM_PROJECTFORK_SUBMENU_CATEGORIES'),
+                'index.php?option=com_categories&extension=com_projectfork',
+                ($view == 'categories')
+            );
+        }
 
-        $result->set('core.admin',  $user->authorise('core.admin',  $asset));
-        $result->set('core.manage', $user->authorise('core.manage', $asset));
+        JSubMenuHelper::addEntry(
+            JText::_('COM_PROJECTFORK_SUBMENU_MILESTONES'),
+            'index.php?option=com_projectfork&view=milestones',
+            ($view == 'milestones')
+        );
 
-        foreach($assets AS $name)
-        {
-            foreach($actions AS $action)
-            {
-                $result->set($name.'.'.$action, $user->authorise($name.'.'.$action, $asset));
+        JSubMenuHelper::addEntry(
+            JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS'),
+            'index.php?option=com_projectfork&view=tasklists',
+            ($view == 'tasklists')
+        );
+
+        JSubMenuHelper::addEntry(
+            JText::_('COM_PROJECTFORK_SUBMENU_TASKS'),
+            'index.php?option=com_projectfork&view=tasks',
+            ($view == 'tasks')
+        );
+
+        JSubMenuHelper::addEntry(
+            JText::_('COM_PROJECTFORK_SUBMENU_TIME_TRACKING'),
+            'index.php?option=com_projectfork&view=timesheet',
+            ($view == 'timesheet')
+        );
+
+        JSubMenuHelper::addEntry(
+            JText::_('COM_PROJECTFORK_SUBMENU_DISCUSSIONS'),
+            'index.php?option=com_projectfork&view=topics',
+            ($view == 'topics')
+        );
+
+        if ($view == 'replies') {
+            $topic  = JRequest::getUint('filter_topic', 0);
+            $append = '';
+
+            if ($append) $append .= '&filter_topic=' . $topic;
+
+            JSubMenuHelper::addEntry(
+                JText::_('COM_PROJECTFORK_SUBMENU_REPLIES'),
+                'index.php?option=com_projectfork&view=replies' . $append,
+                ($view == 'replies')
+            );
+        }
+
+        JSubMenuHelper::addEntry(
+            JText::_('COM_PROJECTFORK_SUBMENU_COMMENTS'),
+            'index.php?option=com_projectfork&view=comments',
+            ($view == 'comments')
+        );
+    }
+
+
+    public function getProjectParams($id = 0)
+    {
+        static $cache = array();
+
+        $project = ($id > 0) ? (int) $id : ProjectforkHelper::getActiveProjectId();
+
+        if (array_key_exists($id, $cache)) {
+            return $cache[$project];
+        }
+
+        $params = JComponentHelper::GetParams('com_projectfork');
+
+        // Get the project parameters if they exist
+        if ($project) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('attribs')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . $db->quote($project));
+
+            $db->setQuery((string) $query);
+            $attribs = $db->loadResult();
+
+            if (!empty($attribs)) {
+                $registry = new JRegistry();
+                $registry->loadString($attribs);
+
+                $params->merge($registry);
             }
         }
 
-		return $result;
-	}
+        $cache[$project] = $params;
+
+        return $cache[$project];
+    }
 
 
     /**
-	 * Returns all groups with the given access level
-	 *
-     * @param    int     $access      The access level id
-     * @param    bool    $children    Include child groups in the result?
-	 * @return	 array                The groups
-	 **/
+     * Calculates and returns all available actions for the given asset
+     *
+     * @deprecated                          Use ProjectforkHelperAccess::getActions() instead!
+     *
+     * @param     string     $asset_name    Optional asset item name
+     * @param     integer    $asset_id      Optional asset id
+     *
+     * @return    object
+     */
+    public static function getActions($asset_name = NULL, $asset_id = 0)
+    {
+        JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+
+        $actions = ProjectforkHelperAccess::getActions($asset_name, $asset_id);
+
+        return $actions;
+    }
+
+
+    /**
+     * Returns all groups with the given access level
+     *
+     * @param     integer    $access      The access level id
+     * @param     boolean    $children    Include child groups in the result?
+     *
+     * @return    array                   The groups
+     **/
     public function getGroupsByAccess($access, $children = true)
     {
         // Setup vars
@@ -117,76 +174,74 @@ class ProjectforkHelper
         $groups = array();
 
         // Get the rule of the access level
-        if($access != 1) {
-            $query->select('a.rules');
-            $query->from('#__viewlevels AS a');
-            $query->where('a.id = '.(int) $access);
+        if ($access != 1) {
+            $query->select('a.rules')
+                  ->from('#__viewlevels AS a')
+                  ->where('a.id = '.(int) $access);
 
             $db->setQuery((string) $query);
-    		$rules = json_decode($db->loadResult());
+
+            $rules = (array) json_decode($db->loadResult());
         }
         else {
             $query->select('id')
                   ->from('#__usergroups');
 
             $db->setQuery((string) $query);
-            $rules = $db->loadResultArray();
+
+            $rules    = (array) $db->loadResultArray();
             $children = false;
         }
 
-
-        if(!count($rules)) return $groups;
+        if (!count($rules)) return $groups;
 
 
         // Get the associated groups data
-        //$rules = implode(',', $rules);
-
-        if(!$children) {
-            $query = $db->getQuery(true);
+        if (!$children) {
             $rules = implode(', ', $rules);
 
-            $query->select('a.id AS value, a.title AS text, COUNT(DISTINCT b.id) AS level, a.parent_id, a.lft, a.rgt');
-		    $query->from('#__usergroups AS a');
-            $query->where('a.id IN('.$rules.')');
-            $query->leftJoin($query->qn('#__usergroups').' AS b ON a.lft > b.lft AND a.rgt < b.rgt');
-            $query->group('a.id');
-		    $query->order('a.lft ASC');
+            $query->clear();
+            $query->select('a.id AS value, a.title AS text, COUNT(DISTINCT b.id) AS level, a.parent_id, a.lft, a.rgt')
+                  ->from('#__usergroups AS a')
+                  ->where('a.id IN(' . $rules . ')')
+                  ->leftJoin($query->qn('#__usergroups') . ' AS b ON a.lft > b.lft AND a.rgt < b.rgt')
+                  ->group('a.id')
+                  ->order('a.lft ASC');
 
             $db->setQuery((string) $query);
-            $groups = $db->loadObjectList();
+
+            $groups = (array) $db->loadObjectList();
         }
         else {
             foreach($rules AS $gid)
             {
                 $gid = (int) $gid;
 
-
                 // Load the group data
-                $query = $db->getQuery(true);
-
-                $query->select('a.id AS value, a.title AS text, COUNT(DISTINCT b.id) AS level, a.parent_id, a.lft, a.rgt');
-    		    $query->from('#__usergroups AS a');
-                $query->where('a.id = '.$gid);
-                $query->leftJoin($query->qn('#__usergroups').' AS b ON a.lft > b.lft AND a.rgt < b.rgt');
-                $query->group('a.id');
-    		    $query->order('a.lft ASC');
+                $query->clear();
+                $query->select('a.id AS value, a.title AS text, COUNT(DISTINCT b.id) AS level, a.parent_id, a.lft, a.rgt')
+                      ->from('#__usergroups AS a')
+                      ->where('a.id = ' . $gid)
+                      ->leftJoin($query->qn('#__usergroups') . ' AS b ON a.lft > b.lft AND a.rgt < b.rgt')
+                      ->group('a.id')
+                      ->order('a.lft ASC');
 
                 $db->setQuery((string) $query);
+
                 $group = $db->loadObject();
 
 
                 // Load child groups
-                if(is_object($group)) {
+                if (is_object($group)) {
                     $groups[] = $group;
 
-                    $query = $db->getQuery(true);
-
-                    $query->select('a.id AS value, a.title AS text, COUNT(DISTINCT b.id) AS level, a.parent_id, a.lft, a.rgt');
-        		    $query->from('#__usergroups AS a');
-                    $query->leftJoin($query->qn('#__usergroups').' AS b ON a.lft > b.lft AND a.rgt < b.rgt');
-                    $query->where('a.lft > '.$group->lft.' AND a.rgt < '.$group->rgt);
-                    $query->group('a.id');
-        		    $query->order('a.lft ASC');
+                    $query->clear();
+                    $query->select('a.id AS value, a.title AS text, COUNT(DISTINCT b.id) AS level, a.parent_id, a.lft, a.rgt')
+                          ->from('#__usergroups AS a')
+                          ->leftJoin($query->qn('#__usergroups'). ' AS b ON a.lft > b.lft AND a.rgt < b.rgt')
+                          ->where('a.lft > ' . $group->lft. ' AND a.rgt < ' . $group->rgt)
+                          ->group('a.id')
+                          ->order('a.lft ASC');
 
                     $db->setQuery((string) $query);
                     $subgroups = (array) $db->loadObjectList();
@@ -204,12 +259,13 @@ class ProjectforkHelper
 
 
     /**
-	 * Returns all child access levels of a given access levels
+     * Returns all child access levels of a given access levels
      * The children are defined by the group hierarchy
-	 *
-     * @param    int     $access      The access level id
-	 * @return	 array                The access levels
-	 **/
+     *
+     * @param     integer    $access    The access level id
+     *
+     * @return    array                 The access levels
+     **/
     public function getChildrenOfAccess($access)
     {
         // Setup vars
@@ -218,24 +274,25 @@ class ProjectforkHelper
         $groups   = ProjectforkHelper::getGroupsByAccess($access);
         $children = array();
 
-        if(!count($groups)) return $children;
+        if (!count($groups)) return $children;
 
 
         // Load all access levels if not yet set
-        if(is_null($accesslist)) {
+        if (is_null($accesslist)) {
             $db    = JFactory::getDbo();
             $query = $db->getQuery(true);
 
-            $query->select('a.id AS value, a.title AS text, a.ordering, a.rules');
-            $query->from('#__viewlevels AS a');
-            $query->order('a.title ASC');
+            $query->select('a.id AS value, a.title AS text, a.ordering, a.rules')
+                  ->from('#__viewlevels AS a')
+                  ->order('a.title ASC');
 
             $db->setQuery((string) $query);
+
             $accesslist = (array) $db->loadObjectList();
         }
 
 
-        // Go through each access level
+        // Go through each group
         foreach($groups AS $group)
         {
             // And each access level
@@ -244,10 +301,10 @@ class ProjectforkHelper
                 $rules = json_decode($item->rules);
                 $key   = $item->value;
 
-                if($key == $access) continue;
+                if ($key == $access) continue;
 
                 // Check if the group is listed in the access rules and add to children if so
-                if(in_array($group->value, $rules) && !array_key_exists($key, $children)) {
+                if (in_array($group->value, $rules) && !array_key_exists($key, $children)) {
                     $children[$key] = $item;
                 }
             }
@@ -257,62 +314,65 @@ class ProjectforkHelper
     }
 
 
+    /**
+     * Returns all parents of the given group id
+     *
+     * @param     integer    $id    The group id to start with
+     *
+     * @return    array             The parent groups
+     **/
     public function getGroupPath($id)
     {
         static $groups;
         static $path;
 
         // Preload all groups
-		if (empty($groups)) {
-			$db = JFactory::getDbo();
+        if (empty($groups)) {
+            $db = JFactory::getDbo();
 
-			$query = $db->getQuery(true)
-				   ->select('parent.id, parent.lft, parent.rgt')
-				   ->from('#__usergroups AS parent')
-				   ->order('parent.lft');
+            $query = $db->getQuery(true)
+                   ->select('parent.id, parent.lft, parent.rgt')
+                   ->from('#__usergroups AS parent')
+                   ->order('parent.lft');
 
-			$db->setQuery($query);
-			$groups = (array) $db->loadObjectList('id');
-		}
+            $db->setQuery((string) $query);
+            $groups = (array) $db->loadObjectList('id');
+        }
 
-        if(empty($path)) $path = array();
+        if (empty($path)) $path = array();
+
+        // Make sure groupId is valid
+        if (!array_key_exists($id, $groups)) return array();
 
 
-		// Make sure groupId is valid
-		if(!array_key_exists($id, $groups)) return array();
+        // Get parent groups and leaf group
+        if (!isset($path[$id])) {
+            $path[$id] = array();
 
+            foreach ($groups as $group)
+            {
+                if ($group->lft <= $groups[$id]->lft && $group->rgt >= $groups[$id]->rgt) {
+                    $path[$id][] = $group->id;
+                }
+            }
+        }
 
-		// Get parent groups and leaf group
-		if (!isset($path[$id]))
-		{
-			$path[$id] = array();
-
-			foreach ($groups as $group)
-			{
-				if ($group->lft <= $groups[$id]->lft && $group->rgt >= $groups[$id]->rgt)
-				{
-					$path[$id][] = $group->id;
-				}
-			}
-		}
-
-		return $path[$id];
+        return $path[$id];
     }
 
 
     /**
-	 * Sets the currently active project for the user.
+     * Sets the currently active project for the user.
      * The active project serves as a global data filter.
-	 *
-     * @param    int        $id      The project id
-	 * @return	 boolean             True on success, False on error
-	 **/
+     *
+     * @param     int        $id      The project id
+     *
+     * @return    boolean             True on success, False on error
+     **/
     public function setActiveProject($id = 0)
     {
-        $app = JFactory::getApplication();
-
-        if($app->isSite()) {
-            JModel::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_projectfork/models');
+        if (JFactory::getApplication()->isSite()) {
+            JModel::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/models');
         }
 
         $model = JModel::getInstance('Project', 'ProjectforkModel');
@@ -323,31 +383,33 @@ class ProjectforkHelper
 
 
     /**
-	 * Returns the currently active project ID of the user.
-	 *
-     * @param    int     $alt      Alternative value of no project is set
-	 * @return	 int               The project id
-	 **/
+     * Returns the currently active project ID of the user.
+     *
+     * @param     int    $alt    Alternative value of no project is set
+     *
+     * @return    int            The project id
+     **/
     public function getActiveProjectId($alt = 0)
     {
-        $app = JFactory::getApplication();
+        $id = JFactory::getApplication()->getUserState('com_projectfork.project.active.id', $alt);
 
-        return (int) $app->getUserState('com_projectfork.project.active.id', $alt);
+        return (int) $id;
     }
 
 
     /**
-	 * Returns the currently active project title of the user.
-	 *
-     * @param    string     $alt      Alternative value of no project is set
-	 * @return	 string               The project title
-	 **/
+     * Returns the currently active project title of the user.
+     *
+     * @param     string    $alt      Alternative value of no project is set
+     *
+     * @return    string              The project title
+     **/
     public function getActiveProjectTitle($alt = '')
     {
-        $app = JFactory::getApplication();
+        if ($alt) $alt = JText::_($alt);
 
-        if($alt) $alt = JText::_($alt);
+        $title = JFactory::getApplication()->getUserState('com_projectfork.project.active.title', $alt);
 
-        return $app->getUserState('com_projectfork.project.active.title', $alt);
+        return $title;
     }
 }

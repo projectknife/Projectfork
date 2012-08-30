@@ -1,11 +1,12 @@
 CREATE TABLE IF NOT EXISTS `#__pf_comments` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Comment ID',
-  `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table',
+  `asset_id` int(10) unsigned NOT NULL COMMENT 'FK to the #__assets table',
   `project_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent project ID',
   `item_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent item ID',
   `context` varchar(32) NOT NULL COMMENT 'Context reference',
-  `title` varchar(128) NOT NULL COMMENT 'Comment title',
-  `content` text NOT NULL COMMENT 'Comment content',
+  `title` varchar(128) NOT NULL COMMENT 'The context item title',
+  `alias` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
+  `description` text NOT NULL COMMENT 'Comment content',
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Comment creation date',
   `created_by` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Comment author',
   `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Comment modify date',
@@ -13,15 +14,21 @@ CREATE TABLE IF NOT EXISTS `#__pf_comments` (
   `checked_out` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'User who is currently editing the comment',
   `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
   `attribs` text NOT NULL COMMENT 'Comment attributes in JSON format',
-  `access` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Comment ACL access level ID',
   `state` tinyint(3) NOT NULL DEFAULT '0' COMMENT 'Comment state: 1 = Active, 0 = Inactive, 2 = Archived, -2 = Trashed ',
+  `parent_id` int(10) unsigned NOT NULL COMMENT 'Adjacency List Reference ID',
+  `lft` int(11) NOT NULL COMMENT 'Nested set lft.',
+  `rgt` int(11) NOT NULL COMMENT 'Nested set rgt.',
+  `level` int(10) unsigned NOT NULL COMMENT 'Nested comment level',
+  `path` varchar(255) NOT NULL,
   PRIMARY KEY (`id`),
   KEY `idx_projectid` (`project_id`),
-  KEY `idx_access` (`access`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`),
-  KEY `idx_contextitemid` (`context`,`item_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork item comments';
+  KEY `idx_contextitemid` (`context`,`item_id`),
+  KEY `idx_state` (`state`),
+  KEY `idx_parentid` (`parent_id`),
+  KEY `idx_nested` (`lft`,`rgt`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork item comments';
 
 CREATE TABLE IF NOT EXISTS `#__pf_files` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'File ID',
@@ -100,6 +107,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_milestones` (
   UNIQUE KEY `idx_alias` (`alias`,`project_id`),
   KEY `idx_projectid` (`project_id`),
   KEY `idx_access` (`access`),
+  KEY `idx_state` (`state`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork milestone data';
@@ -135,6 +143,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_projects` (
   UNIQUE KEY `idx_alias` (`alias`),
   KEY `idx_catid` (`catid`),
   KEY `idx_access` (`access`),
+  KEY `idx_state` (`state`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork project data';
@@ -172,7 +181,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   `project_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent project ID',
   `list_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent task list ID',
   `milestone_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent milestone ID',
-  `catid` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Calculated category ID for ordering',
+  `catid` varchar(255) NOT NULL COMMENT 'Category ID for ordering',
   `title` varchar(128) NOT NULL COMMENT 'Task title',
   `alias` varchar(128) NOT NULL COMMENT 'Title alias. Used in SEF URL''s',
   `description` text NOT NULL COMMENT 'Task description',
@@ -190,6 +199,8 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   `ordering` int(10) NOT NULL DEFAULT '0' COMMENT 'Task ordering in a task list',
   `start_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Task start date',
   `end_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Task end date',
+  `rate` decimal(4,2) NOT NULL COMMENT 'Hourly rate',
+  `estimate` int(10) unsigned NOT NULL COMMENT 'Estimated time required for this task to complete',
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_alias` (`project_id`,`alias`),
   KEY `idx_projectid` (`project_id`),
@@ -200,7 +211,8 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`),
   KEY `idx_priority` (`priority`),
-  KEY `idx_complete` (`complete`)
+  KEY `idx_complete` (`complete`),
+  KEY `idx_state` (`state`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task data';
 
 CREATE TABLE IF NOT EXISTS `#__pf_task_lists` (
@@ -222,11 +234,13 @@ CREATE TABLE IF NOT EXISTS `#__pf_task_lists` (
   `state` tinyint(3) NOT NULL DEFAULT '0' COMMENT 'Task list state: 1 = Active, 0 = Inactive, 2 = Archived, -2 = Trashed ',
   `ordering` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Task list ordering',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_alias` (`project_id`,`alias`),
+  UNIQUE KEY `idx_alias` (`project_id`,`alias`,`milestone_id`),
   KEY `idx_projectid` (`project_id`),
   KEY `idx_milestoneid` (`milestone_id`),
   KEY `idx_createdby` (`created_by`),
-  KEY `idx_checkedout` (`checked_out`)
+  KEY `idx_checkedout` (`checked_out`),
+  KEY `idx_state` (`state`),
+  KEY `idx_access` (`access`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task list data';
 
 CREATE TABLE IF NOT EXISTS `#__pf_task_map` (
@@ -237,3 +251,81 @@ CREATE TABLE IF NOT EXISTS `#__pf_task_map` (
   KEY `idx_taskid` (`task_id`),
   KEY `idx_dependency` (`dependency`)
 ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task dependency';
+
+CREATE TABLE IF NOT EXISTS `#__pf_topics` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Topic ID',
+  `asset_id` int(10) NOT NULL COMMENT 'FK to the #__assets table',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Parent project ID',
+  `title` varchar(124) NOT NULL COMMENT 'Topic title',
+  `alias` varchar(124) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'Title alias. Used in SEF URL''s',
+  `description` text NOT NULL COMMENT 'Topic content text',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Topic creation date',
+  `created_by` int(10) unsigned NOT NULL COMMENT 'Topic author',
+  `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Topic modify date',
+  `modified_by` int(10) unsigned NOT NULL COMMENT 'Last user to modify the topic',
+  `checked_out` int(10) unsigned NOT NULL COMMENT 'User who is currently editing the topic',
+  `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
+  `attribs` text NOT NULL COMMENT 'Topic attributes in JSON format',
+  `access` int(10) unsigned NOT NULL COMMENT 'Topic ACL access level ID',
+  `state` tinyint(3) NOT NULL COMMENT 'Topic state: 1 = Active, 0 = Inactive, 2 = Archived, -2 = Trashed',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_alias` (`project_id`,`alias`),
+  KEY `idx_projectid` (`project_id`),
+  KEY `idx_access` (`access`),
+  KEY `idx_state` (`state`),
+  KEY `idx_createdby` (`created_by`),
+  KEY `idx_checkedout` (`checked_out`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork discussion topics';
+
+CREATE TABLE IF NOT EXISTS `#__pf_replies` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Topic ID',
+  `asset_id` int(10) NOT NULL COMMENT 'FK to the #__assets table',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Parent project ID',
+  `topic_id` int(10) unsigned NOT NULL COMMENT 'Parent topic ID',
+  `description` text NOT NULL COMMENT 'Reply content text',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Reply creation date',
+  `created_by` int(10) unsigned NOT NULL COMMENT 'Reply author',
+  `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Reply modify date',
+  `modified_by` int(10) unsigned NOT NULL COMMENT 'Last user to modify the reply',
+  `checked_out` int(10) unsigned NOT NULL COMMENT 'User who is currently editing the reply',
+  `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
+  `attribs` text NOT NULL COMMENT 'Reply attributes in JSON format',
+  `access` int(10) unsigned NOT NULL COMMENT 'Reply ACL access level ID',
+  `state` tinyint(3) NOT NULL COMMENT 'Reply state: 1 = Active, 0 = Inactive, 2 = Archived, -2 = Trashed',
+  PRIMARY KEY (`id`),
+  KEY `idx_projectid` (`project_id`),
+  KEY `idx_topicid` (`topic_id`),
+  KEY `idx_access` (`access`),
+  KEY `idx_state` (`state`),
+  KEY `idx_createdby` (`created_by`),
+  KEY `idx_checkedout` (`checked_out`)
+) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork discussion replies';
+
+CREATE TABLE IF NOT EXISTS `#__pf_timesheet` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
+  `asset_id` int(10) unsigned NOT NULL COMMENT 'FK to the #__assets table',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Parent project ID',
+  `task_id` int(10) unsigned NOT NULL COMMENT 'Parent task ID',
+  `description` varchar(255) NOT NULL COMMENT 'Description text',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Creation date',
+  `created_by` int(10) unsigned NOT NULL COMMENT 'Time author',
+  `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Time modify date',
+  `modified_by` int(10) unsigned NOT NULL COMMENT 'Last user to modify the record',
+  `checked_out` int(10) unsigned NOT NULL COMMENT 'User who is currently editing this record',
+  `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
+  `attribs` text NOT NULL COMMENT 'Record attributes in JSON format',
+  `billable` tinyint(1) NOT NULL COMMENT '1 = Billable, 0 = Unbillable',
+  `rate` decimal(4,2) NOT NULL COMMENT 'Hourly rate',
+  `access` int(10) unsigned NOT NULL COMMENT 'Record ACL access level ID',
+  `state` tinyint(3) NOT NULL COMMENT 'Record state: 1 = Active, 0 = Inactive, 2 = Archived, -2 = Trashed ',
+  `log_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Time log date',
+  `log_time` int(10) unsigned NOT NULL COMMENT 'Time log seconds',
+  PRIMARY KEY (`id`),
+  KEY `idx_project` (`project_id`),
+  KEY `idx_task` (`task_id`),
+  KEY `idx_createdby` (`created_by`),
+  KEY `idx_checkedout` (`checked_out`),
+  KEY `idx_access` (`access`),
+  KEY `idx_state` (`state`),
+  KEY `idx_billable` (`billable`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork time spent on tasks';

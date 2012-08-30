@@ -21,6 +21,8 @@
 **/
 
 defined('_JEXEC') or die;
+
+$item = &$this->item;
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-user">
 
@@ -35,6 +37,7 @@ defined('_JEXEC') or die;
             <fieldset class="filters btn-toolbar">
                     <div class="filter-project btn-group">
                         <?php echo JHtml::_('projectfork.filterProject');?>
+                        <?php if($item) echo $item->event->afterDisplayTitle; ?>
                     </div>
             </fieldset>
 
@@ -43,6 +46,8 @@ defined('_JEXEC') or die;
 
 
             <div class="clearfix"></div>
+
+            <?php if($item) echo $item->event->beforeDisplayContent;?>
 
                 <div id="user-details">
                     <div class="well">
@@ -94,6 +99,8 @@ defined('_JEXEC') or die;
         	</div>
         </div>
         <!-- End Dashboard Modules -->
+
+        <?php if($item) echo $item->event->afterDisplayContent;?>
 
 	</div>
 </div>

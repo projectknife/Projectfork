@@ -1,26 +1,13 @@
 <?php
 /**
-* @package   Projectfork
-* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
-*
-* This file is part of Projectfork.
-*
-* Projectfork is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*
-* Projectfork is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
-**/
+ * @package      Projectfork
+ *
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ */
 
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die();
 
 
 $db    = JFactory::getDbo();
@@ -29,7 +16,7 @@ $query = $db->getQuery(true);
 // Delete projectfork backend menu item if it exists
 // This should help to avoid duplicate entries
 $query->delete('#__menu')
-      ->where('title = '.$db->quote('projectfork'))
+      ->where('title = ' . $db->quote('projectfork'))
       ->where('client_id = 1');
 
 $db->setQuery($query);
@@ -37,23 +24,28 @@ $db->query();
 
 
 // Check if a projectfork menu already exists
-$query = $db->getQuery(true);
+$query->clear();
 $query->select('COUNT(id)')
       ->from('#__menu_types')
-      ->where('menutype = '.$db->quote('projectfork'));
+      ->where('menutype = ' . $db->quote('projectfork'));
 
-$db->setQuery($query->__toString());
+$db->setQuery((string) $query);
 $menu_exists = (int) $db->loadResult();
 
 
 // Do nothing if the menu exists
-if($menu_exists) return true;
+if ($menu_exists) return true;
 
 
 // Get the Menu model
-JModel::addIncludePath(JPATH_ADMINISTRATOR.'/components/com_menus/models', 'MenusModel');
-$menu_model = JModel::getInstance('Menu', 'MenusModel', array('ignore_request' => true));
+JLoader::register('MenusModelMenu', JPATH_ADMINISTRATOR . '/components/com_menus/models/menu.php');
 
+if (!class_exists('JModel')) {
+    $menu_model = new MenusModelMenu();
+}
+else {
+    $menu_model = JModel::getInstance('Menu', 'MenusModel', array('ignore_request' => true));
+}
 
 // Create the menu
 $data = array('title'       => 'Projectfork',
@@ -65,7 +57,7 @@ $menu_id = $menu_model->getState('menu.id');
 
 
 // Do not continue if menu creation failed
-if(!$success || !$menu_id) return false;
+if (!$success || !$menu_id) return false;
 
 // Prepare the menu items we want to create
 $base_link  = 'index.php?option=com_projectfork';
@@ -84,8 +76,14 @@ $menu_items[] = array('title' => 'Milestones',
 $menu_items[] = array('title' => 'Tasks',
                       'alias' => 'tasks',
                       'link'  => $base_link.'&view=tasks');
+$menu_items[] = array('title' => 'Timesheet',
+                      'alias' => 'timesheet',
+                      'link'  => $base_link.'&view=timesheet');
+$menu_items[] = array('title' => 'Discussions',
+                      'alias' => 'discussions',
+                      'link'  => $base_link.'&view=topics');
 $menu_items[] = array('title' => 'Users',
-                      'alias' => 'users',
+                      'alias' => 'project-members',
                       'link'  => $base_link.'&view=users');
 
 
@@ -93,57 +91,38 @@ $menu_items[] = array('title' => 'Users',
 foreach($menu_items AS $i => $menu_item)
 {
     // Add default properties
-    if(!isset($menu_item['menutype']))     $menu_item['menutype']     = 'projectfork';
-    if(!isset($menu_item['parent_id']))    $menu_item['parent_id']    = '1';
-    if(!isset($menu_item['level']))        $menu_item['level']        = '1';
-    if(!isset($menu_item['published']))    $menu_item['published']    = '1';
-    if(!isset($menu_item['type']))         $menu_item['type']         = 'component';
-    if(!isset($menu_item['component_id'])) $menu_item['component_id'] = 0;
-    if(!isset($menu_item['language']))     $menu_item['language']     = '*';
-    if(!isset($menu_item['access']))       $menu_item['access']       = '1';
-    if(!isset($menu_item['params']))       $menu_item['params']       = '{}';
-    if(!isset($menu_item['ordering']))     $menu_item['ordering']     = ($i + 1);
-    if(!isset($menu_item['id']))           $menu_item['id']           = null;
+    if (!isset($menu_item['menutype']))     $menu_item['menutype']     = 'projectfork';
+    if (!isset($menu_item['parent_id']))    $menu_item['parent_id']    = '1';
+    if (!isset($menu_item['level']))        $menu_item['level']        = '1';
+    if (!isset($menu_item['published']))    $menu_item['published']    = '1';
+    if (!isset($menu_item['type']))         $menu_item['type']         = 'component';
+    if (!isset($menu_item['component_id'])) $menu_item['component_id'] = 0;
+    if (!isset($menu_item['language']))     $menu_item['language']     = '*';
+    if (!isset($menu_item['access']))       $menu_item['access']       = '1';
+    if (!isset($menu_item['params']))       $menu_item['params']       = '{}';
+    if (!isset($menu_item['ordering']))     $menu_item['ordering']     = ($i + 1);
+    if (!isset($menu_item['id']))           $menu_item['id']           = null;
 
     // Save the menu item
-    $row = JTable::getInstance ( 'menu', 'JTable' );
+    $row = JTable::getInstance('menu', 'JTable');
 
     foreach($menu_item AS $key => $value)
     {
-        if(property_exists($row, $key)) {
+        if (property_exists($row, $key)) {
             $row->$key = $value;
         }
     }
 
     $row->check();
 
-	if(!$row->store()) {
-		return false;
-	}
+    if (!$row->store()) {
+        return false;
+    }
 }
 
-// Try to find the position and showtitle of the (presumably) main menu
-/*$query = $db->getQuery(true);
-
-$query->select('position, showtitle')
-      ->from('#__modules')
-      ->where('id = 1');
-
-$db->setQuery($query->__toString());
-$main_menu = $db->loadObject();
-
-if(is_object($main_menu)) {
-    $mm_pos = $main_menu->position;
-    $mm_st  = $main_menu->showtitle;
-}
-else {
-    $mm_pos = 'position-7';
-    $mm_st  = '1';
-}*/
 
 $mm_pos = 'position-7';
 $mm_st  = '1';
-
 
 // Create a module for the menu
 $cols = array($db->quoteName('id'),
@@ -168,28 +147,27 @@ $values = array('NULL',
                 $db->quote('0'),
                 $db->quote('*'));
 
-$query = $db->getQuery(true);
 
+$query->clear();
 $query->insert('#__modules')
       ->columns($cols)
       ->values(implode(', ', $values));
 
-$db->setQuery($query->__toString());
+$db->setQuery((string) $query);
 $db->query();
 
 $module_id = $db->insertid();
 
-if(!$module_id) return false;
+if (!$module_id) return false;
 
 
 // Show the module on all pages
-$query = $db->getQuery(true);
-
+$query->clear();
 $query->insert('#__modules_menu')
       ->columns(array($db->quoteName('moduleid'), $db->quoteName('menuid')))
       ->values((int)$module_id . ', 0');
 
-$db->setQuery($query->__toString());
+$db->setQuery((string) $query);
 $db->query();
 
 // Notify the user about the module position
