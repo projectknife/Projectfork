@@ -41,6 +41,7 @@ class ProjectforkViewReplies extends JView
     public function display($tpl = null)
     {
         $app    = JFactory::getApplication();
+        $user   = JFactory::getUser();
         $active = $app->getMenu()->getActive();
 
         // Check if the provided topic exists and if we have access
@@ -57,7 +58,7 @@ class ProjectforkViewReplies extends JView
                 return;
             }
 
-            if (!JFactory::getUser()->authorise('core.admin')) {
+            if (!$user->authorise('core.admin')) {
                 if (!in_array($this->topic->access, $user->getAuthorisedViewLevels())) {
                     JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
                     return;

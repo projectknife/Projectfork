@@ -121,7 +121,7 @@ Joomla.submitbutton = function(task)
                 </div>
             </div>
             <div class="item-description">
-                <?php echo $this->escape($this->topic->description); ?>
+                <?php echo $this->topic->description; ?>
             </div>
             <hr />
 
