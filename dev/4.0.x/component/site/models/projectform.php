@@ -20,6 +20,26 @@ require_once JPATH_ADMINISTRATOR . '/components/com_projectfork/models/project.p
  */
 class ProjectforkModelProjectForm extends ProjectforkModelProject
 {
+
+    /**
+     * Constructor.
+     *
+     * @param    array          $config    An optional associative array of configuration settings.
+     *
+     * @see      jcontroller
+     */
+    public function __construct($config = array())
+    {
+       // Register dependencies
+       JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/tables');
+       JForm::addFieldPath(JPATH_ADMINISTRATOR    . '/components/com_projectfork/models/fields');
+       JForm::addFormPath(JPATH_ADMINISTRATOR     . '/components/com_projectfork/models/forms');
+
+       // Call parent constructor
+       parent::__construct($config);
+    }
+
+
     /**
      * Method to get item data.
      *
@@ -29,7 +49,7 @@ class ProjectforkModelProjectForm extends ProjectforkModelProject
     public function getItem($id = null)
     {
         // Initialise variables.
-        $id = (int) (!empty($id)) ? $id : $this->getState('project.id');
+        $id = (int) (!empty($id)) ? $id : $this->getState($this->getName() . '.id');
 
         // Get a row instance.
         $table = $this->getTable();
@@ -96,7 +116,7 @@ class ProjectforkModelProjectForm extends ProjectforkModelProject
      * Method to auto-populate the model state.
      * Note. Calling getState in this method will result in recursion.
      *
-     * @return    void    
+     * @return    void
      */
     protected function populateState()
     {
@@ -104,7 +124,7 @@ class ProjectforkModelProjectForm extends ProjectforkModelProject
 
         // Load state from the request.
         $pk = JRequest::getInt('id');
-        $this->setState('project.id', $pk);
+        $this->setState($this->getName() . '.id', $pk);
 
         $return = JRequest::getVar('return', null, 'default', 'base64');
         $this->setState('return_page', base64_decode($return));

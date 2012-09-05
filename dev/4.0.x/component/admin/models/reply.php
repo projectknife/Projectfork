@@ -97,7 +97,7 @@ class ProjectforkModelReply extends JModelAdmin
     protected function loadFormData()
     {
         // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.reply.data', array());
+        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.' . $this->getName() . '.data', array());
 
         if (empty($data)) $data = $this->getItem();
 

@@ -22,7 +22,7 @@ class ProjectforkModelTasklist extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string    
+     * @var    string
      */
     protected $text_prefix = 'COM_PROJECTFORK_TASKLIST';
 
@@ -80,7 +80,7 @@ class ProjectforkModelTasklist extends JModelAdmin
         // Check if a project id is already selected. If not, set the currently active project as value
         $project_id = (int) $form->getValue('project_id');
 
-        if (!$this->getState('tasklist.id') && $project_id == 0) {
+        if (!$this->getState($this->getName() . '.id') && $project_id == 0) {
             $app       = JFactory::getApplication();
             $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
 
@@ -99,7 +99,7 @@ class ProjectforkModelTasklist extends JModelAdmin
     protected function loadFormData()
     {
         // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.tasklist.data', array());
+        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.' . $this->getName() . '.data', array());
 
         if (empty($data)) $data = $this->getItem();
 
@@ -151,7 +151,7 @@ class ProjectforkModelTasklist extends JModelAdmin
             $data['alias'] = '';
         }
 
-        $id      = (int) $this->getState('tasklist.id');
+        $id      = (int) $this->getState($this->getName() . '.id');
         $is_new  = ($id > 0) ? false : true;
         $item    = null;
 
@@ -171,7 +171,7 @@ class ProjectforkModelTasklist extends JModelAdmin
                 $parent_data = array();
 
                 // Load the just updated row
-                if ($updated->load($this->getState('tasklist.id')) === false) return false;
+                if ($updated->load($this->getState($this->getName() . '.id')) === false) return false;
 
                 // Check if any relevant values have changed that need to be updated to children
                 if ($item->access != $updated->access) {

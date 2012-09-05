@@ -11,7 +11,7 @@ defined('_JEXEC') or die();
 
 
 // Base this model on the backend version.
-require_once JPATH_ADMINISTRATOR.'/components/com_projectfork/models/reply.php';
+require_once JPATH_ADMINISTRATOR . '/components/com_projectfork/models/reply.php';
 
 
 /**
@@ -20,6 +20,25 @@ require_once JPATH_ADMINISTRATOR.'/components/com_projectfork/models/reply.php';
  */
 class ProjectforkModelReplyForm extends ProjectforkModelReply
 {
+    /**
+     * Constructor.
+     *
+     * @param    array          $config    An optional associative array of configuration settings.
+     *
+     * @see      jcontroller
+     */
+    public function __construct($config = array())
+    {
+       // Register dependencies
+       JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/tables');
+       JForm::addFieldPath(JPATH_ADMINISTRATOR    . '/components/com_projectfork/models/fields');
+       JForm::addFormPath(JPATH_ADMINISTRATOR     . '/components/com_projectfork/models/forms');
+
+       // Call parent constructor
+       parent::__construct($config);
+    }
+
+
     /**
      * Method to get item data.
      *
@@ -30,7 +49,7 @@ class ProjectforkModelReplyForm extends ProjectforkModelReply
     public function getItem($id = null)
     {
         // Initialise variables.
-        $id = (int) (!empty($id)) ? $id : $this->getState('reply.id');
+        $id = (int) (!empty($id)) ? $id : $this->getState($this->getName() . '.id');
 
         // Get a row instance.
         $table = $this->getTable();
@@ -105,7 +124,7 @@ class ProjectforkModelReplyForm extends ProjectforkModelReply
 
         // Load state from the request.
         $pk = JRequest::getInt('id');
-        $this->setState('reply.id', $pk);
+        $this->setState($this->getName() . '.id', $pk);
 
         $return = JRequest::getVar('return', null, 'default', 'base64');
         $this->setState('return_page', base64_decode($return));
@@ -149,21 +168,5 @@ class ProjectforkModelReplyForm extends ProjectforkModelReply
                 }
             }
         }
-    }
-
-
-    /**
-     * Method to get the data that should be injected in the form.
-     *
-     * @return    mixed    $data    The data for the form.
-     */
-    protected function loadFormData()
-    {
-        // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.replyform.data', array());
-
-        if (empty($data)) $data = $this->getItem();
-
-        return $data;
     }
 }

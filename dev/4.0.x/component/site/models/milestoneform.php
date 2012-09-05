@@ -21,6 +21,25 @@ require_once JPATH_ADMINISTRATOR.'/components/com_projectfork/models/milestone.p
 class ProjectforkModelMilestoneForm extends ProjectforkModelMilestone
 {
     /**
+     * Constructor.
+     *
+     * @param    array          $config    An optional associative array of configuration settings.
+     *
+     * @see      jcontroller
+     */
+    public function __construct($config = array())
+    {
+       // Register dependencies
+       JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/tables');
+       JForm::addFieldPath(JPATH_ADMINISTRATOR    . '/components/com_projectfork/models/fields');
+       JForm::addFormPath(JPATH_ADMINISTRATOR     . '/components/com_projectfork/models/forms');
+
+       // Call parent constructor
+       parent::__construct($config);
+    }
+
+
+    /**
      * Method to get item data.
      *
      * @param     integer    $id       The id of the item.
@@ -30,7 +49,7 @@ class ProjectforkModelMilestoneForm extends ProjectforkModelMilestone
     public function getItem($id = null)
     {
         // Initialise variables.
-        $id = (int) (!empty($id)) ? $id : $this->getState('milestone.id');
+        $id = (int) (!empty($id)) ? $id : $this->getState($this->getName() . '.id');
 
         // Get a row instance.
         $table = $this->getTable();
@@ -105,7 +124,7 @@ class ProjectforkModelMilestoneForm extends ProjectforkModelMilestone
 
         // Load state from the request.
         $pk = JRequest::getInt('id');
-        $this->setState('milestone.id', $pk);
+        $this->setState($this->getName() . '.id', $pk);
 
         $return = JRequest::getVar('return', null, 'default', 'base64');
         $this->setState('return_page', base64_decode($return));
@@ -115,21 +134,5 @@ class ProjectforkModelMilestoneForm extends ProjectforkModelMilestone
         $this->setState('params', $params);
 
         $this->setState('layout', JRequest::getCmd('layout'));
-    }
-
-
-    /**
-     * Method to get the data that should be injected in the form.
-     *
-     * @return    mixed    $data    The data for the form.
-     */
-    protected function loadFormData()
-    {
-        // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.milestoneform.data', array());
-
-        if (empty($data)) $data = $this->getItem();
-
-        return $data;
     }
 }

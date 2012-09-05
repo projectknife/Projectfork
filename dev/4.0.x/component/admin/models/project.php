@@ -182,7 +182,7 @@ class ProjectforkModelProject extends JModelAdmin
         $data['rules'] = $rules;
 
 
-        $id      = (int) $this->getState('project.id');
+        $id      = (int) $this->getState($this->getName() . '.id');
         $is_new  = ($id > 0) ? false : true;
         $item    = null;
 
@@ -195,7 +195,7 @@ class ProjectforkModelProject extends JModelAdmin
 
         // Store the record
         if (parent::save($data)) {
-            $this->setActive(array('id' => $this->getState('project.id')));
+            $this->setActive(array('id' => $this->getState($this->getName() . '.id')));
 
             // To keep data integrity, update all child assets
             if (!$is_new && is_object($item)) {
@@ -210,7 +210,7 @@ class ProjectforkModelProject extends JModelAdmin
                 $null_date   = JFactory::getDbo()->getNullDate();
 
                 // Load the just updated row
-                if ($updated->load($this->getState('project.id')) === false) return false;
+                if ($updated->load($this->getState($this->getName() . '.id')) === false) return false;
 
                 // Check if any relevant values have changed that need to be updated to children
                 if ($item->access != $updated->access) {
@@ -518,7 +518,7 @@ class ProjectforkModelProject extends JModelAdmin
     protected function loadFormData()
     {
         // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.project.data', array());
+        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.' . $this->getName() . '.data', array());
 
         if (empty($data)) $data = $this->getItem();
 

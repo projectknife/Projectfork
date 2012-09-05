@@ -26,7 +26,6 @@ JLoader::register('ProjectforkHelperToolbar',     JPATH_BASE . '/components/com_
 JLoader::register('ProjectforkHelperContextMenu', JPATH_BASE . '/components/com_projectfork/helpers/contextmenu.php');
 
 // Add include paths
-JTable::addIncludePath(JPATH_ADMINISTRATOR . 'components/com_projectfork/tables');
 JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/html');
 
 JLoader::registerPrefix('Projectfork', JPATH_SITE . '/components/com_projectfork/libraries/projectfork');

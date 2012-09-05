@@ -74,10 +74,10 @@ class ProjectforkModelTopic extends JModelAdmin
         $form = $this->loadForm('com_projectfork.topic', 'topic', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) return false;
 
-
         // Check if a project id is already selected. If not, set the currently active project as value
         $project_id = (int) $form->getValue('project_id');
-        if (!$this->getState('topic.id') && $project_id == 0) {
+
+        if (!$this->getState($this->getName() . '.id') && $project_id == 0) {
             $app       = JFactory::getApplication();
             $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
 
@@ -122,7 +122,7 @@ class ProjectforkModelTopic extends JModelAdmin
     protected function loadFormData()
     {
         // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.topic.data', array());
+        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.' . $this->getName() . '.data', array());
 
         if (empty($data)) $data = $this->getItem();
 
@@ -150,7 +150,7 @@ class ProjectforkModelTopic extends JModelAdmin
             $data['alias'] = '';
         }
 
-        $id     = (int) $this->getState('topic.id');
+        $id     = (int) $this->getState($this->getName() . '.id');
         $is_new = ($id > 0) ? false : true;
         $item   = null;
 
@@ -172,7 +172,7 @@ class ProjectforkModelTopic extends JModelAdmin
                 $null_date   = JFactory::getDbo()->getNullDate();
 
                 // Load the just updated row
-                if ($updated->load($this->getState('topic.id')) === false) return false;
+                if ($updated->load($this->getState($this->getName() . '.id')) === false) return false;
 
                 // Check if any relevant values have changed that need to be updated to children
                 if ($item->access != $updated->access) {

@@ -76,7 +76,7 @@ class ProjectforkModelTask extends JModelAdmin
      */
     public function getUsers($pk = NULL)
     {
-        if (!$pk) $pk = $this->getState('task.id');
+        if (!$pk) $pk = $this->getState($this->getName() . '.id');
         if (!$pk) return array();
 
         $db    = JFactory::getDbo();
@@ -116,7 +116,7 @@ class ProjectforkModelTask extends JModelAdmin
 
         // Check if a project id is already selected. If not, set the currently active project as value
         $project_id = (int) $form->getValue('project_id');
-        if (!$this->getState('task.id') && $project_id == 0) {
+        if (!$this->getState($this->getName() . '.id') && $project_id == 0) {
             $app       = JFactory::getApplication();
             $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
 
@@ -135,7 +135,7 @@ class ProjectforkModelTask extends JModelAdmin
     protected function loadFormData()
     {
         // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.task.data', array());
+        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.' . $this->getName() . '.data', array());
 
         if (empty($data)) $data = $this->getItem();
 
