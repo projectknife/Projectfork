@@ -25,7 +25,7 @@ class JFormFieldMilestone extends JFormFieldList
     /**
      * The form field type.
      *
-     * @var    string    
+     * @var    string
      */
     public $type = 'Milestone';
 
@@ -85,6 +85,7 @@ class JFormFieldMilestone extends JFormFieldList
      *
      * @param     integer    $project    The currently selected project
      * @param     integer    $list       The currently selected task list
+     *
      * @return    array      $options    The list options markup.
      */
     protected function getOptions($project = 0, $list = 0)
@@ -95,7 +96,7 @@ class JFormFieldMilestone extends JFormFieldList
         $query   = $db->getQuery(true);
 
         // Get field attributes for the database query
-        $query_state = ($this->element['state']) ? (int) $this->element['state'] : NULL;
+        $state = ($this->element['state']) ? (int) $this->element['state'] : NULL;
 
         // Build the query
         $query->select('a.id AS value, a.title AS text')
@@ -109,7 +110,7 @@ class JFormFieldMilestone extends JFormFieldList
         }
 
         // Filter state
-        if (!is_null($query_state)) $query->where('a.state = ' . $query_state);
+        if (!is_null($state)) $query->where('a.state = ' . $db->quote($state));
 
         // Filter list
         if ($list) {
@@ -120,10 +121,10 @@ class JFormFieldMilestone extends JFormFieldList
               ->order('a.title');
 
         $db->setQuery((string) $query);
-        $list = (array) $db->loadObjectList();
+        $items = (array) $db->loadObjectList();
 
         // Generate the options
-        if (count($list) > 0) {
+        if (count($items) > 0) {
             $options[] = JHtml::_('select.option', '',
                 JText::alt('COM_PROJECTFORK_OPTION_SELECT_MILESTONE',
                 preg_replace('/[^a-zA-Z0-9_\-]/', '_', $this->fieldname)),
@@ -132,7 +133,7 @@ class JFormFieldMilestone extends JFormFieldList
             );
         }
 
-        foreach($list AS $item)
+        foreach($items AS $item)
         {
             // Create a new option object based on the <option /> element.
             $opt = JHtml::_('select.option', (string) $item->value,
@@ -145,6 +146,8 @@ class JFormFieldMilestone extends JFormFieldList
             // Add the option object to the result set.
             $options[] = $opt;
         }
+
+        reset($options);
 
         return $options;
     }
