@@ -7,7 +7,11 @@
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
-defined('_JEXEC') or die();
+defined('JPATH_PLATFORM') or die;
+
+
+jimport('joomla.html.html');
+jimport('joomla.form.formfield');
 
 
 /**
@@ -19,7 +23,7 @@ class JFormFieldMoney extends JFormField
     /**
      * The form field type.
      *
-     * @var    string
+     * @var    string    
      */
     public $type = 'Money';
 
@@ -82,11 +86,11 @@ class JFormFieldMoney extends JFormField
     /**
      * Method to generate the input markup.
      *
-     * @param     string    $v1
-     * @param     string    $v2
-     * @param     string    $attribs
+     * @param     string    $v1         
+     * @param     string    $v2         
+     * @param     string    $attribs    
      *
-     * @return    string              The html field markup
+     * @return    string                The html field markup
      */
     protected function getHTML($v1, $v2, $attribs)
     {
@@ -101,11 +105,11 @@ class JFormFieldMoney extends JFormField
     /**
      * Method to generate the backend input markup.
      *
-     * @param     string    $v1
-     * @param     string    $v2
-     * @param     string    $attribs
+     * @param     string    $v1         
+     * @param     string    $v2         
+     * @param     string    $attribs    
      *
-     * @return    array $html              The html field markup
+     * @return    array     $html       The html field markup
      */
     protected function getAdminHTML($v1, $v2, $attribs)
     {
@@ -134,11 +138,11 @@ class JFormFieldMoney extends JFormField
     /**
      * Method to generate the frontend input markup.
      *
-     * @param     string    $v1
-     * @param     string    $v2
-     * @param     string    $attribs
+     * @param     string    $v1         
+     * @param     string    $v2         
+     * @param     string    $attribs    
      *
-     * @return    array $html              The html field markup
+     * @return    array     $html       The html field markup
      */
     protected function getSiteHTML($v1, $v2, $attribs)
     {
