@@ -81,7 +81,7 @@ class JFormFieldProject extends JFormField
      *
      * @param     string    $title    The title of the current value
      *
-     * @return    string              The html field markup
+     * @return    array     $html     The html field markup
      */
     protected function getAdminHTML($title)
     {
@@ -122,7 +122,7 @@ class JFormFieldProject extends JFormField
      *
      * @param     string    $title    The title of the current value
      *
-     * @return    string              The html field markup
+     * @return    array     $html     The html field markup
      */
     protected function getSiteHTML($title)
     {
