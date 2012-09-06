@@ -25,7 +25,7 @@ class JFormFieldTasklist extends JFormFieldList
     /**
      * The form field type.
      *
-     * @var    string
+     * @var    string    
      */
     public $type = 'Tasklist';
 
@@ -83,10 +83,10 @@ class JFormFieldTasklist extends JFormFieldList
     /**
      * Method to get the field list options markup.
      *
-     * @param     integer    $project    The currently selected project
-     * @param     integer    $milestone       The currently selected milestone
+     * @param     integer    $project      The currently selected project
+     * @param     integer    $milestone    The currently selected milestone
      *
-     * @return    array      $options    The list options markup.
+     * @return    array      $options      The list options markup.
      */
     protected function getOptions($project, $milestone = 0)
     {
