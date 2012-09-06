@@ -90,6 +90,7 @@
 		<field name="created" type="hidden" readonly="true"/>
 		<field name="checked_out" type="hidden" filter="unset" />
 		<field name="checked_out_time" type="hidden" filter="unset" />
+		<field name="elements" type="hidden" />
 	</fieldset>
 	<fields name="users">
 	    <fieldset name="users" label="COM_PROJECTFORK_FIELDSET_ASSIGNED_USERS">

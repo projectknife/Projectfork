@@ -20,7 +20,7 @@ abstract class JHtmlProjectfork
      * Renders an input field with a select button for choosing a project
      *
      * @param     int       $value         The state value
-     * @param     bool      $can_change    
+     * @param     bool      $can_change
      *
      * @return    string                   The input field html
      */
@@ -206,7 +206,7 @@ abstract class JHtmlProjectfork
      * @param     string    $list    The CSS list id selector
      * @param     string    $view    The component view
      *
-     * @return    void               
+     * @return    void
      */
     public static function ajaxReorder($list, $view)
     {
@@ -271,7 +271,7 @@ abstract class JHtmlProjectfork
      * Adds a JS script declaration to the doc header which enables
      * ajax based task completition through checkboxes.
      *
-     * @return    void    
+     * @return    void
      */
     public static function ajaxCompleteTask()
     {
@@ -323,7 +323,7 @@ abstract class JHtmlProjectfork
     /**
      * Loads projectfork CSS files
      *
-     * @return    void    
+     * @return    void
      */
     public static function CSS()
     {
@@ -346,7 +346,7 @@ abstract class JHtmlProjectfork
     /**
      * Loads projectfork JS files
      *
-     * @return    void    
+     * @return    void
      */
     public static function JS()
     {
@@ -357,8 +357,9 @@ abstract class JHtmlProjectfork
             $uri  = JFactory::getURI();
 
             if ($doc->getType() == 'html') {
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/projectfork/js/projectfork.js');
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/projectfork/js/comments.js');
+                $doc->addScript(str_replace('/administrator', '', $uri->base(true)) . '/components/com_projectfork/assets/projectfork/js/projectfork.js');
+                $doc->addScript(str_replace('/administrator', '', $uri->base(true)) . '/components/com_projectfork/assets/projectfork/js/comments.js');
+                $doc->addScript(str_replace('/administrator', '', $uri->base(true)) . '/components/com_projectfork/assets/projectfork/js/form.js');
             }
 
             define('COM_PROJECTFORK_JS', 1);
@@ -369,7 +370,7 @@ abstract class JHtmlProjectfork
     /**
      * Loads bootstrap CSS files
      *
-     * @return    void    
+     * @return    void
      */
     public static function boostrapCSS()
     {
@@ -391,7 +392,7 @@ abstract class JHtmlProjectfork
     /**
      * Loads bootstrap JS files
      *
-     * @return    void    
+     * @return    void
      */
     public static function boostrapJS()
     {
@@ -412,7 +413,7 @@ abstract class JHtmlProjectfork
     /**
      * Loads bootstrap JS files
      *
-     * @return    void    
+     * @return    void
      */
     public static function jQuery()
     {
@@ -422,8 +423,8 @@ abstract class JHtmlProjectfork
             $uri    = JFactory::getURI();
 
             if ($doc->getType() == 'html' && $params->get('jquery', '1') == '1') {
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery/jquery.min.js');
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery/jquery.noconflict.js');
+                $doc->addScript(str_replace('/administrator', '', $uri->base(true)) . '/components/com_projectfork/assets/jquery/jquery.min.js');
+                $doc->addScript(str_replace('/administrator', '', $uri->base(true)) . '/components/com_projectfork/assets/jquery/jquery.noconflict.js');
             }
 
             define('COM_PROJECTFORK_JQUERY', 1);
@@ -434,7 +435,7 @@ abstract class JHtmlProjectfork
     /**
      * Loads jquery-flot JS files
      *
-     * @return    void    
+     * @return    void
      */
     public static function jQueryFlot()
     {

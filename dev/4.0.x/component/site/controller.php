@@ -42,11 +42,11 @@ class ProjectforkController extends JController
     public function display($cachable = false, $urlparams = false)
     {
         // Load CSS and JS assets
-        JHtml::_('projectfork.boostrapCSS');
-        JHtml::_('projectfork.CSS');
+        JHtml::_('projectfork.style.bootstrap');
+        JHtml::_('projectfork.style.projectfork');
 
-        JHtml::_('projectfork.jQuery');
-        JHtml::_('projectfork.boostrapJS');
+        JHtml::_('projectfork.script.jQuery');
+        JHtml::_('projectfork.script.bootstrap');
         JHtml::_('projectfork.JS');
 
         JHtml::_('behavior.tooltip');

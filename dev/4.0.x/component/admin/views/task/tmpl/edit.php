@@ -27,6 +27,7 @@ defined('_JEXEC') or die;
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.keepalive');
+JHtml::_('projectfork.script.comments');
 
 ?>
 <script type="text/javascript">
@@ -130,6 +131,7 @@ Joomla.submitbutton = function(task) {
             echo $this->form->getInput('alias');
             echo $this->form->getInput('created');
             echo $this->form->getInput('id');
+            echo $this->form->getInput('elements');
         ?>
         <input type="hidden" name="task" value="" />
 		<input type="hidden" name="return" value="<?php echo JRequest::getCmd('return');?>" />

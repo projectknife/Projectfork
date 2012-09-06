@@ -68,6 +68,7 @@ class ProjectforkControllerFormJSON extends JControllerForm
         }
     }
 
+
     /**
      * Method to cancel an edit.
      *
@@ -131,6 +132,7 @@ class ProjectforkControllerFormJSON extends JControllerForm
 
         $this->sendResponse($data);
     }
+
 
     /**
      * Method to save a record.
@@ -250,8 +252,7 @@ class ProjectforkControllerFormJSON extends JControllerForm
         }
 
         // Attempt to save the data.
-        if (!$model->save($validData))
-        {
+        if (!$model->save($validData)) {
             $rdata['success'] = "false";
 
             // Save the data in the session.
@@ -264,8 +265,7 @@ class ProjectforkControllerFormJSON extends JControllerForm
         }
 
         // Save succeeded, so check-in the record.
-        if ($checkin && $model->checkin($validData[$key]) === false)
-        {
+        if ($checkin && $model->checkin($validData[$key]) === false) {
             // Save the data in the session.
             $app->setUserState($context . '.data', $validData);
 
@@ -276,11 +276,11 @@ class ProjectforkControllerFormJSON extends JControllerForm
             $this->sendResponse($rdata);
         }
 
-       $rdata['messages'][] = JText::_(
-                ($lang->hasKey($this->text_prefix . ($recordId == 0 && $app->isSite() ? '_SUBMIT' : '') . '_SAVE_SUCCESS')
-                    ? $this->text_prefix
-                    : 'JLIB_APPLICATION') . ($recordId == 0 && $app->isSite() ? '_SUBMIT' : '') . '_SAVE_SUCCESS'
-            );
+        $rdata['messages'][] = JText::_(
+            ($lang->hasKey($this->text_prefix . ($recordId == 0 && $app->isSite() ? '_SUBMIT' : '') . '_SAVE_SUCCESS')
+            ? $this->text_prefix
+            : 'JLIB_APPLICATION') . ($recordId == 0 && $app->isSite() ? '_SUBMIT' : '') . '_SAVE_SUCCESS'
+        );
 
         // Redirect the user and adjust session state based on the chosen task.
         switch ($task)
@@ -332,6 +332,41 @@ class ProjectforkControllerFormJSON extends JControllerForm
 
         // Invoke the postSave method to allow for the child class to access the model.
         $this->postSaveHook($model, $validData);
+
+        $this->sendResponse($rdata);
+    }
+
+
+    /**
+     * Method to reload specific form elements
+     *
+     */
+    public function reload()
+    {
+        $rdata = array();
+        $rdata['success']  = "true";
+        $rdata['messages'] = array();
+        $rdata['data']     = array();
+
+        $app     = JFactory::getApplication();
+		$context = $this->option . ".edit." . $this->context;
+        $data    = $app->getUserState($context . '.data', null);
+
+        // Overwrite form data
+        $app->setUserState($context . '.data', JRequest::getVar('jform'));
+
+        $model = $this->getModel();
+        $form  = $model->getForm(JRequest::getVar('jform'), true);
+
+        $elements = JRequest::getVar('elements');
+
+        foreach($elements AS $element)
+        {
+            $rdata['data'][$element] = $form->getInput($element);
+        }
+
+        // Put the old data back in
+        $app->setUserState($context . '.data', $data);
 
         $this->sendResponse($rdata);
     }
