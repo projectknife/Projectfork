@@ -122,30 +122,6 @@ class ProjectforkControllerTopicform extends JControllerForm
 
 
     /**
-     * Sets the project of the milestone currently being edited.
-     *
-     * @return    void
-     */
-    public function setProject()
-    {
-        // Initialise variables.
-        $app     = JFactory::getApplication();
-        $data    = JRequest::getVar('jform', array(), 'post', 'array');
-        $id      = JRequest::getUInt('id');
-        $project = (int) $data['project_id'];
-
-        // Set the project as active
-        ProjectforkHelper::setActiveProject($project);
-
-        //Save the data in the session.
-        $app->setUserState('com_projectfork.edit.topicform.id', $id);
-        $app->setUserState('com_projectfork.edit.topicform.data', $data);
-
-        $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_item . $this->getRedirectToItemAppend($id), false));
-    }
-
-
-    /**
      * Method to check if you can add a new record.
      *
      * @param     array      $data    An array of input data.

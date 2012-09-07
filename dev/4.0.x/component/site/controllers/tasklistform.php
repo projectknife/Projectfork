@@ -120,45 +120,6 @@ class ProjectforkControllerTasklistForm extends JControllerForm
 
 
     /**
-     * Sets the project of the milestone currently being edited.
-     *
-     * @return    void
-     */
-    public function setProject()
-    {
-        // Initialise variables.
-        $app     = JFactory::getApplication();
-        $data    = JRequest::getVar('jform', array(), 'post', 'array');
-        $id      = JRequest::getInt('id');
-        $project = (int) $data['project_id'];
-
-
-        // Set the project as active
-        ProjectforkHelper::setActiveProject($project);
-
-        // Save the data in the session.
-        $app->setUserState('com_projectfork.edit.tasklistform.id', $id);
-        $app->setUserState('com_projectfork.edit.tasklistform.data', $data);
-
-        $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_item . $this->getRedirectToItemAppend($id), false));
-    }
-
-
-    /**
-     * Sets the selected milestone of the form
-     *
-     * @return    void
-     */
-    public function setMilestone()
-    {
-        $id = JRequest::getInt('id');
-
-        $this->setFormData();
-        $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_item . $this->getRedirectToItemAppend($id), false));
-    }
-
-
-    /**
      * Method override to check if you can edit an existing record.
      *
      * @param     array      $data    An array of input data.
@@ -265,20 +226,5 @@ class ProjectforkControllerTasklistForm extends JControllerForm
         if ($task == 'save') {
             $this->setRedirect(JRoute::_('index.php?option=com_projectfork&view=' . $this->view_list, false));
         }
-    }
-
-
-    /**
-     * Stores the form data
-     *
-     * @return    void
-     */
-    protected function setFormData()
-    {
-        // Initialise variables.
-        $app  = JFactory::getApplication();
-        $data = JRequest::getVar('jform', array(), 'post', 'array');
-
-        $app->setUserState('com_projectfork.edit.tasklistform.data', $data);
     }
 }
