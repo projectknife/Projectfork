@@ -38,40 +38,36 @@ class JFormFieldMilestone extends JFormFieldList
     protected function getInput()
     {
         $attr   = '';
-        $hidden = '<input type="hidden" id="' . $this->id . '_id" name="' . $this->name . '" value="0" />';
+        $hidden = '<input type="hidden" id="' . $this->id . '_id" name="' . $this->name . '" value="" />';
 
         // Initialize some field attributes.
-        $attr .= $this->element['class']                         ? ' class="'.(string) $this->element['class'].'"' : '';
-        $attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"'                          : '';
-        $attr .= $this->element['size']                          ? ' size="'.(int) $this->element['size'].'"'      : '';
-        $attr .= $this->multiple                                 ? ' multiple="multiple"'                          : '';
-
-        // Handle onchange event attribute.
-        if ((string) $this->element['submit'] == 'true') {
-            $view = JRequest::getCmd('view');
-            $attr = ' onchange="';
-            if ($this->element['onchange']) $attr .= (string) $this->element['onchange'] . ';';
-            $attr .= " Joomla.submitbutton('" . $view . ".setMilestone');";
-            $attr .= '"';
-        }
-        else {
-            $attr .= $this->element['onchange'] ? ' onchange="' . (string) $this->element['onchange'] . '"' : '';
-        }
+        $attr .= $this->element['class']                         ? ' class="'.(string) $this->element['class'].'"'           : '';
+        $attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"'                                    : '';
+        $attr .= $this->element['size']                          ? ' size="'.(int) $this->element['size'].'"'                : '';
+        $attr .= $this->multiple                                 ? ' multiple="multiple"'                                    : '';
+        $attr .= $this->element['onchange']                      ? ' onchange="' . (string) $this->element['onchange'] . '"' : '';
 
         // Get parent item field values.
-        $project_id = (int) $this->form->getValue('project_id');
-        $list_id    = (int) $this->form->getValue('list_id');
+        $project = (int) $this->form->getValue('project_id');
+        $list    = (int) $this->form->getValue('list_id');
 
-        if (!$project_id) {
+        if (!$project) {
             // Cant get milestone list without a project id.
+            $this->form->setValue($this->element['name'], null, '');
             return '<span class="readonly">' . JText::_('COM_PROJECTFORK_FIELD_PROJECT_REQ') . '</span>' . $hidden;
         }
 
         // Get the field options.
-        $options = $this->getOptions($project_id, $list_id);
+        $options = $this->getOptions($project);
+
+        // Override the selected value based on the selected list
+        if ($list && count($options)) {
+            $this->value = $this->getListMilestone($list);
+        }
 
         // Return if no options are available.
         if (count($options) == 0) {
+            $this->form->setValue($this->element['name'], null, '');
             return '<span class="readonly">' . JText::_('COM_PROJECTFORK_FIELD_MILESTONE_EMPTY') . '</span>' . $hidden;
         }
 
@@ -81,14 +77,36 @@ class JFormFieldMilestone extends JFormFieldList
 
 
     /**
+     * Method to get the milestone of a task list.
+     *
+     * @param     integer    $list         The currently selected task list
+     *
+     * @return    integer    $milestone    The milestone id
+     */
+    protected function getListMilestone($list)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('milestone_id')
+              ->from('#__pf_task_lists')
+              ->where('id = ' . (int) $list);
+
+        $db->setQuery((string) $query);
+        $milestone = $db->loadResult();
+
+        return (int) $milestone;
+    }
+
+
+    /**
      * Method to get the field list options markup.
      *
      * @param     integer    $project    The currently selected project
-     * @param     integer    $list       The currently selected task list
      *
      * @return    array      $options    The list options markup.
      */
-    protected function getOptions($project = 0, $list = 0)
+    protected function getOptions($project)
     {
         $options = array();
         $user    = JFactory::getUser();
@@ -112,10 +130,6 @@ class JFormFieldMilestone extends JFormFieldList
         // Filter state
         if (!is_null($state)) $query->where('a.state = ' . $db->quote($state));
 
-        // Filter list
-        if ($list) {
-            $query->join('INNER', '#__pf_task_lists AS l ON(l.id = ' . $list . ' AND l.milestone_id = a.id)');
-        }
 
         $query->group('a.id')
               ->order('a.title');

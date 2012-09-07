@@ -23,7 +23,7 @@ class JFormFieldProject extends JFormField
     /**
      * The form field type.
      *
-     * @var    string    
+     * @var    string
      */
     public $type = 'Project';
 
@@ -38,18 +38,12 @@ class JFormFieldProject extends JFormField
         // Load the modal behavior script
         JHtml::_('behavior.modal', 'a.modal_' . $this->id);
 
-        $submit = ($this->element['submit'] == 'true') ? true : false;
-        $view   = (string) JRequest::getCmd('view');
-        $title  = JText::_('COM_PROJECTFORK_SELECT_A_PROJECT');
-
         // Add the script to the document head.
-        $script = $this->getJavascript($submit, $view);
+        $script = $this->getJavascript();
         JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
 
         // Load the current project title a value is set.
-        if ($this->value) {
-            $title = $this->getProjectTitle();
-        }
+        $title = ($this->value ? $this->getProjectTitle() : JText::_('COM_PROJECTFORK_SELECT_A_PROJECT'));
 
         if ($this->value == 0) $this->value = '';
 
@@ -160,9 +154,10 @@ class JFormFieldProject extends JFormField
      *
      * @return    array      $script    The generated javascript
      */
-    protected function getJavascript($submit = false, $view = NULL)
+    protected function getJavascript()
     {
-        $script = array();
+        $script   = array();
+        $onchange = $this->element['onchange'] ? $this->element['onchange'] : '';
 
         $script[] = 'function pfSelectProject_' . $this->id . '(id, title)';
         $script[] = '{';
@@ -170,7 +165,8 @@ class JFormFieldProject extends JFormField
         $script[] = '     if (old_id != id) {';
         $script[] = '         document.getElementById("' . $this->id . '_id").value = id;';
         $script[] = '         document.getElementById("' . $this->id . '_name").value = title;';
-        $script[] = '         ' . ($submit ? 'Joomla.submitbutton("' . $view . '.setProject");' : 'SqueezeBox.close();');
+        $script[] = '         SqueezeBox.close(); ';
+        $script[] = '         ' . $onchange;
         $script[] = '     }';
         $script[] = '}';
 

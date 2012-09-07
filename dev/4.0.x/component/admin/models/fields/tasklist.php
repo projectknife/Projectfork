@@ -25,7 +25,7 @@ class JFormFieldTasklist extends JFormFieldList
     /**
      * The form field type.
      *
-     * @var    string    
+     * @var    string
      */
     public $type = 'Tasklist';
 
@@ -39,25 +39,14 @@ class JFormFieldTasklist extends JFormFieldList
     {
         // Initialize variables.
         $attr   = '';
-        $hidden = '<input type="hidden" id="' . $this->id . '_id" name="' . $this->name . '" value="0" />';
+        $hidden = '<input type="hidden" id="' . $this->id . '_id" name="' . $this->name . '" value="" />';
 
         // Initialize some field attributes.
-        $attr .= $this->element['class']                         ? ' class="'.(string) $this->element['class'].'"' : '';
-        $attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"'                          : '';
-        $attr .= $this->element['size']                          ? ' size="'.(int) $this->element['size'].'"'      : '';
-        $attr .= $this->multiple                                 ? ' multiple="multiple"'                          : '';
-
-        // Handle onchange event attribute.
-        if ((string) $this->element['submit'] == 'true') {
-            $view = JRequest::getCmd('view');
-            $attr = ' onchange="';
-            if ($this->element['onchange']) $attr .= (string) $this->element['onchange'] . ';';
-            $attr .= "Joomla.submitbutton('" . $view . ".setTasklist');";
-            $attr .= '"';
-        }
-        else {
-            $attr .= $this->element['onchange'] ? ' onchange="'.(string) $this->element['onchange'].'"' : '';
-        }
+        $attr .= $this->element['class']                         ? ' class="'.(string) $this->element['class'].'"'       : '';
+        $attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"'                                : '';
+        $attr .= $this->element['size']                          ? ' size="'.(int) $this->element['size'].'"'            : '';
+        $attr .= $this->multiple                                 ? ' multiple="multiple"'                                : '';
+        $attr .= $this->element['onchange']                      ? ' onchange="'.(string) $this->element['onchange'].'"' : '';
 
         // Get parent item field values.
         $project   = (int) $this->form->getValue('project_id');
@@ -65,6 +54,7 @@ class JFormFieldTasklist extends JFormFieldList
 
         if (!$project) {
             // Cant get task list without at least a project id.
+            $this->form->setValue($this->element['name'], null, '');
             return '<span class="readonly">' . JText::_('COM_PROJECTFORK_FIELD_PROJECT_REQ') . '</span>' . $hidden;
         }
 
@@ -73,6 +63,7 @@ class JFormFieldTasklist extends JFormFieldList
 
         // Return if no options are available.
         if (count($options) == 0) {
+            $this->form->setValue($this->element['name'], null, '');
             return '<span class="readonly">' . JText::_('COM_PROJECTFORK_FIELD_TASKLIST_EMPTY') . '</span>' . $hidden;
         }
 

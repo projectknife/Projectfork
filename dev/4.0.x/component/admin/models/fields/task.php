@@ -25,7 +25,7 @@ class JFormFieldTask extends JFormFieldList
     /**
      * The form field type.
      *
-     * @var    string    
+     * @var    string
      */
     public $type = 'Task';
 
@@ -42,22 +42,11 @@ class JFormFieldTask extends JFormFieldList
         $hidden = '<input type="hidden" id="' . $this->id . '_id" name="' . $this->name . '" value="" />';
 
         // Initialize some field attributes.
-        $attr .= $this->element['class']                         ? ' class="'.(string) $this->element['class'].'"' : '';
-        $attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"'                          : '';
-        $attr .= $this->element['size']                          ? ' size="'.(int) $this->element['size'].'"'      : '';
-        $attr .= $this->multiple                                 ? ' multiple="multiple"'                          : '';
-
-        // Handle onchange event attribute.
-        if ((string) $this->element['submit'] == 'true') {
-            $view = JRequest::getCmd('view');
-            $attr = ' onchange="';
-            if ($this->element['onchange']) $attr .= (string) $this->element['onchange'] . ';';
-            $attr .= "Joomla.submitbutton('" . $view . ".setTask');";
-            $attr .= '"';
-        }
-        else {
-            $attr .= $this->element['onchange'] ? ' onchange="' .(string) $this->element['onchange'] . '"' : '';
-        }
+        $attr .= $this->element['class']                         ? ' class="'.(string) $this->element['class'].'"'          : '';
+        $attr .= ((string) $this->element['disabled'] == 'true') ? ' disabled="disabled"'                                   : '';
+        $attr .= $this->element['size']                          ? ' size="'.(int) $this->element['size'].'"'               : '';
+        $attr .= $this->multiple                                 ? ' multiple="multiple"'                                   : '';
+        $attr .= $this->element['onchange']                      ? ' onchange="' .(string) $this->element['onchange'] . '"' : '';
 
         // Get parent item field values.
         $project   = (int) $this->form->getValue('project_id');
@@ -66,6 +55,7 @@ class JFormFieldTask extends JFormFieldList
 
         if (!$project) {
             // Cant get list without at least a project id.
+            $this->form->setValue($this->element['name'], null, '');
             return '<span class="readonly">' . JText::_('COM_PROJECTFORK_FIELD_PROJECT_REQ') . '</span>' . $hidden;
         }
 
@@ -74,6 +64,7 @@ class JFormFieldTask extends JFormFieldList
 
         // Return if no options are available.
         if (count($options) == 0) {
+            $this->form->setValue($this->element['name'], null, '');
             return '<span class="readonly">' . JText::_('COM_PROJECTFORK_FIELD_TASK_EMPTY') . '</span>' . $hidden;
         }
 
@@ -103,7 +94,7 @@ class JFormFieldTask extends JFormFieldList
         // Build the query
         $query->select('a.id AS value, a.title AS text')
               ->from('#__pf_tasks AS a')
-              ->where('a.project_id = '. (int) $project_id);
+              ->where('a.project_id = '. (int) $project);
 
         // Implement View Level Access.
         if (!$user->authorise('core.admin')) {

@@ -35,12 +35,13 @@ var PFform =
 
         // Get the form
         var f = jQuery('#' + fi);
-        var e = jQuery('input[name|="elements"]', f);
+        var e = jQuery('#' + fn + '_elements', f);
         var t = jQuery('input[name|="task"]', f);
+        var v = jQuery('input[name|="view"]', f).val();
 
         // Set the value of the "elements" and "task" field
         e.val(fs);
-        t.val('reload');
+        t.val(v + '.reload');
 
         // Serialize the form
         var d = f.serializeArray();
@@ -49,7 +50,7 @@ var PFform =
         jQuery.ajax(
         {
             url: f.attr('action'),
-            data: jQuery.param(d) + '&format=json',
+            data: jQuery.param(d) + '&tmpl=component&format=json',
             type: 'POST',
             processData: true,
             cache: false,
@@ -59,19 +60,24 @@ var PFform =
                 resp = jQuery.parseJSON(resp);
 
                 if (resp.success == "true") {
-                    if (resp.data.length > 0) {
+                    if (typeof resp.data != 'undefined') {
                         for(var i = 0; i < els.length; i++)
                         {
-                            var eln = els[i];
-                            var elo = jQuery('#' + fn + '_' + eln);
+                            var eln = jQuery.trim(els[i]);
+                            var elo = jQuery('#' + fn + '_' + eln + '_reload');
                             var eld = resp.data[eln];
 
                             if (elo.length > 0 && eld.length > 0) {
-                                elo.replaceWith(eld);
+                                elo.empty();
+                                elo.append(eld);
                             }
                         }
                     }
                 }
+            },
+            error: function(resp, e, msg)
+            {
+                alert(msg);
             },
             complete: function()
             {
@@ -79,5 +85,80 @@ var PFform =
                 t.val('');
             }
         });
+    },
+
+
+    /**
+     * Function that shows or hides the access level select list
+     * depending on the selected access action
+     *
+     * @param    string    el    The access action list
+     * @param    string    fn    The form name (Optional)
+     */
+    accessAction: function(el, fn)
+    {
+        if (typeof fn == 'undefined') {
+            fn = 'jform';
+        }
+
+        if (typeof el == 'undefined') {
+            el = '#' + fn + '_access_action';
+        }
+
+        var a = jQuery('#' + fn + '_access_element');
+        var t = jQuery('#' + fn + '_access_title_element');
+
+        if (a.length > 0) {
+            if (jQuery(el).val() == '0') {
+                a.show();
+                t.hide();
+            }
+            else {
+                a.hide();
+                t.show();
+            }
+        }
+    },
+
+
+    /**
+     * Function for selecting a group when creating a new
+     * access level. This will also select all child groups
+     * and apply the disabled state.
+     *
+     * @param    string    el    The group checkbox that was clicked
+     */
+    accessGroupToggle: function(el)
+    {
+        var cb = jQuery(el);
+        var v  = cb.val();
+        var c  = jQuery('input.childof-' + v);
+        var l  = c.length;
+        var i  = 0;
+
+        if (cb.is(':checked')) {
+            // Force select all child groups
+            for(i = 0; i < l; i++)
+            {
+                var cbc = jQuery(c[i]);
+
+                if (cbc.length) {
+                    cbc.prop('checked', true);
+                    cbc.prop('disabled', true);
+                }
+            }
+        }
+        else {
+            // Release all child groups
+            for(i = 0; i < l; i++)
+            {
+                var cbc = jQuery(c[i]);
+
+                if (cbc.length) {
+                    cbc.prop('checked', false);
+                    cbc.prop('disabled', false);
+                }
+            }
+        }
     }
 }

@@ -13,15 +13,12 @@ defined('_JEXEC') or die();
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.keepalive');
-
+JHtml::_('projectfork.script.form');
 ?>
 <script type="text/javascript">
-Joomla.submitbutton = function(task) {
-    if (task == 'topic.cancel' ||
-        task == 'topic.setProject' ||
-        task == 'topic.setAccess' ||
-        document.formvalidator.isValid(document.id('item-form'))
-       ) {
+Joomla.submitbutton = function(task)
+{
+    if (task == 'topic.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
         <?php echo $this->form->getField('description')->save(); ?>
         Joomla.submitform(task, document.getElementById('item-form'));
     }
@@ -65,35 +62,23 @@ Joomla.submitbutton = function(task) {
             <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_TOPIC_FIELDSET_RULES'), 'access-rules'); ?>
             <fieldset class="panelform">
                 <ul class="adminformlist">
-                    <li id="jform_access-li"><?php echo $this->form->getLabel('access') . $this->form->getInput('access'); ?></li>
-                    <li id="jform_access_exist-li">
+                    <li>
+                        <?php echo $this->form->getLabel('access');?>
+                        <div id="jform_access_reload"><?php echo $this->form->getInput('access'); ?></div>
+                    </li>
+				    <li>
                         <label id="jform_access_exist-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
                             <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
                         </label>
                     </li>
-                    <li id="jform_access_groups-li">
+                    <li>
                         <div id="jform_access_groups">
-                            <div class="clr"></div>
-                            <?php echo $this->form->getInput('rules'); ?>
+    			            <div class="clr"></div>
+                            <div id="jform_rules_reload"><?php echo $this->form->getInput('rules'); ?></div>
                         </div>
                     </li>
                 </ul>
             </fieldset>
-
-            <?php $fieldSets = $this->form->getFieldsets('users'); ?>
-            <?php foreach ($fieldSets as $name => $fieldSet) : ?>
-                <?php echo JHtml::_('sliders.panel', JText::_($fieldSet->label), $name.'-options'); ?>
-                <?php if (isset($fieldSet->description) && trim($fieldSet->description)) : ?>
-                    <p class="tip"><?php echo $this->escape(JText::_($fieldSet->description));?></p>
-                <?php endif; ?>
-                <fieldset class="panelform">
-                    <ul class="adminformlist">
-                        <?php foreach ($this->form->getFieldset($name) as $field) : ?>
-                            <li><?php echo $field->label. $field->input; ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </fieldset>
-            <?php endforeach; ?>
 
        <?php echo JHtml::_('sliders.end'); ?>
        <div class="clr"></div>
@@ -106,9 +91,12 @@ Joomla.submitbutton = function(task) {
             echo $this->form->getInput('alias');
             echo $this->form->getInput('created');
             echo $this->form->getInput('id');
+            echo $this->form->getInput('asset_id');
+            echo $this->form->getInput('elements');
         ?>
         <input type="hidden" name="task" value="" />
         <input type="hidden" name="return" value="<?php echo JRequest::getCmd('return');?>" />
+        <input type="hidden" name="view" value="<?php echo htmlspecialchars($this->get('Name'), ENT_COMPAT, 'UTF-8');?>" />
         <?php echo JHtml::_('form.token'); ?>
     </div>
 </form>

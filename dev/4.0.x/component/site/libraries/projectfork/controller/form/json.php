@@ -348,25 +348,36 @@ class ProjectforkControllerFormJSON extends JControllerForm
         $rdata['messages'] = array();
         $rdata['data']     = array();
 
+        // Check for request forgeries
+        if (!JSession::checkToken()) {
+            $rdata['success']    = "false";
+            $rdata['messages'][] = JText::_('JINVALID_TOKEN');
+
+            $this->sendResponse($rdata);
+        }
+
         $app     = JFactory::getApplication();
-		$context = $this->option . ".edit." . $this->context;
-        $data    = $app->getUserState($context . '.data', null);
+		$context = $this->option . '.edit.' . $this->context;
+        // $data    = $app->getUserState($context . '.data', null);
+        $input   = (array) JRequest::getVar('jform', array(), 'post', 'array');
+
 
         // Overwrite form data
-        $app->setUserState($context . '.data', JRequest::getVar('jform'));
+        $app->setUserState($context . '.data', $input);
 
         $model = $this->getModel();
-        $form  = $model->getForm(JRequest::getVar('jform'), true);
+        $form  = $model->getForm($input, true);
 
-        $elements = JRequest::getVar('elements');
+        $elements = (isset($input['elements']) ? explode(',', $input['elements']) : array());
 
         foreach($elements AS $element)
         {
-            $rdata['data'][$element] = $form->getInput($element);
+            $el = trim($element);
+            $rdata['data'][$el] = $form->getInput($el);
         }
 
         // Put the old data back in
-        $app->setUserState($context . '.data', $data);
+        //$app->setUserState($context . '.data', $data);
 
         $this->sendResponse($rdata);
     }
