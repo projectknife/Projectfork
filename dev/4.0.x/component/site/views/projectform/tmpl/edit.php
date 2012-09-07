@@ -14,7 +14,7 @@ JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.calendar');
 JHtml::_('behavior.formvalidation');
-
+JHtml::_('projectfork.script.form');
 
 // Create shortcut to parameters.
 $params = $this->state->get('params');
@@ -25,7 +25,7 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
 ?>
 <script type="text/javascript">
 	Joomla.submitbutton = function(task) {
-		if (task == 'projectform.cancel' || document.formvalidator.isValid(document.id('adminForm'))) {
+		if (task == 'projectform.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
 			<?php echo $this->form->getField('description')->save(); ?>
 			Joomla.submitform(task);
 		} else {
@@ -40,7 +40,7 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
 </h1>
 <?php endif; ?>
 
-<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="adminForm" class="form-validate form-inline">
+<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="item-form" class="form-validate form-inline">
 	<fieldset>
 		<div class="formelm-buttons btn-toolbar">
 		    <button class="btn btn-primary" type="button" onclick="Joomla.submitbutton('projectform.save')">
@@ -122,7 +122,15 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
 
     <?php echo JHtml::_('tabs.panel', 'Permissions', 'project-permissions') ;?>
     <fieldset>
-        <div class="formelm" id="jform_access-li">
+        <div class="formelm">
+        	<div class="control-label">
+		    	<?php echo $this->form->getLabel('access_action'); ?>
+		    </div>
+		    <div class="controls">
+				<?php echo $this->form->getInput('access_action'); ?>
+			</div>
+		</div>
+        <div class="formelm" id="jform_access_element">
         	<div class="control-label">
 		    	<?php echo $this->form->getLabel('access'); ?>
 		    </div>
@@ -130,25 +138,16 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
 				<?php echo $this->form->getInput('access'); ?>
 			</div>
 		</div>
-        <div class="formelm" id="jform_access_new-li" style="display: none;">
+        <div class="formelm" id="jform_access_title_element" style="display: none;">
         	<div class="control-label">
-		    	<?php echo $this->form->getLabel('access_new'); ?>
+		    	<?php echo $this->form->getLabel('access_title'); ?>
 		    </div>
 		    <div class="controls">
-				<?php echo $this->form->getInput('access_new'); ?>
+				<?php echo $this->form->getInput('access_title'); ?>
 			</div>
 		</div>
-        <div class="formelm" id="jform_access_exist-li" style="display: none;">
-            <label id="jform_access_exist-lbl" class="hasTip control-label" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
-                <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
-            </label>
-        </div>
-        <div class="formlm" id="jform_access_groups-li">
-            <label id="jform_access_groups-lbl" class="hasTip control-label" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_NEW_ACCESS_GROUPS_DESC');?>">
-                <?php echo JText::_('COM_PROJECTFORK_FIELD_NEW_ACCESS_GROUPS_LABEL');?>
-            </label>
-            <div id="jform_access_groups" class="controls">
-    		    <div class="clr"></div>
+        <div class="formlm" id="jform_rules_element">
+            <div id="jform_rules_reload" class="controls">
                 <?php echo $this->form->getInput('rules'); ?>
             </div>
         </div>
@@ -175,8 +174,17 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
 
     <?php echo JHtml::_('tabs.end') ;?>
 
+    <?php
+        echo $this->form->getInput('alias');
+        echo $this->form->getInput('created');
+        echo $this->form->getInput('id');
+        echo $this->form->getInput('asset_id');
+        echo $this->form->getInput('elements');
+    ?>
+
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="return" value="<?php echo $this->return_page;?>" />
+    <input type="hidden" name="view" value="<?php echo htmlspecialchars($this->get('Name'), ENT_COMPAT, 'UTF-8');?>" />
 	<?php echo JHtml::_( 'form.token' ); ?>
 </form>
 </div>

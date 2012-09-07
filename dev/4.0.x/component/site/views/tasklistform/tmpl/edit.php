@@ -27,20 +27,20 @@ JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.calendar');
 JHtml::_('behavior.formvalidation');
-
+JHtml::_('projectfork.script.form');
 
 // Create shortcut to parameters.
 $params = $this->state->get('params');
 ?>
 <script type="text/javascript">
-	Joomla.submitbutton = function(task) {
-		if (task == 'tasklistform.cancel' || task == 'tasklistform.setProject' ||
-            task == 'tasklistform.setMilestone' || document.formvalidator.isValid(document.id('adminForm'))) {
-			Joomla.submitform(task);
-		} else {
-			alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
-		}
+Joomla.submitbutton = function(task)
+{
+	if (task == 'tasklistform.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
+		Joomla.submitform(task);
+	} else {
+		alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 	}
+}
 </script>
 <div class="edit item-page<?php echo $this->pageclass_sfx; ?>">
 <?php if ($params->get('show_page_heading', 0)) : ?>
@@ -49,7 +49,7 @@ $params = $this->state->get('params');
 </h1>
 <?php endif; ?>
 
-<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="adminForm" class="form-validate form-inline">
+<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="item-form" class="form-validate form-inline">
 	<fieldset>
 		<div class="formelm-buttons btn-toolbar">
 		    <button class="btn btn-primary" type="button" onclick="Joomla.submitbutton('tasklistform.save')">
@@ -71,7 +71,7 @@ $params = $this->state->get('params');
 			<div class="control-label">
 		    	<?php echo $this->form->getLabel('milestone_id'); ?>
 		    </div>
-		    <div class="controls">
+		    <div class="controls" id="jform_milestone_id_reload">
 		    	<?php echo $this->form->getInput('milestone_id'); ?>
 		    </div>
 		</div>
@@ -146,18 +146,17 @@ $params = $this->state->get('params');
     		<div class="control-label">
     	    	<?php echo $this->form->getLabel('access'); ?>
     	    </div>
-    	    <div class="controls">
+    	    <div class="controls" id="jform_access_reload">
     	    	<?php echo $this->form->getInput('access'); ?>
     	    </div>
     	</div>
-        <div class="formelm control-group" id="jform_access_exist-li">
-            <label id="jform_access_exist-lbl" class="hasTip control-label" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
+        <div class="formelm control-group">
+            <label id="jform_access_exist-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
                 <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
             </label>
         </div>
-        <div class="formelm control-group" id="jform_access_groups-li">
-            <div id="jform_access_groups" class="controls">
-    		    <div class="clr"></div>
+        <div class="formelm control-group">
+            <div id="jform_rules_reload">
                 <?php echo $this->form->getInput('rules'); ?>
             </div>
         </div>
@@ -182,8 +181,17 @@ $params = $this->state->get('params');
 
     <?php echo JHtml::_('tabs.end') ;?>
 
+    <?php
+        echo $this->form->getInput('alias');
+        echo $this->form->getInput('created');
+        echo $this->form->getInput('id');
+        echo $this->form->getInput('asset_id');
+        echo $this->form->getInput('elements');
+    ?>
+
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="return" value="<?php echo $this->return_page;?>" />
+    <input type="hidden" name="view" value="<?php echo htmlspecialchars($this->get('Name'), ENT_COMPAT, 'UTF-8');?>" />
 	<?php echo JHtml::_( 'form.token' ); ?>
 </form>
 </div>
