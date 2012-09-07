@@ -31,7 +31,7 @@ class ProjectforkControllerReply extends JControllerForm
      *
      * @param     array      $data    An array of input data.
      *
-     * @return    boolean
+     * @return    boolean             
      */
     protected function allowAdd($data = array())
     {
