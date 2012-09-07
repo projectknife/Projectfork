@@ -23,7 +23,7 @@ if (!file_exists(JPATH_SITE . '/components/com_projectfork/helpers/route.php')) 
     echo JText::_('MOD_PF_DASH_BUTTONS_PROJECTFORK_NOT_INSTALLED');
 }
 else {
-    // Include dependancies
+    // Include dependencies
     require_once JPATH_SITE . '/components/com_projectfork/helpers/route.php';
     require_once JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php';
     require_once dirname(__FILE__) . '/helper.php';
