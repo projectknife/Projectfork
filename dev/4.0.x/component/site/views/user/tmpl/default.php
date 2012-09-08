@@ -52,7 +52,7 @@ $item = &$this->item;
                 <div id="user-details">
                     <div class="well">
                         <div class="item-description">
-	                        <img alt="" src="<?php echo $this->baseurl;?>/components/com_projectfork/assets/projectfork/images/icons/avatar.jpg" class="thumbnail pull-left" width="90" />
+	                        <img alt="<?php echo $this->escape($this->item->name);?>" src="<?php echo JHtml::image('com_projectfork/projectfork/icons/avatar.jpg', 'avatar', null, true, true);?>" class="thumbnail pull-left" width="90" />
 	                        <h5><?php echo $this->escape($this->item->name);?></h5>
 	                        <hr class="hr-condensed" />
 	                        <ul class="unstyled">

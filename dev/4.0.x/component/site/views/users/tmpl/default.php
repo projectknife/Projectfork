@@ -78,7 +78,7 @@ $uid	    = $user->get('id');
                 <li class="span2">
                     <div class="thumbnail">
                         <a href="<?php echo ProjectforkHelperRoute::getUserRoute($slug);?>">
-                            <img alt="" src="<?php echo $this->baseurl;?>/components/com_projectfork/assets/projectfork/images/icons/avatar.jpg" />
+                            <?php echo JHtml::image('com_projectfork/projectfork/icons/avatar.jpg', $this->escape($item->name), null, true);?>
                         </a>
                         <div class="caption">
                         	<h4>
