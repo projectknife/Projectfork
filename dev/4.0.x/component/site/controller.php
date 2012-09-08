@@ -47,10 +47,9 @@ class ProjectforkController extends JController
 
         JHtml::_('projectfork.script.jQuery');
         JHtml::_('projectfork.script.bootstrap');
-        JHtml::_('projectfork.JS');
+        JHtml::_('projectfork.script.projectfork');
 
         JHtml::_('behavior.tooltip');
-
 
         // Override method arguments
         $cachable  = true;

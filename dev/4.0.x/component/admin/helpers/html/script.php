@@ -63,7 +63,7 @@ abstract class ProjectforkScript
             return;
         }
 
-        // Load dependancies
+        // Load dependencies
         if (empty(self::$loaded['jQuery'])) {
             self::jQuery();
         }
@@ -91,7 +91,7 @@ abstract class ProjectforkScript
             return;
         }
 
-        // Load dependancies
+        // Load dependencies
         if (empty(self::$loaded['jQuery'])) {
             self::jQuery();
         }
@@ -119,7 +119,7 @@ abstract class ProjectforkScript
             return;
         }
 
-        // Load dependancies
+        // Load dependencies
         if (empty(self::$loaded['jQuery'])) {
             self::jQuery();
         }
@@ -145,7 +145,7 @@ abstract class ProjectforkScript
             return;
         }
 
-        // Load dependancies
+        // Load dependencies
         if (empty(self::$loaded['jQuery'])) {
             self::jQuery();
         }
@@ -153,6 +153,27 @@ abstract class ProjectforkScript
         // Load only of doc type is HTML
         if (JFactory::getDocument()->getType() == 'html') {
             JHtml::_('script', 'com_projectfork/projectfork/form.js', false, true, false, false, false);
+        }
+
+        self::$loaded[__METHOD__] = true;
+    }
+
+
+    /**
+     * Method to load Projectfork base JS
+     *
+     * @return    void
+     */
+    public static function projectfork()
+    {
+        // Only load once
+        if (!empty(self::$loaded[__METHOD__])) {
+            return;
+        }
+
+        // Load only of doc type is HTML
+        if (JFactory::getDocument()->getType() == 'html') {
+            JHtml::_('script', 'com_projectfork/projectfork/projectfork.js', false, true, false, false, false);
         }
 
         self::$loaded[__METHOD__] = true;
