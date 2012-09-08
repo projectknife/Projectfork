@@ -10,7 +10,7 @@
 defined('_JEXEC') or die();
 
 
-$avatar = JFactory::getURI()->base(true) . '/components/com_projectfork/assets/projectfork/images/icons/avatar.jpg';
+$avatar = JHtml::image('com_projectfork/projectfork/icons/avatar.jpg', 'avatar', null, true, true);
 
 ?>
 <ul class="unstyled" id="comment-editor">

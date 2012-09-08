@@ -10,7 +10,6 @@
 defined('_JEXEC') or die();
 
 $user     = JFactory::getUser();
-$avatar   = JFactory::getURI()->base(true) . '/components/com_projectfork/assets/projectfork/images/icons/avatar.jpg';
 $ul_open  = false;
 $level    = 1;
 $uid      = $user->get('id');
@@ -39,6 +38,7 @@ foreach($this->items AS $i => $item) :
 
     $can_create = $this->access->get('comment.create');
     $can_trash  = ($this->access->get('comment.edit.state') || ($this->access->get('comment.edit.own') && $item->created_by == $uid));
+    $avatar     = JHtml::image('com_projectfork/projectfork/icons/avatar.jpg', $item->author_name, null, true, true);
     ?>
     <li id="comment-item-<?php echo $i; ?>">
         <div class="comment-item">
