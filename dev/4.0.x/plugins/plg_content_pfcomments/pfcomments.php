@@ -1,6 +1,6 @@
 <?php
 /**
- * @package      Projectfork
+ * @package      Projectfork Comments
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
@@ -70,12 +70,11 @@ class plgContentPfcomments extends JPlugin
         $this->item_context = $context;
         $this->item_id      = (isset($item->id) ? intval($item->id) : 0);
 
-        // Get the comments model
-        /*JModel::addIncludePath(JPATH_SITE . '/components/com_projectfork/models');
+        // Add include paths
+        JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/html');
 
-        $model = JModel::getInstance('Comments', 'ProjectforkModel', array('ignore_request' => true));
-        $model->setState('comments.filter.context', $this->item_context);
-        $model->setState('comments.filter.item_id', $this->item_id);*/
+        // Load comments JS
+        JHtml::_('projectfork.script.comments');
 
         return $this->display();
     }
