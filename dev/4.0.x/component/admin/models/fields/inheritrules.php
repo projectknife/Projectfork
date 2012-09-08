@@ -39,7 +39,6 @@ class JFormFieldInheritRules extends JFormField
      */
     protected $is_admin;
 
-
     /**
      * 1 if the user is creating a new access level. Otherwise 0
      *
@@ -47,17 +46,23 @@ class JFormFieldInheritRules extends JFormField
      */
     protected $create_access;
 
-
+    /**
+     *
+     * @var    object
+     */
     protected $rules;
 
-
+    /**
+     *
+     * @var    integer
+     */
     protected $asset_id;
 
-
+    /**
+     *
+     * @var    array
+     */
     protected $actions;
-
-
-    protected $tmpmsg;
 
 
     /**
@@ -91,7 +96,16 @@ class JFormFieldInheritRules extends JFormField
     }
 
 
-    protected function getHTML($component, $section, $asset)
+    /**
+     * Method to get the field markup.
+     *
+     * @param     string    $component    The component of which to show the actions
+     * @param     string    $section      The action section to show
+     * @param     int       $asset        The asset id
+
+     * @return    array                   The html array
+     */
+    protected function getHTML($component, $section, $asset = '')
     {
         if (JFactory::getApplication()->isSite()) {
             return $this->getSiteHTML($component, $section, $asset);
@@ -101,6 +115,15 @@ class JFormFieldInheritRules extends JFormField
     }
 
 
+    /**
+     * Method to get the admin field markup.
+     *
+     * @param     string    $component    The component of which to show the actions
+     * @param     string    $section      The action section to show
+     * @param     int       $asset        The asset id
+
+     * @return    array                   The html array
+     */
     protected function getAdminHTML($component, $section, $asset = '')
     {
         $html   = array();
@@ -259,6 +282,15 @@ class JFormFieldInheritRules extends JFormField
     }
 
 
+    /**
+     * Method to get the site field markup.
+     *
+     * @param     string    $component    The component of which to show the actions
+     * @param     string    $section      The action section to show
+     * @param     int       $asset        The asset id
+
+     * @return    array                   The html array
+     */
     protected function getSiteHTML()
     {
         $html   = array();
@@ -271,13 +303,9 @@ class JFormFieldInheritRules extends JFormField
         {
             $gid = $item->value;
 
-            $html[] = '<li class="usergroup control-group">';
-            $html[] = '     <div class="pull-left">';
-            $html[] = '         <button type="button" class="btn" onclick="jQuery(\'#group-rules-' . $gid . '\').toggle();">Permissions</button>';
-            $html[] = '     </div>';
-            $html[] = '     <div class="pull-left">';
-            $html[] = '         ';
-            $html[] = '         <label for="">';
+            $html[] = '<li class="well well-small">';
+            $html[] = '    <button type="button" class="btn btn-mini" onclick="jQuery(\'#group-rules-' . $gid . '\').toggle();"><i class="icon-wrench"></i></button>';
+            $html[] = '    <label for="">';
 
             // Add a checkbox if the user is creating a new access level
             if ($this->create_access) {
@@ -294,15 +322,16 @@ class JFormFieldInheritRules extends JFormField
 
                 $classes = implode(' ', $classes);
 
-                $html[] = '         <input type="checkbox" name="' . $this->name . '[]" value="' . $gid . '" class="inputbox ' . $classes . '" ' . $onclick . '/>';
+                $html[] = '     <input type="checkbox" name="' . $this->name . '[]" value="' . $gid . '" class="inputbox ' . $classes . '" ' . $onclick . '/>';
             }
 
-            $html[] = '             ' . str_repeat('<span class="gi">|&mdash;</span>', $item->level) . $item->text;
-            $html[] = '         </label>';
-            $html[] = '     </div>';
-            $html[] = '     <div class="clr"></div>';
+            //$html[] = '             ' . str_repeat('<i class="icon-chevron-right"></i> ', $item->level) . ' <strong>' . $item->text . '</strong>';
+            $html[] = '         ' . str_repeat('<strong>|&mdash;</strong>', $item->level) . ' <strong>' . $item->text . '</strong>';
+            $html[] = '     </label>';
+            $html[] = '     <div class="clearfix"></div>';
             $html[] = '     <div class="mypanel" id="group-rules-' . $gid . '" style="display:none;">';
-            $html[] = '         <table class="group-rules table">';
+            $html[] = '         <hr/>';
+            $html[] = '         <table class="table table-striped table-condensed">';
             $html[] = '             <thead>';
             $html[] = '                 <tr>';
             $html[] = '                     <th class="actions" id="actions-th' . $gid . '">';
@@ -365,35 +394,35 @@ class JFormFieldInheritRules extends JFormField
                     // Check whether this is a component or global. Change the text slightly.
                     if (JAccess::checkGroup($gid, 'core.admin') !== true) {
                         if ($inherited === null) {
-                            $html[] = '<span class="icon-16-unset">' . JText::_('JLIB_RULES_NOT_ALLOWED') . '</span>';
+                            $html[] = '<span class="label label-warning"><i class="icon-white icon-remove"></i> ' . JText::_('JLIB_RULES_NOT_ALLOWED') . '</span>';
                         }
                         elseif ($inherited === true) {
-                            $html[] = '<span class="icon-16-allowed">' . JText::_('JLIB_RULES_ALLOWED') . '</span>';
+                            $html[] = '<span class="label label-success"><i class="icon-white icon-ok"></i> ' . JText::_('JLIB_RULES_ALLOWED') . '</span>';
                         }
                         elseif ($inherited === false) {
                             if ($rule === false) {
-                                $html[] = '<span class="icon-16-denied">' . JText::_('JLIB_RULES_NOT_ALLOWED') . '</span>';
+                                $html[] = '<span class="label label-warning"><i class="icon-white icon-remove"></i> ' . JText::_('JLIB_RULES_NOT_ALLOWED') . '</span>';
                             }
                             else {
-                                $html[] = '<span class="icon-16-denied"><span class="icon-16-locked">' . JText::_('JLIB_RULES_NOT_ALLOWED_LOCKED') . '</span></span>';
+                                $html[] = '<span class="label label-important"><i class="icon-white icon-lock"></i> ' . JText::_('JLIB_RULES_NOT_ALLOWED_LOCKED') . '</span>';
                             }
                         }
                     }
                     elseif (!empty($component)) {
-                        $html[] = '<span class="icon-16-allowed"><span class="icon-16-locked">' . JText::_('JLIB_RULES_ALLOWED_ADMIN') . '</span></span>';
+                        $html[] = '<span class="label label-success"><i class="icon-white icon-ok"></i> ' . JText::_('JLIB_RULES_ALLOWED_ADMIN') . '</span>';
                     }
                     else {
                         // Special handling for  groups that have global admin because they can't be denied.
                         // The admin rights can be changed.
                         if ($action->name === 'core.admin') {
-                            $html[] = '<span class="icon-16-allowed">' . JText::_('JLIB_RULES_ALLOWED') . '</span>';
+                            $html[] = '<span class="label label-success"><i class="icon-white icon-ok"></i> ' . JText::_('JLIB_RULES_ALLOWED') . '</span>';
                         }
                         elseif ($inherited === false) {
                             // Other actions cannot be changed.
-                            $html[] = '<span class="icon-16-denied"><span class="icon-16-locked">' . JText::_('JLIB_RULES_NOT_ALLOWED_ADMIN_CONFLICT') . '</span></span>';
+                            $html[] = '<span class="label label-important"><i class="icon-white icon-remove"></i> <i class="icon-white icon-lock"></i> ' . JText::_('JLIB_RULES_NOT_ALLOWED_ADMIN_CONFLICT') . '</span>';
                         }
                         else {
-                            $html[] = '<span class="icon-16-allowed"><span class="icon-16-locked">' . JText::_('JLIB_RULES_ALLOWED_ADMIN') . '</span></span>';
+                            $html[] = '<span class="label label-success"><i class="icon-white icon-ok"></i> <i class="icon-white icon-lock"></i> ' . JText::_('JLIB_RULES_ALLOWED_ADMIN') . '</span>';
                         }
                     }
 
@@ -417,6 +446,15 @@ class JFormFieldInheritRules extends JFormField
     }
 
 
+    /**
+     * Method to get the asset rules and id.
+     *
+     * @param     string    $component    The component of which to show the actions
+     * @param     string    $section      The action section to show
+     * @param     int       $asset        The asset id
+
+     * @return    void
+     */
     protected function getAssetRules($component, $section, $asset = '')
     {
         $db    = JFactory::getDbo();
@@ -462,9 +500,9 @@ class JFormFieldInheritRules extends JFormField
     /**
      * Gets the path of a user group upwards to its root
      *
-     * @param integer $id The user group for which to get the path
+     * @param     integer    $id      The user group for which to get the path
      *
-     * @return array $path All parent groups
+     * @return    array      $path    All parent groups
      */
     protected function getGroupPath($id)
     {
@@ -473,9 +511,9 @@ class JFormFieldInheritRules extends JFormField
 
         $query->select('p.id')
               ->from('#__usergroups AS n, #__usergroups AS p')
-		      ->where('n.lft BETWEEN p.lft AND p.rgt')
-		      ->where('n.id = ' . $id)
-		      ->order('p.lft');
+              ->where('n.lft BETWEEN p.lft AND p.rgt')
+              ->where('n.id = ' . $id)
+              ->order('p.lft');
 
         $db->setQuery((string) $query);
         $path = (array) $db->loadResultArray();
@@ -487,7 +525,7 @@ class JFormFieldInheritRules extends JFormField
     /**
      * Get a list of the user groups.
      *
-     * @return    array $groups
+     * @return    array    $groups
      */
     protected function getUserGroups()
     {
@@ -518,7 +556,7 @@ class JFormFieldInheritRules extends JFormField
                 foreach($rules AS $i => $rule)
                 {
                     $group = (int) $rule;
-                    if(!in_array($group, $my_groups)) {
+                    if (!in_array($group, $my_groups)) {
                         unset($rules[$i]);
                     }
                 }
@@ -583,78 +621,6 @@ class JFormFieldInheritRules extends JFormField
 
 
     /**
-     * Returns a list of all access levels with their assigned groups
-     *
-     * @return    array
-     */
-    protected function getAccessGroups()
-    {
-        $db    = JFactory::getDBO();
-        $query = $db->getQuery(true);
-        $list  = array();
-
-        $query->select('a.id, a.rules')
-              ->from('#__viewlevels AS a');
-
-        $db->setQuery($query);
-        $levels = $db->loadObjectList();
-
-        foreach($levels AS $lvl)
-        {
-            $key    = $lvl->id;
-            $groups = json_decode($lvl->rules);
-
-            if (!is_array($groups)) $groups = array();
-
-            $list[$key] = $groups;
-        }
-
-        return $list;
-    }
-
-
-    /**
-     * Returns a string of css classes based on the associated access levels with
-     *                      $id).
-     *
-     * @param     int       $id      The group id
-     * @return    string
-     */
-    protected function getGroupClasses($id)
-    {
-        static $levels;
-
-        $parents = ProjectforkHelper::getGroupPath($id);
-        $groups  = array();
-        $classes = array();
-
-        if (empty($levels)) $levels = $this->getAccessGroups();
-
-        // Get parent groups
-        foreach($parents AS $parent)
-        {
-            $groups[] = $parent;
-        }
-
-        foreach($levels AS $lvl => $lvl_groups)
-        {
-            foreach($groups AS $group)
-            {
-                if (in_array($group, $lvl_groups) && !in_array('haslvl-' . $lvl, $classes)) {
-                    $classes[] = 'haslvl-' . $lvl;
-                }
-            }
-        }
-
-        if (!in_array('haslvl-1', $classes)) {
-            $classes[] = 'haslvl-1';
-        }
-
-        return implode(' ', $classes);
-    }
-
-
-    /**
      * Returns the available actions
      *
      * @param     string    $component    The component name
@@ -680,28 +646,5 @@ class JFormFieldInheritRules extends JFormField
         }
 
         return $actions;
-    }
-
-
-    protected function getGroupChildren($i = 0, $level = 0, $prefix = '')
-    {
-        $children = array();
-        $count    = count($this->groups);
-
-        $i++;
-
-        for ($i, $n = $count; $i < $n; $i++)
-        {
-            $item = $this->groups[$i];
-
-            if ($item->level > $level) {
-                $children[] = $prefix . $item->value;
-            }
-            else {
-                return $children;
-            }
-        }
-
-        return $children;
     }
 }
