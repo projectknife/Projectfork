@@ -139,24 +139,24 @@ class ProjectforkModelTimesheet extends JModelList
         $query->from('#__pf_timesheet AS a');
 
         // Join over the users for the checked out user.
-        $query->select('uc.name AS editor');
-        $query->join('LEFT', '#__users AS uc ON uc.id = a.checked_out');
+        $query->select('uc.name AS editor')
+              ->join('LEFT', '#__users AS uc ON uc.id = a.checked_out');
 
         // Join over the asset groups.
-        $query->select('ag.title AS access_level');
-        $query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
+        $query->select('ag.title AS access_level')
+              ->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
 
         // Join over the users for the author.
-        $query->select('ua.name AS author_name');
-        $query->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
+        $query->select('ua.name AS author_name')
+              ->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
         // Join over the projects for the project title.
-        $query->select('p.title AS project_title');
-        $query->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
+        $query->select('p.title AS project_title')
+              ->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
 
         // Join over the tasks for the task title.
-        $query->select('t.title AS task_title');
-        $query->join('LEFT', '#__pf_tasks AS t ON t.id = a.task_id');
+        $query->select('t.title AS task_title')
+              ->join('LEFT', '#__pf_tasks AS t ON t.id = a.task_id');
 
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {

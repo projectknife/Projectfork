@@ -1,27 +1,14 @@
 <?php
 /**
-* @package   Projectfork
-* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
-*
-* This file is part of Projectfork.
-*
-* Projectfork is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*
-* Projectfork is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
-**/
+ * @package      Projectfork
+ *
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ */
 
-// No direct access
-defined('_JEXEC') or die;
+defined('_JEXEC') or die();
+
 
 // Load the tooltip behavior.
 JHtml::_('behavior.tooltip');
@@ -31,7 +18,8 @@ JHtml::_('projectfork.script.form');
 ?>
 <script type="text/javascript">
 PFform.accessAction();
-Joomla.submitbutton = function(task) {
+Joomla.submitbutton = function(task)
+{
     if (task == 'project.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
 	    <?php echo $this->form->getField('description')->save(); ?>
         Joomla.submitform(task, document.getElementById('item-form'));

@@ -1,26 +1,14 @@
 <?php
 /**
-* @package   Projectfork
-* @copyright Copyright (C) 2006-2011 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
-*
-* This file is part of Projectfork.
-*
-* Projectfork is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*
-* Projectfork is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
-**/
+ * @package      Projectfork
+ *
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ */
 
-defined('_JEXEC') or die;
+defined('_JEXEC') or die();
+
 
 jimport('joomla.application.component.controlleradmin');
 
@@ -31,30 +19,30 @@ jimport('joomla.application.component.controlleradmin');
  */
 class ProjectforkControllerTasklists extends JControllerAdmin
 {
-	/**
-	 * Constructor.
-	 *
-	 * @param	array	$config	An optional associative array of configuration settings
-	 * @return	ProjectforkControllerMilestones
-	 * @see		JController
-	 */
-	public function __construct($config = array())
-	{
-		parent::__construct($config);
-	}
+    /**
+     * Constructor.
+     *
+     * @param     array                              $config    An optional associative array of configuration settings
+     * @return    projectforkcontrollermilestones               
+     * @see       jcontroller                                   
+     */
+    public function __construct($config = array())
+    {
+        parent::__construct($config);
+    }
 
 
-	/**
-	 * Proxy for getModel.
-	 *
-	 * @param	string	$name	The name of the model.
-	 * @param	string	$prefix	The prefix for the PHP class name.
-	 * @return	JModel
-	 */
-	public function getModel($name = 'Tasklist', $prefix = 'ProjectforkModel', $config = array('ignore_request' => true))
-	{
-		$model = parent::getModel($name, $prefix, $config);
+    /**
+     * Proxy for getModel.
+     *
+     * @param     string    $name      The name of the model.
+     * @param     string    $prefix    The prefix for the PHP class name.
+     * @return    jmodel               
+     */
+    public function getModel($name = 'Tasklist', $prefix = 'ProjectforkModel', $config = array('ignore_request' => true))
+    {
+        $model = parent::getModel($name, $prefix, $config);
 
-		return $model;
-	}
+        return $model;
+    }
 }

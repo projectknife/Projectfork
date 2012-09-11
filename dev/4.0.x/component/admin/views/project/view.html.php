@@ -52,7 +52,7 @@ class ProjectforkViewProject extends JView
         JRequest::setVar('hidemainmenu', true);
 
         $uid         = JFactory::getUser()->get('id');
-        $access      = ProjectforkHelper::getActions('project', $this->item->id);
+        $access      = ProjectforkHelperAccess::getActions('project', $this->item->id);
         $checked_out = !($this->item->checked_out == 0 || $this->item->checked_out == $uid);
         $is_new      = ($this->item->id == 0);
 

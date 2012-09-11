@@ -198,15 +198,15 @@ class ProjectforkModelReplies extends JModelList
         $search = $this->getState('filter.search');
         if (!empty($search)) {
             if (stripos($search, 'id:') === 0) {
-                $query->where('a.id = '.(int) substr($search, 3));
+                $query->where('a.id = '. (int) substr($search, 3));
             }
             elseif (stripos($search, 'manager:') === 0) {
-                $search = $db->Quote('%' . $db->getEscaped(substr($search, 7), true).'%');
-                $query->where('(ua.name LIKE ' . $search.' OR ua.username LIKE ' . $search.')');
+                $search = $db->Quote('%' . $db->getEscaped(substr($search, 7), true) . '%');
+                $query->where('(ua.name LIKE ' . $search.' OR ua.username LIKE ' . $search . ')');
             }
             else {
                 $search = $db->Quote('%' . $db->getEscaped($search, true).'%');
-                $query->where('(a.title LIKE ' . $search.' OR a.alias LIKE ' . $search.')');
+                $query->where('(a.title LIKE ' . $search . ' OR a.alias LIKE ' . $search . ')');
             }
         }
 
@@ -227,7 +227,6 @@ class ProjectforkModelReplies extends JModelList
      */
     public function getAuthors()
     {
-        // Create a new query object.
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -238,7 +237,6 @@ class ProjectforkModelReplies extends JModelList
               ->group('u.id')
               ->order('u.name');
 
-        // Setup the query
         $db->setQuery((string) $query);
 
         // Return the result

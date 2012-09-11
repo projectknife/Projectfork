@@ -91,7 +91,7 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
         </thead>
         <tbody>
         <?php foreach ($this->items as $i => $item) :
-            $access = ProjectforkHelperAccess::getActions('comment', $item->id);
+            $access  = ProjectforkHelperAccess::getActions('comment', $item->id);
             $context = str_replace('.', '_', strtoupper($item->context)) . '_TITLE';
 
             if ($item->level == 0) $item->level = 1;
