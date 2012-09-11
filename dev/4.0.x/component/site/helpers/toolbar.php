@@ -1,27 +1,13 @@
 <?php
 /**
-* @package   Projectfork
-* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
-*
-* This file is part of Projectfork.
-*
-* Projectfork is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*
-* Projectfork is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
-**/
+ * @package      Projectfork
+ *
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ */
 
-// No direct access
-defined('_JEXEC') or die;
+defined('_JEXEC') or die();
 
 
 class ProjectforkHelperToolbar
@@ -53,13 +39,13 @@ class ProjectforkHelperToolbar
 
         $html[] = '<button class="btn btn-info" ';
 
-        if($task) {
+        if ($task) {
             $html[] = 'onclick="';
 
-            if($list) {
+            if ($list) {
                 $message = JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST');
-		        $message = addslashes($message);
-                $html[] = "if(document.adminForm.boxchecked.value==0){alert('$message');}else{Joomla.submitbutton('$task')}";
+                $message = addslashes($message);
+                $html[] = "if (document.adminForm.boxchecked.value==0){alert('$message');}else{Joomla.submitbutton('$task')}";
             }
             else {
                 $html[] = "Joomla.submitbutton('$task');";
@@ -83,13 +69,13 @@ class ProjectforkHelperToolbar
 
         $html[] = '<a href="javascript:void();" ';
 
-        if($task) {
+        if ($task) {
             $html[] = 'onclick="';
 
-            if($list) {
+            if ($list) {
                 $message = JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST');
-		        $message = addslashes($message);
-                $html[] = "if(document.adminForm.boxchecked.value==0){alert('$message');}else{Joomla.submitbutton('$task')}";
+                $message = addslashes($message);
+                $html[] = "if (document.adminForm.boxchecked.value==0){alert('$message');}else{Joomla.submitbutton('$task')}";
             }
             else {
                 $html[] = "Joomla.submitbutton('$task');";
@@ -111,13 +97,13 @@ class ProjectforkHelperToolbar
         $html = array();
 
         $html[] = '<div class="btn-group">';
-        $html[] = '    '.$this->renderButton($text, $task, $list);
+        $html[] = '    ' . $this->renderButton($text, $task, $list);
         $html[] = '    <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">';
         $html[] = '        <span class="caret"></span>';
         $html[] = '    </button>';
         $html[] = '    <ul class="dropdown-menu">';
 
-        if(is_array($items)) {
+        if (is_array($items)) {
             foreach($items AS $task => $item)
             {
                 $txt  = (isset($item['text']) ? $item['text'] : '');

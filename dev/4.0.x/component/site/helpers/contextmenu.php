@@ -1,27 +1,13 @@
 <?php
 /**
-* @package   Projectfork
-* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
-*
-* This file is part of Projectfork.
-*
-* Projectfork is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*
-* Projectfork is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
-**/
+ * @package      Projectfork
+ *
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ */
 
-// No direct access
-defined('_JEXEC') or die;
+defined('_JEXEC') or die();
 
 
 class ProjectforkHelperContextMenu
@@ -45,11 +31,11 @@ class ProjectforkHelperContextMenu
     {
         $class = '';
 
-        if(isset($disabled_options['class']) && $disabled_options['class'] != '') {
-            $class = ' '.$disabled_options['class'];
+        if (isset($disabled_options['class']) && $disabled_options['class'] != '') {
+            $class = ' ' . $disabled_options['class'];
         }
 
-        if(count($this->items) <= 2) {
+        if (count($this->items) <= 2) {
             $this->items = array();
 
             $html = array();
@@ -76,34 +62,34 @@ class ProjectforkHelperContextMenu
         $pull   = '';
         $single = false;
 
-        if(isset($options['class']) && $options['class'] != '') {
-            $class = ' '.$options['class'];
+        if (isset($options['class']) && $options['class'] != '') {
+            $class = ' ' . $options['class'];
         }
 
-        if(isset($options['title']) && $options['title'] != '') {
-            $title = $options['title'].' ';
+        if (isset($options['title']) && $options['title'] != '') {
+            $title = $options['title'] . ' ';
         }
 
-        if(isset($options['single-button']) && $options['single-button'] != '') {
+        if (isset($options['single-button']) && $options['single-button'] != '') {
             $single = (bool) $options['single-button'];
         }
 
-        if(isset($options['pull']) && $options['pull'] != '') {
+        if (isset($options['pull']) && $options['pull'] != '') {
             $pull = ' pull-' . $options['pull'];
         }
 
         $html = array();
 
-        if(!$single) {
+        if (!$single) {
             $html[] = '<div class="btn-group' . $pull . '">';
-            $html[] = '    <a class="btn dropdown-toggle'.$class.'" data-toggle="dropdown" href="#">'.$title.'<span class="caret"></span></a>';
+            $html[] = '    <a class="btn dropdown-toggle' . $class.'" data-toggle="dropdown" href="#">' . $title . '<span class="caret"></span></a>';
             $html[] = '    <ul class="dropdown-menu">';
         }
         else {
-            $html[] = '<div class="btn '.$class.'">'.$title.'</div>';
+            $html[] = '<div class="btn ' . $class.'">' . $title . '</div>';
         }
 
-        if($return) return implode("\n", $html);
+        if ($return) return implode("\n", $html);
 
         $this->addItem(implode("\n", $html));
     }
@@ -114,10 +100,10 @@ class ProjectforkHelperContextMenu
         $html = array();
 
         $html[] = '        <li>';
-        $html[] = '            <a href="'.$action.'"><i class="'.$icon.'"></i> '.JText::_($title).'</a>';
+        $html[] = '            <a href="' . $action . '"><i class="' . $icon . '"></i> ' . JText::_($title) . '</a>';
         $html[] = '        </li>';
 
-        if($return) return implode("\n", $html);
+        if ($return) return implode("\n", $html);
 
         $this->addItem(implode("\n", $html));
     }
@@ -128,10 +114,10 @@ class ProjectforkHelperContextMenu
         $html = array();
 
         $html[] = '        <li>';
-        $html[] = '            <i class="'.$icon.'"></i> '.JText::_($title);
+        $html[] = '            <i class="' . $icon . '"></i> ' . JText::_($title);
         $html[] = '        </li>';
 
-        if($return) return implode("\n", $html);
+        if ($return) return implode("\n", $html);
 
         $this->addItem(implode("\n", $html));
     }
@@ -142,14 +128,16 @@ class ProjectforkHelperContextMenu
         static $modal;
 
         // Load the modal behavior script.
-        if(!isset($modal)) JHtml::_('behavior.modal', 'a.modal_item');
+        if (!isset($modal)) JHtml::_('behavior.modal', 'a.modal_item');
         $html = array();
 
         $html[] = '        <li>';
-        $html[] = '            <a class="modal_item" href="'.$action.'" rel="{handler: \'iframe\', size: {x: '.$size_x.', y: '.$size_y.'}}"><i class="'.$icon.'"></i> '.JText::_($title).'</a>';
+        $html[] = '            <a class="modal_item" href="' . $action . '" rel="{handler: \'iframe\', size: {x: ' . $size_x . ', y: ' . $size_y.'}}">';
+        $html[] = '                <i class="' . $icon.'"></i> ' . JText::_($title);
+        $html[] = '            </a>';
         $html[] = '        </li>';
 
-        if($return) return implode("\n", $html);
+        if ($return) return implode("\n", $html);
 
         $this->addItem(implode("\n", $html));
     }
@@ -160,10 +148,10 @@ class ProjectforkHelperContextMenu
         $html = array();
 
         $html[] = '        <li>';
-        $html[] = '            <a onclick="'.$action.'" href="javascript:void(0);"><i class="'.$icon.'"></i> '.JText::_($title).'</a>';
+        $html[] = '            <a onclick="' . $action . '" href="javascript:void(0);"><i class="' . $icon . '"></i> ' . JText::_($title) . '</a>';
         $html[] = '        </li>';
 
-        if($return) return implode("\n", $html);
+        if ($return) return implode("\n", $html);
 
         $this->addItem(implode("\n", $html));
     }
@@ -171,17 +159,17 @@ class ProjectforkHelperContextMenu
 
     public function itemDivider($return = false)
     {
-        if($return) return '        <li class="divider"></li>';
+        if ($return) return '        <li class="divider"></li>';
         $this->addItem('        <li class="divider"></li>');
     }
 
 
     public function itemEdit($asset, $id = 0, $access = false)
     {
-        if(!$access) return '';
+        if (!$access) return '';
 
         $icon   = 'icon-pencil';
-        $action = JRoute::_('index.php?option=com_projectfork&task='.strval($asset).'.edit&id='.intval($id));
+        $action = JRoute::_('index.php?option=com_projectfork&task=' . strval($asset) . '.edit&id=' . intval($id));
         $title  = JText::_('COM_PROJECTFORK_ACTION_EDIT');
 
         return $this->itemLink($icon, $title, $action);
@@ -190,10 +178,10 @@ class ProjectforkHelperContextMenu
 
     public function itemTrash($asset, $id, $access = false)
     {
-        if(!$access) return '';
+        if (!$access) return '';
 
         $icon   = 'icon-trash';
-        $action = "return listItemTask('cb".$id."','".$asset.".trash');";
+        $action = "return listItemTask('cb" . $id . "','" . $asset . ".trash');";
         $title  = JText::_('COM_PROJECTFORK_ACTION_TRASH');
 
         return $this->itemJavaScript($icon, $title, $action);
@@ -210,7 +198,7 @@ class ProjectforkHelperContextMenu
         // Find the current priority and class
         foreach($priorities AS $priority)
         {
-            if($priority->value == $selected) {
+            if ($priority->value == $selected) {
                 $title = $priority->text;
 
                 switch($priority->value)
@@ -242,15 +230,15 @@ class ProjectforkHelperContextMenu
             }
         }
 
-        $class .= ' '.$css_class;
+        $class .= ' ' . $css_class;
 
 
-        if($access) {
+        if ($access) {
             $html[] = $this->start(array('title' => $title, 'class' => $class), true);
             foreach($priorities AS $priority)
             {
-                if($title == $priority->text) continue;
-                $action = "document.id('priority".$i."').set('value', ".intval($priority->value)."); return listItemTask('cb".$i."','".$asset.".savePriority');";
+                if ($title == $priority->text) continue;
+                $action = "document.id('priority" . $i . "').set('value', " . intval($priority->value) . "); return listItemTask('cb" . $i . "','" . $asset . ".savePriority');";
                 $html[] = $this->itemJavaScript('icon-flag', $priority->text, $action, true);
             }
             $html[] = $this->end(true);
@@ -259,8 +247,7 @@ class ProjectforkHelperContextMenu
             $html[] = $this->start(array('title' => $title, 'class' => $class, 'single-button' => true), true);
         }
 
-        $html[] = '<input type="hidden" id="priority'.$i.'" name="priority['.$id.']" value="'.intval($selected).'"/>';
-
+        $html[] = '<input type="hidden" id="priority' . $i . '" name="priority[' . $id . ']" value="' . intval($selected) . '"/>';
 
         return implode("\n", $html);
     }
@@ -274,51 +261,43 @@ class ProjectforkHelperContextMenu
         $title = ($count > 0) ? $assigned[0]->name : JText::_('COM_PROJECTFORK_UNASSIGNED');
         $title .= ($count > 1) ? ' +'.($count - 1) : '';
 
-        $class .= ' '.$css_class;
-        $link  = ProjectforkHelperRoute::getUsersRoute().'&amp;layout=modal&amp;tmpl=component&amp;field=assigned'.$i;
+        $class .= ' ' . $css_class;
+        $link  = ProjectforkHelperRoute::getUsersRoute() . '&amp;layout=modal&amp;tmpl=component&amp;field=assigned' . $i;
 
-        if(!$access && $count < 2) {
+        if (!$access && $count < 2) {
             $html[] = $this->start(array('title' => $title, 'class' => $class, 'single-button' => true), true);
-            $html[] = '<input type="hidden" id="assigned'.$i.'" name="assigned['.$id.']" value="0"/>';
+            $html[] = '<input type="hidden" id="assigned' . $i . '" name="assigned[' . $id . ']" value="0"/>';
 
             return implode("\n", $html);
         }
         else {
             // Build the script.
-    		$script = array();
-    		$script[] = '	function jSelectUser_assigned' . $i . '(id, title) {';
-    		$script[] = '		document.getElementById("assigned' . $i . '").value = id';
-    		$script[] = '		SqueezeBox.close();';
-    		$script[] = '		return listItemTask("cb'.$i.'","'.$asset.'.addUsers");';
-    		$script[] = '	}';
+            $script = array();
+            $script[] = '    function jSelectUser_assigned' . $i . '(id, title) {';
+            $script[] = '        document.getElementById("assigned' . $i . '").value = id';
+            $script[] = '        SqueezeBox.close();';
+            $script[] = '        return listItemTask("cb' . $i . '","' . $asset . '.addUsers");';
+            $script[] = '    }';
 
-    		// Add the script to the document head.
-    		JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
+            // Add the script to the document head.
+            JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
 
             $html[] = $this->start(array('title' => $title, 'class' => $class), true);
         }
 
-        if($access) {
+        if ($access) {
             $html[] = $this->itemModal('icon-plus', 'COM_PROJECTFORK_ASSIGN_TO_USER', $link, 800, 500, true);
-            if($count > 1) $html[] = $this->itemDivider(true);
+            if ($count > 1) $html[] = $this->itemDivider(true);
         }
 
         foreach($assigned AS $user)
         {
-            /*if($access) {
-                $action = "$('assigned".$i."').set('value', ".intval($user->user_id)."); return listItemTask('cb".$i."','".$asset.".deleteUsers');";
-                $html[] = $this->itemJavaScript('icon-remove', $user->name, $action, true);
-            }
-            else {
-                $html[] = $this->itemPlaceholder('icon-user', $user->name, true);
-            }*/
-            $action = "$('filter_assigned').set('value', ".intval($user->user_id)."); submitbutton();";
+            $action = "$('filter_assigned').set('value', " . intval($user->user_id) . "); submitbutton();";
             $html[] = $this->itemJavaScript('icon-user', $user->name, $action, true);
         }
 
         $html[] = $this->end(true);
-        $html[] = '<input type="hidden" id="assigned'.$i.'" name="assigned['.$id.']" value="0"/>';
-
+        $html[] = '<input type="hidden" id="assigned' . $i . '" name="assigned[' . $id . ']" value="0"/>';
 
         return implode("\n", $html);
     }
@@ -329,8 +308,7 @@ class ProjectforkHelperContextMenu
         $message = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));
         $html    = array();
 
-
-        if(count($actions) == 0) {
+        if (count($actions) == 0) {
             $html[] = '<div class="btn-group" id="bulk-action-menu">';
             $html[] = '    <a class="btn btn-primary disabled" href="javascript: void(0);"><span class="caret"></span></a>';
             $html[] = '</div>';
@@ -338,26 +316,23 @@ class ProjectforkHelperContextMenu
             return implode("\n", $html);
         }
 
-
         $html[] = '<div class="btn-group" id="bulk-action-menu">';
         $html[] = '    <a class="btn btn-primary dropdown-toggle" data-toggle="dropdown" href="#"><span class="caret"></span></a>';
         $html[] = '    <ul class="dropdown-menu">';
 
-
         foreach($actions AS $action)
         {
-            $js = "if(document.adminForm.boxchecked.value==0){alert('".$message."');}"
-                . "else{Joomla.submitbutton('".$action->value."')}";
-
+            $js = "if (document.adminForm.boxchecked.value==0){alert('" . $message . "');}"
+                . "else{Joomla.submitbutton('" . $action->value . "')}";
 
             $icon = 'icon-chevron-right';
 
-            if(strpos($action->value, '.publish') !== false)   $icon = 'icon-eye-open';
-            if(strpos($action->value, '.unpublish') !== false) $icon = 'icon-eye-close';
-            if(strpos($action->value, '.archive') !== false)   $icon = 'icon-folder-open';
-            if(strpos($action->value, '.trash') !== false)     $icon = 'icon-trash';
-            if(strpos($action->value, '.delete') !== false)    $icon = 'icon-remove';
-            if(strpos($action->value, '.checkin') !== false)   $icon = 'icon-ok-sign';
+            if (strpos($action->value, '.publish') !== false)   $icon = 'icon-eye-open';
+            if (strpos($action->value, '.unpublish') !== false) $icon = 'icon-eye-close';
+            if (strpos($action->value, '.archive') !== false)   $icon = 'icon-folder-open';
+            if (strpos($action->value, '.trash') !== false)     $icon = 'icon-trash';
+            if (strpos($action->value, '.delete') !== false)    $icon = 'icon-remove';
+            if (strpos($action->value, '.checkin') !== false)   $icon = 'icon-ok-sign';
 
             $html[] = $this->itemJavaScript($icon, $action->text, $js, true);
         }
@@ -376,7 +351,7 @@ class ProjectforkHelperContextMenu
         $html[] = '    </ul>';
         $html[] = '</div>';
 
-        if($return) return implode("\n", $html);
+        if ($return) return implode("\n", $html);
 
         $this->addItem(implode("\n", $html));
     }
