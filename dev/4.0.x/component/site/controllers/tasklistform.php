@@ -35,6 +35,20 @@ class ProjectforkControllerTasklistForm extends JControllerForm
 
 
     /**
+     * Constructor
+     *
+     */
+    public function __construct($config = array())
+	{
+	    parent::__construct($config);
+
+        // Register additional tasks
+		$this->registerTask('save2milestone', 'save');
+		$this->registerTask('save2task', 'save');
+    }
+
+
+    /**
      * Method to add a new record.
      *
      * @return    boolean    True if the item can be added, false if not.
@@ -99,27 +113,6 @@ class ProjectforkControllerTasklistForm extends JControllerForm
 
 
     /**
-     * Method to save a record.
-     *
-     * @param     string     $key        The name of the primary key of the URL variable.
-     * @param     string     $url_var    The name of the URL variable if different from the primary key.
-     *
-     * @return    boolean                True if successful, false otherwise.
-     */
-    public function save($key = null, $url_var = 'id')
-    {
-        $result = parent::save($key, $url_var);
-
-        // If ok, redirect to the return page.
-        if ($result) {
-            $this->setRedirect($this->getReturnPage());
-        }
-
-        return $result;
-    }
-
-
-    /**
      * Method override to check if you can edit an existing record.
      *
      * @param     array      $data    An array of input data.
@@ -177,6 +170,7 @@ class ProjectforkControllerTasklistForm extends JControllerForm
         $tmpl    = JRequest::getCmd('tmpl');
         $layout  = JRequest::getCmd('layout', 'edit');
         $item_id = JRequest::getInt('Itemid');
+        $ms_id   = JRequest::getUInt('milestone_id');
         $return  = $this->getReturnPage();
         $append  = '';
 
@@ -185,6 +179,7 @@ class ProjectforkControllerTasklistForm extends JControllerForm
         $append .= '&layout=edit';
 
         if ($id)      $append .= '&' . $url_var. '=' . $id;
+        if ($ms_id)   $append .= '&milestone_id=' . $ms_id;
         if ($item_id) $append .= '&Itemid=' . $item_id;
         if ($return)  $append .= '&return=' . base64_encode($return);
 
@@ -222,9 +217,28 @@ class ProjectforkControllerTasklistForm extends JControllerForm
     protected function postSaveHook(JModel &$model, $validData)
     {
         $task = $this->getTask();
+        $id   = (int) $model->getState('tasklistform.id');
 
-        if ($task == 'save') {
-            $this->setRedirect(JRoute::_('index.php?option=com_projectfork&view=' . $this->view_list, false));
+        switch($task)
+        {
+            case 'save2copy':
+            case 'save2new':
+                // No redirect because its already set
+                break;
+
+            case 'save2milestone':
+                $link = JRoute::_(ProjectforkHelperRoute::getMilestonesRoute() . '&task=milestoneform.add');
+                $this->setRedirect($link);
+                break;
+
+            case 'save2task':
+                $link = JRoute::_(ProjectforkHelperRoute::getTasksRoute() . '&task=taskform.add&list_id=' . $id);
+                $this->setRedirect($link);
+                break;
+
+            default:
+                $this->setRedirect($this->getReturnPage());
+                break;
         }
     }
 }

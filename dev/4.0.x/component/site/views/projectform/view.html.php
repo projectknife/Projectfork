@@ -38,7 +38,7 @@ class ProjectforkViewProjectForm extends JView
         $return_page = $this->get('ReturnPage');
 
         // Permission check.
-        if (empty($item->id)) {
+        if ($item->id > 0) {
             $access     = ProjectforkHelperAccess::getActions();
             $authorised = $access->get('project.create');
         }
