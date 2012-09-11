@@ -136,9 +136,9 @@ class ProjectforkModelTasks extends JModelList
     protected function getListQuery()
     {
         // Create a new query object.
-        $db    = $this->getDbo();
+        $db	   = $this->getDbo();
         $query = $db->getQuery(true);
-        $user = JFactory::getUser();
+        $user  = JFactory::getUser();
 
         // Select the required fields from the table.
         $query->select(
@@ -236,34 +236,33 @@ class ProjectforkModelTasks extends JModelList
                 $query->where('a.id = ' . (int) substr($search, 3));
             }
             elseif (stripos($search, 'manager:') === 0) {
-                $search = $db->Quote('%' . $db->getEscaped(substr($search, 7), true) . '%');
+                $search = $db->Quote('%' . $db->escape(substr($search, 7), true) . '%');
                 $query->where('(ua.name LIKE ' . $search . ' OR ua.username LIKE ' . $search . ')');
             }
             else {
-                $search = $db->Quote('%' . $db->getEscaped($search, true) . '%');
+                $search = $db->Quote('%' . $db->escape($search, true) . '%');
                 $query->where('(a.title LIKE ' . $search.' OR a.alias LIKE ' . $search . ')');
             }
         }
 
         // Add the list ordering clause.
-        $orderCol  = $this->state->get('list.ordering', 'a.title');
-        $orderDirn = $this->state->get('list.direction', 'asc');
+        $order_col = $this->state->get('list.ordering', 'a.ordering');
+        $order_dir = $this->state->get('list.direction', 'asc');
 
-        if ($orderCol == 'a.ordering') {
-            $orderCol = 'p.title, m.title, tl.title ' . $orderDirn . ', ' . $orderCol;
+        if ($order_col == 'a.ordering') {
+            $order_col = 'p.title, m.title, tl.title ' . $order_dir . ', ' . $order_col;
         }
-        if ($orderCol == 'project_title') {
-            $orderCol = 'm.title, tl.title, a.title ' . $orderDirn . ', p.title';
+        if ($order_col == 'project_title') {
+            $order_col = 'm.title, tl.title, a.title ' . $order_dir . ', p.title';
         }
-        if ($orderCol == 'milestone_title') {
-            $orderCol = 'p.title ' . $orderDirn . ', m.title';
+        if ($order_col == 'milestone_title') {
+            $order_col = 'p.title ' . $order_dir . ', m.title';
         }
-        if ($orderCol == 'tasklist_title') {
-            $orderCol = 'p.title, m.title ' . $orderDirn . ', tl.title';
+        if ($order_col == 'tasklist_title') {
+            $order_col = 'p.title, m.title ' . $order_dir . ', tl.title';
         }
 
-        $query->order($db->getEscaped($orderCol . ' ' . $orderDirn));
-
+        $query->order($db->escape($order_col . ' ' . $order_dir));
 
         return $query;
     }
@@ -381,7 +380,7 @@ class ProjectforkModelTasks extends JModelList
         $app   = JFactory::getApplication();
 
         // Get the assigned users for each item
-        $ref = JModel::getInstance('UserRefs', 'ProjectforkModel');
+        $ref = JModelLegacy::getInstance('UserRefs', 'ProjectforkModel');
 
         for ($x = 0, $count = count($items); $x < $count; $x++)
         {

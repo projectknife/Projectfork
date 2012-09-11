@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.view');
 
 
-class ProjectforkViewReplies extends JView
+class ProjectforkViewReplies extends JViewLegacy
 {
     /**
      * A list of replies

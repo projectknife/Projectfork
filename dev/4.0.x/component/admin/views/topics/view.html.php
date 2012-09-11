@@ -13,39 +13,39 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.view');
 
 
-class ProjectforkViewTopics extends JView
+class ProjectforkViewTopics extends JViewLegacy
 {
     /**
      * A list of topics
      *
-     * @var    array    
+     * @var    array
      */
     protected $items;
 
     /**
      * JPagination instance
      *
-     * @var    object    
+     * @var    object
      */
     protected $pagination;
 
     /**
      * State object
      *
-     * @var    object    
+     * @var    object
      */
     protected $state;
 
     /**
      * A list of authors
      *
-     * @var    array    
+     * @var    array
      */
     protected $authors;
 
     /**
      *
-     * @var    string    
+     * @var    string
      */
     protected $nulldate;
 
@@ -54,7 +54,7 @@ class ProjectforkViewTopics extends JView
      * Display the view
      *
      * @param    string    $tpl    A template suffix
-     * @retun    void              
+     * @retun    void
      */
     public function display($tpl = null)
     {
@@ -82,7 +82,7 @@ class ProjectforkViewTopics extends JView
     /**
      * Add the page title and toolbar.
      *
-     * @return    void    
+     * @return    void
      */
     protected function addToolbar()
     {

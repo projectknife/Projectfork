@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.view');
 
 
-class ProjectforkViewProjects extends JView
+class ProjectforkViewProjects extends JViewLegacy
 {
     protected $items;
     protected $pagination;

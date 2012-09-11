@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.view');
 
 
-class ProjectforkViewDashboard extends JView
+class ProjectforkViewDashboard extends JViewLegacy
 {
     /**
      * Display the view

@@ -204,11 +204,11 @@ class ProjectforkModelTimesheet extends JModelList
                 $query->where('a.id = '.(int) substr($search, 3));
             }
             elseif (stripos($search, 'manager:') === 0) {
-                $search = $db->Quote('%' . $db->getEscaped(substr($search, 7), true).'%');
+                $search = $db->Quote('%' . $db->escape(substr($search, 7), true).'%');
                 $query->where('(ua.name LIKE ' . $search.' OR ua.username LIKE ' . $search.')');
             }
             else {
-                $search = $db->Quote('%' . $db->getEscaped($search, true).'%');
+                $search = $db->Quote('%' . $db->escape($search, true).'%');
                 $query->where('(a.title LIKE ' . $search.' OR a.alias LIKE ' . $search.')');
             }
         }
@@ -217,7 +217,7 @@ class ProjectforkModelTimesheet extends JModelList
         $order_col = $this->state->get('list.ordering', 'a.log_date');
         $order_dir = $this->state->get('list.direction', 'desc');
 
-        $query->order($db->getEscaped($order_col . ' ' . $order_dir));
+        $query->order($db->escape($order_col . ' ' . $order_dir));
 
         // Group by topic id
         $query->group('a.id');

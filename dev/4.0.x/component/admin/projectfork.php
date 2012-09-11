@@ -24,6 +24,6 @@ JLoader::register('ProjectforkHelper',       JPATH_ADMINISTRATOR . '/components/
 JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
 JLoader::registerPrefix('Projectfork',       JPATH_SITE . '/components/com_projectfork/libraries/projectfork');
 
-$controller = JController::getInstance('Projectfork');
+$controller = JControllerLegacy::getInstance('Projectfork');
 $controller->execute(JRequest::getCmd('task'));
 $controller->redirect();
