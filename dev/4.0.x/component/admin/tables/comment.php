@@ -35,7 +35,7 @@ class PFTableComment extends JTableNested
      * The default name is in the form table_name.id
      * where id is the value of the primary key of the table.
      *
-     * @return    string
+     * @return    string    
      */
     protected function _getAssetName()
     {
@@ -47,7 +47,7 @@ class PFTableComment extends JTableNested
     /**
      * Method to return the title to use for the asset table.
      *
-     * @return    string
+     * @return    string    
      */
     protected function _getAssetTitle()
     {
@@ -144,7 +144,7 @@ class PFTableComment extends JTableNested
 
         // Check attribs
         $registry = new JRegistry;
-        $registry->loadJSON($this->attribs);
+        $registry->loadString($this->attribs);
 
         $this->attribs = (string) $registry;
 
@@ -275,31 +275,31 @@ class PFTableComment extends JTableNested
 
 
     /**
-	 * Overridden JTable::store to set created/modified and user id.
-	 *
-	 * @param   boolean  $updateNulls  True to update fields even if they are null.
-	 *
-	 * @return  boolean  True on success.
-	 */
-	public function store($updateNulls = false)
-	{
-		$date = JFactory::getDate();
-		$user = JFactory::getUser();
+     * Overridden JTable::store to set created/modified and user id.
+     *
+     * @param     boolean    $updateNulls    True to update fields even if they are null.
+     *
+     * @return    boolean                    True on success.
+     */
+    public function store($updateNulls = false)
+    {
+        $date = JFactory::getDate();
+        $user = JFactory::getUser();
 
-		if ($this->id) {
-			// Existing category
-			$this->modified    = $date->toSql();
-			$this->modified_by = $user->get('id');
-		}
-		else {
-			// New category
-			$this->created    = $date->toSql();
-			$this->created_by = $user->get('id');
-		}
+        if ($this->id) {
+            // Existing category
+            $this->modified    = $date->toSql();
+            $this->modified_by = $user->get('id');
+        }
+        else {
+            // New category
+            $this->created    = $date->toSql();
+            $this->created_by = $user->get('id');
+        }
         //return false;
 
-		return parent::store($updateNulls);
-	}
+        return parent::store($updateNulls);
+    }
 
 
     public function publish($pks = null, $state = 1, $userId = 0)

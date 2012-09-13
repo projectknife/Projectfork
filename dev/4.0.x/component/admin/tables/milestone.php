@@ -206,13 +206,13 @@ class PFTableMilestone extends JTable
 
         if ($this->id) {
             // Existing item
-            $this->modified    = $date->toMySQL();
+            $this->modified    = $date->toSql();
             $this->modified_by = $user->get('id');
         }
         else {
             // New item. A created_by field can be set by the user,
             // so we don't touch it if set.
-            $this->created = $date->toMySQL();
+            $this->created = $date->toSql();
             if (empty($this->created_by)) $this->created_by = $user->get('id');
         }
 

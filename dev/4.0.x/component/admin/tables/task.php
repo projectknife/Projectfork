@@ -35,7 +35,7 @@ class PFTableTask extends JTable
      * The default name is in the form table_name.id
      * where id is the value of the primary key of the table.
      *
-     * @return    string    
+     * @return    string
      */
     protected function _getAssetName()
     {
@@ -47,7 +47,7 @@ class PFTableTask extends JTable
     /**
      * Method to return the title to use for the asset table.
      *
-     * @return    string    
+     * @return    string
      */
     protected function _getAssetTitle()
     {
@@ -59,9 +59,9 @@ class PFTableTask extends JTable
      * Method to get the parent asset id for the record
      *
      * @param     jtable     $table    A JTable object for the asset parent
-     * @param     integer    $id       
+     * @param     integer    $id
      *
-     * @return    integer              
+     * @return    integer
      */
     protected function _getAssetParentId($table = null, $id = null)
     {
@@ -194,13 +194,13 @@ class PFTableTask extends JTable
 
         if ($this->id) {
             // Existing item
-            $this->modified    = $date->toMySQL();
+            $this->modified    = $date->toSql();
             $this->modified_by = $user->get('id');
         }
         else {
             // New item. A project created_by field can be set by the user,
             // so we don't touch it if set.
-            $this->created = $date->toMySQL();
+            $this->created = $date->toSql();
             if (empty($this->created_by)) $this->created_by = $user->get('id');
         }
 
