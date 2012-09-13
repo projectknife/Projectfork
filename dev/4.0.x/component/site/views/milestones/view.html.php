@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
  * Milestone list view class.
  *
  */
-class ProjectforkViewMilestones extends JView
+class ProjectforkViewMilestones extends JViewLegacy
 {
     protected $pageclass_sfx;
     protected $items;

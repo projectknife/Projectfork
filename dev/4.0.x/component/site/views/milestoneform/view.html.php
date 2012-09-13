@@ -31,7 +31,7 @@ jimport('joomla.application.component.view');
  * Milestone Form View Class for Projectfork component
  *
  */
-class ProjectforkViewMilestoneForm extends JView
+class ProjectforkViewMilestoneForm extends JViewLegacy
 {
 	protected $form;
 	protected $item;

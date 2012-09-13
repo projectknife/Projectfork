@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
  * Task list view class.
  *
  */
-class ProjectforkViewTasks extends JView
+class ProjectforkViewTasks extends JViewLegacy
 {
     protected $pageclass_sfx;
     protected $items;
@@ -38,7 +38,7 @@ class ProjectforkViewTasks extends JView
     /**
      * Display the view
      *
-     * @return    void    
+     * @return    void
      */
     public function display($tpl = null)
     {
@@ -97,7 +97,7 @@ class ProjectforkViewTasks extends JView
     /**
      * Prepares the document
      *
-     * @return    void    
+     * @return    void
      */
     protected function prepareDocument()
     {

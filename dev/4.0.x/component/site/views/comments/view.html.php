@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
  * Comment list view class.
  *
  */
-class ProjectforkViewComments extends JView
+class ProjectforkViewComments extends JViewLegacy
 {
     protected $items;
     protected $params;

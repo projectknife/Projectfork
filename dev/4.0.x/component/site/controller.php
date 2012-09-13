@@ -18,7 +18,7 @@ jimport('joomla.application.component.controller');
  *
  * @see    JController
  */
-class ProjectforkController extends JController
+class ProjectforkController extends JControllerLegacy
 {
     /**
      * Constructor

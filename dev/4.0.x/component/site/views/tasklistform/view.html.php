@@ -31,7 +31,7 @@ jimport('joomla.application.component.view');
  * Task List Form View Class for Projectfork component
  *
  */
-class ProjectforkViewTasklistForm extends JView
+class ProjectforkViewTasklistForm extends JViewLegacy
 {
 	protected $form;
 	protected $item;

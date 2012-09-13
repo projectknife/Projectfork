@@ -48,7 +48,7 @@ class ProjectforkModelUsers extends UsersModelUsers
 
         $app    = JFactory::getApplication();
         $user   = JFactory::getUser();
-        $model  = JModel::getInstance('Projectform', 'ProjectforkModel');
+        $model  = JModelLegacy::getInstance('Projectform', 'ProjectforkModel');
         $groups = array();
 
         // Filter - Project

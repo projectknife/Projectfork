@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
  * Reply Form View Class for Projectfork component
  *
  */
-class ProjectforkViewReplyForm extends JView
+class ProjectforkViewReplyForm extends JViewLegacy
 {
     protected $form;
     protected $item;

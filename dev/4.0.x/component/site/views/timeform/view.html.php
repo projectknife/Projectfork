@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
  * Time Form View Class for Projectfork component
  *
  */
-class ProjectforkViewTimeForm extends JView
+class ProjectforkViewTimeForm extends JViewLegacy
 {
     protected $form;
     protected $item;

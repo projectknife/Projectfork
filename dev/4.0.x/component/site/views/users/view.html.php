@@ -26,7 +26,7 @@ defined( '_JEXEC' ) or die( 'Restricted access' );
 jimport('joomla.application.component.view');
 
 
-class ProjectforkViewUsers extends JView
+class ProjectforkViewUsers extends JViewLegacy
 {
 	/**
 	 * Display the view

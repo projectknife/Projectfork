@@ -25,7 +25,7 @@ defined('_JEXEC') or die;
 jimport('joomla.application.component.view');
 
 
-class ProjectforkViewUser extends JView
+class ProjectforkViewUser extends JViewLegacy
 {
 	function display($tpl = null)
 	{

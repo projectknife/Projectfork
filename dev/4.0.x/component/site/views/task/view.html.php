@@ -31,7 +31,7 @@ jimport('joomla.application.component.view');
  * HTML Task View class for the Projectfork component
  *
  */
-class ProjectforkViewTask extends JView
+class ProjectforkViewTask extends JViewLegacy
 {
 	protected $item;
 	protected $params;

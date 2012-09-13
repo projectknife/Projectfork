@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
  * Topic list view class.
  *
  */
-class ProjectforkViewTopics extends JView
+class ProjectforkViewTopics extends JViewLegacy
 {
     protected $pageclass_sfx;
     protected $items;

@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
  * Reply list view class.
  *
  */
-class ProjectforkViewReplies extends JView
+class ProjectforkViewReplies extends JViewLegacy
 {
     protected $pageclass_sfx;
     protected $items;

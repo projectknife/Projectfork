@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
  * Project Form View Class for Projectfork component
  *
  */
-class ProjectforkViewProjectForm extends JView
+class ProjectforkViewProjectForm extends JViewLegacy
 {
     protected $form;
     protected $item;
