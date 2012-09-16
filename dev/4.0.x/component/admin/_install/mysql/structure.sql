@@ -28,61 +28,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_comments` (
   KEY `idx_state` (`state`),
   KEY `idx_parentid` (`parent_id`),
   KEY `idx_nested` (`lft`,`rgt`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork item comments';
-
-CREATE TABLE IF NOT EXISTS `#__pf_files` (
-  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'File ID',
-  `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table',
-  `project_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent project ID',
-  `folder_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent folder ID',
-  `name` varchar(255) NOT NULL COMMENT 'File name',
-  `prefix` varchar(33) NOT NULL COMMENT 'File name prefix',
-  `alias` varchar(255) NOT NULL COMMENT 'Title alias',
-  `description` text NOT NULL COMMENT 'File description',
-  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'File upload date',
-  `created_by` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'File author',
-  `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'File modify date',
-  `modified_by` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Last user to modify the file',
-  `checked_out` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'User who is currently editing the file',
-  `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
-  `attribs` text NOT NULL COMMENT 'File attributes in JSON format',
-  `access` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'File ACL access level ID',
-  `state` tinyint(3) NOT NULL DEFAULT '0' COMMENT 'File state: 1 = Active, 0 = Inactive, 2 = Archived, -2 = Trashed ',
-  PRIMARY KEY (`id`),
-  KEY `idx_projectid` (`project_id`),
-  KEY `idx_access` (`access`),
-  KEY `idx_createdby` (`created_by`),
-  KEY `idx_checkedout` (`checked_out`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork file info. The actual files are stored in';
-
-CREATE TABLE IF NOT EXISTS `#__pf_file_folders` (
-  `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'Folder ID',
-  `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table.',
-  `project_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent project ID',
-  `parent_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Primary key of the parent node',
-  `lft` int(11) NOT NULL DEFAULT '0' COMMENT 'Left value of the tree node',
-  `rgt` int(11) NOT NULL DEFAULT '0' COMMENT 'Right value of the tree node',
-  `level` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Tree depth level',
-  `path` varchar(255) NOT NULL DEFAULT '' COMMENT 'Tree path',
-  `title` varchar(64) NOT NULL COMMENT 'Folder title',
-  `alias` varchar(64) NOT NULL DEFAULT '' COMMENT 'Folder alias',
-  `description` varchar(255) NOT NULL DEFAULT '' COMMENT 'Folder description',
-  `checked_out` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'User who is currently editing the folder',
-  `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out time and date',
-  `access` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Folder Access level ID',
-  `params` text NOT NULL COMMENT 'Folder params in JSON format',
-  `created_by` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Folder author',
-  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Folder creation date',
-  `modified_by` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Last user to modify the folder',
-  `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Modify date and time',
-  PRIMARY KEY (`id`),
-  KEY `idx_access` (`access`),
-  KEY `idx_checkout` (`checked_out`),
-  KEY `idx_path` (`path`),
-  KEY `idx_left_right` (`lft`,`rgt`),
-  KEY `idx_alias` (`alias`),
-  KEY `idx_projectid` (`project_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork folder structure';
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork item comments';
 
 CREATE TABLE IF NOT EXISTS `#__pf_milestones` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Milestone ID',
@@ -110,7 +56,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_milestones` (
   KEY `idx_state` (`state`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork milestone data';
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork milestone data';
 
 CREATE TABLE IF NOT EXISTS `#__pf_milestone_map` (
   `id` int(10) unsigned NOT NULL COMMENT 'Dependency Map',
@@ -119,7 +65,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_milestone_map` (
   PRIMARY KEY (`id`),
   KEY `idx_milestoneid` (`milestone_id`),
   KEY `idx_dependency` (`dependency`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork milestone dependency';
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork milestone dependency';
 
 CREATE TABLE IF NOT EXISTS `#__pf_projects` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Project ID',
@@ -146,7 +92,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_projects` (
   KEY `idx_state` (`state`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork project data';
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork project data';
 
 CREATE TABLE IF NOT EXISTS `#__pf_ref_tags` (
   `id` int(10) unsigned NOT NULL COMMENT 'Item ID reference',
@@ -155,7 +101,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_ref_tags` (
   PRIMARY KEY (`context`,`id`,`tag_id`),
   KEY `idx_tagid` (`tag_id`),
   KEY `idx_contextid` (`context`,`id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork tag references';
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork tag references';
 
 CREATE TABLE IF NOT EXISTS `#__pf_ref_users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID reference',
@@ -165,7 +111,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_ref_users` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_user` (`user_id`,`item_id`,`item_type`),
   KEY `idx_item` (`item_type`,`item_id`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork user references';
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork user references';
 
 CREATE TABLE IF NOT EXISTS `#__pf_tags` (
   `id` int(10) unsigned NOT NULL COMMENT 'Tag ID',
@@ -173,7 +119,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_tags` (
   `alias` varchar(64) NOT NULL COMMENT 'Tag alias',
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_alias` (`alias`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork tags';
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork tags';
 
 CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Task ID',
@@ -213,7 +159,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   KEY `idx_priority` (`priority`),
   KEY `idx_complete` (`complete`),
   KEY `idx_state` (`state`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task data';
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task data';
 
 CREATE TABLE IF NOT EXISTS `#__pf_task_lists` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Task list ID',
@@ -241,7 +187,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_task_lists` (
   KEY `idx_checkedout` (`checked_out`),
   KEY `idx_state` (`state`),
   KEY `idx_access` (`access`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task list data';
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task list data';
 
 CREATE TABLE IF NOT EXISTS `#__pf_task_map` (
   `id` int(10) unsigned NOT NULL COMMENT 'Dependency Map',
@@ -250,7 +196,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_task_map` (
   PRIMARY KEY (`id`),
   KEY `idx_taskid` (`task_id`),
   KEY `idx_dependency` (`dependency`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task dependency';
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task dependency';
 
 CREATE TABLE IF NOT EXISTS `#__pf_topics` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Topic ID',
@@ -275,7 +221,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_topics` (
   KEY `idx_state` (`state`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork discussion topics';
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork discussion topics';
 
 CREATE TABLE IF NOT EXISTS `#__pf_replies` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Topic ID',
@@ -299,7 +245,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_replies` (
   KEY `idx_state` (`state`),
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`)
-) ENGINE=MyISAM  DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork discussion replies';
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork discussion replies';
 
 CREATE TABLE IF NOT EXISTS `#__pf_timesheet` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT,
@@ -328,4 +274,35 @@ CREATE TABLE IF NOT EXISTS `#__pf_timesheet` (
   KEY `idx_access` (`access`),
   KEY `idx_state` (`state`),
   KEY `idx_billable` (`billable`)
-) ENGINE=MyISAM DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork time spent on tasks';
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork time spent on tasks';
+
+CREATE TABLE IF NOT EXISTS `#__pf_repo_dirs` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Directory ID',
+  `asset_id` int(10) unsigned NOT NULL COMMENT 'FK to the #__assets table',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Parent project id',
+  `title` varchar(56) NOT NULL COMMENT 'Directory title',
+  `alias` varchar(56) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'Title alias. Used in SEF URL''s',
+  `description` varchar(128) NOT NULL COMMENT 'Directory description text',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Directory creation date',
+  `created_by` int(10) unsigned NOT NULL COMMENT 'Directory author',
+  `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Directory modify date',
+  `modified_by` int(10) unsigned NOT NULL COMMENT 'Last user to modify the directory',
+  `checked_out` int(10) unsigned NOT NULL COMMENT 'User who is currently editing the directory',
+  `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
+  `attribs` text NOT NULL COMMENT 'Directory attributes in JSON format',
+  `access` int(10) unsigned NOT NULL COMMENT 'Directory ACL access level ID',
+  `protected` tinyint(1) NOT NULL COMMENT 'If set to 1, directories cannot be deleted manually',
+  `parent_id` int(10) unsigned NOT NULL COMMENT 'Adjacency List Reference ID',
+  `lft` int(10) NOT NULL COMMENT 'Nested set lft.',
+  `rgt` int(10) NOT NULL COMMENT 'Nested set rgt.',
+  `level` int(10) unsigned NOT NULL COMMENT 'Nested directory level',
+  `path` text CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'Directory path',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_alias` (`alias`,`parent_id`),
+  KEY `idx_projectid` (`project_id`),
+  KEY `idx_createdby` (`created_by`),
+  KEY `idx_checkedout` (`checked_out`),
+  KEY `idx_parentid` (`parent_id`),
+  KEY `idx_nested` (`lft`,`rgt`),
+  KEY `idx_access` (`access`)
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork repository directory information';

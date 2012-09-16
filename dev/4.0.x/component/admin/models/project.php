@@ -181,7 +181,6 @@ class ProjectforkModelProject extends JModelAdmin
         }
         $data['rules'] = $rules;
 
-
         $id      = (int) $this->getState($this->getName() . '.id');
         $is_new  = ($id > 0) ? false : true;
         $item    = null;
@@ -197,9 +196,12 @@ class ProjectforkModelProject extends JModelAdmin
         if (parent::save($data)) {
             $this->setActive(array('id' => $this->getState($this->getName() . '.id')));
 
+            // Load the just updated row
+            $updated = $this->getTable();
+            if ($updated->load($this->getState($this->getName() . '.id')) === false) return false;
+
             // To keep data integrity, update all child assets
             if (!$is_new && is_object($item)) {
-                $updated    = $this->getTable();
                 $milestones = JTable::getInstance('Milestone', 'PFTable');
                 $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
                 $tasks      = JTable::getInstance('Task', 'PFTable');
@@ -208,9 +210,6 @@ class ProjectforkModelProject extends JModelAdmin
 
                 $parent_data = array();
                 $null_date   = JFactory::getDbo()->getNullDate();
-
-                // Load the just updated row
-                if ($updated->load($this->getState($this->getName() . '.id')) === false) return false;
 
                 // Check if any relevant values have changed that need to be updated to children
                 if ($item->access != $updated->access) {
@@ -229,7 +228,6 @@ class ProjectforkModelProject extends JModelAdmin
                     $parent_data['state'] = $updated->state;
                 }
 
-
                 if (count($parent_data)) {
                     $milestones->updateByReference($id, 'project_id', $parent_data);
                     $tasklists->updateByReference($id, 'project_id', $parent_data);
@@ -237,6 +235,11 @@ class ProjectforkModelProject extends JModelAdmin
                     $topics->updateByReference($id, 'project_id', $parent_data);
                     $replies->updateByReference($id, 'project_id', $parent_data);
                 }
+            }
+
+            // Create repo base and attachments folder
+            if (!$this->createRepository($updated)) {
+                return false;
             }
 
             return true;
@@ -368,6 +371,120 @@ class ProjectforkModelProject extends JModelAdmin
     protected function cleanCache()
     {
         parent::cleanCache('com_projectfork');
+    }
+
+
+    /**
+     * Method to create a project repository structure
+     *
+     * @param     object    $item    The project JTable object
+     *
+     * @return    boolean     True on success, otherwise False
+     */
+    protected function createRepository($item)
+    {
+        if (!is_object($item) || empty($item)) {
+            return false;
+        }
+
+        $registry = new JRegistry;
+        $registry->loadString($item->attribs);
+
+        $repo_dir   = ($registry->get('repo_dir') ? (int) $registry->get('repo_dir') : 0 );
+        $attach_dir = ($registry->get('attachments_dir') ? (int) $registry->get('attachments_dir') : 0 );
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if ($repo_dir) {
+            // A repo dir reference is set. See if the dir actually exists
+            $dir = $this->getInstance('Directory', 'ProjectforkModel', array('ignore_request'));
+            $dir->setState('create_repo', true);
+
+            $record = $dir->getItem($repo_dir);
+
+            if ($record === false || $record->id == 0) {
+                $repo_dir = 0;
+            }
+        }
+
+        if ($attach_dir) {
+            // A repo attachments dir reference is set. See if the dir actually exists
+            $dir = $this->getInstance('Directory', 'ProjectforkModel', array('ignore_request'));
+            $dir->setState('create_repo', true);
+            $record = $dir->getItem($attach_dir);
+
+            if ($record === false || $record->id == 0) {
+                $attach_dir = 0;
+            }
+        }
+
+        // Create repo dir if it does not exist
+        if (!$repo_dir) {
+            $dir = $this->getInstance('Directory', 'ProjectforkModel', array('ignore_request'));
+            $dir->setState('create_repo', true);
+
+            $data = array();
+            $data['id']         = 0;
+            $data['protected']  = 1;
+            $data['title']      = $item->title;
+            $data['project_id'] = $item->id;
+            $data['created']    = $item->created;
+            $data['created_by'] = $item->created_by;
+            $data['access']     = $item->access;
+            $data['parent_id']  = 1;
+
+            if (!$dir->save($data)) {
+                $this->setError($dir->getError());
+                return false;
+            }
+
+            $repo_dir = $dir->getState($dir->getName() . '.id');
+            $registry->set('repo_dir', $repo_dir);
+
+            // Update the project attribs
+            $query->clear();
+            $query->update('#__pf_projects')
+                  ->set('attribs = ' . $db->quote((string) $registry))
+                  ->where('id = ' . $db->quote($item->id));
+
+            $db->setQuery((string) $query);
+            $db->execute();
+        }
+
+        // Create attachments dir if it does not exist
+        if (!$attach_dir && $repo_dir > 0) {
+            $dir = $this->getInstance('Directory', 'ProjectforkModel', array('ignore_request'));
+            $dir->setState('create_repo', true);
+
+            $data = array();
+            $data['id']         = 0;
+            $data['protected']  = 1;
+            $data['title']      = JText::_('COM_PROJECTFORK_REPO_TITLE_ATTACHMENTS');
+            $data['project_id'] = $item->id;
+            $data['created']    = $item->created;
+            $data['created_by'] = $item->created_by;
+            $data['access']     = $item->access;
+            $data['parent_id']  = $repo_dir;
+
+            if (!$dir->save($data)) {
+                $this->setError($dir->getError() . ' yepp');
+                return false;
+            }
+
+            $registry->set('attachments_dir', $dir->getState($dir->getName() . '.id'));
+
+            // Update the project attribs
+            $query->clear();
+            $query->update('#__pf_projects')
+                  ->set('attribs = ' . $db->quote((string) $registry))
+                  ->where('id = ' . $db->quote($item->id));
+
+            $db->setQuery((string) $query);
+            $db->execute();
+        }
+
+        return true;
     }
 
 

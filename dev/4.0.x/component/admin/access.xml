@@ -33,6 +33,12 @@
 		<action name="task.edit.state" title="COM_PROJECTFORK_TASK_ACTION_EDITSTATE" description="COM_PROJECTFORK_TASK_ACTION_EDITSTATE_DESC" />
 		<action name="task.edit.own" title="COM_PROJECTFORK_TASK_ACTION_EDITOWN" description="COM_PROJECTFORK_TASK_ACTION_EDITOWN_DESC" />
 
+        <action name="directory.create" title="COM_PROJECTFORK_DIRECTORY_ACTION_CREATE" description="COM_PROJECTFORK_DIRECTORY_ACTION_CREATE_DESC" />
+		<action name="directory.delete" title="COM_PROJECTFORK_DIRECTORY_ACTION_DELETE" description="COM_PROJECTFORK_DIRECTORY_ACTION_DELETE_DESC" />
+		<action name="directory.edit" title="COM_PROJECTFORK_DIRECTORY_ACTION_EDIT" description="COM_PROJECTFORK_DIRECTORY_ACTION_EDIT_DESC" />
+		<action name="directory.edit.state" title="COM_PROJECTFORK_DIRECTORY_ACTION_EDITSTATE" description="COM_PROJECTFORK_DIRECTORY_ACTION_EDITSTATE_DESC" />
+		<action name="directory.edit.own" title="COM_PROJECTFORK_DIRECTORY_ACTION_EDITOWN" description="COM_PROJECTFORK_DIRECTORY_ACTION_EDITOWN_DESC" />
+
         <action name="topic.create" title="COM_PROJECTFORK_TOPIC_ACTION_CREATE" description="COM_PROJECTFORK_TOPIC_ACTION_CREATE_DESC" />
 		<action name="topic.delete" title="COM_PROJECTFORK_TOPIC_ACTION_DELETE" description="COM_PROJECTFORK_TOPIC_ACTION_DELETE_DESC" />
 		<action name="topic.edit" title="COM_PROJECTFORK_TOPIC_ACTION_EDIT" description="COM_PROJECTFORK_TOPIC_ACTION_EDIT_DESC" />
@@ -50,6 +56,11 @@
 		<action name="time.edit" title="COM_PROJECTFORK_TIME_ACTION_EDIT" description="COM_PROJECTFORK_TIME_ACTION_EDIT_DESC" />
 		<action name="time.edit.state" title="COM_PROJECTFORK_TIME_ACTION_EDITSTATE" description="COM_PROJECTFORK_TIME_ACTION_EDITSTATE_DESC" />
 		<action name="time.edit.own" title="COM_PROJECTFORK_TIME_ACTION_EDITOWN" description="COM_PROJECTFORK_TIME_ACTION_EDITOWN_DESC" />
+
+        <action name="comment.create" title="COM_PROJECTFORK_COMMENT_ACTION_CREATE" description="COM_PROJECTFORK_COMMENT_ACTION_CREATE_DESC" />
+		<action name="comment.delete" title="COM_PROJECTFORK_COMMENT_ACTION_DELETE" description="COM_PROJECTFORK_COMMENT_ACTION_DELETE_DESC" />
+		<action name="comment.edit" title="COM_PROJECTFORK_COMMENT_ACTION_EDIT" description="COM_PROJECTFORK_COMMENT_ACTION_EDIT_DESC" />
+		<action name="comment.edit.own" title="COM_PROJECTFORK_COMMENT_ACTION_EDITOWN" description="COM_PROJECTFORK_COMMENT_ACTION_EDITOWN_DESC" />
 	</section>
 	<section name="category">
 		<action name="core.create" title="JACTION_CREATE" description="COM_CATEGORIES_ACCESS_CREATE_DESC" />
@@ -80,6 +91,12 @@
 		<action name="task.edit" title="COM_PROJECTFORK_TASK_ACTION_EDIT" description="COM_PROJECTFORK_TASK_ACTION_EDIT_DESC" />
 		<action name="task.edit.state" title="COM_PROJECTFORK_TASK_ACTION_EDITSTATE" description="COM_PROJECTFORK_TASK_ACTION_EDITSTATE_DESC" />
 		<action name="task.edit.own" title="COM_PROJECTFORK_TASK_ACTION_EDITOWN" description="COM_PROJECTFORK_TASK_ACTION_EDITOWN_DESC" />
+
+        <action name="directory.create" title="COM_PROJECTFORK_DIRECTORY_ACTION_CREATE" description="COM_PROJECTFORK_DIRECTORY_ACTION_CREATE_DESC" />
+		<action name="directory.delete" title="COM_PROJECTFORK_DIRECTORY_ACTION_DELETE" description="COM_PROJECTFORK_DIRECTORY_ACTION_DELETE_DESC" />
+		<action name="directory.edit" title="COM_PROJECTFORK_DIRECTORY_ACTION_EDIT" description="COM_PROJECTFORK_DIRECTORY_ACTION_EDIT_DESC" />
+		<action name="directory.edit.state" title="COM_PROJECTFORK_DIRECTORY_ACTION_EDITSTATE" description="COM_PROJECTFORK_DIRECTORY_ACTION_EDITSTATE_DESC" />
+		<action name="directory.edit.own" title="COM_PROJECTFORK_DIRECTORY_ACTION_EDITOWN" description="COM_PROJECTFORK_DIRECTORY_ACTION_EDITOWN_DESC" />
 
         <action name="topic.create" title="COM_PROJECTFORK_TOPIC_ACTION_CREATE" description="COM_PROJECTFORK_TOPIC_ACTION_CREATE_DESC" />
 		<action name="topic.delete" title="COM_PROJECTFORK_TOPIC_ACTION_DELETE" description="COM_PROJECTFORK_TOPIC_ACTION_DELETE_DESC" />

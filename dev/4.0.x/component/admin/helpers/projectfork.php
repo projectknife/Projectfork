@@ -74,6 +74,12 @@ class ProjectforkHelper
         );
 
         JSubMenuHelper::addEntry(
+            JText::_('COM_PROJECTFORK_SUBMENU_REPO'),
+            'index.php?option=com_projectfork&view=repository',
+            ($view == 'repository')
+        );
+
+        JSubMenuHelper::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_DISCUSSIONS'),
             'index.php?option=com_projectfork&view=topics',
             ($view == 'topics')
@@ -106,7 +112,7 @@ class ProjectforkHelper
 
         $project = ($id > 0) ? (int) $id : ProjectforkHelper::getActiveProjectId();
 
-        if (array_key_exists($id, $cache)) {
+        if (array_key_exists($project, $cache)) {
             return $cache[$project];
         }
 

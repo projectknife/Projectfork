@@ -75,6 +75,8 @@
 
     <fields name="attribs">
         <fieldset name="basic" label="COM_PROJECTFORK_PROJECT_ATTRIBS_FIELDSET_LABEL">
+            <field name="repo_dir" type="hidden" readonly="true"/>
+            <field name="attachments_dir" type="hidden" readonly="true"/>
             <field name="website" type="text"
                 label="COM_PROJECTFORK_FIELD_WEBSITE_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_WEBSITE_DESC"
                 class="inputbox" size="30" filter="url"

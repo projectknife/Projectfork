@@ -160,7 +160,7 @@ class PFTableProject extends JTable
             && (stripos($website, 'https://') === false)
             && (stripos($website, 'ftp://') === false))
         {
-            $registry->setValue('website', 'http://' . $website);
+            $registry->set('website', 'http://' . $website);
         }
 
         // Validate contact email
