@@ -38,4 +38,38 @@ class ProjectforkHelperRepository
 
         return $basepath;
     }
+
+
+    public static function getFileErrorMsg($num, $name, $size)
+    {
+        $size_limit = ini_get('upload_max_filesize');
+
+        switch ($num)
+        {
+            case 1:
+                $msg = JText::sprintf('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_' . $num, $name, $size, $size_limit);
+                break;
+
+            case 2:
+                $msg = JText::sprintf('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_' . $num, $name, $size);
+                break;
+
+            case 3:
+            case 7:
+            case 8:
+                $msg = JText::sprintf('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_' . $num, $name);
+                break;
+
+            case 4:
+            case 6:
+                $msg = JText::_('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_' . $num);
+                break;
+
+            default:
+                $msg = JText::sprintf('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_UNKNOWN' . $num, $name, $num);
+                break;
+        }
+
+        return $msg;
+    }
 }

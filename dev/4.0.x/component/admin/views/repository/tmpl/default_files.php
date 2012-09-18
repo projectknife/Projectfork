@@ -13,21 +13,19 @@ defined('_JEXEC') or die();
 $user     = JFactory::getUser();
 $uid      = $user->get('id');
 
-return;
-
 foreach ($this->items['files'] as $i => $item) :
-    $edit_link = 'task=note.edit&filter_project=' . $item->project_id . 'filter_parent_id=' . $item->parent_id . '&id=' . $item->id;
-    $access    = ProjectforkHelperAccess::getActions('note', $item->id);
+    $edit_link = 'task=file.edit&filter_project=' . $item->project_id . 'filter_parent_id=' . $item->dir_id . '&id=' . $item->id;
+    $access    = ProjectforkHelperAccess::getActions('file', $item->id);
 
-    $can_create   = $access->get('note.create');
-    $can_edit     = $access->get('note.edit');
+    $can_create   = $access->get('file.create');
+    $can_edit     = $access->get('file.edit');
     $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
-    $can_edit_own = ($access->get('note.edit.own') && $item->created_by == $uid);
-    $can_change   = ($access->get('note.edit.state') && $can_checkin);
+    $can_edit_own = ($access->get('file.edit.own') && $item->created_by == $uid);
+    $can_change   = ($access->get('file.edit.state') && $can_checkin);
     ?>
     <tr class="row<?php echo $i % 2; ?>">
         <td class="center">
-            <?php echo JHtml::_('grid.id', $i, $item->id, false, 'nid'); ?>
+            <?php echo JHtml::_('grid.id', $i, $item->id, false, 'fid'); ?>
         </td>
         <td>
             <?php if ($item->checked_out) : ?>

@@ -331,3 +331,31 @@ CREATE TABLE IF NOT EXISTS `#__pf_repo_notes` (
   KEY `idx_createdby` (`created_by`),
   KEY `idx_checkedout` (`checked_out`)
 ) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork notes';
+
+CREATE TABLE IF NOT EXISTS `#__pf_repo_files` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'File ID',
+  `asset_id` int(10) NOT NULL COMMENT 'FK to the #__assets table',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Parent project ID',
+  `dir_id` int(10) unsigned NOT NULL COMMENT 'Parent directory ID',
+  `title` varchar(56) NOT NULL COMMENT 'File title',
+  `alias` varchar(56) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'Title alias. Used in SEF URL''s',
+  `description` varchar(128) NOT NULL COMMENT 'File description',
+  `file_name` varchar(255) NOT NULL COMMENT 'The file name',
+  `file_extension` varchar(32) NOT NULL COMMENT 'The file extension name',
+  `file_size` int(10) unsigned NOT NULL COMMENT 'The file size in kilobyte',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'File creation date',
+  `created_by` int(10) unsigned NOT NULL COMMENT 'File author',
+  `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'File modify date',
+  `modified_by` int(10) unsigned NOT NULL COMMENT 'Last user to modify the file',
+  `checked_out` int(10) unsigned NOT NULL COMMENT 'User who is currently editing the file',
+  `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
+  `attribs` text NOT NULL COMMENT 'Fileattributes in JSON format',
+  `access` int(10) unsigned NOT NULL COMMENT 'File ACL access level ID',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_alias` (`dir_id`,`alias`),
+  KEY `idx_projectid` (`project_id`),
+  KEY `idx_dirid` (`dir_id`),
+  KEY `idx_access` (`access`),
+  KEY `idx_createdby` (`created_by`),
+  KEY `idx_checkedout` (`checked_out`)
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork file details';

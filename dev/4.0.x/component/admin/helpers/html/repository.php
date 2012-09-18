@@ -32,7 +32,7 @@ abstract class ProjectforkRepository
             JHtml::_('select.option', 'm', JText::_('JLIB_HTML_BATCH_MOVE'))
         );
 
-        $paths = self::pathOptions($project, $dir);
+        $paths = self::pathOptions($project);
 
         // Create the batch selector to change select the category by which to move or copy.
         $lines = array(
@@ -90,11 +90,17 @@ abstract class ProjectforkRepository
         // Setup the query
         $db->setQuery((string) $query);
 
-        // Return the result
-        $list = (array) $db->loadObjectList();
+        // Get the result
+        $list    = (array) $db->loadObjectList();
+        $options = array();
 
-        echo $db->getErrorMsg();
+        foreach($list AS $item)
+        {
+            $options[] = JHtml::_('select.option',
+                (int) $item->value, htmlspecialchars($item->text, ENT_COMPAT, 'UTF-8')
+            );
+        }
 
-        return $list;
+        return $options;
     }
 }

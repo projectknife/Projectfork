@@ -62,12 +62,12 @@ class ProjectforkViewRepository extends JViewLegacy
                 JToolBarHelper::custom('directory.add', 'new.png', 'new_f2.png', 'JTOOLBAR_ADD_DIRECTORY', false);
             }
 
-            if ($access->get('note.create')) {
-                JToolBarHelper::custom('note.add', 'html.png', 'html_f2.png', 'JTOOLBAR_ADD_NOTE', false);
+            if ($access->get('file.create')) {
+                JToolBarHelper::custom('file.add', 'upload.png', 'upload_f2.png', 'JTOOLBAR_ADD_FILE', false);
             }
 
-            if ($access->get('file.create')) {
-                JToolBarHelper::addNew('file.add');
+            if ($access->get('note.create')) {
+                JToolBarHelper::custom('note.add', 'html.png', 'html_f2.png', 'JTOOLBAR_ADD_NOTE', false);
             }
 
             if ($access->get('directory.delete') || $access->get('note.delete') || $access->get('file.delete')) {
