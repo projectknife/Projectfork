@@ -100,12 +100,13 @@ class ProjectforkHelperAccess
     public static function getAssetMap($asset = 'core')
     {
         $map = array();
-        $map['core']      = array('project', 'milestone', 'tasklist', 'task', 'directory', 'comment', 'topic', 'reply', 'time');
-        $map['project']   = array('milestone', 'tasklist', 'task', 'directory', 'comment', 'topic', 'reply', 'time');
+        $map['core']      = array('project', 'milestone', 'tasklist', 'task', 'directory', 'note', 'comment', 'topic', 'reply', 'time');
+        $map['project']   = array('milestone', 'tasklist', 'task', 'directory', 'note', 'comment', 'topic', 'reply', 'time');
         $map['milestone'] = array('tasklist', 'task', 'comment');
         $map['tasklist']  = array('task', 'comment');
         $map['task']      = array('comment', 'time');
         $map['topic']     = array('reply');
+        $map['directory'] = array('note', 'file');
 
         if (!array_key_exists($asset, $map)) {
             return array();

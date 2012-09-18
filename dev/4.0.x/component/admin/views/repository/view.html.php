@@ -59,11 +59,11 @@ class ProjectforkViewRepository extends JViewLegacy
 
         if ($state->get('filter.project')) {
             if ($access->get('directory.create')) {
-                JToolBarHelper::addNew('directory.add');
+                JToolBarHelper::custom('directory.add', 'new.png', 'new_f2.png', 'JTOOLBAR_ADD_DIRECTORY', false);
             }
 
             if ($access->get('note.create')) {
-                JToolBarHelper::addNew('note.add');
+                JToolBarHelper::custom('note.add', 'html.png', 'html_f2.png', 'JTOOLBAR_ADD_NOTE', false);
             }
 
             if ($access->get('file.create')) {
@@ -71,6 +71,7 @@ class ProjectforkViewRepository extends JViewLegacy
             }
 
             if ($access->get('directory.delete') || $access->get('note.delete') || $access->get('file.delete')) {
+                JToolBarHelper::divider();
                 JToolBarHelper::deleteList('', 'repository.delete','JTOOLBAR_DELETE');
             }
         }

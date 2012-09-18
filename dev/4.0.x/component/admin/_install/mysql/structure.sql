@@ -306,3 +306,28 @@ CREATE TABLE IF NOT EXISTS `#__pf_repo_dirs` (
   KEY `idx_nested` (`lft`,`rgt`),
   KEY `idx_access` (`access`)
 ) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork repository directory information';
+
+CREATE TABLE IF NOT EXISTS `#__pf_repo_notes` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Note ID',
+  `asset_id` int(10) NOT NULL COMMENT 'FK to the #__assets table',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Parent project ID',
+  `dir_id` int(10) unsigned NOT NULL COMMENT 'Parent directory ID',
+  `title` varchar(56) NOT NULL COMMENT 'Note title',
+  `alias` varchar(56) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL COMMENT 'Title alias. Used in SEF URL''s',
+  `description` text NOT NULL COMMENT 'Note content text',
+  `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Note creation date',
+  `created_by` int(10) unsigned NOT NULL COMMENT 'Note author',
+  `modified` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Note modify date',
+  `modified_by` int(10) unsigned NOT NULL COMMENT 'Last user to modify the note',
+  `checked_out` int(10) unsigned NOT NULL COMMENT 'User who is currently editing the note',
+  `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
+  `attribs` text NOT NULL COMMENT 'Note attributes in JSON format',
+  `access` int(10) unsigned NOT NULL COMMENT 'Note ACL access level ID',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_alias` (`dir_id`,`alias`),
+  KEY `idx_projectid` (`project_id`),
+  KEY `idx_dirid` (`dir_id`),
+  KEY `idx_access` (`access`),
+  KEY `idx_createdby` (`created_by`),
+  KEY `idx_checkedout` (`checked_out`)
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork notes';

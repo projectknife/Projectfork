@@ -147,6 +147,34 @@ class ProjectforkControllerRepository extends JControllerAdmin
                     $app->enqueueMessage($model->getError(), 'error');
                 }
             }
+
+            // Batch notes
+            if (is_array($nid) && count($nid) > 0) {
+                $model = $this->getModel('Note');
+
+                JArrayHelper::toInteger($nid);
+
+                if ($model->batch($vars, $nid)) {
+                    $app->enqueueMessage(JText::_('COM_PROJECTFORK_SUCCESS_BATCH_NOTES'));
+                }
+                else {
+                    $app->enqueueMessage($model->getError(), 'error');
+                }
+            }
+
+            // Batch files
+            if (is_array($fid) && count($fid) > 0) {
+                $model = $this->getModel('File');
+
+                JArrayHelper::toInteger($fid);
+
+                if ($model->batch($vars, $fid)) {
+                    $app->enqueueMessage(JText::_('COM_PROJECTFORK_SUCCESS_BATCH_FILES'));
+                }
+                else {
+                    $app->enqueueMessage($model->getError(), 'error');
+                }
+            }
         }
 
         $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list, false));

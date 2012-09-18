@@ -342,6 +342,7 @@ class ProjectforkModelDirectory extends JModelAdmin
             $table->asset_id = null;
             $table->lft = null;
             $table->rgt = null;
+            $table->protected = 0;
 
             // Alter the title & alias
             list($title, $alias) = $this->generateNewTitle($table->parent_id, $table->title, $table->alias);
@@ -376,6 +377,28 @@ class ProjectforkModelDirectory extends JModelAdmin
         if (!$table->rebuildPath($table->id)) {
             $this->setError($table->getError());
             return false;
+        }
+
+        // Copy the notes and files in the directories
+        if (count($parents)) {
+            $note_model = $this->getInstance('Note', 'ProjectforkModel', array('ignore_request' => true));
+
+            foreach($parents AS $old => $new)
+            {
+                $query->clear();
+                $query->select('id')
+                      ->from($db->quoteName('#__pf_repo_notes'))
+                      ->where('dir_id = ' . (int) $old);
+
+                $db->setQuery($query);
+                $notes = (array) $db->loadColumn();
+
+                if (count($notes)) {
+                    if (!$note_model->batchCopy($new, $notes)) {
+                        $this->setError($note_model->getError());
+                    }
+                }
+            }
         }
 
         return $newIds;
@@ -587,12 +610,12 @@ class ProjectforkModelDirectory extends JModelAdmin
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
         $moved = array();
+        $dest  = 0;
 
         // Include the content plugins for the on delete events.
         JPluginHelper::importPlugin('content');
 
         // Move the sub folders up which we are not allowed to delete
-        JFactory::getApplication()->enqueueMessage('Starting with ' . implode(', ', $pks));
         foreach ($pks as $i => $pk)
         {
             // Get the parent id of the current directory
@@ -648,11 +671,23 @@ class ProjectforkModelDirectory extends JModelAdmin
         }
 
         // Iterate the items to delete each one.
+        $note_model = $this->getInstance('Note', 'ProjectforkModel', array('ignore_request' => true));
+        $note_table = $this->getTable('Note');
+
         foreach ($pks as $i => $pk)
         {
             if ($table->load($pk)) {
                 if ($this->canDelete($table)) {
-                    $context = $this->option . '.' . $this->name;
+                    $context  = $this->option . '.' . $this->name;
+                    $tree     = $table->getTree($pk, true);
+                    $dir_list = array();
+
+                    if (is_array($tree) && count($tree) > 0) {
+                        foreach($tree AS $dir)
+                        {
+                            $dir_list[] = (int) $dir->id;
+                        }
+                    }
 
                     // Trigger the onContentBeforeDelete event.
                     $result = $dispatcher->trigger($this->event_before_delete, array($context, $table));
@@ -676,6 +711,49 @@ class ProjectforkModelDirectory extends JModelAdmin
 
                         if (JFolder::exists($fullpath)) {
                             JFolder::delete($fullpath);
+                        }
+                    }
+
+                    if (is_array($dir_list) && count($dir_list) > 0) {
+                        $move_notes = array();
+                        $del_notes  = array();
+                        $move_files = array();
+                        $del_files  = array();
+
+                        // Get the notes for deletion
+                        $query->clear();
+                        $query->select('id, asset_id, access')
+                              ->from('#__pf_repo_notes')
+                              ->where('dir_id IN(' . implode(', ', $dir_list) . ')');
+
+                        $db->setQuery($query);
+                        $notes = (array) $db->loadObjectList();
+
+                        foreach($notes AS $note)
+                        {
+                            if (!$note_model->canDelete($note)) {
+                                $move_notes[] = $note->id;
+                            }
+                            else {
+                                $del_notes[] = $note->id;
+                            }
+                        }
+
+                        // Delete notes
+                        if (!$note_model->delete($del_notes)) {
+                            $this->setError($note_model->getError());
+                        }
+
+                        // Move notes you cant delete
+                        foreach($move_notes AS $note)
+                        {
+                            if ($note_table->load($note)) {
+                                $note_table->dir_id = $table->parent_id;
+
+                                if (!$table->store()) {
+                                    $this->setError($table->getError());
+                                }
+                            }
                         }
                     }
 

@@ -76,6 +76,8 @@ $project    = (int) $this->state->get('filter.project');
         </thead>
         <tbody>
             <?php echo $this->loadTemplate('directories'); ?>
+            <?php echo $this->loadTemplate('notes'); ?>
+            <?php echo $this->loadTemplate('files'); ?>
         </tbody>
         <tfoot>
             <tr>

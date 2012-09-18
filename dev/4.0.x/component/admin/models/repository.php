@@ -61,9 +61,11 @@ class ProjectforkModelRepository extends JModelList
         $parent = (int) $this->getState('filter.parent_id', 1);
         $dir    = $this->getInstance('Directory', 'ProjectforkModel', $config = array('ignore_request' => true));
         $dirs   = $this->getInstance('Directories', 'ProjectforkModel', $config = array());
+        $notes  = $this->getInstance('Notes', 'ProjectforkModel', $config = array());
 
         $items['directory']   = $dir->getItem($parent);
         $items['directories'] = $dirs->getItems();
+        $items['notes']       = $notes->getItems();
 
         // Add the items to the internal cache.
         $this->cache[$store] = $items;
