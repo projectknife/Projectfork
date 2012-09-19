@@ -424,8 +424,9 @@ class ProjectforkModelDirectory extends JModelAdmin
 
         // Copy the notes and files in the directories
         if (count($parents)) {
-            $note_model = $this->getInstance('Note', 'ProjectforkModel', array('ignore_request' => true));
-            $file_model = $this->getInstance('File', 'ProjectforkModel', array('ignore_request' => true));
+            $suffix     = ((JFactory::getApplication()->isSite()) ? 'Form' : '');
+            $note_model = $this->getInstance('Note' . $suffix, 'ProjectforkModel', array('ignore_request' => true));
+            $file_model = $this->getInstance('File' . $suffix, 'ProjectforkModel', array('ignore_request' => true));
 
             foreach($parents AS $old => $new)
             {
@@ -721,8 +722,9 @@ class ProjectforkModelDirectory extends JModelAdmin
         }
 
         // Iterate the items to delete each one.
-        $note_model = $this->getInstance('Note', 'ProjectforkModel', array('ignore_request' => true));
-        $file_model = $this->getInstance('File', 'ProjectforkModel', array('ignore_request' => true));
+        $suffix     = ((JFactory::getApplication()->isSite()) ? 'Form' : '');
+        $note_model = $this->getInstance('Note' . $suffix, 'ProjectforkModel', array('ignore_request' => true));
+        $file_model = $this->getInstance('File' . $suffix, 'ProjectforkModel', array('ignore_request' => true));
         $note_table = $this->getTable('Note');
         $file_table = $this->getTable('File');
 

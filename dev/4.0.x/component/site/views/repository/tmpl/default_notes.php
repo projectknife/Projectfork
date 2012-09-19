@@ -12,6 +12,7 @@ defined('_JEXEC') or die();
 
 $user     = JFactory::getUser();
 $uid      = $user->get('id');
+$x        = count($this->items['directories']);
 
 foreach ($this->items['notes'] as $i => $item) :
     $edit_link = 'task=note.edit&filter_project=' . $item->project_id . 'filter_parent_id=' . $item->dir_id . '&id=' . $item->id;
@@ -25,7 +26,7 @@ foreach ($this->items['notes'] as $i => $item) :
     ?>
     <tr class="row<?php echo $i % 2; ?>">
         <td class="center">
-            <?php echo JHtml::_('grid.id', $i, $item->id, false, 'nid'); ?>
+            <?php echo JHtml::_('grid.id', $x, $item->id, false, 'nid'); ?>
         </td>
         <td>
             <i class="icon-pencil"></i>
@@ -38,7 +39,7 @@ foreach ($this->items['notes'] as $i => $item) :
             <?php
                 $this->menu->start(array('class' => 'btn-mini'));
                 $this->menu->itemEdit('noteform', $item->id, ($can_edit || $can_edit_own));
-                $this->menu->itemDelete('repository', $i, ($can_edit || $can_edit_own));
+                $this->menu->itemDelete('repository', $x, ($can_edit || $can_edit_own));
                 $this->menu->end();
 
                 echo $this->menu->render();
@@ -51,4 +52,4 @@ foreach ($this->items['notes'] as $i => $item) :
             <?php echo JHtml::_('projectfork.truncate', $item->description); ?> <i class="icon-user"></i> <?php echo $this->escape($item->author_name); ?>
         </td>
     </tr>
-<?php endforeach; ?>
+<?php $x++; endforeach; ?>
