@@ -26,6 +26,9 @@ class PFTableFile extends JTable
      */
     public function __construct(&$db)
     {
+        // Register dependencies
+        JLoader::register('ProjectforkHelper', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
+
         parent::__construct('#__pf_repo_files', 'id', $db);
     }
 
@@ -45,6 +48,17 @@ class PFTableFile extends JTable
 
 
     /**
+     * Method to return the title to use for the asset table.
+     *
+     * @return    string
+     */
+    protected function _getAssetTitle()
+    {
+        return $this->title;
+    }
+
+
+    /**
      * Method to get the parent asset id for the record
      *
      * @param     jtable     $table    A JTable object for the asset parent
@@ -54,10 +68,8 @@ class PFTableFile extends JTable
      */
     protected function _getAssetParentId($table = null, $id = null)
     {
-        // Initialise variables.
         $asset_id = null;
-
-        $query = $this->_db->getQuery(true);
+        $query    = $this->_db->getQuery(true);
 
         if ($this->dir_id) {
             // Build the query to get the asset id for the parent topic.
@@ -72,16 +84,37 @@ class PFTableFile extends JTable
             if ($result) $asset_id = (int) $result;
         }
         elseif ($this->project_id) {
-            // Build the query to get the asset id for the parent project.
-            $query->select('asset_id')
-                  ->from('#__pf_projects')
-                  ->where('id = ' . (int) $this->project_id);
+            $params   = ProjectforkHelper::getProjectParams($this->project_id);
+            $repo_dir = (int) $params->get('repo_dir');
+            $result   = null;
 
-            // Get the asset id from the database.
-            $this->_db->setQuery((string) $query);
-            $result = $this->_db->loadResult();
+            if ($repo_dir) {
+                // Try to get the asset id of the project repo
+                $query->clear();
+                $query->select('asset_id')
+                      ->from('#__pf_repo_dirs')
+                      ->where('id = ' . $repo_dir);
 
-            if ($result) $asset_id = (int) $result;
+                $this->_db->setQuery((string) $query);
+                $result = $this->_db->loadResult();
+            }
+
+            if ($result) {
+                $this->dir = $repo_dir;
+                $asset_id  = (int) $result;
+            }
+            else {
+                // Build the query to get the asset id for the parent project.
+                $query->select('asset_id')
+                      ->from('#__pf_projects')
+                      ->where('id = ' . (int) $this->project_id);
+
+                // Get the asset id from the database.
+                $this->_db->setQuery((string) $query);
+                $result = $this->_db->loadResult();
+
+                if ($result) $asset_id = (int) $result;
+            }
         }
 
         // Return the asset id.
@@ -124,10 +157,14 @@ class PFTableFile extends JTable
      */
     public function check()
     {
-        return true;
         if (trim(str_replace('&nbsp;', '', $this->title)) == '') {
-            $this->setError(JText::_('COM_PROJECTFORK_WARNING_PROVIDE_VALID_TITLE'));
-            return false;
+            if ($this->file_name == '') {
+                $this->setError(JText::_('COM_PROJECTFORK_WARNING_PROVIDE_VALID_TITLE'));
+                return false;
+            }
+            else {
+                $this->title = $this->file_name;
+            }
         }
 
         return true;
@@ -151,7 +188,7 @@ class PFTableFile extends JTable
             $this->modified_by = $user->get('id');
         }
         else {
-            // New item. A created_by field can be set by the user, so we don't touch it if set.
+            // New item
             $this->created = $date->toSql();
             if (empty($this->created_by)) $this->created_by = $user->get('id');
         }
@@ -160,83 +197,6 @@ class PFTableFile extends JTable
         $success = parent::store($updateNulls);
 
         return $success;
-    }
-
-
-    /**
-     * Method to set the state for a row or list of rows in the database
-     * table. The method respects checked out rows by other users and will attempt
-     * to checkin rows that it can after adjustments are made.
-     *
-     * @param     mixed      $pks      An optional array of primary key values to update.  If not set the instance property value is used.
-     * @param     integer    $state    The state. eg. [0 = Inactive, 1 = Active, 2 = Archived, -2 = Trashed]
-     * @param     integer    $uid      The user id of the user performing the operation.
-     *
-     * @return    boolean              True on success.
-     */
-    public function setState($pks = null, $state = 1, $uid = 0)
-    {
-        // Initialise variables.
-        $k = $this->_tbl_key;
-
-        // Sanitize input.
-        JArrayHelper::toInteger($pks);
-        $uid    = (int) $uid;
-        $state  = (int) $state;
-
-        // If there are no primary keys set check to see if the instance key is set.
-        if (empty($pks)) {
-            if ($this->$k) {
-                $pks = array($this->$k);
-            }
-            else {
-                // Nothing to set state on, return false.
-                $this->setError(JText::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'));
-                return false;
-            }
-        }
-
-        // Build the WHERE clause for the primary keys.
-        $where = $k . '=' . implode(' OR ' . $k . '=', $pks);
-
-        // Determine if there is checkin support for the table.
-        if (!property_exists($this, 'checked_out') || !property_exists($this, 'checked_out_time')) {
-            $checkin = '';
-        }
-        else {
-            $checkin = ' AND (checked_out = 0 OR checked_out = ' . (int) $uid . ')';
-        }
-
-        // Update the state for rows with the given primary keys.
-        $query = $this->_db->getQuery(true);
-
-        $query->update($this->_db->quoteName($this->_tbl))
-              ->set($this->_db->quoteName('state') . ' = ' . $state)
-              ->where('(' . $where . ')');
-
-        $this->_db->setQuery((string) $query);
-        $this->_db->query();
-
-        // Check for a database error.
-        if ($this->_db->getErrorNum()) {
-            $this->setError($this->_db->getErrorMsg());
-            return false;
-        }
-
-        // If checkin is supported and all rows were adjusted, check them in.
-        if ($checkin && (count($pks) == $this->_db->getAffectedRows())) {
-            // Checkin the rows.
-            foreach($pks as $pk)
-            {
-                $this->checkin($pk);
-            }
-        }
-
-        // If the JTable instance value is in the list of primary keys that were set, set the instance.
-        if (in_array($this->$k, $pks)) $this->state = $state;
-        $this->setError('');
-
-        return true;
     }
 
 

@@ -28,18 +28,20 @@ class ProjectforkModelFile extends JModelAdmin
 
 
     /**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     JController
-	 */
-	public function __construct($config = array())
-	{
-	   // Register dependencies
+     * Constructor.
+     *
+     * @param    array          $config    An optional associative array of configuration settings.
+     *
+     * @see      jcontroller
+     */
+    public function __construct($config = array())
+    {
+       // Register dependencies
+       JLoader::register('ProjectforkHelperRepository', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/repository.php');
+
+       jimport('joomla.filesystem.path');
        jimport('joomla.filesystem.folder');
        jimport('joomla.filesystem.file');
-       JLoader::register('ProjectforkHelperRepository', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/repository.php');
 
        parent::__construct($config);
     }
@@ -119,6 +121,85 @@ class ProjectforkModelFile extends JModelAdmin
 
 
     /**
+     * Method to delete one or more records.
+     *
+     * @param     array  &    $pks    An array of record primary keys.
+     *
+     * @return    boolean             True if successful, false if an error occurs.
+     */
+    public function delete(&$pks)
+    {
+        // Initialise variables.
+        $dispatcher = JDispatcher::getInstance();
+        $pks        = (array) $pks;
+        $table      = $this->getTable();
+
+        // Include the content plugins for the on delete events.
+        JPluginHelper::importPlugin('content');
+
+        // Iterate the items to delete each one.
+        foreach ($pks as $i => $pk)
+        {
+            if ($table->load($pk)) {
+                if ($this->canDelete($table)) {
+                    $context = $this->option . '.' . $this->name;
+
+                    // Trigger the onContentBeforeDelete event.
+                    $result = $dispatcher->trigger($this->event_before_delete, array($context, $table));
+
+                    if (in_array(false, $result, true)) {
+                        $this->setError($table->getError());
+                        return false;
+                    }
+
+                    // Delete the physical file
+                    $path = ProjectforkHelperRepository::getBasePath($table->project_id);
+                    $file = $table->file_name;
+
+                    if (JFile::exists($path . '/' . $file)) {
+                        JFile::delete($path . '/' . $file);
+                        // Dont care if the deletion failed and remove the db record anyway.
+                    }
+
+                    if (!$table->delete($pk)) {
+                        $this->setError($table->getError());
+                        return false;
+                    }
+
+                    // Trigger the onContentAfterDelete event.
+                    $dispatcher->trigger($this->event_after_delete, array($context, $table));
+
+                }
+                else {
+                    // Prune items that you can't change.
+                    unset($pks[$i]);
+
+                    $error = $this->getError();
+
+                    if ($error) {
+                        JError::raiseWarning(500, $error);
+                        return false;
+                    }
+                    else {
+                        JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'));
+                        return false;
+                    }
+                }
+            }
+            else {
+                $this->setError($table->getError());
+                return false;
+            }
+        }
+
+        // Clear the component's cache
+        $this->cleanCache();
+
+        return true;
+    }
+
+
+    /**
      * Batch move items to a new directory
      *
      * @param     integer    $value    The new parent ID.
@@ -179,8 +260,14 @@ class ProjectforkModelFile extends JModelAdmin
                 }
             }
 
-            // Set the new location in the tree for the node.
+            // Set the new location directory
             $table->dir_id = (int) $dest;
+
+            // Generate new title
+            list($title, $alias) = $this->generateNewTitle($table->dir_id, $table->title, $table->alias, $table->id);
+
+            $table->title = $title;
+            $table->alias = $alias;
 
             // Store the row.
             if (!$table->store()) {
@@ -273,11 +360,10 @@ class ProjectforkModelFile extends JModelAdmin
                 }
             }
 
-
             // Reset the id because we are making a copy.
             $table->id = 0;
 
-            // Set the new location in the tree for the node.
+            // Set the new location directory
             $table->dir_id = (int) $dest;
 
             // Alter the title & alias
@@ -346,7 +432,13 @@ class ProjectforkModelFile extends JModelAdmin
             }
         }
 
-        if ($data['title'] == '') {
+        // Delete the old file if a new one is uploaded
+        if (!$isNew && isset($data['file_name'])) {
+            $this->deleteFile($table->file_name, $table->project_id);
+        }
+
+        // Use the file name as title if empty
+        if ($data['title'] == '' && isset($data['file_name'])) {
             $data['title'] = $data['file_name'];
         }
 
@@ -356,6 +448,10 @@ class ProjectforkModelFile extends JModelAdmin
 
         $data['title'] = $title;
         $data['alias'] = $alias;
+
+        if (isset($data['file_name'])) {
+            $data['file_extension'] = JFile::getExt($data['file_name']);
+        }
 
         // Bind the data.
         if (!$table->bind($data)) {
@@ -384,6 +480,15 @@ class ProjectforkModelFile extends JModelAdmin
     }
 
 
+    /**
+     * Method for uploading a file
+     *
+     * @param     array      $file       The file information
+     * @param     integer    $project    The project id
+     * @param     boolean    $stream     If set to true, use data stream
+     *
+     * @return    mixed                  Array with file info on success, otherwise False
+     */
     public function upload($file = NULL, $project = 0, $stream = false)
     {
         $uploadpath = ProjectforkHelperRepository::getBasePath($project);
@@ -422,6 +527,32 @@ class ProjectforkModelFile extends JModelAdmin
         }
 
         return false;
+    }
+
+
+    /**
+     * Method to delete a file
+     *
+     * @param     string     $name       The file name
+     * @param     integer    $project    The project id to which the file belongs to
+     *
+     * @return    boolean                True on success, otherwise False
+     */
+    public function deleteFile($name, $project = 0)
+    {
+        $uploadpath = ProjectforkHelperRepository::getBasePath($project);
+
+        if (JFile::exists($uploadpath . '/' . $name)) {
+            if (JFile::delete($uploadpath . '/' . $name) !== true) {
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        else {
+            return false;
+        }
     }
 
 
@@ -503,12 +634,12 @@ class ProjectforkModelFile extends JModelAdmin
     /**
      * Method to change the title.
      *
-     * @param     integer    $dir_id       The parent directory
-     * @param     string     $title        The directory title
-     * @param     string     $alias        The current alias
-     * @param     integer    $id           The note id
+     * @param     integer    $dir_id    The parent directory
+     * @param     string     $title     The directory title
+     * @param     string     $alias     The current alias
+     * @param     integer    $id        The note id
      *
-     * @return    string                   Contains the new title
+     * @return    string                Contains the new title
      */
     protected function generateNewTitle($dir_id, $title, $alias = '', $id = 0)
     {
@@ -571,10 +702,10 @@ class ProjectforkModelFile extends JModelAdmin
     /**
      * Method to change the file name.
      *
-     * @param     string     $dest         The target destination folder
-     * @param     string     $name         The file name
+     * @param     string    $dest    The target destination folder
+     * @param     string    $name    The file name
      *
-     * @return    string                   Contains the new name
+     * @return    string             Contains the new name
      */
     protected function generateNewFileName($dest, $name)
     {
@@ -672,12 +803,12 @@ class ProjectforkModelFile extends JModelAdmin
     {
         // Initialise variables.
         $app   = JFactory::getApplication();
-		$table = $this->getTable();
-		$key   = $table->getKeyName();
+        $table = $this->getTable();
+        $key   = $table->getKeyName();
 
-		// Get the pk of the record from the request.
-		$pk = JRequest::getInt($key);
-		$this->setState($this->getName() . '.id', $pk);
+        // Get the pk of the record from the request.
+        $pk = JRequest::getInt($key);
+        $this->setState($this->getName() . '.id', $pk);
 
         if ($pk) {
             $table = $this->getTable();
@@ -713,8 +844,8 @@ class ProjectforkModelFile extends JModelAdmin
             }
         }
 
-		// Load the parameters.
-		$value = JComponentHelper::getParams($this->option);
-		$this->setState('params', $value);
+        // Load the parameters.
+        $value = JComponentHelper::getParams($this->option);
+        $this->setState('params', $value);
     }
 }

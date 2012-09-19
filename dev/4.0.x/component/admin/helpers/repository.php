@@ -10,10 +10,23 @@
 defined('_JEXEC') or die();
 
 
+/**
+ * File Repository Helper Class
+ *
+ */
 class ProjectforkHelperRepository
 {
+    /**
+     * Method to get the base upload path for a project
+     *
+     * @param     int       $project     Optional project id
+     *
+     * @return    string    $basepath    The upload directory
+     */
     public static function getBasePath($project = NULL)
     {
+        jimport('joomla.filesystem.path');
+
         $params = JComponentHelper::GetParams('com_projectfork');
 
         $base = JPATH_ROOT . '/';
@@ -40,18 +53,27 @@ class ProjectforkHelperRepository
     }
 
 
-    public static function getFileErrorMsg($num, $name, $size)
+    /**
+     * Method for translating an upload error code into human readable format
+     *
+     * @param     integer    $num     The error code
+     * @param     string     $name    The name of the file
+     *
+     * @return    string     $msg     The error message
+     */
+    public static function getFileErrorMsg($num, $name)
     {
         $size_limit = ini_get('upload_max_filesize');
+        $name = '"' . htmlspecialchars($name, ENT_COMPAT, 'UTF-8') . '"';
 
         switch ($num)
         {
             case 1:
-                $msg = JText::sprintf('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_' . $num, $name, $size, $size_limit);
+                $msg = JText::sprintf('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_' . $num, $name, $size_limit);
                 break;
 
             case 2:
-                $msg = JText::sprintf('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_' . $num, $name, $size);
+                $msg = JText::sprintf('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_' . $num, $name);
                 break;
 
             case 3:

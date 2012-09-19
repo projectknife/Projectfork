@@ -382,6 +382,7 @@ class ProjectforkModelDirectory extends JModelAdmin
         // Copy the notes and files in the directories
         if (count($parents)) {
             $note_model = $this->getInstance('Note', 'ProjectforkModel', array('ignore_request' => true));
+            $file_model = $this->getInstance('File', 'ProjectforkModel', array('ignore_request' => true));
 
             foreach($parents AS $old => $new)
             {
@@ -393,9 +394,23 @@ class ProjectforkModelDirectory extends JModelAdmin
                 $db->setQuery($query);
                 $notes = (array) $db->loadColumn();
 
+                $query->clear();
+                $query->select('id')
+                      ->from($db->quoteName('#__pf_repo_files'))
+                      ->where('dir_id = ' . (int) $old);
+
+                $db->setQuery($query);
+                $files = (array) $db->loadColumn();
+
                 if (count($notes)) {
                     if (!$note_model->batchCopy($new, $notes)) {
                         $this->setError($note_model->getError());
+                    }
+                }
+
+                if (count($files)) {
+                    if (!$file_model->batchCopy($new, $files)) {
+                        $this->setError($file_model->getError());
                     }
                 }
             }
@@ -672,7 +687,9 @@ class ProjectforkModelDirectory extends JModelAdmin
 
         // Iterate the items to delete each one.
         $note_model = $this->getInstance('Note', 'ProjectforkModel', array('ignore_request' => true));
+        $file_model = $this->getInstance('File', 'ProjectforkModel', array('ignore_request' => true));
         $note_table = $this->getTable('Note');
+        $file_table = $this->getTable('File');
 
         foreach ($pks as $i => $pk)
         {
@@ -681,6 +698,9 @@ class ProjectforkModelDirectory extends JModelAdmin
                     $context  = $this->option . '.' . $this->name;
                     $tree     = $table->getTree($pk, true);
                     $dir_list = array();
+
+                    $dir_project = (int) $table->project_id;
+                    $dir_path    = $table->path;
 
                     if (is_array($tree) && count($tree) > 0) {
                         foreach($tree AS $dir)
@@ -702,17 +722,7 @@ class ProjectforkModelDirectory extends JModelAdmin
                         return false;
                     }
 
-                    // Delete the path
-                    $project = (int) $table->project_id;
 
-                    if ($project) {
-                        $basepath = ProjectforkHelperRepository::getBasePath($table->project_id);
-                        $fullpath = JPath::clean($basepath . '/' . $table->path);
-
-                        if (JFolder::exists($fullpath)) {
-                            JFolder::delete($fullpath);
-                        }
-                    }
 
                     if (is_array($dir_list) && count($dir_list) > 0) {
                         $move_notes = array();
@@ -739,9 +749,37 @@ class ProjectforkModelDirectory extends JModelAdmin
                             }
                         }
 
+                        // Get the files for deletion
+                        $query->clear();
+                        $query->select('id, asset_id, access')
+                              ->from('#__pf_repo_files')
+                              ->where('dir_id IN(' . implode(', ', $dir_list) . ')');
+
+                        $db->setQuery($query);
+                        $files = (array) $db->loadObjectList();
+
+                        foreach($files AS $file)
+                        {
+                            if (!$file_model->canDelete($file)) {
+                                $move_files[] = $file->id;
+                            }
+                            else {
+                                $del_files[] = $file->id;
+                            }
+                        }
+
                         // Delete notes
-                        if (!$note_model->delete($del_notes)) {
-                            $this->setError($note_model->getError());
+                        if (count($del_notes)) {
+                            $query->clear();
+                            $query->delete('#__pf_repo_notes')
+                                  ->where('id IN(' . implode(', ', $del_notes) . ')');
+
+                            $db->setQuery((string) $query);
+                            $db->execute();
+
+                            if ($db->getErrorMsg()) {
+                                $this->setError($db->getErrorMsg());
+                            }
                         }
 
                         // Move notes you cant delete
@@ -750,10 +788,46 @@ class ProjectforkModelDirectory extends JModelAdmin
                             if ($note_table->load($note)) {
                                 $note_table->dir_id = $table->parent_id;
 
-                                if (!$table->store()) {
-                                    $this->setError($table->getError());
+                                if (!$note_table->store()) {
+                                    $this->setError($note_table->getError());
                                 }
                             }
+                        }
+
+                        // Delete files
+                        if (count($del_files)) {
+                            $query->clear();
+                            $query->delete('#__pf_repo_files')
+                                  ->where('id IN(' . implode(', ', $del_files) . ')');
+
+                            $db->setQuery((string) $query);
+                            $db->execute();
+
+                            if ($db->getErrorMsg()) {
+                                $this->setError($db->getErrorMsg());
+                            }
+                        }
+
+                        // Move files you cant delete
+                        foreach($move_files AS $file)
+                        {
+                            if ($file_table->load($file)) {
+                                $file_table->dir_id = $table->parent_id;
+
+                                if (!$file_table->store()) {
+                                    $this->setError($file_table->getError());
+                                }
+                            }
+                        }
+                    }
+
+                    // Delete the physical directory if it exists
+                    if ($dir_project) {
+                        $basepath = ProjectforkHelperRepository::getBasePath($dir_project);
+                        $fullpath = JPath::clean($basepath . '/' . $dir_path);
+
+                        if (JFolder::exists($fullpath)) {
+                            JFolder::delete($fullpath);
                         }
                     }
 

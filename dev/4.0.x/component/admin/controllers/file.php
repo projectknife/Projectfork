@@ -35,25 +35,43 @@ class ProjectforkControllerFile extends JControllerForm
 
 
     /**
-	 * Method to save a record.
-	 *
-	 * @param   string  $key     The name of the primary key of the URL variable.
-	 * @param   string  $urlVar  The name of the URL variable if different from the primary key (sometimes required to avoid router collisions).
-	 *
-	 * @return  boolean  True if successful, false otherwise.
-	 *
-	 * @since   11.1
-	 */
-	public function save($key = null, $urlVar = null)
-	{
-		// Check for request forgeries.
-		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+     * Method to save a record.
+     *
+     * @param     string     $key       The name of the primary key of the URL variable.
+     * @param     string     $urlVar    The name of the URL variable if different from the primary key (sometimes required to avoid router collisions).
+     *
+     * @return    boolean               True if successful, false otherwise.
+     */
+    public function save($key = null, $urlVar = null)
+    {
+        // Check for request forgeries.
+        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-		// Initialise variables.
-		$model     = $this->getModel();
-		$data      = JRequest::getVar('jform', array(), 'post', 'array');
-		$file_form = JRequest::getVar('jform', '', 'files', 'array');
+        // Initialise variables.
+        $model     = $this->getModel();
+        $data      = JRequest::getVar('jform', array(), 'post', 'array');
+        $file_form = JRequest::getVar('jform', '', 'files', 'array');
+        $context   = $this->option . ".edit." . $this->context;
         $files     = array();
+
+        if (empty($urlVar)) $urlVar = $key;
+
+        $record_id = JRequest::getInt($urlVar);
+
+        if (!$this->checkEditId($context, $record_id)) {
+			// Somehow the person just went to the form and tried to save it. We don't allow that.
+			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $record_id));
+			$this->setMessage($this->getError(), 'error');
+
+			$this->setRedirect(
+				JRoute::_(
+					'index.php?option=' . $this->option . '&view=' . $this->view_list
+					. $this->getRedirectToListAppend(), false
+				)
+			);
+
+			return false;
+		}
 
         if (is_array($file_form)) {
             foreach($file_form AS $attr => $field)
@@ -78,16 +96,30 @@ class ProjectforkControllerFile extends JControllerForm
             if (is_array($result)) {
                 $keys = array_keys($result);
 
-                foreach($keys AS $key)
+                foreach($keys AS $k)
                 {
-                    $data[$key] = $result[$key];
+                    $data[$k] = $result[$k];
                 }
+            }
+            else {
+                $error = $model->getError();
+                $this->setError($error);
+                $this->setMessage($error, 'error');
+
+                $this->setRedirect(
+                    JRoute::_(
+                        'index.php?option=' . $this->option . '&view=' . $this->view_item
+                        . $this->getRedirectToItemAppend($record_id, $urlVar), false
+                    )
+                );
+
+                return false;
             }
         }
 
         JRequest::setVar('jform', $data, 'post');
 
-        parent::save($key, $urlVar);
+        return parent::save($key, $urlVar);
     }
 
 

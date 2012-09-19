@@ -55,10 +55,10 @@ abstract class ProjectforkRepository
     /**
      * Build a list of directory paths
      *
-     * @param     string    $project    The project id
-     * @param     integer   $exclude    The directory id to exclude
+     * @param     string     $project    The project id
+     * @param     integer    $exclude    The directory id to exclude
      *
-     * @return    array                 The path array
+     * @return    array                  The path array
      */
     public static function pathOptions($project, $exclude = null)
     {
@@ -85,9 +85,13 @@ abstract class ProjectforkRepository
             $query->where('a.id != ' . $db->quote((int) $exclude));
         }
 
-        $query->order('a.path');
+        if (is_array($exclude)) {
+            JArrayHelper::toInteger($exclude);
 
-        // Setup the query
+            $query->where('a.id NOT IN(' . implode(', ', $exclude) . ')');
+        }
+
+        $query->order('a.path');
         $db->setQuery((string) $query);
 
         // Get the result

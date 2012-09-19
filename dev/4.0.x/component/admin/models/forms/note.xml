@@ -31,7 +31,7 @@
         />
         <field name="rules" type="inheritrules"
             label="JCONFIG_PERMISSIONS_LABEL"
-            component="com_projectfork" section="reply" validate="rules" filter="rules"
+            component="com_projectfork" section="note" validate="rules" filter="rules"
         />
         <field name="id" type="hidden" readonly="true"/>
         <field name="project_id" type="hidden" readonly="true"/>

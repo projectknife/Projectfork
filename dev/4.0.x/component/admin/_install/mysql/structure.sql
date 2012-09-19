@@ -349,7 +349,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_repo_files` (
   `modified_by` int(10) unsigned NOT NULL COMMENT 'Last user to modify the file',
   `checked_out` int(10) unsigned NOT NULL COMMENT 'User who is currently editing the file',
   `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
-  `attribs` text NOT NULL COMMENT 'Fileattributes in JSON format',
+  `attribs` text NOT NULL COMMENT 'File attributes in JSON format',
   `access` int(10) unsigned NOT NULL COMMENT 'File ACL access level ID',
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_alias` (`dir_id`,`alias`),
