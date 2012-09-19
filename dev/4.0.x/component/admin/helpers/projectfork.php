@@ -375,13 +375,21 @@ class ProjectforkHelper
      *
      * @return    boolean             True on success, False on error
      **/
-    public function setActiveProject($id = 0)
+    public static function setActiveProject($id = 0)
     {
-        if (JFactory::getApplication()->isSite()) {
-            JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/models');
+        static $model = null;
+
+        if (!$model) {
+            if (JFactory::getApplication()->isSite()) {
+                JLoader::register('ProjectforkModelProjectForm', JPATH_BASE . '/components/com_projectfork/models/projectform.php');
+                $model = new ProjectforkModelProjectForm(array('ignore_request' => true));
+            }
+            else {
+                JLoader::register('ProjectforkModelProject', JPATH_ADMINISTRATOR . '/components/com_projectfork/models/project.php');
+                $model = new ProjectforkModelProject(array('ignore_request' => true));
+            }
         }
 
-        $model = JModelLegacy::getInstance('Project', 'ProjectforkModel');
         $data  = array('id' => (int) $id);
 
         return $model->setActive($data);

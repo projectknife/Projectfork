@@ -188,6 +188,18 @@ class ProjectforkHelperContextMenu
     }
 
 
+    public function itemDelete($asset, $id, $access = false)
+    {
+        if (!$access) return '';
+
+        $icon   = 'icon-remove';
+        $action = "return listItemTask('cb" . $id . "','" . $asset . ".delete');";
+        $title  = JText::_('COM_PROJECTFORK_ACTION_DELETE');
+
+        return $this->itemJavaScript($icon, $title, $action);
+    }
+
+
     public function priorityList($i, $id, $asset, $selected = 0, $access = false, $css_class = 'btn-mini')
     {
         $priorities = JHtml::_('projectfork.priorityOptions');

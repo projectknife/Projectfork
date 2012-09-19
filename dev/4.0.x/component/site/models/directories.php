@@ -11,23 +11,30 @@ defined('_JEXEC') or die();
 
 
 jimport('joomla.application.component.modellist');
+jimport('joomla.application.component.helper');
 
 
 /**
- * Methods supporting a list of comments.
+ * This models supports retrieving lists of directory folders.
  *
  */
 class ProjectforkModelDirectories extends JModelList
 {
+
     /**
-     * Constructor
+     * Constructor.
      *
-     * @param     array    An optional associative array of configuration settings.
-     *
-     * @return    void
+     * @param    array          $config    An optional associative array of configuration settings.
+     * @see      jcontroller
      */
     public function __construct($config = array())
     {
+        // Register dependencies
+        JLoader::register('ProjectforkHelperQuery',  JPATH_SITE . '/components/com_projectfork/helpers/query.php');
+        JLoader::register('ProjectforkHelper',       JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
+        JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+
+        // Set field filter
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
                 'a.id', 'a.project_id', 'project_title',
@@ -45,44 +52,16 @@ class ProjectforkModelDirectories extends JModelList
 
 
     /**
-     * Build a list of project authors
+     * Get the master query for retrieving a list of items subject to the model state.
      *
      * @return    jdatabasequery
      */
-    public function getAuthors()
-    {
-        $db    = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        if ((int) $this->getState('filter.project') == 0) {
-            return array();
-        }
-
-        // Construct the query
-        $query->select('u.id AS value, u.name AS text')
-              ->from('#__users AS u')
-              ->join('INNER', '#__pf_repo_dirs AS a ON a.created_by = u.id')
-              ->group('u.id')
-              ->order('u.name');
-
-        // Setup the query
-        $db->setQuery((string) $query);
-
-        // Return the result
-        return $db->loadObjectList();
-    }
-
-
-    /**
-     * Build an SQL query to load the list data.
-     *
-     * @return    jdatabasequery
-     */
-    protected function getListQuery()
+    public function getListQuery()
     {
         // Create a new query object.
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
+
         $user  = JFactory::getUser();
 
         // Select the required fields from the table.
@@ -91,7 +70,7 @@ class ProjectforkModelDirectories extends JModelList
                 'list.select',
                 'a.id, a.project_id, a.title, a.alias, a.description, a.checked_out, '
                 . 'a.checked_out_time, a.created, a.access, a.created_by, a.parent_id, '
-                . 'a.lft, a.rgt, a.level, a.path'
+                . 'a.lft, a.rgt, a.level, a.path, a.protected, a.attribs'
             )
         );
         $query->from('#__pf_repo_dirs AS a');
@@ -121,21 +100,9 @@ class ProjectforkModelDirectories extends JModelList
             $query->where('a.access IN (' . $groups . ')');
         }
 
-        // Filter by project
-        $project = $this->getState('filter.project');
-        if (is_numeric($project) && $project != 0) {
-            $query->where('a.project_id = ' . (int) $project);
-        }
-
-        // Filter by author
-        $author_id = $this->getState('filter.author_id');
-        if (is_numeric($author_id)) {
-            $type = $this->getState('filter.author_id.include', true) ? '= ' : '<>';
-            $query->where('a.created_by ' . $type . (int) $author_id);
-        }
-
         // Filter by parent_id
         $parent_id = $this->getState('filter.parent_id');
+        $project   = $this->getState('filter.project');
 
         if ((!is_numeric($parent_id) && empty($search)) || !is_numeric($project)) {
             $this->setState('filter.parent_id', '1');
@@ -146,21 +113,14 @@ class ProjectforkModelDirectories extends JModelList
             $query->where('a.parent_id = ' . $db->quote($parent_id));
         }
 
-        // Filter by search in title.
-        $search = $this->getState('filter.search');
-        if (!empty($search)) {
-            if (stripos($search, 'id:') === 0) {
-                $query->where('a.id = '.(int) substr($search, 3));
-            }
-            elseif (stripos($search, 'author:') === 0) {
-                $search = $db->Quote('%' . $db->escape(substr($search, 7), true).'%');
-                $query->where('(ua.name LIKE ' . $search . ' OR ua.username LIKE ' . $search . ')');
-            }
-            else {
-                $search = $db->Quote('%' . $db->escape($search, true).'%');
-                $query->where('(a.title LIKE ' . $search . ' OR a.alias LIKE ' . $search . ')');
-            }
-        }
+        // Filter fields
+        $filters = array();
+        $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
+        $filters['a.created_by'] = array('INT-NOTZERO', $this->getState('filter.author'));
+        $filters['a']            = array('SEARCH',      $this->getState('filter.search'));
+
+        // Apply Filter
+        ProjectforkHelperQuery::buildFilter($query, $filters);
 
         // Add the list ordering clause.
         $order_col = $this->state->get('list.ordering', 'a.title');
@@ -178,33 +138,84 @@ class ProjectforkModelDirectories extends JModelList
 
 
     /**
+     * Method to get a list of items.
+     * Overriden to inject convert the attribs field into a JParameter object.
+     *
+     * @return    mixed    $items    An array of objects on success, false on failure.
+     */
+    public function getItems()
+    {
+        $items = parent::getItems();
+
+        // Get the global params
+        $global_params = JComponentHelper::getParams('com_projectfork', true);
+
+        foreach ($items as $i => &$item)
+        {
+            // Convert the parameter fields into objects.
+            $params = new JRegistry;
+            $params->loadString($item->attribs);
+
+            $items[$i]->params = clone $this->getState('params');
+
+            // Create slugs
+            $items[$i]->slug         = $items[$i]->alias ? ($items[$i]->id . ':' . $items[$i]->alias) : $items[$i]->id;
+            $items[$i]->project_slug = $items[$i]->project_alias ? ($items[$i]->project_id . ':' . $items[$i]->project_alias) : $items[$i]->project_id;
+        }
+
+        return $items;
+    }
+
+
+    /**
      * Method to auto-populate the model state.
-     * Note: Calling getState in this method will result in recursion.
+     * Note. Calling getState in this method will result in recursion.
      *
      * @return    void
      */
-    protected function populateState($ordering = 'a.title', $direction = 'desc')
+    protected function populateState($ordering = 'a.title', $direction = 'ASC')
     {
-        // Initialise variables.
-        $app = JFactory::getApplication();
+        $app    = JFactory::getApplication();
+        $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
 
         // Adjust the context to support modal layouts.
-        if ($layout = JRequest::getVar('layout')) $this->context .= '.' . $layout;
+        $layout = JRequest::getCmd('layout');
 
-        $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
+        // View Layout
+        $this->setState('layout', $layout);
+        if ($layout) $this->context .= '.' . $layout;
+
+        // Params
+        $value = $app->getParams();
+        $this->setState('params', $value);
+
+        // Filter - Search
+        $search = JRequest::getString('filter_search', '');
         $this->setState('filter.search', $search);
 
-        $author_id = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
-        $this->setState('filter.author_id', $author_id);
-
-        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        // Filter - Project
+        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
         $this->setState('filter.project', $project);
         ProjectforkHelper::setActiveProject($project);
 
+        // Filter - Author
+        $author = $app->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', '');
+        $this->setState('filter.author', $author);
+
+        // Filter - Parent folder
         $parent_id = JRequest::getCmd('filter_parent_id', '');
         $this->setState('filter.parent_id', $parent_id);
 
-        // List state information.
+        // Do not allow to filter by author if no project is selected
+        if (!is_numeric($project) || intval($project) == 0) {
+            $this->setState('filter.author', '');
+            $author = '';
+        }
+
+        // Filter - Is set
+        $this->setState('filter.isset', (!empty($search) || is_numeric($author)));
+
+        // Call parent method
         parent::populateState($ordering, $direction);
     }
 
@@ -217,16 +228,14 @@ class ProjectforkModelDirectories extends JModelList
      * ordering requirements.
      *
      * @param     string    $id    A prefix for the store id.
-     *
      * @return    string           A store id.
      */
     protected function getStoreId($id = '')
     {
         // Compile the store id.
-        $id .= ':' . $this->getState('filter.search');
-        $id .= ':' . $this->getState('filter.access');
-        $id .= ':' . $this->getState('filter.author_id');
         $id .= ':' . $this->getState('filter.project');
+        $id .= ':' . $this->getState('filter.author');
+        $id .= ':' . $this->getState('filter.search');
         $id .= ':' . $this->getState('filter.parent_id');
 
         return parent::getStoreId($id);

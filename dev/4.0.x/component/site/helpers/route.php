@@ -322,6 +322,26 @@ abstract class ProjectforkHelperRoute
         return $link;
     }
 
+    public static function getRepositoryRoute($project = '', $dir = '')
+    {
+        $link  = 'index.php?option=com_projectfork&view=repository';
+        $link .= '&filter_project=' . $project;
+        $link .= '&filter_parent_id=' . $dir;
+
+        $needles = array('filter_project'   => array((int) $project),
+                         'filter_parent_id' => array((int) $dir)
+                        );
+
+        if ($item = self::_findItem($needles, 'repository')) {
+            $link .= '&Itemid=' . $item;
+        }
+        elseif ($item = self::_findItem(null, 'repository')) {
+            $link .= '&Itemid=' . $item;
+        }
+
+        return $link;
+    }
+
 
     /**
      * This method will try to find a menu item for the given view and
