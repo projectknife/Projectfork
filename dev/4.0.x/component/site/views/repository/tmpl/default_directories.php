@@ -19,7 +19,7 @@ if ($this_dir->parent_id > 1) : ?>
         <td class="center"></td>
         <td colspan="6">
             <i class="icon-arrow-up"></i>
-            <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=repository&filter_parent_id=' . $this_dir->parent_id);?>">
+            <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getRepositoryRoute($this_dir->project_id, $this_dir->parent_id, $this_dir->path));?>">
                 ..
             </a>
         </td>
@@ -47,7 +47,7 @@ foreach ($this->items['directories'] as $i => $item) :
         <td>
             <i class="<?php echo $icon;?>"></i>
             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
-            <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=repository&filter_parent_id=' . $item->id);?>">
+            <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getRepositoryRoute($item->project_slug, $item->slug, $item->path));?>">
                 <?php echo JText::_($this->escape($item->title)); ?>
             </a>
         </td>

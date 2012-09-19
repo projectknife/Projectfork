@@ -114,10 +114,24 @@ class ProjectforkModelRepository extends JModelList
         ProjectforkHelper::setActiveProject($project);
 
         // Filter - Parent id
-        $parent_id = JRequest::getCmd('filter_parent_id', '');
+        $parent_id = JRequest::getUInt('filter_parent_id', '');
 
-        // If no parent folder is given, find the repo dir of the project
-        if (empty($parent_id) && $project > 0) {
+        // Get the path
+        $path = str_replace(':', '-', JRequest::getVar('path'));
+
+        if (!$parent_id && !empty($path)  && $project > 0) {
+            // No parent folder given. Try to find it from the path
+             $dir = $this->getInstance('DirectoryForm', 'ProjectforkModel', $config = array('ignore_request' => true));
+             $item = $dir->getItemFromProjectPath($project, $path);
+
+             if ($item) {
+                $parent_id = $item->id;
+                JRequest::setVar('filter_parent_id', $parent_id);
+             }
+        }
+
+        if (!$parent_id  && $project > 0) {
+            // If no parent folder is given, find the repo dir of the project
             $params = ProjectforkHelper::getProjectParams();
             $repo = (int) $params->get('repo_dir');
 
@@ -128,7 +142,7 @@ class ProjectforkModelRepository extends JModelList
         elseif ($project === '0') {
             $parent_id = 1;
         }
-        elseif (is_numeric($parent_id) && empty($project)) {
+        elseif ($parent_id && empty($project)) {
             // If a folder is selected, but no project, find the project id of the folder
             $dir  = $this->getInstance('DirectoryForm', 'ProjectforkModel', $config = array('ignore_request' => true));
             $item = $dir->getItem((int) $parent_id);

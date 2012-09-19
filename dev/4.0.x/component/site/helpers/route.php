@@ -322,14 +322,63 @@ abstract class ProjectforkHelperRoute
         return $link;
     }
 
-    public static function getRepositoryRoute($project = '', $dir = '')
+    public static function getRepositoryRoute($project = '', $dir = '', $path = '')
     {
+        static $paths = array();
+
+        // Get all paths of the project
+        if (!isset($paths[$project])) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('id, path')
+                  ->from('#__pf_repo_dirs')
+                  ->where('project_id = ' . $db->quote((int) $project));
+
+            $db->setQuery($query);
+            $list = (array) $db->loadObjectList();
+
+            $project_paths = array();
+
+            foreach($list AS $list_item)
+            {
+                $id = $list_item->id;
+                $p  = $list_item->path;
+
+                $project_paths[$p] = $id;
+            }
+
+            $paths[$project] = $project_paths;
+        }
+
+        if ($path) {
+            $parts    = array_reverse(explode('/', $path));
+            $new_path = array();
+            $looped   = array();
+
+            while(count($parts))
+            {
+                $part     = array_pop($parts);
+                $looped[] = $part;
+
+                $find = implode('/', $looped);
+
+                if (isset($paths[$project][$find])) {
+                    $new_path[] = $paths[$project][$find] . ':' . $part;
+                }
+            }
+
+            $path = implode('/', $new_path);
+        }
+
         $link  = 'index.php?option=com_projectfork&view=repository';
         $link .= '&filter_project=' . $project;
         $link .= '&filter_parent_id=' . $dir;
+        $link .= '&path=' . $path;
 
         $needles = array('filter_project'   => array((int) $project),
-                         'filter_parent_id' => array((int) $dir)
+                         'filter_parent_id' => array((int) $dir),
+                         'path' => array((int) $path),
                         );
 
         if ($item = self::_findItem($needles, 'repository')) {

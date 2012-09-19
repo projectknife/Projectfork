@@ -40,6 +40,7 @@ class ProjectforkModelDirectory extends JModelAdmin
         // Register dependencies
         JLoader::register('ProjectforkHelperRepository', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/repository.php');
         JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+        JLoader::register('ProjectforkHelper', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
 
         parent::__construct($config);
     }
@@ -77,6 +78,48 @@ class ProjectforkModelDirectory extends JModelAdmin
         }
 
         return $item;
+    }
+
+
+    public function getItemFromProjectPath($project, $path)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if (substr($path, -1) == '/') {
+            $path = substr($path, 0, -1);
+        }
+
+        $params   = ProjectforkHelper::getProjectParams((int) $project);
+        $repo_dir = (int) $params->get('repo_dir');
+
+        if (!$repo_dir) {
+            return false;
+        }
+
+        $query->select('alias')
+              ->from('#__pf_repo_dirs')
+              ->where('id = ' . $db->quote($repo_dir));
+
+        $db->setQuery($query);
+        $alias = $db->loadResult();
+
+        $path = $db->escape($alias . '/' . $path);
+
+        $query->clear();
+        $query->select('id')
+              ->from('#__pf_repo_dirs')
+              ->where('project_id = ' . $db->quote((int) $project))
+              ->where('path = ' . $db->quote($path));
+
+        $db->setQuery($query);
+        $id = (int) $db->loadResult();
+
+        if ($id) {
+            return $this->getItem($id);
+        }
+
+        return false;
     }
 
 
@@ -439,14 +482,6 @@ class ProjectforkModelDirectory extends JModelAdmin
 
         $item_access = ProjectforkHelperAccess::getActions('directory', $id);
         $access      = ProjectforkHelperAccess::getActions();
-
-        // Check for existing item.
-        // Modify the form based on Edit State access controls.
-        if (($id != 0 && !$item_access->get('directory.edit.state')) || ($id == 0 && !$access->get('directory.edit.state'))) {
-            // Disable fields for display.
-            $form->setFieldAttribute('state', 'disabled', 'true');
-            $form->setFieldAttribute('state', 'filter', 'unset');
-        }
 
         // Check if the project, and parent id are given
         $project_id = (int) $form->getValue('project_id');

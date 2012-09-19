@@ -129,6 +129,30 @@ class ProjectforkModelDirectoryForm extends ProjectforkModelDirectory
         $return = JRequest::getVar('return', null, 'default', 'base64');
         $this->setState('return_page', base64_decode($return));
 
+        if ($pk) {
+            $table = $this->getTable();
+
+            if ($table->load($pk)) {
+                $project = (int) $table->project_id;
+                $this->setState($this->getName() . '.project', $project);
+                ProjectforkHelper::setActiveProject($project);
+
+                $parent_id = (int) $table->parent_id;
+                $this->setState($this->getName() . '.parent_id', $parent_id);
+            }
+        }
+        else {
+            $parent_id = JRequest::getUInt('filter_parent_id', 0);
+            $this->setState($this->getName() . '.parent_id', $parent_id);
+
+            $project = (int) $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+
+            if ($project) {
+                $this->setState($this->getName() . '.project', $project);
+                ProjectforkHelper::setActiveProject($project);
+            }
+        }
+
         // Load the parameters.
         $params = $app->getParams();
         $this->setState('params', $params);

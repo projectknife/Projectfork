@@ -154,9 +154,11 @@ class ProjectforkViewRepository extends JViewLegacy
         $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
         $tb     = new ProjectforkHelperToolbar();
 
-        if ($access->get('milestone.create')) {
-            $tb->button('COM_PROJECTFORK_ACTION_NEW', 'milestoneform.add');
-        }
+        $items = array();
+        $items['directoryform.add'] = array('text' => 'COM_PROJECTFORK_ACTION_NEW_DIRECTORY');
+        $items['noteform.add'] = array('text' => 'COM_PROJECTFORK_ACTION_NEW_NOTE');
+
+        $tb->dropdownButton($items, 'COM_PROJECTFORK_ACTION_NEW', 'fileform.add', false);
 
         return $tb->__toString();
     }
