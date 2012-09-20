@@ -13,11 +13,13 @@ defined('_JEXEC') or die();
 $user     = JFactory::getUser();
 $uid      = $user->get('id');
 $x        = count($this->items['directories']) + count($this->items['notes']);
+$this_dir = $this->items['directory'];
+$dir_slug = $this_dir->id . ':' . $this_dir->alias;
 
 foreach ($this->items['files'] as $i => $item) :
-    $edit_link = 'task=file.edit&filter_project=' . $item->project_id . 'filter_parent_id=' . $item->dir_id . '&id=' . $item->id;
-    $access    = ProjectforkHelperAccess::getActions('file', $item->id);
-    $icon      = $this->escape(strtolower($item->file_extension));
+    $link   = ProjectforkHelperRoute::getFileRoute($item->slug, $item->project_slug, $dir_slug, $this_dir->path);
+    $access = ProjectforkHelperAccess::getActions('file', $item->id);
+    $icon   = $this->escape(strtolower($item->file_extension));
 
     $can_create   = $access->get('file.create');
     $can_edit     = $access->get('file.edit');
@@ -32,7 +34,7 @@ foreach ($this->items['files'] as $i => $item) :
         <td>
             <i class="icon-file icon-<?php echo $icon;?>"></i>
             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
-            <a href="<?php echo JRoute::_('index.php?option=com_projectfork&' . $edit_link);?>">
+            <a href="<?php echo JRoute::_($link);?>">
                 <?php echo JText::_($this->escape($item->title)); ?>
             </a>
         </td>

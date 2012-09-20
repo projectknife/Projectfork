@@ -322,7 +322,8 @@ abstract class ProjectforkHelperRoute
         return $link;
     }
 
-    public static function getRepositoryRoute($project = '', $dir = '', $path = '')
+
+    public static function getRepositoryPath($project = '', $path = '')
     {
         static $paths = array();
 
@@ -371,6 +372,22 @@ abstract class ProjectforkHelperRoute
             $path = implode('/', $new_path);
         }
 
+        return $path;
+    }
+
+
+    /**
+     * Creates a link a repo directory
+     *
+     * @param     string    $project      The project slug. Optional
+     * @param     string $dir The directory slug. Optional
+     * @param string $path The full directory path. Optional
+     *
+     * @return    string    $link         The link
+     */
+    public static function getRepositoryRoute($project = '', $dir = '', $path = '')
+    {
+        $path  = self::getRepositoryPath($project, $path);
         $link  = 'index.php?option=com_projectfork&view=repository';
         $link .= '&filter_project=' . $project;
         $link .= '&filter_parent_id=' . $dir;
@@ -378,10 +395,46 @@ abstract class ProjectforkHelperRoute
 
         $needles = array('filter_project'   => array((int) $project),
                          'filter_parent_id' => array((int) $dir),
-                         'path' => array((int) $path),
+                         'path' => array($path),
                         );
 
         if ($item = self::_findItem($needles, 'repository')) {
+            $link .= '&Itemid=' . $item;
+        }
+        elseif ($item = self::_findItem(null, 'repository')) {
+            $link .= '&Itemid=' . $item;
+        }
+
+        return $link;
+    }
+
+
+    /**
+     * Creates a link a repo directory
+     *
+     * @param string $file The file slug
+     * @param     string    $project      The project slug. Optional
+     * @param     string $dir The directory slug. Optional
+     * @param string $path The full directory path. Optional
+     *
+     *
+     * @return    string    $link         The link
+     */
+    public static function getFileRoute($file, $project = '', $dir = '', $path = '')
+    {
+        $path  = self::getRepositoryPath($project, $path);
+        $link  = 'index.php?option=com_projectfork&view=file';
+        $link .= '&filter_project=' . $project;
+        $link .= '&filter_parent_id=' . $dir;
+        $link .= '&path=' . $path;
+        $link .= '&id=' . $file;
+
+        $needles = array('filter_project'   => array((int) $project),
+                         'filter_parent_id' => array((int) $dir),
+                         'path' => array($path),
+                        );
+
+        if ($item = self::_findItem($needles, 'file')) {
             $link .= '&Itemid=' . $item;
         }
         elseif ($item = self::_findItem(null, 'repository')) {

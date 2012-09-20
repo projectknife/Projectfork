@@ -289,7 +289,7 @@ function ProjectforkBuildRoute(&$query)
 
 
     // Handle repository query
-    if($view == 'repository') {
+    if($view == 'repository' || $view == 'file') {
         if (!$menu_item_given) $segments[] = $view;
         unset($query['view']);
 
@@ -338,6 +338,17 @@ function ProjectforkBuildRoute(&$query)
 
         $segments[] = $query['filter_parent_id'];
         unset($query['filter_parent_id']);
+
+        // Get file id
+        if (isset($query['id']) && $view == 'file') {
+            if (strpos($query['id'], ':') === false) {
+                $query['id'] = ProjectforkMakeSlug($query['id'], '#__pf_repo_files');
+            }
+
+            $segments[] = 'file';
+            $segments[] = $query['id'];
+            unset($query['id']);
+        }
 
         return $segments;
     }
@@ -531,16 +542,23 @@ function ProjectforkParseRoute($segments)
 
     // Handle Repository
     if ($vars['view'] == 'repository') {
-        if ($count >= 1) {
+        $count2 = $count;
+        if ($count >= 2) {
+            if ($segments[$count - 2] == 'file' && intval($segments[$count - 2]) == 0) {
+                $vars['view'] = 'file';
+                $count2 = $count - 2;
+            }
+        }
+        if ($count2 >= 1) {
             $vars['filter_project'] = ProjectforkParseSlug($segments[0]);
         }
-        if ($count >= 2) {
+        if ($count2 >= 2) {
             $i    = 1;
             $path = array();
 
-            while($i < $count)
+            while($i < $count2)
             {
-                if ($i == ($count - 1)) {
+                if ($i == ($count2 - 1)) {
                     $vars['filter_parent_id'] = ProjectforkParseSlug($segments[$i]);
                 }
                 else {
@@ -550,6 +568,16 @@ function ProjectforkParseRoute($segments)
             }
             $vars['path'] = implode('/', $path);
         }
+
+        if ($vars['view'] == 'repository') {
+            return $vars;
+        }
+    }
+
+
+    // Handle File
+    if ($vars['view'] == 'file') {
+        $vars['id'] = ProjectforkParseSlug($segments[$count - 1]);
 
         return $vars;
     }
