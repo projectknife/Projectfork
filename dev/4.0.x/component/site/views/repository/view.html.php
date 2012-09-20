@@ -155,10 +155,10 @@ class ProjectforkViewRepository extends JViewLegacy
         $tb     = new ProjectforkHelperToolbar();
 
         $items = array();
-        $items['directoryform.add'] = array('text' => 'COM_PROJECTFORK_ACTION_NEW_DIRECTORY');
-        $items['noteform.add'] = array('text' => 'COM_PROJECTFORK_ACTION_NEW_NOTE');
+        $items['directoryform.add'] = array('text' => 'JTOOLBAR_ADD_DIRECTORY');
+        $items['noteform.add'] = array('text' => 'JTOOLBAR_ADD_NOTE');
 
-        $tb->dropdownButton($items, 'COM_PROJECTFORK_ACTION_NEW', 'fileform.add', false);
+        $tb->dropdownButton($items, 'JTOOLBAR_ADD_FILE', 'fileform.add', false);
 
         return $tb->__toString();
     }

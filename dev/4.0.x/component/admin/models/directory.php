@@ -543,7 +543,9 @@ class ProjectforkModelDirectory extends JModelAdmin
                 return false;
             }
 
-            $data['protected'] = 0;
+            if (isset($data['protected'])) {
+                $data['protected'] = 0;
+            }
         }
 
         // Set the new parent id if parent id not matched OR while New/Save as Copy.
