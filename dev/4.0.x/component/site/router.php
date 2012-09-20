@@ -289,7 +289,7 @@ function ProjectforkBuildRoute(&$query)
 
 
     // Handle repository query
-    if($view == 'repository' || $view == 'file') {
+    if($view == 'repository' || $view == 'file' || $view == 'note') {
         if (!$menu_item_given) $segments[] = $view;
         unset($query['view']);
 
@@ -346,6 +346,17 @@ function ProjectforkBuildRoute(&$query)
             }
 
             $segments[] = 'file';
+            $segments[] = $query['id'];
+            unset($query['id']);
+        }
+
+        // Get note id
+        if (isset($query['id']) && $view == 'note') {
+            if (strpos($query['id'], ':') === false) {
+                $query['id'] = ProjectforkMakeSlug($query['id'], '#__pf_repo_notes');
+            }
+
+            $segments[] = 'note';
             $segments[] = $query['id'];
             unset($query['id']);
         }
@@ -545,7 +556,11 @@ function ProjectforkParseRoute($segments)
         $count2 = $count;
         if ($count >= 2) {
             if ($segments[$count - 2] == 'file' && intval($segments[$count - 2]) == 0) {
-                $vars['view'] = 'file';
+                $vars['view'] = $segments[$count - 2];
+                $count2 = $count - 2;
+            }
+            if ($segments[$count - 2] == 'note' && intval($segments[$count - 2]) == 0) {
+                $vars['view'] = $segments[$count - 2];
                 $count2 = $count - 2;
             }
         }
@@ -577,6 +592,14 @@ function ProjectforkParseRoute($segments)
 
     // Handle File
     if ($vars['view'] == 'file') {
+        $vars['id'] = ProjectforkParseSlug($segments[$count - 1]);
+
+        return $vars;
+    }
+
+
+    // Handle Note
+    if ($vars['view'] == 'note') {
         $vars['id'] = ProjectforkParseSlug($segments[$count - 1]);
 
         return $vars;

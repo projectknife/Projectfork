@@ -91,7 +91,7 @@ class ProjectforkModelFiles extends JModelList
         $query->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
 
         // Join over the dirs for the dir title.
-        $query->select('d.title AS dir_title, d.alias AS dir_alias');
+        $query->select('d.title AS dir_title, d.alias AS dir_alias, d.path');
         $query->join('LEFT', '#__pf_repo_dirs AS d ON d.id = a.dir_id');
 
         // Implement View Level Access

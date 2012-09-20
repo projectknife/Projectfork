@@ -13,11 +13,9 @@ defined('_JEXEC') or die();
 $user     = JFactory::getUser();
 $uid      = $user->get('id');
 $x        = count($this->items['directories']) + count($this->items['notes']);
-$this_dir = $this->items['directory'];
-$dir_slug = $this_dir->id . ':' . $this_dir->alias;
 
 foreach ($this->items['files'] as $i => $item) :
-    $link   = ProjectforkHelperRoute::getFileRoute($item->slug, $item->project_slug, $dir_slug, $this_dir->path);
+    $link   = ProjectforkHelperRoute::getFileRoute($item->slug, $item->project_slug, $item->dir_slug, $item->path);
     $access = ProjectforkHelperAccess::getActions('file', $item->id);
     $icon   = $this->escape(strtolower($item->file_extension));
 

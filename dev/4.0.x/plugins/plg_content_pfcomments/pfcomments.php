@@ -48,7 +48,8 @@ class plgContentPfcomments extends JPlugin
         $context_items = array('com_projectfork.project',
                                'com_projectfork.milestone',
                                'com_projectfork.task',
-                               'com_projectfork.user'
+                               'com_projectfork.user',
+                               'com_projectfork.note'
                               );
 
         // Check if the context is supported. Return empty string if its not.

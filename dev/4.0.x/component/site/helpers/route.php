@@ -16,7 +16,7 @@ jimport('joomla.application.component.helper');
 /**
  * Projectfork Component Route Helper
  *
- * @static
+ * @static    
  */
 abstract class ProjectforkHelperRoute
 {
@@ -233,9 +233,9 @@ abstract class ProjectforkHelperRoute
     /**
      * Creates a link to the topics overview
      *
-     * @param     string    $project      The project slug. Optional
+     * @param     string    $project    The project slug. Optional
      *
-     * @return    string    $link         The link
+     * @return    string    $link       The link
      */
     public static function getTopicsRoute($project = '')
     {
@@ -259,10 +259,10 @@ abstract class ProjectforkHelperRoute
     /**
      * Creates a link to a topic item view
      *
-     * @param     string    $id           The topic slug
-     * @param     string    $project      The project slug. Optional
+     * @param     string    $id         The topic slug
+     * @param     string    $project    The project slug. Optional
      *
-     * @return    string    $link         The link
+     * @return    string    $link       The link
      */
     public static function getTopicRoute($id, $project = '')
     {
@@ -273,10 +273,10 @@ abstract class ProjectforkHelperRoute
     /**
      * Creates a link to a topic item view
      *
-     * @param     string    $id           The topic slug
-     * @param     string    $project      The project slug. Optional
+     * @param     string    $id         The topic slug
+     * @param     string    $project    The project slug. Optional
      *
-     * @return    string    $link         The link
+     * @return    string    $link       The link
      */
     public static function getRepliesRoute($id, $project = '')
     {
@@ -300,9 +300,9 @@ abstract class ProjectforkHelperRoute
     /**
      * Creates a link to the timesheet overview
      *
-     * @param     string    $project      The project slug. Optional
+     * @param     string    $project    The project slug. Optional
      *
-     * @return    string    $link         The link
+     * @return    string    $link       The link
      */
     public static function getTimesheetRoute($project = '')
     {
@@ -323,6 +323,14 @@ abstract class ProjectforkHelperRoute
     }
 
 
+    /**
+     * Creates a valid repository directory path
+     *
+     * @param     string    $project    The project slug. Optional
+     * @param     string    $path       The full directory path. Optional
+     *
+     * @return    string    $link       The link
+     */
     public static function getRepositoryPath($project = '', $path = '')
     {
         static $paths = array();
@@ -379,11 +387,11 @@ abstract class ProjectforkHelperRoute
     /**
      * Creates a link a repo directory
      *
-     * @param     string    $project      The project slug. Optional
-     * @param     string $dir The directory slug. Optional
-     * @param string $path The full directory path. Optional
+     * @param     string    $project    The project slug. Optional
+     * @param     string    $dir        The directory slug. Optional
+     * @param     string    $path       The full directory path. Optional
      *
-     * @return    string    $link         The link
+     * @return    string    $link       The link
      */
     public static function getRepositoryRoute($project = '', $dir = '', $path = '')
     {
@@ -410,15 +418,15 @@ abstract class ProjectforkHelperRoute
 
 
     /**
-     * Creates a link a repo directory
+     * Creates a link a repo file
      *
-     * @param string $file The file slug
-     * @param     string    $project      The project slug. Optional
-     * @param     string $dir The directory slug. Optional
-     * @param string $path The full directory path. Optional
+     * @param     string    $file       The file slug
+     * @param     string    $project    The project slug. Optional
+     * @param     string    $dir        The directory slug. Optional
+     * @param     string    $path       The full directory path. Optional
      *
      *
-     * @return    string    $link         The link
+     * @return    string    $link       The link
      */
     public static function getFileRoute($file, $project = '', $dir = '', $path = '')
     {
@@ -446,8 +454,44 @@ abstract class ProjectforkHelperRoute
 
 
     /**
+     * Creates a link a repo note
+     *
+     * @param     string    $file       The file slug
+     * @param     string    $project    The project slug. Optional
+     * @param     string    $dir        The directory slug. Optional
+     * @param     string    $path       The full directory path. Optional
+     *
+     *
+     * @return    string    $link       The link
+     */
+    public static function getNoteRoute($note, $project = '', $dir = '', $path = '')
+    {
+        $path  = self::getRepositoryPath($project, $path);
+        $link  = 'index.php?option=com_projectfork&view=note';
+        $link .= '&filter_project=' . $project;
+        $link .= '&filter_parent_id=' . $dir;
+        $link .= '&path=' . $path;
+        $link .= '&id=' . $note;
+
+        $needles = array('filter_project'   => array((int) $project),
+                         'filter_parent_id' => array((int) $dir),
+                         'path' => array($path),
+                        );
+
+        if ($item = self::_findItem($needles, 'note')) {
+            $link .= '&Itemid=' . $item;
+        }
+        elseif ($item = self::_findItem(null, 'repository')) {
+            $link .= '&Itemid=' . $item;
+        }
+
+        return $link;
+    }
+
+
+    /**
      * This method will try to find a menu item for the given view and
-     * URL params ($needles)
+     *                      $needles)    
      *
      * @param     array     $needles     Query segments to search for
      * @param     string    $com_view    The component view name to look for
