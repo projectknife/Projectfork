@@ -22,8 +22,7 @@ $params = $this->state->get('params');
 <script type="text/javascript">
 Joomla.submitbutton = function(task)
 {
-    if (task == 'noteform.cancel' document.formvalidator.isValid(document.id('item-form'))) {
-        <?php echo $this->form->getField('description')->save(); ?>
+    if (task == 'fileform.cancel' document.formvalidator.isValid(document.id('item-form'))) {
         Joomla.submitform(task);
     } else {
         alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
@@ -37,13 +36,13 @@ Joomla.submitbutton = function(task)
 </h1>
 <?php endif; ?>
 
-<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="item-form" class="form-validate form-inline">
+<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="item-form" class="form-validate form-inline" enctype="multipart/form-data">
     <fieldset>
         <div class="formelm-buttons btn-toolbar">
-            <button class="btn btn-primary" type="button" onclick="Joomla.submitbutton('noteform.save')">
+            <button class="btn btn-primary" type="button" onclick="Joomla.submitbutton('fileform.save')">
                 <?php echo JText::_('JSAVE') ?>
             </button>
-            <button class="btn" type="button" onclick="Joomla.submitbutton('noteform.cancel')">
+            <button class="btn" type="button" onclick="Joomla.submitbutton('fileform.cancel')">
                 <?php echo JText::_('JCANCEL') ?>
             </button>
         </div>
@@ -53,6 +52,14 @@ Joomla.submitbutton = function(task)
             </div>
             <div class="controls">
                 <?php echo $this->form->getInput('dir_id'); ?>
+            </div>
+        </div>
+        <div class="formelm control-group">
+            <div class="control-label">
+                <?php echo $this->form->getLabel('file'); ?>
+            </div>
+            <div class="controls">
+                <?php echo $this->form->getInput('file'); ?>
             </div>
         </div>
         <div class="formelm control-group">
@@ -91,8 +98,8 @@ Joomla.submitbutton = function(task)
         <?php endif; ?>
     </fieldset>
 
-    <?php echo JHtml::_('tabs.start', 'noteform', array('useCookie' => 'true')) ;?>
-    <?php echo JHtml::_('tabs.panel', 'Permissions', 'note-permissions') ;?>
+    <?php echo JHtml::_('tabs.start', 'fileform', array('useCookie' => 'true')) ;?>
+    <?php echo JHtml::_('tabs.panel', 'Permissions', 'file-permissions') ;?>
     <fieldset>
         <div class="formelm control-group">
     		<div class="control-label">
@@ -114,7 +121,7 @@ Joomla.submitbutton = function(task)
         </div>
     </fieldset>
 
-    <?php echo JHtml::_('tabs.panel', 'Options', 'note-options') ;?>
+    <?php echo JHtml::_('tabs.panel', 'Options', 'file-options') ;?>
         <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
             <?php foreach ($fieldSets as $name => $fieldSet) : ?>
                 <fieldset>

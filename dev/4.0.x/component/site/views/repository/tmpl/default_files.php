@@ -39,7 +39,7 @@ foreach ($this->items['files'] as $i => $item) :
         <td>
             <?php
                 $this->menu->start(array('class' => 'btn-mini'));
-                $this->menu->itemEdit('directoryform', $item->id, ($can_edit || $can_edit_own));
+                $this->menu->itemEdit('fileform', $item->id, ($can_edit || $can_edit_own));
                 $this->menu->itemDelete('repository', $x, ($can_edit || $can_edit_own));
                 $this->menu->end();
 
