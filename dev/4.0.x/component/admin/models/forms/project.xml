@@ -62,9 +62,9 @@
             label="COM_PROJECTFORK_FIELD_ACCESS_NEW_LABEL" description="COM_PROJECTFORK_FIELD_ACCESS_NEW_DESC"
             class="inputbox" size="30"
         />
-        <field name="rules" type="inheritrules"
+        <field name="rules" type="groupaccess"
             label="JCONFIG_PERMISSIONS_LABEL"
-            class="inputbox" component="com_projectfork" section="project"
+            component="com_projectfork" section="project" inheritonly="false"
         />
         <field name="id" type="hidden" readonly="true"/>
         <field name="asset_id" type="hidden" filter="unset"/>

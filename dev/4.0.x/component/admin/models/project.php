@@ -28,6 +28,23 @@ class ProjectforkModelProject extends JModelAdmin
 
 
     /**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     JController
+	 */
+    public function __construct($config = array())
+    {
+        // Register dependencies
+        JLoader::register('ProjectforkHelper',       JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
+        JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+        JLoader::register('ProjectforkHelperQuery',  JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
+
+        parent::__construct($config);
+    }
+
+    /**
      * Returns a Table object, always creating it.
      *
      * @param     string    The table type to instantiate
@@ -138,7 +155,16 @@ class ProjectforkModelProject extends JModelAdmin
      */
     public function save($data)
     {
-        require_once JPATH_ADMINISTRATOR . '/components/com_users/helpers/users.php';
+        $record = $this->getTable();
+		$key    = $record->getKeyName();
+        $pk     = (!empty($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
+		$is_new = true;
+
+        if ($pk > 0) {
+			if ($record->load($pk)) {
+			    $is_new = false;
+			}
+		}
 
         // Alter the title for save as copy
         if (JRequest::getVar('task') == 'save2copy') {
@@ -152,102 +178,49 @@ class ProjectforkModelProject extends JModelAdmin
             $data['alias'] = '';
         }
 
-        // Create new access level?
-        $new_access = trim($data['access_new']);
-        $can_do     = UsersHelper::getActions();
+        // Create access level
+        if (isset($data['rules'])) {
+            $prev_access = ($is_new ? 0 : $record->access);
+            $access = ProjectforkHelperAccess::getViewLevelFromRules($data['rules'], $prev_access);
 
-        if (!isset($data['rules'])) {
-            $data['rules']= array();
+            if ($access) {
+                $data['access'] = $access;
+            }
         }
-
-        if (strlen($new_access) && $can_do->get('core.create')) {
-            $data['access'] = $this->saveAccessLevel($new_access, $data['rules']);
-        }
-
-        if ($data['access'] <= 0) $data['access'] = 1;
-
-
-        // Filter the rules
-        $rules = array();
-        foreach ((array) $data['rules'] as $action => $ids)
-        {
-            if (is_numeric($action)) continue;
-
-            // Build the rules array.
-            $rules[$action] = array();
-            foreach ($ids as $id => $p)
-            {
-                if ($p !== '')
-                {
-                    $rules[$action][$id] = ($p == '1' || $p == 'true') ? true : false;
+        else {
+            if ($is_new) {
+                $data['access'] = 1;
+            }
+            else {
+                if (isset($data['access'])) {
+                    unset($data['access']);
                 }
             }
         }
-        $data['rules'] = $rules;
-
-        $id      = (int) $this->getState($this->getName() . '.id');
-        $is_new  = ($id > 0) ? false : true;
-        $item    = null;
-
-        if (!$is_new) {
-            // Load the existing record before updating it
-            $item = $this->getTable();
-            $item->load($id);
-        }
-
 
         // Store the record
         if (parent::save($data)) {
+            $id = $this->getState($this->getName() . '.id');
+
             $this->setActive(array('id' => $this->getState($this->getName() . '.id')));
 
             // Load the just updated row
             $updated = $this->getTable();
-            if ($updated->load($this->getState($this->getName() . '.id')) === false) return false;
+            if ($updated->load($id) === false) return false;
 
             // To keep data integrity, update all child assets
-            if (!$is_new && is_object($item)) {
-                $id      = $this->getState($this->getName() . '.id');
+            if (!$is_new) {
                 $props   = array('access', 'state', array('start_date', 'NE-SQLDATE'), array('end_date', 'NE-SQLDATE'));
-                $changes = ProjectforkHelper::getItemChanges($item, $updated, $props);
+                $changes = ProjectforkHelper::getItemChanges($record, $updated, $props);
 
                 if (count($changes)) {
                     $tables = array('milestone', 'tasklist', 'task', 'topic', 'reply');
-                    ProjectforkHelperQuery::updateTablesByField($tables, 'project_id.' . $id, $changes);
+                    $field  = 'project_id.' . $id;
+
+                    if (!ProjectforkHelperQuery::updateTablesByField($tables, $field, $changes)) {
+                        return false;
+                    }
                 }
-
-                /*$milestones = JTable::getInstance('Milestone', 'PFTable');
-                $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
-                $tasks      = JTable::getInstance('Task', 'PFTable');
-                $topics     = JTable::getInstance('Topic', 'PFTable');
-                $replies    = JTable::getInstance('Reply', 'PFTable');
-
-                $parent_data = array();
-                $null_date   = JFactory::getDbo()->getNullDate();
-
-                // Check if any relevant values have changed that need to be updated to children
-                if ($item->access != $updated->access) {
-                    $parent_data['access'] = $updated->access;
-                }
-
-                if ($item->start_date != $updated->start_date && $item->start_date != $null_date) {
-                    $parent_data['start_date'] = $updated->start_date;
-                }
-
-                if ($item->start_date != $updated->end_date && $item->end_date != $null_date) {
-                    $parent_data['end_date'] = $updated->end_date;
-                }
-
-                if ($item->state != $updated->state) {
-                    $parent_data['state'] = $updated->state;
-                }
-
-                if (count($parent_data)) {
-                    $milestones->updateByReference($id, 'project_id', $parent_data);
-                    $tasklists->updateByReference($id, 'project_id', $parent_data);
-                    $tasks->updateByReference($id, 'project_id', $parent_data);
-                    $topics->updateByReference($id, 'project_id', $parent_data);
-                    $replies->updateByReference($id, 'project_id', $parent_data);
-                }*/
             }
 
             // Create repo base and attachments folder
@@ -256,7 +229,7 @@ class ProjectforkModelProject extends JModelAdmin
             }
 
             // Store the attachments
-            if (isset($data['attachment'])) {
+            if (isset($data['attachment']) && !$is_new) {
                 $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
 
                 if ($attachments->getState('item.id') == 0) {
@@ -264,8 +237,8 @@ class ProjectforkModelProject extends JModelAdmin
                 }
 
                 if (!$attachments->save($data['attachment'])) {
-                    JError::raiseWarning(500, $attachments->getError());
                     $this->setError($attachments->getError());
+                    return false;
                 }
             }
 
@@ -564,41 +537,6 @@ class ProjectforkModelProject extends JModelAdmin
         }
 
         return array($title, $alias);
-    }
-
-
-    /**
-    * Method to generate a new access level for a project
-    *
-    * @param     string     The project title
-    * @param     array      Optional associated user groups
-    *
-    * @return    integer    The access level id
-    **/
-    protected function saveAccessLevel($title, $tmp_rules = array())
-    {
-        // Get user viewing level model
-        JModel::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_users/models');
-
-        $model = JModel::getInstance('Level', 'UsersModel');
-
-        // Trim project name if too long for access level
-        if (strlen($title) > 100) $title = substr($title, 0, 97).'...';
-
-        // Filter out groups from the permission rules
-        $rules = array();
-        foreach($tmp_rules AS $key => $value)
-        {
-            if (is_numeric($key) && is_numeric($value)) $rules[] = $value;
-        }
-
-        // Set access level data
-        $data = array('id' => 0, 'title' => $title, 'rules' => $rules);
-
-        // Store access level
-        if (!$model->save($data)) return false;
-
-        return $model->getState('level.id');
     }
 
 

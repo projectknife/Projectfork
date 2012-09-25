@@ -333,4 +333,100 @@ class ProjectforkHelperAccess
 
         return $cache[$id];
     }
+
+
+    /**
+     * Method to get a Viewing Access Level based on the selected groups.
+     * The Access level will be created if none is found
+     *
+     * @param     mixed      $rules     The selected rules from the form
+     * @param     integer $access The parent access level (optional)
+     *
+     * @return    integer    $access    The viewing access level on success, False on error.
+     */
+    public static function getViewLevelFromRules($rules = NULL, $access = 0)
+    {
+        JLoader::register('UsersModelLevel', JPATH_ADMINISTRATOR . '/components/com_users/models/level.php');
+
+        if (!is_array($rules)) {
+            return false;
+        }
+
+        $db     = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+        $groups = array();
+
+        // Filter out the groups from the rules
+        foreach ($rules as $key => $value)
+        {
+            if (!is_numeric($key) || !is_numeric($value)) continue;
+
+            $groups[] = (int) $value;
+        }
+
+        if (!count($groups)) {
+            return false;
+        }
+
+        if ($access > 1) {
+            // Parent access level is given, see if the rules are the same
+            $query->select('rules')
+                  ->from('#__viewlevels')
+                  ->where('id = ' . $db->quote((int) $access));
+
+            $db->setQuery($query);
+            $access_rules = $db->loadResult();
+
+            if (json_encode($groups) == $access_rules) {
+                return (int) $access;
+            }
+        }
+
+        // Try to find the access levels that are connecting to the groups
+        $query->clear();
+        $query->select('id')
+              ->from('#__viewlevels')
+              ->where('rules = ' . $db->quote(json_encode($groups)));
+
+        $db->setQuery($query);
+        $results = (array) $db->loadColumn();
+        $count   = count($results);
+
+        // Return the 1st access level found
+        if ($count >= 1) {
+            return $results[0];
+        }
+
+        // Create the access level if none is found
+        $query->clear();
+        $query->select('title')
+              ->from('#__usergroups')
+              ->where('id IN(' . implode(', ', $groups) . ')');
+
+        $db->setQuery($query);
+        $group_names = (array) $db->loadColumn();
+
+        if (!count($group_names)) {
+            return false;
+        }
+
+        // Generate level title
+        $level_name = implode(', ', $group_names);
+
+        $x = -3;
+        while (strlen($level_name) > 100)
+        {
+            $level_name = substr($level_name, 0, $x) . '...';
+            $x--;
+        }
+
+        $model = new UsersModelLevel(array('ignore_request' => true));
+        $data  = array('id' => 0, 'title' => $level_name, 'rules' => $groups);
+
+        // Store access level
+        if (!$model->save($data)) return false;
+
+        return $model->getState('level.id');
+
+    }
 }

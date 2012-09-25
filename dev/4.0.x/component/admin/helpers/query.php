@@ -119,7 +119,7 @@ class ProjectforkHelperQuery
             // Weed out fields that dont exist
             foreach($changed_fields AS $i => $field)
             {
-                if (!in_array($field, $table_fields)) {
+                if (!array_key_exists($field, $table_fields)) {
                     unset($changed_fields[$i]);
                     unset($changes[$field]);
                 }

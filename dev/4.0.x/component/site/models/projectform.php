@@ -11,7 +11,7 @@ defined('_JEXEC') or die();
 
 
 // Base this model on the backend version.
-require_once JPATH_ADMINISTRATOR . '/components/com_projectfork/models/project.php';
+JLoader::register('ProjectforkModelProject', JPATH_ADMINISTRATOR . '/components/com_projectfork/models/project.php');
 
 
 /**
