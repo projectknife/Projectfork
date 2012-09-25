@@ -56,6 +56,10 @@ class ProjectforkModelProject extends JModelAdmin
             $registry = new JRegistry;
             $registry->loadString($item->attribs);
             $item->attribs = $registry->toArray();
+
+            // Get the attachments
+            $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
+            $item->attachment = $attachments->getItems('project', $item->id);
         }
 
         return $item;
@@ -242,6 +246,18 @@ class ProjectforkModelProject extends JModelAdmin
                 return false;
             }
 
+            // Store the attachments
+
+
+            if (isset($data['attachment'])) {
+                $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
+
+                if (!$attachments->save($data['attachment'])) {
+                    JError::raiseWarning(500, $attachments->getError());
+                    $this->setError($attachments->getError());
+                }
+            }
+
             return true;
         }
 
@@ -392,13 +408,14 @@ class ProjectforkModelProject extends JModelAdmin
 
         $repo_dir   = ($registry->get('repo_dir') ? (int) $registry->get('repo_dir') : 0 );
         $attach_dir = ($registry->get('attachments_dir') ? (int) $registry->get('attachments_dir') : 0 );
+        $suffix     = (JFactory::getApplication()->isSite() ? 'Form' : '');
 
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         if ($repo_dir) {
             // A repo dir reference is set. See if the dir actually exists
-            $dir = $this->getInstance('Directory', 'ProjectforkModel', array('ignore_request'));
+            $dir = $this->getInstance('Directory' . $suffix, 'ProjectforkModel', array('ignore_request'));
             $dir->setState('create_repo', true);
 
             $record = $dir->getItem($repo_dir);
@@ -410,7 +427,7 @@ class ProjectforkModelProject extends JModelAdmin
 
         if ($attach_dir) {
             // A repo attachments dir reference is set. See if the dir actually exists
-            $dir = $this->getInstance('Directory', 'ProjectforkModel', array('ignore_request'));
+            $dir = $this->getInstance('Directory' . $suffix, 'ProjectforkModel', array('ignore_request'));
             $dir->setState('create_repo', true);
             $record = $dir->getItem($attach_dir);
 
@@ -421,7 +438,7 @@ class ProjectforkModelProject extends JModelAdmin
 
         // Create repo dir if it does not exist
         if (!$repo_dir) {
-            $dir = $this->getInstance('Directory', 'ProjectforkModel', array('ignore_request'));
+            $dir = $this->getInstance('Directory' . $suffix, 'ProjectforkModel', array('ignore_request'));
             $dir->setState('create_repo', true);
 
             $data = array();
@@ -454,7 +471,7 @@ class ProjectforkModelProject extends JModelAdmin
 
         // Create attachments dir if it does not exist
         if (!$attach_dir && $repo_dir > 0) {
-            $dir = $this->getInstance('Directory', 'ProjectforkModel', array('ignore_request'));
+            $dir = $this->getInstance('Directory' . $suffix, 'ProjectforkModel', array('ignore_request'));
             $dir->setState('create_repo', true);
 
             $data = array();

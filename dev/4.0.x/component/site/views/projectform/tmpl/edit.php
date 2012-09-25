@@ -165,6 +165,13 @@ $create_task = $access->get('task.create');
 		<?php endif; ?>
     </fieldset>
 
+    <?php echo JHtml::_('tabs.panel', 'Attachments', 'project-attachments') ;?>
+    <fieldset>
+    	<div class="formelm control-group">
+    		<?php echo $this->form->getInput('attachment'); ?>
+    	</div>
+    </fieldset>
+
     <?php echo JHtml::_('tabs.panel', 'Permissions', 'project-permissions') ;?>
     <fieldset>
         <div class="formelm">
