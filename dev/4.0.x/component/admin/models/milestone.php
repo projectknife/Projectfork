@@ -56,6 +56,10 @@ class ProjectforkModelMilestone extends JModelAdmin
             $registry = new JRegistry;
             $registry->loadString($item->attribs);
             $item->attribs = $registry->toArray();
+
+            // Get the attachments
+            $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
+            $item->attachment = $attachments->getItems('milestone', $item->id);
         }
 
         return $item;
@@ -197,6 +201,17 @@ class ProjectforkModelMilestone extends JModelAdmin
                 if (count($parent_data)) {
                     $tasklists->updateByReference($id, 'milestone_id', $parent_data);
                     $tasks->updateByReference($id, 'milestone_id', $parent_data);
+                }
+            }
+
+            // Store the attachments
+            if (isset($data['attachment'])) {
+                $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
+                $attachments->setState('item.id', $this->getState($this->getName() . '.id'));
+
+                if (!$attachments->save($data['attachment'])) {
+                    JError::raiseWarning(500, $attachments->getError());
+                    $this->setError($attachments->getError());
                 }
             }
 

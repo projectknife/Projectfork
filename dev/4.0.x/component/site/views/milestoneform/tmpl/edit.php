@@ -183,6 +183,13 @@ Joomla.submitbutton = function(task)
         </div>
     </fieldset>
 
+    <?php echo JHtml::_('tabs.panel', 'Attachments', 'milestone-attachments') ;?>
+    <fieldset>
+    	<div class="formelm control-group">
+    		<?php echo $this->form->getInput('attachment'); ?>
+    	</div>
+    </fieldset>
+
     <?php echo JHtml::_('tabs.panel', 'Options', 'milestone-options') ;?>
         <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
             <?php foreach ($fieldSets as $name => $fieldSet) : ?>

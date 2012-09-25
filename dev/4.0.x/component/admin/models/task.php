@@ -248,6 +248,7 @@ class ProjectforkModelTask extends JModelAdmin
             // Store the attachments
             if (isset($data['attachment'])) {
                 $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
+                $attachments->setState('item.id', $id);
 
                 if (!$attachments->save($data['attachment'])) {
                     JError::raiseWarning(500, $attachments->getError());

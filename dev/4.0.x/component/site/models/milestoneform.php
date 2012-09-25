@@ -70,6 +70,10 @@ class ProjectforkModelMilestoneForm extends ProjectforkModelMilestone
         $value->params = new JRegistry;
         $value->params->loadString($value->attribs);
 
+        // Get the attachments
+        $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
+        $value->attachment = $attachments->getItems('milestone', $value->id);
+
         // Compute selected asset permissions.
         $uid    = JFactory::getUser()->get('id');
         $access = ProjectforkHelperAccess::getActions('milestone', $value->id);

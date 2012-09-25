@@ -42,6 +42,9 @@
             label="JGLOBAL_FIELD_MODIFIED_BY_LABEL"
             class="readonly" readonly="true" filter="unset"
         />
+        <field name="attachment" type="repoattachment"
+            label="COM_PROJECTFORK_FIELD_ATTACHMENT_LABEL" description="COM_PROJECTFORK_FIELD_ATTACHMENT_DESC"
+        />
         <field name="access" type="inheritaccess"
             label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC"
             class="inputbox" size="1"
