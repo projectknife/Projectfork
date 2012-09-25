@@ -106,6 +106,14 @@ class ProjectforkHelper
     }
 
 
+    /**
+     * Method to get the Projectfork config settings merged into
+     * the project settings
+     *
+     * @param     integer    $id        Optional project id. If not provided, will use the currently active project
+     *
+     * @return    object     $params    The config settings
+     */
     public function getProjectParams($id = 0)
     {
         static $cache = array();
@@ -147,12 +155,12 @@ class ProjectforkHelper
     /**
      * Calculates and returns all available actions for the given asset
      *
-     * @deprecated                          Use ProjectforkHelperAccess::getActions() instead!
+     * @deprecated
      *
-     * @param     string     $asset_name    Optional asset item name
-     * @param     integer    $asset_id      Optional asset id
+     * @param         string     $asset_name    Optional asset item name
+     * @param         integer    $asset_id      Optional asset id
      *
-     * @return    object
+     * @return        object
      */
     public static function getActions($asset_name = NULL, $asset_id = 0)
     {
@@ -165,215 +173,12 @@ class ProjectforkHelper
 
 
     /**
-     * Returns all groups with the given access level
-     *
-     * @param     integer    $access      The access level id
-     * @param     boolean    $children    Include child groups in the result?
-     *
-     * @return    array                   The groups
-     **/
-    public function getGroupsByAccess($access, $children = true)
-    {
-        // Setup vars
-        $db     = JFactory::getDbo();
-        $query  = $db->getQuery(true);
-        $groups = array();
-
-        // Get the rule of the access level
-        if ($access != 1) {
-            $query->select('a.rules')
-                  ->from('#__viewlevels AS a')
-                  ->where('a.id = '.(int) $access);
-
-            $db->setQuery((string) $query);
-
-            $rules = (array) json_decode($db->loadResult());
-        }
-        else {
-            $query->select('id')
-                  ->from('#__usergroups');
-
-            $db->setQuery((string) $query);
-
-            $rules    = (array) $db->loadResultArray();
-            $children = false;
-        }
-
-        if (!count($rules)) return $groups;
-
-
-        // Get the associated groups data
-        if (!$children) {
-            $rules = implode(', ', $rules);
-
-            $query->clear();
-            $query->select('a.id AS value, a.title AS text, COUNT(DISTINCT b.id) AS level, a.parent_id, a.lft, a.rgt')
-                  ->from('#__usergroups AS a')
-                  ->where('a.id IN(' . $rules . ')')
-                  ->leftJoin($query->qn('#__usergroups') . ' AS b ON a.lft > b.lft AND a.rgt < b.rgt')
-                  ->group('a.id')
-                  ->order('a.lft ASC');
-
-            $db->setQuery((string) $query);
-
-            $groups = (array) $db->loadObjectList();
-        }
-        else {
-            foreach($rules AS $gid)
-            {
-                $gid = (int) $gid;
-
-                // Load the group data
-                $query->clear();
-                $query->select('a.id AS value, a.title AS text, COUNT(DISTINCT b.id) AS level, a.parent_id, a.lft, a.rgt')
-                      ->from('#__usergroups AS a')
-                      ->where('a.id = ' . $gid)
-                      ->leftJoin($query->qn('#__usergroups') . ' AS b ON a.lft > b.lft AND a.rgt < b.rgt')
-                      ->group('a.id')
-                      ->order('a.lft ASC');
-
-                $db->setQuery((string) $query);
-
-                $group = $db->loadObject();
-
-
-                // Load child groups
-                if (is_object($group)) {
-                    $groups[] = $group;
-
-                    $query->clear();
-                    $query->select('a.id AS value, a.title AS text, COUNT(DISTINCT b.id) AS level, a.parent_id, a.lft, a.rgt')
-                          ->from('#__usergroups AS a')
-                          ->leftJoin($query->qn('#__usergroups'). ' AS b ON a.lft > b.lft AND a.rgt < b.rgt')
-                          ->where('a.lft > ' . $group->lft. ' AND a.rgt < ' . $group->rgt)
-                          ->group('a.id')
-                          ->order('a.lft ASC');
-
-                    $db->setQuery((string) $query);
-                    $subgroups = (array) $db->loadObjectList();
-
-                    foreach($subgroups AS $subgroup)
-                    {
-                        $groups[] = $subgroup;
-                    }
-                }
-            }
-        }
-
-        return $groups;
-    }
-
-
-    /**
-     * Returns all child access levels of a given access levels
-     * The children are defined by the group hierarchy
-     *
-     * @param     integer    $access    The access level id
-     *
-     * @return    array                 The access levels
-     **/
-    public function getChildrenOfAccess($access)
-    {
-        // Setup vars
-        static $accesslist = NULL;
-
-        $groups   = ProjectforkHelper::getGroupsByAccess($access);
-        $children = array();
-
-        if (!count($groups)) return $children;
-
-
-        // Load all access levels if not yet set
-        if (is_null($accesslist)) {
-            $db    = JFactory::getDbo();
-            $query = $db->getQuery(true);
-
-            $query->select('a.id AS value, a.title AS text, a.ordering, a.rules')
-                  ->from('#__viewlevels AS a')
-                  ->order('a.title ASC');
-
-            $db->setQuery((string) $query);
-
-            $accesslist = (array) $db->loadObjectList();
-        }
-
-
-        // Go through each group
-        foreach($groups AS $group)
-        {
-            // And each access level
-            foreach($accesslist AS $item)
-            {
-                $rules = json_decode($item->rules);
-                $key   = $item->value;
-
-                if ($key == $access) continue;
-
-                // Check if the group is listed in the access rules and add to children if so
-                if (in_array($group->value, $rules) && !array_key_exists($key, $children)) {
-                    $children[$key] = $item;
-                }
-            }
-        }
-
-        return $children;
-    }
-
-
-    /**
-     * Returns all parents of the given group id
-     *
-     * @param     integer    $id    The group id to start with
-     *
-     * @return    array             The parent groups
-     **/
-    public function getGroupPath($id)
-    {
-        static $groups;
-        static $path;
-
-        // Preload all groups
-        if (empty($groups)) {
-            $db = JFactory::getDbo();
-
-            $query = $db->getQuery(true)
-                   ->select('parent.id, parent.lft, parent.rgt')
-                   ->from('#__usergroups AS parent')
-                   ->order('parent.lft');
-
-            $db->setQuery((string) $query);
-            $groups = (array) $db->loadObjectList('id');
-        }
-
-        if (empty($path)) $path = array();
-
-        // Make sure groupId is valid
-        if (!array_key_exists($id, $groups)) return array();
-
-
-        // Get parent groups and leaf group
-        if (!isset($path[$id])) {
-            $path[$id] = array();
-
-            foreach ($groups as $group)
-            {
-                if ($group->lft <= $groups[$id]->lft && $group->rgt >= $groups[$id]->rgt) {
-                    $path[$id][] = $group->id;
-                }
-            }
-        }
-
-        return $path[$id];
-    }
-
-
-    /**
      * Sets the currently active project for the user.
      * The active project serves as a global data filter.
      *
-     * @param     int        $id      The project id
+     * @param     int        $id    The project id
      *
-     * @return    boolean             True on success, False on error
+     * @return    boolean           True on success, False on error
      **/
     public static function setActiveProject($id = 0)
     {
@@ -414,9 +219,9 @@ class ProjectforkHelper
     /**
      * Returns the currently active project title of the user.
      *
-     * @param     string    $alt      Alternative value of no project is set
+     * @param     string    $alt    Alternative value of no project is set
      *
-     * @return    string              The project title
+     * @return    string            The project title
      **/
     public function getActiveProjectTitle($alt = '')
     {
