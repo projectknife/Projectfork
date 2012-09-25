@@ -206,7 +206,16 @@ class ProjectforkModelProject extends JModelAdmin
 
             // To keep data integrity, update all child assets
             if (!$is_new && is_object($item)) {
-                $milestones = JTable::getInstance('Milestone', 'PFTable');
+                $id      = $this->getState($this->getName() . '.id');
+                $props   = array('access', 'state', array('start_date', 'NE-SQLDATE'), array('end_date', 'NE-SQLDATE'));
+                $changes = ProjectforkHelper::getItemChanges($item, $updated, $props);
+
+                if (count($changes)) {
+                    $tables = array('milestone', 'tasklist', 'task', 'topic', 'reply');
+                    ProjectforkHelperQuery::updateTablesByField($tables, 'project_id.' . $id, $changes);
+                }
+
+                /*$milestones = JTable::getInstance('Milestone', 'PFTable');
                 $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
                 $tasks      = JTable::getInstance('Task', 'PFTable');
                 $topics     = JTable::getInstance('Topic', 'PFTable');
@@ -238,7 +247,7 @@ class ProjectforkModelProject extends JModelAdmin
                     $tasks->updateByReference($id, 'project_id', $parent_data);
                     $topics->updateByReference($id, 'project_id', $parent_data);
                     $replies->updateByReference($id, 'project_id', $parent_data);
-                }
+                }*/
             }
 
             // Create repo base and attachments folder
@@ -418,7 +427,10 @@ class ProjectforkModelProject extends JModelAdmin
         if ($repo_dir) {
             // A repo dir reference is set. See if the dir actually exists
             $dir = $this->getInstance('Directory' . $suffix, 'ProjectforkModel', array('ignore_request'));
-            $dir->setState('create_repo', true);
+
+            if (!$dir->getState('create_repo')) {
+                $dir->setState('create_repo', true);
+            }
 
             $record = $dir->getItem($repo_dir);
 
@@ -430,7 +442,11 @@ class ProjectforkModelProject extends JModelAdmin
         if ($attach_dir) {
             // A repo attachments dir reference is set. See if the dir actually exists
             $dir = $this->getInstance('Directory' . $suffix, 'ProjectforkModel', array('ignore_request'));
-            $dir->setState('create_repo', true);
+
+            if (!$dir->getState('create_repo')) {
+                $dir->setState('create_repo', true);
+            }
+
             $record = $dir->getItem($attach_dir);
 
             if ($record === false || $record->id == 0) {
@@ -441,7 +457,10 @@ class ProjectforkModelProject extends JModelAdmin
         // Create repo dir if it does not exist
         if (!$repo_dir) {
             $dir = $this->getInstance('Directory' . $suffix, 'ProjectforkModel', array('ignore_request'));
-            $dir->setState('create_repo', true);
+
+            if (!$dir->getState('create_repo')) {
+                $dir->setState('create_repo', true);
+            }
 
             $data = array();
             $data['id']         = 0;
@@ -474,7 +493,10 @@ class ProjectforkModelProject extends JModelAdmin
         // Create attachments dir if it does not exist
         if (!$attach_dir && $repo_dir > 0) {
             $dir = $this->getInstance('Directory' . $suffix, 'ProjectforkModel', array('ignore_request'));
-            $dir->setState('create_repo', true);
+
+            if (!$dir->getState('create_repo')) {
+                $dir->setState('create_repo', true);
+            }
 
             $data = array();
             $data['id']         = 0;

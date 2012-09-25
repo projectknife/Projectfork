@@ -114,4 +114,223 @@ class ProjectforkHelperAccess
 
         return $map[$asset];
     }
+
+
+    /**
+     * Returns all parent groups of the given group id
+     *
+     * @param     integer    $id    The group id
+     *
+     * @return    array             The parent groups
+     */
+    public function getGroupPath($id)
+    {
+        static $groups;
+        static $path;
+
+        // Preload all groups
+        if (empty($groups)) {
+            $db = JFactory::getDbo();
+
+            $query = $db->getQuery(true)
+                   ->select('parent.id, parent.lft, parent.rgt')
+                   ->from('#__usergroups AS parent')
+                   ->order('parent.lft');
+
+            $db->setQuery((string) $query);
+            $groups = (array) $db->loadObjectList('id');
+        }
+
+        if (empty($path)) $path = array();
+
+        // Make sure group id is valid
+        if (!array_key_exists($id, $groups)) return array();
+
+        // Get parent groups and leaf group
+        if (!isset($path[$id])) {
+            $path[$id] = array();
+
+            foreach ($groups as $group)
+            {
+                if ($group->lft <= $groups[$id]->lft && $group->rgt >= $groups[$id]->rgt) {
+                    $path[$id][] = $group->id;
+                }
+            }
+        }
+
+        return $path[$id];
+    }
+
+
+    /**
+     * Returns all groups with the given access level
+     *
+     * @param     integer    $access        The access level id
+     * @param     boolean    $diagnostic    If true, will only load the group id's
+     *
+     * @return    array                     The groups
+     */
+    public function getGroupsByAccessLevel($access, $diagnostic = true)
+    {
+        static $cache = array();
+        $cache_key    = $access . '.' . strval($diagnostic);
+
+        if (isset($cache[$cache_key])) {
+            return $cache[$cache_key];
+        }
+
+        $db     = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+        $groups = array();
+        $fields = ($diagnostic ? 'a.id' : 'a.id, a.lft, a.rgt');
+
+        // Handle public access
+        if ($access == '1') {
+            $query->select($fields)
+                  ->from('#__usergroups');
+
+            $db->setQuery((string) $query);
+            $groups = (array) $db->loadColumn();
+
+            $cache[$cache_key] = $groups;
+
+            return $cache[$cache_key];
+        }
+
+
+        // Get the groups of the access level
+        $query->select('a.rules')
+              ->from('#__viewlevels AS a')
+              ->where('a.id = '. (int) $access);
+
+        $db->setQuery((string) $query);
+        $rules = $db->loadResult();
+        $rules = (empty($rules) ? array() : json_decode($rules));
+
+        if (!count($rules)) {
+            $cache[$cache_key] = array();
+            return $cache[$cache_key];
+        }
+
+
+        // Loop through the top groups to find the children
+        $groups = array();
+        foreach($rules AS $gid)
+        {
+            $gid = (int) $gid;
+
+            // Load the group data
+            $query->clear();
+            $query->select('a.id, a.lft, a.rgt')
+                  ->from('#__usergroups AS a')
+                  ->where('a.id = ' . $db->quote($gid))
+                  ->join('LEFT', $query->quoteName('#__usergroups') . ' AS b ON a.lft > b.lft AND a.rgt < b.rgt')
+                  ->group('a.id')
+                  ->order('a.lft ASC');
+
+            $db->setQuery((string) $query);
+
+            $group = $db->loadObject();
+
+            // Load child groups
+            if (is_object($group)) {
+                $groups[] = ($diagnostic ? $group->id : $group);
+
+                $query->clear();
+                $query->select($fields)
+                      ->from('#__usergroups AS a')
+                      ->join('LEFT', $query->quoteName('#__usergroups'). ' AS b ON a.lft > b.lft AND a.rgt < b.rgt')
+                      ->where('a.lft > ' . intval($group->lft) . ' AND a.rgt < ' . intval($group->rgt))
+                      ->group('a.id')
+                      ->order('a.lft ASC');
+
+                $db->setQuery((string) $query);
+                $children = (array) ($diagnostic ? $db->loadColumn() : $db->loadObjectList());
+
+                foreach($children AS $child)
+                {
+                    $groups[] = $child;
+                }
+            }
+        }
+
+        $cache[$cache_key] = $groups;
+
+        return $cache[$cache_key];
+    }
+
+
+    /**
+    * Returns all children of the given access level
+    *
+    * @param     integer    $id    The access level id
+    *
+    * @return    array             The child access levels
+    */
+    public static function getAccessTree($id)
+    {
+        static $cache = array();
+        static $list  = null;
+
+        // Load all access levels if not yet set
+        if (is_null($list)) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('a.id, a.rules')
+                  ->from('#__viewlevels AS a');
+
+            $db->setQuery((string) $query);
+
+            $list = (array) $db->loadObjectList();
+        }
+
+        if (isset($cache[$id])) {
+            return $cache[$id];
+        }
+
+        $groups = self::getGroupsByAccessLevel($id);
+        $tree   = array();
+
+        if (!count($groups)) {
+            $cache[$id] = $tree;
+
+            return $cache[$id];
+        }
+
+        foreach ($list AS $item)
+        {
+            if (empty($item->rules) || $item->id == $id || in_array($item->id, $tree)) {
+                continue;
+            }
+
+            $rules = (array) json_decode($item->rules);
+            $count = count($rules);
+            $found = 0;
+
+            if ($count == 0) {
+                continue;
+            }
+
+            foreach ($rules AS $rule)
+            {
+                if ($rule < 0) {
+                    continue;
+                }
+
+                if (in_array($rule, $groups)) {
+                    $found++;
+                }
+            }
+
+            if ($found == $count) {
+                $tree[] = $item->id;
+            }
+        }
+
+        $cache[$id] = $tree;
+
+
+        return $cache[$id];
+    }
 }

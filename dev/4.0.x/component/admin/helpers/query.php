@@ -25,7 +25,7 @@ class ProjectforkHelperQuery
      *
      * @return    void
      */
-    public function buildFilter(&$query, $filters = array())
+    public static function buildFilter(&$query, $filters = array())
     {
         $db = JFactory::getDbo();
 
@@ -80,5 +80,137 @@ class ProjectforkHelperQuery
                     break;
             }
         }
+    }
+
+
+    public static function updateTablesByField($tables, $field_value, $data)
+    {
+        $db      = JFactory::getDbo();
+        $query   = $db->getQuery(true);
+        $success = true;
+
+        // Pre-fetch access level tree if access field is set
+        $access_tree = array();
+        if (isset($data['access'])) {
+            $access_tree   = ProjectforkHelperAccess::getAccessTree($data['access']);
+            $access_tree[] = $data['access'];
+        }
+
+        // Loop through the tables
+        foreach ($tables AS $table_name)
+        {
+            $changes        = $data;
+            $changed_fields = array_keys($changes);
+
+            $table = JTable::getInstance(ucfirst($table_name), 'PFtable', array('ignore_request' => true));
+
+            if (!$table) {
+                $success = false;
+                continue;
+            }
+
+            $table_fields = $table->getFields();
+
+            if (!is_array($table_fields)) {
+                $success = false;
+                continue;
+            }
+
+            // Weed out fields that dont exist
+            foreach($changed_fields AS $i => $field)
+            {
+                if (!in_array($field, $table_fields)) {
+                    unset($changed_fields[$i]);
+                    unset($changes[$field]);
+                }
+            }
+
+            // Skip table if no fields are left
+            if (count($changes) == 0) {
+                continue;
+            }
+
+            // Update the table
+            foreach($changes AS $field => $value)
+            {
+                $query->clear();
+
+                switch ($field)
+                {
+                    case 'start_date':
+                        if (strtotime($value) == 0) continue;
+                        $query->update($table->getTableName())
+                              ->set($db->quoteName($field) . ' = ' . $db->quote($value))
+                              ->where($db->quoteName($field) . ' < ' . $db->quote($value))
+                              ->where($db->quoteName($field) . ' != ' . $db->quote($db->getNullDate()));
+                        break;
+
+                    case 'end_date':
+                        if (strtotime($value) == 0) continue;
+                        $query->update($table->getTableName())
+                              ->set($db->quoteName($field) . ' = ' . $db->quote($value))
+                              ->where($db->quoteName($field) . ' > ' . $db->quote($value))
+                              ->where($db->quoteName($field) . ' != ' . $db->quote($db->getNullDate()));
+                        break;
+
+                    case 'access':
+                        $query->update($table->getTableName())
+                              ->set($db->quoteName($field) . ' = ' . $db->quote($value));
+
+                        if (count($access_tree) > 1) {
+                            $query->where($db->quoteName($field) . ' NOT IN(' . implode(', ', $access_tree) . ')');
+                        }
+                        else {
+                            $query->where($db->quoteName($field) . ' != ' . $db->quote($access_tree[0]));
+                        }
+                        break;
+
+                    case 'state':
+                        if ($value == '1') continue;
+
+                        $ignore = array('-2');
+
+                        if ($value == '0')  $ignore = array('-2', '0', '2');
+                        if ($value == '-2') $ignore = array('-2');
+                        if ($value == '2')  $ignore = array('-2');
+
+                        $query->update($table->getTableName())
+                              ->set($db->quoteName($field) . ' = ' . $db->quote($value));
+
+                        if (count($ignore) > 1) {
+                            $query->where($db->quoteName($field) . ' NOT IN(' . implode(', ', $ignore) . ')');
+                        }
+                        else {
+                            $query->where($db->quoteName($field) . ' != ' . $db->quote($ignore[0]));
+                        }
+                        break;
+
+                    default:
+                        $query->update($table->getTableName())
+                              ->set($db->quoteName($field) . ' = ' . $db->quote($value));
+                        break;
+                }
+
+                if (!is_array($field_value)) {
+                    list($ref_field, $ref_value) = explode('.', $field_value, 2);
+                    $query->where($db->quoteName($ref_field) . ' = ' . $db->quote($db->escape($ref_value)));
+                }
+                else {
+                    foreach ($field_value AS $ref_field => $ref_value)
+                    {
+                        $query->where($db->quoteName($ref_field) . ' = ' . $db->quote($db->escape($ref_value)));
+                    }
+                }
+
+                $db->setQuery($query);
+                $db->execute();
+
+                if ($db->getError()) {
+                    $success = false;
+                }
+            }
+        }
+
+        return $success;
     }
 }

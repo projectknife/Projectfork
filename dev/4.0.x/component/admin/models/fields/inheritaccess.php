@@ -119,7 +119,24 @@ class JFormFieldInheritAccess extends JFormFieldList
             );
 
             // Find access level children
-            $levels = ProjectforkHelper::getChildrenOfAccess($table->access);
+            $levels = array();
+            $tree   = ProjectforkHelperAccess::getAccessTree($table->access);
+
+            if (count($tree)) {
+                $query->clear();
+                $query->select('a.id AS value, a.title AS text')
+                      ->from('#__viewlevels AS a');
+
+                if (count($tree) > 1) {
+                    $query->where('a.id IN(' . implode(',', $tree) . ')');
+                }
+                else {
+                    $query->where('a.id = ' . $db->quote($tree[0]));
+                }
+
+                $db->setQuery((string) $query);
+                $levels = (array) $db->loadObjectList();
+            }
         }
         else {
             // Load access levels

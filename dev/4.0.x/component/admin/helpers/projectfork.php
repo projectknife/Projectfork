@@ -15,7 +15,7 @@ class ProjectforkHelper
     /**
      * The component name
      *
-     * @var    string
+     * @var    string    
      */
     public static $extension = 'com_projectfork';
 
@@ -25,7 +25,7 @@ class ProjectforkHelper
      *
      * @param     string    $view    The name of the active view.
      *
-     * @return    void
+     * @return    void               
      */
     public static function addSubmenu($view)
     {
@@ -155,12 +155,12 @@ class ProjectforkHelper
     /**
      * Calculates and returns all available actions for the given asset
      *
-     * @deprecated
+     * @deprecated                              
      *
      * @param         string     $asset_name    Optional asset item name
      * @param         integer    $asset_id      Optional asset id
      *
-     * @return        object
+     * @return        object                    
      */
     public static function getActions($asset_name = NULL, $asset_id = 0)
     {
@@ -169,6 +169,58 @@ class ProjectforkHelper
         $actions = ProjectforkHelperAccess::getActions($asset_name, $asset_id);
 
         return $actions;
+    }
+
+
+    /**
+     * Method to get the changes between two item objects
+     *
+     * @param     object    $old        The old item object
+     * @param     object    $new        The new/updated item object
+     * @param     array     $prop       The field/comparison method pairs
+     *
+     * @return    array     $changes    The changed field values
+     */
+    public static function getItemChanges($old, $new, $props)
+    {
+        $changes   = array();
+        $old_props = get_object_vars($old);
+        $new_props = get_object_vars($new);
+
+        foreach($props AS $prop)
+        {
+            if (!is_array($prop)) {
+                $prop = array($prop, 'NE');
+            }
+
+            if (count($prop) != 2) continue;
+
+            list($name, $cmp) = $prop;
+
+            if (!in_array($name, $new_props) || !in_array($name, $old_props)) {
+                continue;
+            }
+
+            switch (strtoupper($cmp))
+            {
+                case 'NE-SQLDATE':
+                    // Not equal, not sql null date
+                    if ($new->$name != $old->$name && $new->$name != JFactory::getDbo()->getNullDate()) {
+                        $changes[$name] = $new->$name;
+                    }
+                    break;
+
+                case 'NE':
+                default:
+                    // Default, not equal
+                    if ($new->$name != $old->$name) {
+                        $changes[$name] = $new->$name;
+                    }
+                    break;
+            }
+        }
+
+        return $changes;
     }
 
 

@@ -539,7 +539,7 @@ class ProjectforkModelDirectory extends JModelAdmin
 
         if (!$this->getState('create_repo')) {
             if (intval($data['parent_id']) <= 1 && ($isNew == false && $table->parent_id > 1)) {
-                $this->setError(JText::_('COM_PROJECTFORK_ERROR_REPO_SAVE_ROOT_DIR'));
+                $this->setError(JText::_('COM_PROJECTFORK_ERROR_REPO_SAVE_ROOT_DIR') . 'yarr 0');
                 return false;
             }
 
@@ -567,7 +567,7 @@ class ProjectforkModelDirectory extends JModelAdmin
 
         // Store the data.
         if (!$table->store()) {
-            $this->setError($table->getError());
+            $this->setError($table->getError() . 'argh');
             return false;
         }
 
