@@ -207,7 +207,10 @@ class ProjectforkModelMilestone extends JModelAdmin
             // Store the attachments
             if (isset($data['attachment'])) {
                 $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
-                $attachments->setState('item.id', $this->getState($this->getName() . '.id'));
+
+                if ($attachments->getState('item.id') == 0) {
+                    $attachments->setState('item.id', $this->getState($this->getName() . '.id'));
+                }
 
                 if (!$attachments->save($data['attachment'])) {
                     JError::raiseWarning(500, $attachments->getError());
