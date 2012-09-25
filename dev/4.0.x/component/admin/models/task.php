@@ -62,6 +62,11 @@ class ProjectforkModelTask extends JModelAdmin
             if ($item->estimate > 0) {
                 $item->estimate = round($item->estimate / 60);
             }
+
+            // Get the attachments
+            $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
+            $item->attachment = $attachments->getItems('task', $item->id);
+
         }
 
         return $item;
@@ -231,8 +236,30 @@ class ProjectforkModelTask extends JModelAdmin
             $data['estimate'] = $data['estimate'] * 60;
         }
 
-        // Store the record
-        return parent::save($data);
+        if (!isset($data['attachment'])) {
+            $data['attachment'] = array();
+        }
+
+        // Store the base record
+        if(parent::save($data)) {
+            $id   = $this->getState($this->getName() . '.id');
+            $item = $this->getItem($id);
+
+            // Store the attachments
+            if (isset($data['attachment'])) {
+                $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
+
+                if (!$attachments->save($data['attachment'])) {
+                    JError::raiseWarning(500, $attachments->getError());
+                    $this->setError($attachments->getError());
+                }
+            }
+
+
+            return true;
+        }
+
+        return false;
     }
 
 

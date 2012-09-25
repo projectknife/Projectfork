@@ -25,7 +25,7 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
      *
      * @param    array          $config    An optional associative array of configuration settings.
      *
-     * @see      jcontroller               
+     * @see      jcontroller
      */
     public function __construct($config = array())
     {
@@ -80,6 +80,10 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
         if ($value->estimate > 0) {
             $value->estimate = round($value->estimate / 60);
         }
+
+        // Get the attachments
+        $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
+        $value->attachment = $attachments->getItems('task', $value->id);
 
         // Check general edit permission first.
         if ($access->get('task.edit')) {
@@ -249,7 +253,7 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
      * Method to auto-populate the model state.
      * Note. Calling getState in this method will result in recursion.
      *
-     * @return    void    
+     * @return    void
      */
     protected function populateState()
     {

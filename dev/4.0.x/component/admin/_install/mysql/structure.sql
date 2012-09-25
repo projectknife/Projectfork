@@ -94,6 +94,19 @@ CREATE TABLE IF NOT EXISTS `#__pf_projects` (
   KEY `idx_checkedout` (`checked_out`)
 ) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork project data';
 
+CREATE TABLE IF NOT EXISTS `#__pf_ref_attachments` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Reference ID',
+  `item_type` varchar(32) NOT NULL COMMENT 'The item type',
+  `item_id` int(10) unsigned NOT NULL COMMENT 'The item id',
+  `project_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'The project id',
+  `attachment` varchar(128) NOT NULL COMMENT 'The attachment type and id',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_connection` (`attachment`,`item_id`,`item_type`),
+  KEY `idx_item` (`item_type`,`item_id`),
+  KEY `idx_project` (`project_id`),
+  KEY `idx_attachment` (`attachment`)
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork attachment references';
+
 CREATE TABLE IF NOT EXISTS `#__pf_ref_tags` (
   `id` int(10) unsigned NOT NULL COMMENT 'Item ID reference',
   `context` varchar(32) NOT NULL COMMENT 'Reference context',

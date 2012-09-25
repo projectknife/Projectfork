@@ -10,4 +10,4 @@
 defined('_JEXEC') or die();
 
 
-JLoader::register('ProjectforkModelUserRefs', JPATH_ADMINISTRATOR . '/components/com_projectfork/models/userrefs.php');
+JLoader::register('ProjectforkModelAttachment', JPATH_ADMINISTRATOR . '/components/com_projectfork/models/attachment.php');

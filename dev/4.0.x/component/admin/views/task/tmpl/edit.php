@@ -99,6 +99,15 @@ Joomla.submitbutton = function(task)
                 </ul>
             </fieldset>
 
+            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_TASK_FIELDSET_ATTACHMENTS'), 'attachments'); ?>
+            <fieldset class="panelform">
+				<ul class="adminformlist">
+                    <li>
+                        <?php echo $this->form->getInput('attachment'); ?>
+                    </li>
+                </ul>
+            </fieldset>
+
             <?php $fieldSets = $this->form->getFieldsets('users'); ?>
 			<?php foreach ($fieldSets as $name => $fieldSet) : ?>
 				<?php echo JHtml::_('sliders.panel',JText::_($fieldSet->label), $name.'-options'); ?>

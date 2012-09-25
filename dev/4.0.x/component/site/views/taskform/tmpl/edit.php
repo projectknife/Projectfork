@@ -207,26 +207,11 @@ Joomla.submitbutton = function(task)
     	<?php endif; ?>
     </fieldset>
 
-    <?php echo JHtml::_('tabs.panel', 'Permissions', 'task-permissions') ;?>
+    <?php echo JHtml::_('tabs.panel', 'Attachments', 'task-attachments') ;?>
     <fieldset>
     	<div class="formelm control-group">
-    		<div class="control-label">
-    	    	<?php echo $this->form->getLabel('access'); ?>
-    	    </div>
-    	    <div class="controls" id="jform_access_reload">
-    	    	<?php echo $this->form->getInput('access'); ?>
-    	    </div>
+    		<?php echo $this->form->getInput('attachment'); ?>
     	</div>
-        <div class="formelm control-group">
-            <label id="jform_access_exist-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
-                <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
-            </label>
-        </div>
-        <div class="formelm control-group">
-            <div id="jform_rules_reload">
-                <?php echo $this->form->getInput('rules'); ?>
-            </div>
-        </div>
     </fieldset>
 
     <?php $fieldSets = $this->form->getFieldsets('users'); ?>
@@ -248,6 +233,28 @@ Joomla.submitbutton = function(task)
 			    <?php endforeach; ?>
 		</fieldset>
 	<?php endforeach; ?>
+
+    <?php echo JHtml::_('tabs.panel', 'Permissions', 'task-permissions') ;?>
+    <fieldset>
+    	<div class="formelm control-group">
+    		<div class="control-label">
+    	    	<?php echo $this->form->getLabel('access'); ?>
+    	    </div>
+    	    <div class="controls" id="jform_access_reload">
+    	    	<?php echo $this->form->getInput('access'); ?>
+    	    </div>
+    	</div>
+        <div class="formelm control-group">
+            <label id="jform_access_exist-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
+                <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
+            </label>
+        </div>
+        <div class="formelm control-group">
+            <div id="jform_rules_reload">
+                <?php echo $this->form->getInput('rules'); ?>
+            </div>
+        </div>
+    </fieldset>
 
     <?php echo JHtml::_('tabs.panel', 'Options', 'task-options') ;?>
         <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>

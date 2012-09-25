@@ -9,15 +9,14 @@
 
 defined('_JEXEC') or die();
 
-
+$function   = JRequest::getCmd('function', 'pfSelectAttachment');
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
 $uid        = $user->get('id');
 $dir        = $this->items['directory'];
 
-$action_count = count($this->actions);
-$filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
+$link_append  = '&layout=modal&tmpl=component&function=' . $function;
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-repository">
 
@@ -28,22 +27,9 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
     <div class="clearfix"></div>
 
     <div class="cat-items">
-        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(ProjectforkHelperRoute::getRepositoryRoute($dir->project_id, $dir->id)); ?>" method="post">
-            <div class="btn-toolbar btn-toolbar-top">
-                <div class="btn-group">
-                    <?php echo $this->toolbar;?>
-                </div>
-                <div class="filter-project btn-group">
-                    <?php echo JHtml::_('projectfork.filterProject');?>
-                </div>
-                <div class="btn-group">
-                    <a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
-                </div>
-            </div>
+        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(ProjectforkHelperRoute::getRepositoryRoute($dir->project_id, $dir->id) . $link_append); ?>" method="post">
 
-            <div class="clearfix"> </div>
-
-            <div class="<?php echo $filter_in;?>collapse" id="filters">
+            <fieldset class="filters">
                 <div class="well btn-toolbar">
                     <div class="filter-search btn-group pull-left">
                         <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
@@ -54,7 +40,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                     </div>
                     <div class="clearfix"> </div>
                 </div>
-            </div>
+            </fieldset>
 
             <div class="clearfix"> </div>
 
@@ -64,16 +50,10 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                 <thead>
                     <tr>
                         <th width="1%">
-                            <input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
-                        </th>
-                        <th width="25%">
-                            <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
-                        </th>
-                        <th width="1%">
 
                         </th>
-                        <th width="10%">
-                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_ON', 'a.created', $list_dir, $list_order); ?>
+                        <th width="40%">
+                            <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                         </th>
                         <th>
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DESCRIPTION', 'a.description', $list_dir, $list_order); ?>
@@ -87,7 +67,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td colspan="10">
+                        <td colspan="4">
 
                         </td>
                     </tr>
