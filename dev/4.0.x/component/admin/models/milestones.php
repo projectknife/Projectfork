@@ -28,22 +28,13 @@ class ProjectforkModelMilestones extends JModelList
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'id', 'a.id',
-                'project_id', 'a.project_id',
-                'title', 'a.title',
-                'description', 'a.description',
-                'alias', 'a.alias',
-                'created', 'a.created',
-                'created_by', 'a.created_by',
-                'modified', 'a.modified',
-                'modified_by', 'a.modified_by',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
-                'attribs', 'a.attribs',
-                'access', 'a.access', 'access_level',
-                'state', 'a.state',
-                'start_date', 'a.start_date',
-                'end_date', 'a.end_date',
+                'a.id', 'a.project_id', 'a.title',
+                'a.description', 'a.alias',
+                'a.created', 'a.created_by', 'a.modified',
+                'a.modified_by', 'a.checked_out',
+                'a.checked_out_time', 'a.attribs',
+                'a.access', 'access_level',
+                'a.state', 'a.start_date', 'a.end_date',
                 'project_title', 'p.title'
             );
         }
@@ -58,7 +49,7 @@ class ProjectforkModelMilestones extends JModelList
      *
      * @return    void
      */
-    protected function populateState($ordering = null, $direction = null)
+    protected function populateState($ordering = 'a.title', $direction = 'asc')
     {
         // Initialise variables.
         $app = JFactory::getApplication();
@@ -81,8 +72,13 @@ class ProjectforkModelMilestones extends JModelList
         $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
 
+        // Disable author filter if no project is selected
+        if (!$project) {
+            $this->setState('filter.author_id', '');
+        }
+
         // List state information.
-        parent::populateState('a.title', 'asc');
+        parent::populateState($ordering, $direction);
     }
 
 
@@ -214,6 +210,11 @@ class ProjectforkModelMilestones extends JModelList
      */
     public function getAuthors()
     {
+        // Load only if project filter is set
+        if (!$this->getState('filter.project')) {
+            return array();
+        }
+
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
 

@@ -15,7 +15,7 @@ class ProjectforkHelper
     /**
      * The component name
      *
-     * @var    string    
+     * @var    string
      */
     public static $extension = 'com_projectfork';
 
@@ -25,7 +25,7 @@ class ProjectforkHelper
      *
      * @param     string    $view    The name of the active view.
      *
-     * @return    void               
+     * @return    void
      */
     public static function addSubmenu($view)
     {
@@ -155,12 +155,12 @@ class ProjectforkHelper
     /**
      * Calculates and returns all available actions for the given asset
      *
-     * @deprecated                              
+     * @deprecated
      *
      * @param         string     $asset_name    Optional asset item name
      * @param         integer    $asset_id      Optional asset id
      *
-     * @return        object                    
+     * @return        object
      */
     public static function getActions($asset_name = NULL, $asset_id = 0)
     {
@@ -282,12 +282,12 @@ class ProjectforkHelper
         $app = JFactory::getApplication();
 
         $old_state = $app->getUserState('com_projectfork.project.active.id');
-        $cur_state = (!is_null($old_state)) ? (int) $old_state : 0;
+        $cur_state = (!is_null($old_state)) ? $old_state : '';
 
         if (!empty($request)) {
             $new_state = JRequest::getVar($request, null, 'default');
 
-            if ($new_state) {
+            if (!is_null($new_state)) {
                 $result = self::setActiveProject($new_state);
 
                 if (!$result) {
@@ -298,7 +298,7 @@ class ProjectforkHelper
             }
         }
 
-        return (int) $cur_state;
+        return $cur_state;
     }
 
 

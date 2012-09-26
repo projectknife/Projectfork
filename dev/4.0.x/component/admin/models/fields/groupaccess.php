@@ -96,13 +96,56 @@ class JFormFieldGroupAccess extends JFormField
         $inherit    = $this->element['inheritonly'] ? strval($this->element['inheritonly'])  : "true";
         $inherit    = (trim(strtolower($inherit)) == 'true' ? true : false);
 
+        if ($inherit) {
+            // Get possible parent field values
+            // Note that the order of the array elements matter!
+            $parents = array();
+            $parents['project']   = (int) $this->form->getValue('project_id');
+            $parents['milestone'] = (int) $this->form->getValue('milestone_id');
+            $parents['tasklist']  = (int) $this->form->getValue('list_id');
+            $parents['task']      = (int) $this->form->getValue('task_id');
+            $parents['topic']     = (int) $this->form->getValue('topic_id');
+
+            $parent_el = 'project';
+            $parent_id = $parents['project'];
+
+            foreach($parents AS $key => $value)
+            {
+                if ($value > 0) {
+                    $parent_el = $key;
+                    $parent_id = $value;
+                    break;
+                }
+            }
+
+            if ($parent_id) {
+                JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/tables');
+
+                $table = JTable::getInstance($parent_el, 'PFTable');
+                if (!$table) {
+                    $this->access_level  = (int) $this->form->getValue('access');
+                }
+                else {
+                    // Load the parent item
+                    if (!$table->load($parent_id)) {
+                        $this->access_level  = (int) $this->form->getValue('access');
+                    }
+                    else {
+                        $this->access_level = $table->access;
+                    }
+                }
+            }
+        }
+        else {
+            $this->access_level  = (int) $this->form->getValue('access');
+        }
+
         // Initialize variables
-        $this->access_level  = (int) $this->form->getValue('access');
         $this->is_admin      = JFactory::getUser()->authorise('core.admin', $component);
         $this->auth_groups   = JFactory::getUser()->getAuthorisedGroups();
         $this->groups        = $this->getUserGroups($inherit);
         $this->actions       = $this->getActions($component, $section);
-        $this->selected      = $this->getAccessRules($this->access_level);
+        $this->selected      = $this->getAccessRules((int) $this->form->getValue('access'));
 
         $this->getAccessRules($this->access_level);
 

@@ -40,7 +40,7 @@ class PFTableMilestone extends JTable
     protected function _getAssetName()
     {
         $k = $this->_tbl_key;
-        return 'com_projectfork.milestone.'.(int) $this->$k;
+        return 'com_projectfork.milestone.' . (int) $this->$k;
     }
 
 
@@ -82,6 +82,19 @@ class PFTableMilestone extends JTable
             if ($result) $asset_id = (int) $result;
         }
 
+        if (!$asset_id) {
+            // No asset found, fall back to the component
+            $query->clear();
+            $query->select($this->_db->quoteName('id'))
+                  ->from($this->_db->quoteName('#__assets'))
+                  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_projectfork"));
+
+            // Get the asset id from the database.
+            $this->_db->setQuery($query);
+            $result = $this->_db->loadResult();
+
+            if ($result) $asset_id = (int) $result;
+        }
 
         // Return the asset id.
         if ($asset_id) return $asset_id;
@@ -103,7 +116,7 @@ class PFTableMilestone extends JTable
 
         $query->select('access')
               ->from('#__pf_projects')
-              ->where('id = '.(int) $this->project_id);
+              ->where('id = '. (int) $this->project_id);
 
         $db->setQuery($query);
         $access = (int) $db->loadResult();
@@ -160,13 +173,15 @@ class PFTableMilestone extends JTable
         if (trim(str_replace('&nbsp;', '', $this->description)) == '') $this->description = '';
 
         // Check if a project is selected
-        if ((int) $this->project_id == 0) {
+        if ((int) $this->project_id <= 0) {
             $this->setError(JText::_('COM_PROJECTFORK_WARNING_SELECT_PROJECT'));
             return false;
         }
 
         // Check for selected access level
-        if ($this->access == 0) $this->access = $this->_getAccessProjectId();
+        if ($this->access <= 0) {
+            $this->access = $this->_getAccessProjectId();
+        }
 
         // Check the start date is not earlier than the end date.
         if ($this->end_date > $this->_db->getNullDate() && $this->end_date < $this->start_date) {
@@ -177,7 +192,7 @@ class PFTableMilestone extends JTable
         }
 
         // Check if the start and end dates are in bounds of the parent dates
-        $project = JTable::getInstance('project', 'PFTable');
+        $project = JTable::getInstance('Project', 'PFTable');
         $project->load((int)$this->project_id);
 
         $a_start = strtotime($project->start_date);
@@ -226,6 +241,7 @@ class PFTableMilestone extends JTable
 
         return parent::store($updateNulls);
     }
+
 
     /**
      * Method to set the state for a row or list of rows in the database
@@ -303,7 +319,6 @@ class PFTableMilestone extends JTable
     }
 
 
-
     /**
      * @see    setstate
      *
@@ -311,158 +326,6 @@ class PFTableMilestone extends JTable
     public function publish($pks = null, $state = 1, $userId = 0)
     {
         return $this->setState($pks, $state, $userId);
-    }
-
-
-    /**
-     * Deletes all items by a reference field
-     *
-     * @param     mixed      $id       The parent item id(s)
-     * @param     string     $field    The parent field name
-     *
-     * @return    boolean              True on success, False on error
-     */
-    public function deleteByReference($id, $field)
-    {
-        $db    = $this->_db;
-        $query = $db->getQuery(true);
-
-        // Generate the WHERE clause
-        $where = $db->quoteName($field) . (is_array($id) ? ' IN(' . implode(', ', $id) . ')' : ' = ' . (int) $id );
-
-        if (is_array($id) && count($id) === 1) {
-            $where = $db->quoteName($field) . ' = ' . (int) $id[0];
-        }
-
-        // Delete the records. Note that the assets have already been deleted
-        $query->delete($this->_db->quoteName($this->_tbl))
-              ->where($where);
-
-        $db->setQuery((string) $query);
-        $db->query();
-
-        return true;
-    }
-
-
-    /**
-     * Updates all items by reference data and parent item
-     *
-     * @param     integer    $id       The parent item id
-     * @param     string     $field    The parent field name
-     * @param     array      $data     The parent data
-     * @return    boolean              True on success, False on error
-     */
-    public function updateByReference($id, $field, $data)
-    {
-        $db        = $this->_db;
-        $fields    = array_keys($data);
-        $null_date = $db->getNullDate();
-        $pk        = $this->_tbl_key;
-
-        // Check if the fields exist
-        foreach($fields AS $i => $tbl_field)
-        {
-            if (!property_exists($this, $tbl_field)) {
-                unset($fields[$i]);
-                unset($data[$tbl_field]);
-            }
-        }
-
-        // Return if no fields are left
-        if (count($fields) == 0) {
-            return true;
-        }
-
-        $tbl_fields = implode(', ', array_keys($data));
-
-        // Find access children if access field is in the data
-        $access_children = array();
-        if (in_array('access', $fields)) {
-            $access_children = array_keys(ProjectforkHelper::getChildrenOfAccess($data['access']));
-        }
-
-        // Get the items we have to update
-        $where = $db->quoteName($field) . (is_array($id) ? ' IN(' . implode(', ', $id) . ')' : ' = ' . (int) $id );
-
-        if (is_array($id) && count($id) === 1) {
-            $where = $db->quoteName($field) . ' = ' . (int) $id[0];
-        }
-
-        $query = $db->getQuery(true);
-        $query->select($this->_tbl_key . ', ' . $tbl_fields)
-              ->from($db->quoteName($this->_tbl))
-              ->where($where);
-
-        $db->setQuery((string) $query);
-
-        // Get the result
-        $list = (array) $db->loadObjectList();
-
-        // Update each item
-        foreach($list AS $item)
-        {
-            $updates = array();
-
-            foreach($data AS $key => $val)
-            {
-                switch($key)
-                {
-                    case 'start_date':
-                        $tmp_val_1 = strtotime($val);
-                        $tmp_val_2 = strtotime($item->$key);
-                        if ($tmp_val_1 > 0) {
-                            if (($tmp_val_1 > $tmp_val_2) && $tmp_val_2 > 0) {
-                                $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
-                            }
-                        }
-                        break;
-
-                    case 'end_date':
-                        $tmp_val_1 = strtotime($val);
-                        $tmp_val_2 = strtotime($item->$key);
-                        if ($tmp_val_1 > 0) {
-                            if (($tmp_val_1 < $tmp_val_2)) {
-                                $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
-                            }
-                        }
-                        break;
-
-                    case 'access':
-                        if ($val != $item->$key && !in_array($item->$key, $access_children)) {
-                            $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
-                        }
-                        break;
-
-                    case 'state':
-                        if ($val != $item->$key) {
-                            // Do not publish/unpublish items that are currently archived or trashed
-                            // Also, do not publish items that are unpublished
-                            if (($item->$key == '2' || $item->$key == '-2' || $item->$key == '0') && ($val == '0' || $val == '1')) {
-                                continue;
-                            }
-
-                            $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
-                        }
-                        break;
-
-                    default:
-                        if ($item->$key != $val) $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
-                        break;
-                }
-            }
-
-            if (count($updates)) {
-                $query->clear();
-
-                $query->update($db->quoteName($this->_tbl))
-                      ->set(implode(', ', $updates))
-                      ->where($db->quoteName($this->_tbl_key) . ' = ' . (int) $item->$pk);
-
-                $db->setQuery((string) $query);
-                $db->query();
-            }
-        }
     }
 
 

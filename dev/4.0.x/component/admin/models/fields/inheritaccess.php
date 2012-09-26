@@ -30,6 +30,9 @@ class JFormFieldInheritAccess extends JFormFieldList
     public $type = 'InheritAccess';
 
 
+    protected $hidden;
+
+
     /**
      * Method to get the field input markup.
      *
@@ -38,7 +41,7 @@ class JFormFieldInheritAccess extends JFormFieldList
     protected function getInput()
     {
         // Get possible parent field values
-        // Note that the order of the array items matter!
+        // Note that the order of the array elements matter!
         $parents = array();
         $parents['project']   = (int) $this->form->getValue('project_id');
         $parents['milestone'] = (int) $this->form->getValue('milestone_id');
@@ -53,6 +56,9 @@ class JFormFieldInheritAccess extends JFormFieldList
         $attr .= $this->element['size']                          ? ' size="' . (int) $this->element['size'] . '"'            : '';
         $attr .= $this->multiple                                 ? ' multiple="multiple"'                                    : '';
         $attr .= $this->element['onchange']                      ? ' onchange="' . (string) $this->element['onchange'] . '"' : '';
+        $attr .= ((string) $this->element['hidden'] == 'true')   ? ' style="display:none"'                                   : '';
+
+        $this->hidden = ((string) $this->element['hidden'] == 'true');
 
         // Get the field options
         $options = $this->getOptions($parents);
@@ -84,6 +90,7 @@ class JFormFieldInheritAccess extends JFormFieldList
             if ($value > 0) {
                 $parent_el = $key;
                 $parent_id = $value;
+                break;
             }
         }
 
@@ -96,6 +103,16 @@ class JFormFieldInheritAccess extends JFormFieldList
 
             // Load the parent item
             if (!$table->load($parent_id)) return $options;
+
+            if ($this->hidden) {
+                $options[] = JHtml::_('select.option', (int) $table->access,
+                    'access',
+                    'value',
+                    'text'
+                );
+
+                return $options;
+            }
 
             // Load access level title
             $db    = JFactory::getDbo();

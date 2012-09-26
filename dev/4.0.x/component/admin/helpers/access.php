@@ -340,11 +340,12 @@ class ProjectforkHelperAccess
      * The Access level will be created if none is found
      *
      * @param     mixed      $rules     The selected rules from the form
-     * @param     integer $access The parent access level (optional)
+     * @param     integer $access       The access level from the form (optional)
+     * @param     integer $inherit       If set to true, will inherit the groups from $access if no groups have been selected
      *
      * @return    integer    $access    The viewing access level on success, False on error.
      */
-    public static function getViewLevelFromRules(&$rules, $access = 0)
+    public static function getViewLevelFromRules(&$rules, $access = 0, $inherit = true)
     {
         JLoader::register('UsersModelLevel', JPATH_ADMINISTRATOR . '/components/com_users/models/level.php');
 
@@ -366,11 +367,29 @@ class ProjectforkHelperAccess
         }
 
         if (!count($groups)) {
-            return false;
+            if ($access && $inherit) {
+                $query->clear();
+                $query->select('rules')
+                      ->from('#__viewlevels')
+                      ->where('id = ' . $db->quote((int) $access));
+
+                $db->setQuery($query);
+                $access_rules = $db->loadResult();
+
+                $groups = (array) json_decode($access_rules);
+
+                if (!count($groups)) {
+                    return false;
+                }
+            }
+            else {
+                return false;
+            }
         }
 
-        if ($access > 1) {
+        if ($access > 1 && !$inherit) {
             // Parent access level is given, see if the rules are the same
+            $query->clear();
             $query->select('rules')
                   ->from('#__viewlevels')
                   ->where('id = ' . $db->quote((int) $access));
@@ -413,19 +432,24 @@ class ProjectforkHelperAccess
 
         // Generate level title
         $level_name = implode(', ', $group_names);
+        $model      = new UsersModelLevel(array('ignore_request' => true));
+        $table      = $model->getTable();
 
-        $x = -3;
-        while (strlen($level_name) > 100)
+        $x = 100 - strlen($level_name);
+        if ($x >= 0) $x = -3;
+
+        while (strlen($level_name) > 100 || $table->load(array('title' => $level_name)))
         {
             $level_name = substr($level_name, 0, $x) . '...';
             $x--;
         }
 
-        $model = new UsersModelLevel(array('ignore_request' => true));
         $data  = array('id' => 0, 'title' => $level_name, 'rules' => $groups);
 
         // Store access level
-        if (!$model->save($data)) return false;
+        if (!$model->save($data)) {
+            return false;
+        }
 
         return $model->getState('level.id');
 

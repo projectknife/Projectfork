@@ -284,8 +284,7 @@ class ProjectforkModelProject extends JModelAdmin
     public function setActive($data)
     {
         $app = JFactory::getApplication();
-
-        $id = (int) $data['id'];
+        $id  = (int) $data['id'];
 
         if ($id) {
             // Load the project and verify the access
@@ -311,6 +310,7 @@ class ProjectforkModelProject extends JModelAdmin
             $app->setUserState('com_projectfork.project.active.title', $table->title);
         }
         else {
+
             $app->setUserState('com_projectfork.project.active.id', 0);
             $app->setUserState('com_projectfork.project.active.title', '');
         }

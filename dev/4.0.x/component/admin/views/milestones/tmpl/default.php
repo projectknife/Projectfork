@@ -33,15 +33,12 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                 <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
             </select>
 
-            <select name="filter_access" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_ACCESS');?></option>
-                <?php echo JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'));?>
-            </select>
-
+            <?php if ($this->state->get('filter.project')) : ?>
             <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
                 <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
                 <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
             </select>
+            <?php endif; ?>
             <?php echo JHtml::_('projectfork.filterProject');?>
         </div>
     </fieldset>
@@ -66,16 +63,10 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
                 </th>
                 <th width="10%">
-                    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_ON', 'a.created', $list_dir, $list_order); ?>
-                </th>
-                <th width="10%">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_START_DATE', 'a.start_date', $list_dir, $list_order); ?>
                 </th>
                 <th width="10%">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
-                </th>
-                <th width="10%">
-                    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access', $list_dir, $list_order); ?>
                 </th>
                 <th width="1%" class="nowrap">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $list_dir, $list_order); ?>
@@ -101,7 +92,7 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                 </td>
                 <td>
                     <?php if ($item->checked_out) : ?>
-                        <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'articles.', $can_checkin); ?>
+                        <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'milestones.', $can_checkin); ?>
                     <?php endif; ?>
                     <?php if ($can_edit || $can_edit_own) : ?>
                         <a href="<?php echo JRoute::_('index.php?option=com_projectfork&task=milestone.edit&id=' . $item->id);?>">
@@ -109,24 +100,16 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                     <?php else : ?>
                         <?php echo $this->escape($item->title); ?>
                     <?php endif; ?>
-                    <?php echo ($item->description) ? '<p class="smallsub">' . $item->description.'</p>' : '<p class="smallsub">'.JText::_('COM_PROJECTFORK_NO_DESC').'</p>' ?>
                 </td>
                 <td><?php echo $this->escape($item->project_title); ?></td>
-
-                <td class="center">
+                <td>
                     <?php echo $this->escape($item->author_name); ?>
-                </td>
-                <td class="center nowrap">
-                    <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
                 </td>
                 <td class="center nowrap">
                     <?php echo (($item->start_date == $this->nulldate) ? JText::_('DATE_NOT_SET') : JHtml::_('date', $item->start_date, JText::_('DATE_FORMAT_LC4'))); ?>
                 </td>
                 <td class="center nowrap">
                     <?php echo (($item->end_date == $this->nulldate) ? JText::_('DATE_NOT_SET') : JHtml::_('date', $item->end_date, JText::_('DATE_FORMAT_LC4'))); ?>
-                </td>
-                <td class="center">
-                    <?php echo $this->escape($item->access_level); ?>
                 </td>
                 <td class="center">
                     <?php echo (int) $item->id; ?>
@@ -136,7 +119,7 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="10">
+                <td colspan="8">
                     <?php echo $this->pagination->getListFooter(); ?>
                 </td>
             </tr>
