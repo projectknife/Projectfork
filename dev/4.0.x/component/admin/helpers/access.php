@@ -10,12 +10,21 @@
 defined('_JEXEC') or die();
 
 
+JLoader::register('ProjectforkHelper', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
+
+
 /**
  * Projectfork Access Helper Class
  *
  */
 class ProjectforkHelperAccess
 {
+    public static function auth($item = null)
+    {
+
+    }
+
+
     /**
      * Calculates and returns all available actions for the given asset
      *
@@ -30,19 +39,21 @@ class ProjectforkHelperAccess
         static $results        = array();
         static $project_assets = array();
 
-        if (!count($project_assets)) $project_assets = self::getAssetMap('project');
+        if (!count($project_assets)) {
+            $project_assets = self::getAssetMap('project');
+        }
 
         $asset = 'com_projectfork';
 
-        if ($asset_name) $asset .= '.' . $asset_name;
-        if ($asset_id)   $asset .= '.' . $asset_id;
+        if ($asset_name && $asset_id) {
+            $asset .= '.' . $asset_name . '.' . $asset_id;
+        }
 
         if ($active_project || (in_array($asset_name, $project_assets) && $asset_id == 0)) {
-            $pid = (int) JFactory::getApplication()->getUserState('com_projectfork.project.active.id', 0);
+            $pid = (int) ProjectforkHelper::getActiveProjectId();
 
             if ($pid) return self::getActions('project', $pid);
         }
-
 
         if (array_key_exists($asset, $results)) {
             // Return cached result
@@ -60,7 +71,7 @@ class ProjectforkHelperAccess
             $result->set('core.admin',  $auth_admin);
             $result->set('core.manage', $user->authorise('core.manage', $asset));
 
-            // Check if the asset name  and ID is given and reduce the assets to check to this one
+            // Check if the asset name and ID is given and reduce the assets to check to this one
             if ($asset_name && in_array($asset_name, $assets)) {
                 // Check general asset type including children
                 $assets = array_merge(array($asset_name), self::getAssetMap($asset_name));

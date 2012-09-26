@@ -175,24 +175,22 @@ Joomla.submitbutton = function(task)
     </fieldset>
     <?php endif; ?>
 
-    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_DETAILS_FIELDSET'), 'project-options') ;?>
-    <fieldset>
-        <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
-			<?php foreach ($fieldSets as $name => $fieldSet) : ?>
-				<fieldset>
-                    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
-                        <div class="formelm control-group" id="jform_access-li">
-                        	<div class="control-label">
-                		   		<?php echo $field->label; ?>
-                		    </div>
-                		    <div class="controls">
-                				<?php echo $field->input; ?>
-                			</div>
-                		</div>
-                    <?php endforeach; ?>
-                </fieldset>
-			<?php endforeach; ?>
-    </fieldset>
+    <?php
+    $fieldsets = $this->form->getFieldsets('attribs');
+    if (count($fieldsets)) :
+        echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_DETAILS_FIELDSET'), 'project-options');
+		foreach ($fieldsets as $name => $fieldset) :
+            ?>
+			<fieldset>
+                <?php foreach ($this->form->getFieldset($name) as $field) : ?>
+                    <div class="formelm control-group">
+                    	<div class="control-label"><?php echo $field->label; ?></div>
+            		    <div class="controls"><?php echo $field->input; ?></div>
+            		</div>
+                <?php endforeach; ?>
+            </fieldset>
+        <?php endforeach; ?>
+    <?php endif; ?>
 
     <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'project-permissions') ;?>
     <fieldset>
