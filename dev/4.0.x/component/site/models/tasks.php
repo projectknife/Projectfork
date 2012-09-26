@@ -25,14 +25,14 @@ class ProjectforkModelTasks extends JModelList
      * Constructor.
      *
      * @param    array          An optional associative array of configuration settings.
-     * @see      jcontroller    
+     * @see      jcontroller
      */
     public function __construct($config = array())
     {
         // Register dependencies
-        JLoader::register('ProjectforkHelperQuery',  JPATH_SITE . '/components/com_projectfork/helpers/query.php');
         JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
         JLoader::discover('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+        JLoader::register('ProjectforkHelperQuery',  JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
 
         // Set field filter
         if (empty($config['filter_fields'])) {
@@ -54,7 +54,7 @@ class ProjectforkModelTasks extends JModelList
     /**
      * Get the master query for retrieving a list of items subject to the model state.
      *
-     * @return    jdatabasequery    
+     * @return    jdatabasequery
      */
     public function getListQuery()
     {
@@ -194,7 +194,7 @@ class ProjectforkModelTasks extends JModelList
     /**
      * Build a list of project authors
      *
-     * @return    jdatabasequery    
+     * @return    jdatabasequery
      */
     public function getAuthors()
     {
@@ -247,7 +247,7 @@ class ProjectforkModelTasks extends JModelList
     /**
      * Build a list of milestones
      *
-     * @return    jdatabasequery    
+     * @return    jdatabasequery
      */
     public function getMilestones()
     {
@@ -307,7 +307,7 @@ class ProjectforkModelTasks extends JModelList
     /**
      * Build a list of task lists
      *
-     * @return    jdatabasequery    
+     * @return    jdatabasequery
      */
     public function getTaskLists()
     {
@@ -367,7 +367,7 @@ class ProjectforkModelTasks extends JModelList
     /**
      * Build a list of assigned users
      *
-     * @return    jdatabasequery    
+     * @return    jdatabasequery
      */
     public function getAssignedUsers()
     {
@@ -422,7 +422,7 @@ class ProjectforkModelTasks extends JModelList
      * Method to auto-populate the model state.
      * Note. Calling getState in this method will result in recursion.
      *
-     * @return    void    
+     * @return    void
      */
     protected function populateState($ordering = 'a.title', $direction = 'ASC')
     {
