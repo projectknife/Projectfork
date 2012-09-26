@@ -23,27 +23,17 @@ class ProjectforkModelProjects extends JModelList
      * Constructor
      *
      * @param    array          An optional associative array of configuration settings.
-     * @see      jcontroller
+     * @see      jcontroller    
      */
     public function __construct($config = array())
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'id', 'a.id',
-                'title', 'a.title',
-                'category_title', 'c.title',
-                'alias', 'a.alias',
-                'created', 'a.created',
-                'created_by', 'a.created_by',
-                'modified', 'a.modified',
-                'modified_by', 'a.modified_by',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
-                'attribs', 'a.attribs',
-                'access', 'a.access', 'access_level',
-                'state', 'a.state',
-                'start_date', 'a.start_date',
-                'end_date', 'a.end_date'
+                'a.id', 'a.title', 'category_title', 'c.title',
+                'a.alias', 'a.created', 'a.created_by', 'a.modified',
+                'a.modified_by', 'a.checked_out', 'a.checked_out_time',
+                'a.attribs', 'a.access', 'access_level',
+                'a.state', 'a.start_date', 'a.end_date'
             );
         }
 
@@ -52,12 +42,35 @@ class ProjectforkModelProjects extends JModelList
 
 
     /**
+     * Build a list of project authors
+     *
+     * @return    jdatabasequery    
+     */
+    public function getAuthors()
+    {
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        // Construct the query
+        $query->select('u.id AS value, u.name AS text')
+              ->from('#__users AS u')
+              ->join('INNER', '#__pf_projects AS a ON a.created_by = u.id')
+              ->group('u.id')
+              ->order('u.name');
+
+        // Return the result
+        $db->setQuery((string) $query);
+        return (array) $db->loadObjectList();
+    }
+
+
+    /**
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
-     * @return    void
+     * @return    void    
      */
-    protected function populateState($ordering = null, $direction = null)
+    protected function populateState($ordering = 'a.title', $direction = 'asc')
     {
         // Initialise variables.
         $app = JFactory::getApplication();
@@ -65,23 +78,23 @@ class ProjectforkModelProjects extends JModelList
         // Adjust the context to support modal layouts.
         if ($layout = JRequest::getVar('layout')) $this->context .= '.' . $layout;
 
-        $search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
+        $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
 
-        $manager_id = $app->getUserStateFromRequest($this->context.'.filter.author_id', 'filter_author_id');
+        $manager_id = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
         $this->setState('filter.author_id', $manager_id);
 
-        $published = $this->getUserStateFromRequest($this->context.'.filter.published', 'filter_published', '');
+        $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
         $this->setState('filter.published', $published);
 
-        $category = $this->getUserStateFromRequest($this->context.'.filter.category', 'filter_category', '');
+        $category = $this->getUserStateFromRequest($this->context . '.filter.category', 'filter_category', '');
         $this->setState('filter.category', $category);
 
-        $access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', '');
+        $access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', '');
         $this->setState('filter.access', $access);
 
         // List state information.
-        parent::populateState('a.title', 'asc');
+        parent::populateState($ordering, $direction);
     }
 
 
@@ -110,11 +123,10 @@ class ProjectforkModelProjects extends JModelList
     /**
      * Build an SQL query to load the list data.
      *
-     * @return    jdatabasequery
+     * @return    jdatabasequery    
      */
     protected function getListQuery()
     {
-        // Create a new query object.
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
         $user  = JFactory::getUser();
@@ -162,8 +174,9 @@ class ProjectforkModelProjects extends JModelList
         }
 
         // Filter by a single or group of categories.
-        $baselevel = 1;
+        $baselevel  = 1;
         $categoryId = $this->getState('filter.category');
+
         if (is_numeric($categoryId)) {
             $cat_tbl = JTable::getInstance('Category', 'JTable');
             $cat_tbl->load($categoryId);
@@ -176,7 +189,7 @@ class ProjectforkModelProjects extends JModelList
         elseif (is_array($categoryId)) {
             JArrayHelper::toInteger($categoryId);
             $categoryId = implode(',', $categoryId);
-            $query->where('a.catid IN (' . $categoryId.')');
+            $query->where('a.catid IN (' . $categoryId . ')');
         }
 
         // Filter by access level.
@@ -191,10 +204,10 @@ class ProjectforkModelProjects extends JModelList
         }
 
         // Filter by author
-        $manager_id = $this->getState('filter.author_id');
-        if (is_numeric($manager_id)) {
+        $author = $this->getState('filter.author_id');
+        if (is_numeric($author)) {
             $type = $this->getState('filter.author_id.include', true) ? '= ' : '<>';
-            $query->where('a.created_by ' . $type.(int) $manager_id);
+            $query->where('a.created_by ' . $type . (int) $author);
         }
 
         // Filter by search in title.
@@ -220,30 +233,5 @@ class ProjectforkModelProjects extends JModelList
         $query->order($db->escape($order_col . ' ' . $order_dir));
 
         return $query;
-    }
-
-
-    /**
-     * Build a list of project authors
-     *
-     * @return    jdatabasequery
-     */
-    public function getAuthors()
-    {
-        $db    = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        // Construct the query
-        $query->select('u.id AS value, u.name AS text')
-              ->from('#__users AS u')
-              ->join('INNER', '#__pf_projects AS a ON a.created_by = u.id')
-              ->group('u.id')
-              ->order('u.name');
-
-        // Setup the query
-        $db->setQuery((string) $query);
-
-        // Return the result
-        return $db->loadObjectList();
     }
 }

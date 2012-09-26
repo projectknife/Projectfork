@@ -37,9 +37,10 @@ class ProjectforkModelProject extends JModelAdmin
     public function __construct($config = array())
     {
         // Register dependencies
-        JLoader::register('ProjectforkHelper',       JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
-        JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
-        JLoader::register('ProjectforkHelperQuery',  JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
+        JLoader::register('ProjectforkHelper',           JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
+        JLoader::register('ProjectforkHelperAccess',     JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+        JLoader::register('ProjectforkHelperQuery',      JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
+        JLoader::register('ProjectforkHelperRepository', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/repository.php');
 
         parent::__construct($config);
     }
@@ -84,13 +85,13 @@ class ProjectforkModelProject extends JModelAdmin
 
 
     /**
-     * Method to get the user groups of a project
+     * Method to get the user groups assigned to a project
      *
      * @param     integer    The project id
      *
      * @return    array      The user groups
      **/
-    public function getUserGroups($pk = NULL, $children = true)
+    public function getUserGroups($pk = NULL)
     {
         $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
         $table = $this->getTable();
@@ -105,7 +106,7 @@ class ProjectforkModelProject extends JModelAdmin
                 return false;
             }
 
-            return ProjectforkHelper::getGroupsByAccess($table->access, $children);
+            return ProjectforkHelperAccess::getGroupsByAccessLevel($table->access);
         }
 
         return false;
@@ -132,7 +133,6 @@ class ProjectforkModelProject extends JModelAdmin
 
         $item_access = ProjectforkHelperAccess::getActions('project', $id);
         $access      = ProjectforkHelperAccess::getActions();
-
 
         // Check for existing item.
         // Modify the form based on Edit State access controls.
@@ -166,19 +166,14 @@ class ProjectforkModelProject extends JModelAdmin
 			}
 		}
 
-        // Alter the title for save as copy
-        if (JRequest::getVar('task') == 'save2copy') {
-            list($title, $alias) = $this->generateNewTitle($data['alias'], $data['title']);
+        // Make sure the title and alias are always unique
+        $data['alias'] = '';
+        list($title, $alias) = $this->generateNewTitle($data['title'], $data['alias'], $pk);
 
-            $data['title'] = $title;
-            $data['alias'] = $alias;
-        }
-        else {
-            // Always re-generate the alias unless save2copy
-            $data['alias'] = '';
-        }
+        $data['title'] = $title;
+        $data['alias'] = $alias;
 
-        // Create access level
+        // Handle permissions and access level
         if (isset($data['rules'])) {
             $prev_access = ($is_new ? 0 : $record->access);
             $access = ProjectforkHelperAccess::getViewLevelFromRules($data['rules'], $prev_access);
@@ -214,7 +209,7 @@ class ProjectforkModelProject extends JModelAdmin
                 $changes = ProjectforkHelper::getItemChanges($record, $updated, $props);
 
                 if (count($changes)) {
-                    $tables = array('milestone', 'tasklist', 'task', 'topic', 'reply');
+                    $tables = array('milestone', 'tasklist', 'task', 'topic', 'reply', 'comment', 'directory', 'note', 'file', 'time');
                     $field  = 'project_id.' . $id;
 
                     if (!ProjectforkHelperQuery::updateTablesByField($tables, $field, $changes)) {
@@ -259,24 +254,20 @@ class ProjectforkModelProject extends JModelAdmin
      */
     public function publish(&$pks, $value = 1)
     {
-        $result = parent::publish($pks, $value);
+        $result  = parent::publish($pks, $value);
+        $changes = array('state', $value);
 
         if ($result) {
             // State change succeeded. Now update all children
-            $milestones = JTable::getInstance('Milestone', 'PFTable');
-            $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
-            $tasks      = JTable::getInstance('Task', 'PFTable');
-            $topics     = JTable::getInstance('Topic', 'PFTable');
-            $replies    = JTable::getInstance('Reply', 'PFTable');
+            foreach ($pks AS $id)
+            {
+                $tables = array('milestone', 'tasklist', 'task', 'topic', 'reply', 'comment', 'directory', 'note', 'file', 'time');
+                $field  = 'project_id.' . $id;
 
-            $parent_data = array();
-            $parent_data['state'] = $value;
-
-            $milestones->updateByReference($pks, 'project_id', $parent_data);
-            $tasklists->updateByReference($pks, 'project_id', $parent_data);
-            $tasks->updateByReference($pks, 'project_id', $parent_data);
-            $topics->updateByReference($pks, 'project_id', $parent_data);
-            $replies->updateByReference($pks, 'project_id', $parent_data);
+                if (!ProjectforkHelperQuery::updateTablesByField($tables, $field, $changes)) {
+                    $result = false;
+                }
+            }
         }
 
         return $result;
@@ -302,12 +293,16 @@ class ProjectforkModelProject extends JModelAdmin
             $table = $this->getTable();
 
             if ($table->load($id) === false) {
+                if ($table->getError()) {
+                    $this->setError($table->getError());
+                }
+
                 return false;
             }
 
             if (!$user->authorise('core.admin')) {
                 if (!in_array($table->access, $user->getAuthorisedViewLevels())) {
-                    $this->setError(JText::_('COM_PROJECTFORK_ERROR_PROJECT_ACCESS'));
+                    $this->setError(JText::_('COM_PROJECTFORK_ERROR_PROJECT_ACCESS_DENIED'));
                     return false;
                 }
             }
@@ -333,34 +328,85 @@ class ProjectforkModelProject extends JModelAdmin
      */
     public function delete(&$pks)
     {
-        // Delete the records
-        $success = parent::delete($pks);
+        // Initialise variables.
+		$dispatcher = JDispatcher::getInstance();
+		$pks   = (array) $pks;
+		$table = $this->getTable();
 
-        // Cancel if something went wrong
-        if (!$success) return false;
+        $active_id = ProjectforkHelper::getActiveProjectId();
 
-        $app        = JFactory::getApplication();
-        $milestones = JTable::getInstance('Milestone', 'PFTable');
-        $tasklists  = JTable::getInstance('Tasklist', 'PFTable');
-        $tasks      = JTable::getInstance('Task', 'PFTable');
-        $topics     = JTable::getInstance('Topics', 'PFTable');
-        $replies    = JTable::getInstance('Reply', 'PFTable');
+		// Include the content plugins for the on delete events.
+		JPluginHelper::importPlugin('content');
 
-        // Delete all other items referenced to each project
-        if (!$milestones->deleteByReference($pks, 'project_id')) $success = false;
-        if (!$tasklists->deleteByReference($pks, 'project_id'))  $success = false;
-        if (!$tasks->deleteByReference($pks, 'project_id'))      $success = false;
-        if (!$topics->deleteByReference($pks, 'project_id'))     $success = false;
-        if (!$replies->deleteByReference($pks, 'project_id'))    $success = false;
+		// Iterate the items to delete each one.
+		foreach ($pks as $i => $pk)
+		{
+			if ($table->load($pk)) {
+				if ($this->canDelete($table)) {
+					$context = $this->option . '.' . $this->name;
+					// Trigger the onContentBeforeDelete event.
+					$result = $dispatcher->trigger($this->event_before_delete, array($context, $table));
 
-        $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
+					if (in_array(false, $result, true)) {
+						$this->setError($table->getError());
+						return false;
+					}
 
-        // The active project has been delete?
-        if (in_array($active_id, $pks)) {
-            $this->setActive(array('id' => 0));
-        }
+					if (!$table->delete($pk)) {
+						$this->setError($table->getError());
+						return false;
+					}
 
-        return $success;
+                    // Try to delete the repo
+                    $repo = ProjectforkHelperRepository::getBasePath($pk);
+
+                    if (JFolder::exists($repo)) {
+                        JFolder::delete($repo);
+                    }
+
+                    // Check if the currently active project is being deleted.
+                    // If so, clear it from the session
+                    if ($active_id == $pk) {
+                        $this->setActive(array('id' => 0));
+                    }
+
+                    // Delete every item related to this project
+                    $tables = array('milestone', 'tasklist', 'task', 'topic', 'reply', 'comment', 'directory', 'note', 'file', 'time', 'attachment');
+                    $field  = 'project_id.' . $pk;
+
+                    if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
+                        return false;
+                    }
+
+					// Trigger the onContentAfterDelete event.
+					$dispatcher->trigger($this->event_after_delete, array($context, $table));
+				}
+				else {
+					// Prune items that you can't change.
+					unset($pks[$i]);
+
+					$error = $this->getError();
+
+					if ($error) {
+						JError::raiseWarning(500, $error);
+						return false;
+					}
+					else {
+						JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'));
+						return false;
+					}
+				}
+			}
+			else {
+				$this->setError($table->getError());
+				return false;
+			}
+		}
+
+		// Clear the component's cache
+		$this->cleanCache();
+
+		return true;
     }
 
 
@@ -506,33 +552,61 @@ class ProjectforkModelProject extends JModelAdmin
      * Method to change the title & alias.
      * Overloaded from JModelAdmin class
      *
-     * @param     string    The alias
      * @param     string    The title
+     * @param     string    The alias
+     * @param     integer    The item id
      *
      * @return    array     Contains the modified title and alias
      */
-    protected function generateNewTitle($alias, $title)
+    protected function generateNewTitle($title, $alias = '', $id = 0)
     {
-        // Alter the title & alias
         $table = $this->getTable();
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-        while ($table->load(array('alias' => $alias)))
-        {
-            $m = null;
+        if (empty($alias)) {
+            $alias = JApplication::stringURLSafe($title);
 
-            if (preg_match('#-(\d+)$#', $alias, $m)) {
-                $alias = preg_replace('#-(\d+)$#', '-'.($m[1] + 1).'', $alias);
+            if (trim(str_replace('-', '', $alias)) == '') {
+                $alias = JApplication::stringURLSafe(JFactory::getDate()->format('Y-m-d-H-i-s'));
             }
-            else {
-                $alias .= '-2';
-            }
+        }
 
+        $query->select('COUNT(id)')
+              ->from($table->getTableName())
+              ->where('alias = ' . $db->quote($alias));
 
-            if (preg_match('#\((\d+)\)$#', $title, $m)) {
-                $title = preg_replace('#\(\d+\)$#', '('.($m[1] + 1).')', $title);
-            }
-            else {
-                $title .= ' (2)';
+        if ($id) {
+            $query->where('id != ' . intval($id));
+        }
+
+        $db->setQuery((string) $query);
+        $count = (int) $db->loadResult();
+
+        if ($id > 0 && $count == 0) {
+            return array($title, $alias);
+        }
+        elseif ($id == 0 && $count == 0) {
+            return array($title, $alias);
+        }
+        else {
+            while ($table->load(array('alias' => $alias)))
+            {
+                $m = null;
+
+                if (preg_match('#-(\d+)$#', $alias, $m)) {
+                    $alias = preg_replace('#-(\d+)$#', '-'.($m[1] + 1).'', $alias);
+                }
+                else {
+                    $alias .= '-2';
+                }
+
+                if (preg_match('#\((\d+)\)$#', $title, $m)) {
+                    $title = preg_replace('#\(\d+\)$#', '('.($m[1] + 1).')', $title);
+                }
+                else {
+                    $title .= ' (2)';
+                }
             }
         }
 
@@ -596,12 +670,12 @@ class ProjectforkModelProject extends JModelAdmin
     {
         // Check for existing item.
         if (!empty($record->id)) {
+            $user   = JFactory::getUser();
             $access = ProjectforkHelperAccess::getActions('project', $record->id);
-            return $access->get('project.edit');
+            return ($access->get('project.edit') || ($access->get('project.edit.own') && $record->created_by == $user->id));
         }
         else {
-            $access = ProjectforkHelperAccess::getActions();
-            return $access->get('project.edit');
+            return false;
         }
     }
 

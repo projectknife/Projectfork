@@ -83,6 +83,57 @@ class ProjectforkHelperQuery
     }
 
 
+    public static function deleteFromTablesByField($tables, $field_value)
+    {
+        $db      = JFactory::getDbo();
+        $query   = $db->getQuery(true);
+        $success = true;
+
+        // Loop through the tables
+        foreach ($tables AS $table_name)
+        {
+            $table = JTable::getInstance(ucfirst($table_name), 'PFtable', array('ignore_request' => true));
+
+            if (!$table) {
+                $success = false;
+                continue;
+            }
+
+            $query->clear();
+            $query->delete($table->getTableName());
+
+            if (!is_array($field_value)) {
+                list($ref_field, $ref_value) = explode('.', $field_value, 2);
+                $query->where($db->quoteName($ref_field) . ' = ' . $db->quote($db->escape($ref_value)));
+            }
+            else {
+                foreach ($field_value AS $ref_field => $ref_value)
+                {
+                    $query->where($db->quoteName($ref_field) . ' = ' . $db->quote($db->escape($ref_value)));
+                }
+            }
+
+            $db->setQuery((string) $query);
+            $db->execute();
+
+            if ($db->getError()) {
+                $success = false;
+            }
+        }
+
+        return $success;
+    }
+
+
+    /**
+     * Method to update table data by field reference
+     *
+     * @param     array      $tables         The table name classes. Expects the class prefix to be PFTable.
+     * @param     mixed      $field_value    The reference field and value by which to update connected by a "."
+     * @param     array      $data           The new data
+     *
+     * @return    boolean                    True on success, False on error
+     */
     public static function updateTablesByField($tables, $field_value, $data)
     {
         $db      = JFactory::getDbo();

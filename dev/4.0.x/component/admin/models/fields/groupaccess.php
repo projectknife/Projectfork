@@ -219,15 +219,31 @@ class JFormFieldGroupAccess extends JFormField
             $html[] = '             <tbody>';
 
             // Start rendering the list of actions
+            $current_group = '';
             foreach ($this->actions as $action)
             {
+                if (strpos(JText::_($action->title), '-') !== false) {
+                    list ($action_group, $action_name) = explode('-', JText::_($action->title), 2);
+
+                    if ($action_group != $current_group) {
+                        $current_group = $action_group;
+
+                        $html[] = '                 <tr>';
+                        $html[] = '                    <th colspan="3" class="actions"><span class="acl-action">' . trim($action_group) . '</span></th>';
+                        $html[] = '                 </tr>';
+                    }
+                }
+                else {
+                    $action_name = JText::_($action->title);
+                }
+
                 // Get the actual setting for the action for this group.
                 $inherited = JAccess::checkGroup($gid, $action->name, $this->asset_id);
                 $rule      = $this->rules->allow($action->name, $item->value);
 
                 $field_id    = $this->id . '_' . $action->name . '_' . $gid;
                 $field_name  = $this->name . '[' . $action->name . '][' . $gid . ']';
-                $field_desc  = htmlspecialchars(JText::_($action->title) . '::' . JText::_($action->description), ENT_COMPAT, 'UTF-8');
+                $field_desc  = htmlspecialchars($action_name . '::' . JText::_($action->description), ENT_COMPAT, 'UTF-8');
                 $field_title = JText::sprintf('JLIB_RULES_SELECT_ALLOW_DENY_GROUP', JText::_($action->title), trim($item->text));
 
                 $opt_text    = JText::_(empty($item->parent_id) && empty($component) ? 'JLIB_RULES_NOT_SET' : 'JLIB_RULES_INHERITED');
@@ -236,7 +252,7 @@ class JFormFieldGroupAccess extends JFormField
                 $html[] = '                 <tr>';
                 $html[] = '                     <td headers="actions-th' . $gid . '">';
                 $html[] = '                         <label class="hasTip" for="' . $field_id . '" title="' . $field_desc . '">';
-                $html[] = '                             ' . JText::_($action->title);
+                $html[] = '                             <span class="gi">|&mdash;</span>' . trim($action_name);
                 $html[] = '                         </label>';
                 $html[] = '                     </td>';
                 $html[] = '                     <td headers="settings-th' . $gid . '">';

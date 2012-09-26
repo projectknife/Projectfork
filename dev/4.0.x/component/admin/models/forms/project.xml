@@ -53,31 +53,25 @@
             <option value="0">COM_PROJECTFORK_OPTION_ACCESS_ACTION_EXISTING</option>
             <option value="1">COM_PROJECTFORK_OPTION_ACCESS_ACTION_NEW</option>
         </field>
-        <field name="access" type="inheritaccess"
-            label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC"
-            class="inputbox" size="1"
-            onchange="PFform.reload('rules');"
-        />
         <field name="access_title" type="text"
             label="COM_PROJECTFORK_FIELD_ACCESS_NEW_LABEL" description="COM_PROJECTFORK_FIELD_ACCESS_NEW_DESC"
             class="inputbox" size="30"
         />
         <field name="rules" type="groupaccess"
-            label="JCONFIG_PERMISSIONS_LABEL"
-            component="com_projectfork" section="project" inheritonly="false"
+            component="com_projectfork" section="project" inheritonly="false" filter="ProjectforkHelperForm::filterRules" validate="groupaccess"
         />
         <field name="id" type="hidden" readonly="true"/>
         <field name="asset_id" type="hidden" filter="unset"/>
+        <field name="access" type="hidden" readonly="true"/>
         <field name="elements" type="hidden"/>
         <field name="alias" type="hidden" readonly="true"/>
         <field name="created" type="hidden" readonly="true"/>
         <field name="checked_out" type="hidden" filter="unset" />
         <field name="checked_out_time" type="hidden" filter="unset" />
-        <field name="access_rules" type="hidden" filter="int_array" />
     </fieldset>
 
     <fields name="attribs">
-        <fieldset name="basic" label="COM_PROJECTFORK_PROJECT_ATTRIBS_FIELDSET_LABEL">
+        <fieldset name="basic" label="COM_PROJECTFORK_DETAILS_FIELDSET">
             <field name="repo_dir" type="hidden" readonly="true"/>
             <field name="attachments_dir" type="hidden" readonly="true"/>
             <field name="website" type="text"

@@ -15,7 +15,7 @@ class ProjectforkHelper
     /**
      * The component name
      *
-     * @var    string
+     * @var    string    
      */
     public static $extension = 'com_projectfork';
 
@@ -25,7 +25,7 @@ class ProjectforkHelper
      *
      * @param     string    $view    The name of the active view.
      *
-     * @return    void
+     * @return    void               
      */
     public static function addSubmenu($view)
     {
@@ -155,12 +155,12 @@ class ProjectforkHelper
     /**
      * Calculates and returns all available actions for the given asset
      *
-     * @deprecated
+     * @deprecated                              
      *
      * @param         string     $asset_name    Optional asset item name
      * @param         integer    $asset_id      Optional asset id
      *
-     * @return        object
+     * @return        object                    
      */
     public static function getActions($asset_name = NULL, $asset_id = 0)
     {
@@ -247,24 +247,58 @@ class ProjectforkHelper
             }
         }
 
-        $data  = array('id' => (int) $id);
+        $current = self::getActiveProjectId();
 
-        return $model->setActive($data);
+        if ($current == $id) {
+            return true;
+        }
+
+        $result = $model->setActive(array('id' => (int) $id));
+
+        if (!$result) {
+            JFactory::getApplication()->enqueueMessage($model->getErrorMsg(), 'error');
+        }
+        else {
+            if ($id) {
+                $title = self::getActiveProjectTitle();
+                $msg = JText::sprintf('COM_PROJECTFORK_INFO_NEW_ACTIVE_PROJECT', '"' . $title . '"');
+                JFactory::getApplication()->enqueueMessage($msg);
+            }
+        }
+
+        return $result;
     }
 
 
     /**
      * Returns the currently active project ID of the user.
      *
-     * @param     int    $alt    Alternative value of no project is set
+     * @param     string    $request    The name of the variable passed in a request.
      *
-     * @return    int            The project id
+     * @return    int                   The project id
      **/
-    public function getActiveProjectId($alt = 0)
+    public function getActiveProjectId($request = NULL)
     {
-        $id = JFactory::getApplication()->getUserState('com_projectfork.project.active.id', $alt);
+        $app = JFactory::getApplication();
 
-        return (int) $id;
+        $old_state = $app->getUserState('com_projectfork.project.active.id');
+        $cur_state = (!is_null($old_state)) ? (int) $old_state : 0;
+
+        if (!empty($request)) {
+            $new_state = JRequest::getVar($request, null, 'default');
+
+            if ($new_state) {
+                $result = self::setActiveProject($new_state);
+
+                if (!$result) {
+                    return $cur_state;
+                }
+
+                return (int) $new_state;
+            }
+        }
+
+        return (int) $cur_state;
     }
 
 

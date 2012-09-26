@@ -65,11 +65,9 @@ class PFTableProject extends JTable
      */
     protected function _getAssetParentId($table = null, $id = null)
     {
-        // Initialise variables.
         $query    = $this->_db->getQuery(true);
         $asset_id = null;
 
-        // Build the query to get the asset id for the parent category.
         $query->select($this->_db->quoteName('id'))
               ->from($this->_db->quoteName('#__assets'))
               ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_projectfork"));
@@ -101,12 +99,6 @@ class PFTableProject extends JTable
             $registry = new JRegistry;
             $registry->loadArray($array['attribs']);
             $array['attribs'] = (string) $registry;
-        }
-
-        if (isset($array['metadata']) && is_array($array['metadata'])) {
-            $registry = new JRegistry;
-            $registry->loadArray($array['metadata']);
-            $array['metadata'] = (string)$registry;
         }
 
         // Bind the rules.
@@ -199,7 +191,7 @@ class PFTableProject extends JTable
         $table = JTable::getInstance('Project', 'PFTable');
 
         if ($table->load(array('alias' => $this->alias)) && ($table->id != $this->id || $this->id == 0)) {
-            $this->setError(JText::_('JLIB_DATABASE_ERROR_PROJECT_UNIQUE_ALIAS'));
+            $this->setError(JText::_('COM_PROJECTFORK_ERROR_PROJECT_UNIQUE_ALIAS'));
             return false;
         }
 

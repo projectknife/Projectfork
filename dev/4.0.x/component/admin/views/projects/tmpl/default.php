@@ -40,11 +40,6 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                 <?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_projectfork'), 'value', 'text', $this->state->get('filter.category'));?>
             </select>
 
-            <select name="filter_access" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_ACCESS');?></option>
-                <?php echo JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'));?>
-            </select>
-
             <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
                 <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
                 <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
@@ -79,9 +74,6 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                 </th>
                 <th width="10%">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
-                </th>
-                <th width="10%">
-                    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access', $list_dir, $list_order); ?>
                 </th>
                 <th width="1%" class="nowrap">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $list_dir, $list_order); ?>
@@ -132,9 +124,6 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                     <?php echo (($item->end_date == $this->nulldate) ? JText::_('DATE_NOT_SET') : JHtml::_('date', $item->end_date, JText::_('DATE_FORMAT_LC4'))); ?>
                 </td>
                 <td class="center">
-                    <?php echo $this->escape($item->access_level); ?>
-                </td>
-                <td class="center">
                     <?php echo (int) $item->id; ?>
                 </td>
             </tr>
@@ -142,7 +131,7 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="10">
+                <td colspan="9">
                     <?php echo $this->pagination->getListFooter(); ?>
                 </td>
             </tr>

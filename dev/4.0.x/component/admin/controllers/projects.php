@@ -19,12 +19,15 @@ jimport('joomla.application.component.controlleradmin');
  */
 class ProjectforkControllerProjects extends JControllerAdmin
 {
+    protected $text_prefix = "COM_PROJECTFORK_PROJECTS";
+
+
     /**
      * Constructor.
      *
-     * @param     array                            $config    An optional associative array of configuration settings
-     * @return    projectforkcontrollerprojects               
-     * @see       jcontroller                                 
+     * @param    array          $config    An optional associative array of configuration settings
+
+     * @see      jcontroller               
      */
     public function __construct($config = array())
     {

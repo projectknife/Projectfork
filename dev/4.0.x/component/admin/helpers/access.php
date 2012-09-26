@@ -344,7 +344,7 @@ class ProjectforkHelperAccess
      *
      * @return    integer    $access    The viewing access level on success, False on error.
      */
-    public static function getViewLevelFromRules($rules = NULL, $access = 0)
+    public static function getViewLevelFromRules(&$rules, $access = 0)
     {
         JLoader::register('UsersModelLevel', JPATH_ADMINISTRATOR . '/components/com_users/models/level.php');
 
@@ -362,6 +362,7 @@ class ProjectforkHelperAccess
             if (!is_numeric($key) || !is_numeric($value)) continue;
 
             $groups[] = (int) $value;
+            unset($rules[$key]);
         }
 
         if (!count($groups)) {

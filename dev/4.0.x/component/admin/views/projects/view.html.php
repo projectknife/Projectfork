@@ -54,7 +54,6 @@ class ProjectforkViewProjects extends JViewLegacy
     protected function addToolbar()
     {
         $access = ProjectforkHelper::getActions();
-        $user   = JFactory::getUser();
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_PROJECTS_TITLE'), 'article.png');
 

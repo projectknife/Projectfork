@@ -12,7 +12,6 @@ defined('_JEXEC') or die();
 
 // Load the tooltip behavior.
 JHtml::_('behavior.tooltip');
-JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.keepalive');
 JHtml::_('projectfork.script.form');
 ?>
@@ -20,7 +19,7 @@ JHtml::_('projectfork.script.form');
 PFform.accessAction();
 Joomla.submitbutton = function(task)
 {
-    if (task == 'project.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
+    if (task == 'project.cancel' || document.getElementById('jform_title').value != '') {
 	    <?php echo $this->form->getField('description')->save(); ?>
         Joomla.submitform(task, document.getElementById('item-form'));
 	}
@@ -29,13 +28,13 @@ Joomla.submitbutton = function(task)
 	}
 }
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=project&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=project&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 
     <div class="width-60 fltlft">
         <fieldset class="adminform">
 			<legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_PROJECT') : JText::_('COM_PROJECTFORK_EDIT_PROJECT'); ?></legend>
 			<ul class="adminformlist">
-				<li><?php echo $this->form->getLabel('title').$this->form->getInput('title'); ?></li>
+				<li><?php echo $this->form->getLabel('title') . $this->form->getInput('title'); ?></li>
 			</ul>
 			<div class="clr"></div>
 			<?php echo $this->form->getLabel('description'); ?>
@@ -45,7 +44,7 @@ Joomla.submitbutton = function(task)
     </div>
 
     <div class="width-40 fltrt">
-        <?php echo JHtml::_('sliders.start','project-sliders-'.$this->item->id, array('useCookie'=>1)); ?>
+        <?php echo JHtml::_('sliders.start','project-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
 
             <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
             <fieldset class="panelform">
@@ -62,38 +61,23 @@ Joomla.submitbutton = function(task)
                 </ul>
             </fieldset>
 
-            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_PROJECT_FIELDSET_RULES'), 'access-details'); ?>
-            <fieldset class="panelform">
-                <ul class="adminformlist">
-                    <li><?php echo $this->form->getLabel('access_action') . $this->form->getInput('access_action'); ?></li>
-                    <li id="jform_access_element"><?php echo $this->form->getLabel('access') . $this->form->getInput('access'); ?></li>
-                    <li id="jform_access_title_element" style="display: none;"><?php echo $this->form->getLabel('access_title') . $this->form->getInput('access_title'); ?></li>
-                    <li id="jform_rules_element">
-                        <?php echo $this->form->getLabel('rules'); ?>
-                        <div id="jform_rules_reload" style="clear: both;"><?php echo $this->form->getInput('rules'); ?></div>
-                    </li>
-                </ul>
-            </fieldset>
+            <?php if ($this->item->id > 0) : ?>
+                <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'attachment-details'); ?>
+                <fieldset class="panelform">
+    				<?php echo $this->form->getInput('attachment'); ?>
+                </fieldset>
+            <?php endif; ?>
 
-            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_TASK_FIELDSET_ATTACHMENTS'), 'attachments'); ?>
-            <fieldset class="panelform">
-				<ul class="adminformlist">
-                    <li>
-                        <?php echo $this->form->getInput('attachment'); ?>
-                    </li>
-                </ul>
-            </fieldset>
-
-            <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
-			<?php foreach ($fieldSets as $name => $fieldSet) : ?>
-				<?php echo JHtml::_('sliders.panel',JText::_($fieldSet->label), $name.'-options'); ?>
-				<?php if (isset($fieldSet->description) && trim($fieldSet->description)) : ?>
-					<p class="tip"><?php echo $this->escape(JText::_($fieldSet->description));?></p>
+            <?php $fieldsets = $this->form->getFieldsets('attribs'); ?>
+			<?php foreach ($fieldsets as $name => $fieldset) : ?>
+				<?php echo JHtml::_('sliders.panel', JText::_($fieldset->label), $name . '-options'); ?>
+				<?php if (isset($fieldset->description) && trim($fieldset->description)) : ?>
+					<p><?php echo $this->escape(JText::_($fieldset->description));?></p>
 				<?php endif; ?>
 				<fieldset class="panelform">
 					<ul class="adminformlist">
 					    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
-						    <li><?php echo $field->label. $field->input; ?></li>
+						    <li><?php echo $field->label . $field->input; ?></li>
 					    <?php endforeach; ?>
 					</ul>
 				</fieldset>
@@ -105,6 +89,22 @@ Joomla.submitbutton = function(task)
 
     <div class="clr"></div>
 
+	<div class="width-100 fltlft">
+		<?php echo JHtml::_('sliders.start', 'permissions-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
+
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'access-rules'); ?>
+			<fieldset class="panelform">
+                <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+                <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+				<div id="jform_rules_element">
+                    <div id="jform_rules_reload" style="clear: both;">
+                        <?php echo $this->form->getInput('rules'); ?>
+                    </div>
+                </div>
+			</fieldset>
+		<?php echo JHtml::_('sliders.end'); ?>
+	</div>
+
     <div>
 		<?php
             echo $this->form->getInput('alias');
@@ -112,6 +112,7 @@ Joomla.submitbutton = function(task)
             echo $this->form->getInput('id');
             echo $this->form->getInput('asset_id');
             echo $this->form->getInput('elements');
+            echo $this->form->getInput('access');
         ?>
         <input type="hidden" name="task" value="" />
         <input type="hidden" name="view" value="<?php echo htmlspecialchars($this->get('Name'), ENT_COMPAT, 'UTF-8');?>" />

@@ -78,9 +78,8 @@ class ProjectforkModelMilestones extends JModelList
         $access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', '');
         $this->setState('filter.access', $access);
 
-        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         // List state information.
         parent::populateState('a.title', 'asc');

@@ -15,11 +15,13 @@ jimport('joomla.application.component.controllerform');
 
 class ProjectforkControllerProject extends JControllerForm
 {
+    protected $text_prefix = "COM_PROJECTFORK_PROJECT";
+
+
     /**
      * Class constructor.
      *
-     * @param     array              $config    A named array of configuration variables
-     * @return    jcontrollerform               
+     * @param    array    $config    A named array of configuration variables
      */
     public function __construct($config = array())
     {
