@@ -71,7 +71,7 @@ class ProjectforkHelperAccess
             $result->set('core.admin',  $auth_admin);
             $result->set('core.manage', $user->authorise('core.manage', $asset));
 
-            // Check if the asset name and ID is given and reduce the assets to check to this one
+            // Check if the asset name and ID is given and reduce the assets to check only this one
             if ($asset_name && in_array($asset_name, $assets)) {
                 // Check general asset type including children
                 $assets = array_merge(array($asset_name), self::getAssetMap($asset_name));

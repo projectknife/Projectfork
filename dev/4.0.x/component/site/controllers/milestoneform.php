@@ -33,6 +33,13 @@ class ProjectforkControllerMilestoneform extends JControllerForm
      */
     protected $view_list = 'milestones';
 
+    /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
+	protected $text_prefix = 'COM_PROJECTFORK_MILESTONE';
+
 
     /**
      * Constructor
@@ -125,7 +132,12 @@ class ProjectforkControllerMilestoneform extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $access = ProjectforkHelperAccess::getActions(null, 0, true);
+        if (isset($data['project_id'])) {
+            $access = ProjectforkHelperAccess::getActions('project', (int) $data['project_id']);
+        }
+        else {
+            $access = ProjectforkHelperAccess::getActions(null, 0, true);
+        }
 
         return $access->get('milestone.create');
     }
