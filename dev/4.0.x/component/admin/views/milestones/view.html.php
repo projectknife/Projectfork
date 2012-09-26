@@ -55,7 +55,7 @@ class ProjectforkViewMilestones extends JViewLegacy
      */
     protected function addToolbar()
     {
-        $access = ProjectforkHelperAccess::getActions();
+        $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_MILESTONES_TITLE'), 'article.png');
 

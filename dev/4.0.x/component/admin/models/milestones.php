@@ -57,16 +57,16 @@ class ProjectforkModelMilestones extends JModelList
         // Adjust the context to support modal layouts.
         if ($layout = JRequest::getVar('layout')) $this->context .= '.' . $layout;
 
-        $search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
+        $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
 
-        $author_id = $app->getUserStateFromRequest($this->context.'.filter.author_id', 'filter_author_id');
+        $author_id = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
         $this->setState('filter.author_id', $author_id);
 
-        $published = $this->getUserStateFromRequest($this->context.'.filter.published', 'filter_published', '');
+        $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
         $this->setState('filter.published', $published);
 
-        $access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', '');
+        $access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', '');
         $this->setState('filter.access', $access);
 
         $project = ProjectforkHelper::getActiveProjectId('filter_project');
@@ -211,7 +211,9 @@ class ProjectforkModelMilestones extends JModelList
     public function getAuthors()
     {
         // Load only if project filter is set
-        if (!$this->getState('filter.project')) {
+        $project = (int) $this->getState('filter.project');
+
+        if ($project <= 0) {
             return array();
         }
 
@@ -222,6 +224,7 @@ class ProjectforkModelMilestones extends JModelList
         $query->select('u.id AS value, u.name AS text')
               ->from('#__users AS u')
               ->join('INNER', '#__pf_milestones AS a ON a.created_by = u.id')
+              ->where('a.project_id = ' . $db->quote($project))
               ->group('u.id')
               ->order('u.name');
 

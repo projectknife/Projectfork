@@ -29,23 +29,12 @@ class ProjectforkModelTasklists extends JModelList
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'id', 'a.id',
-                'project_id', 'a.project_id',
-                'milestone_id', 'a.milestone_id',
-                'title', 'a.title',
-                'description', 'a.description',
-                'alias', 'a.alias',
-                'created', 'a.created',
-                'created_by', 'a.created_by',
-                'modified', 'a.modified',
-                'modified_by', 'a.modified_by',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
-                'attribs', 'a.attribs',
-                'access', 'a.access', 'access_level',
-                'state', 'a.state',
-                'ordering', 'a.ordering',
-                'project_title', 'p.title',
+                'a.id', 'a.project_id', 'a.milestone_id',
+                'a.title', 'a.description', 'a.alias',
+                'a.created', 'a.created_by', 'a.modified',
+                'a.modified_by', 'a.checked_out', 'a.checked_out_time',
+                'a.attribs', 'a.access', 'access_level',
+                'a.state', 'a.ordering', 'project_title', 'p.title',
                 'milestone_title', 'm.title'
             );
         }
@@ -68,24 +57,28 @@ class ProjectforkModelTasklists extends JModelList
         // Adjust the context to support modal layouts.
         if ($layout = JRequest::getVar('layout')) $this->context .= '.' . $layout;
 
-        $search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
+        $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
 
-        $author_id = $app->getUserStateFromRequest($this->context.'.filter.author_id', 'filter_author_id');
+        $author_id = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
         $this->setState('filter.author_id', $author_id);
 
-        $published = $this->getUserStateFromRequest($this->context.'.filter.published', 'filter_published', '');
+        $published = $this->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
         $this->setState('filter.published', $published);
 
-        $access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', '');
+        $access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', '');
         $this->setState('filter.access', $access);
 
-        $milestone = $this->getUserStateFromRequest($this->context.'.filter.milestone', 'filter_milestone', '');
+        $milestone = $this->getUserStateFromRequest($this->context . '.filter.milestone', 'filter_milestone', '');
         $this->setState('filter.milestone', $milestone);
 
-        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
+
+        // Disable author filter if no project is selected
+        if (!$project) {
+            $this->setState('filter.author_id', '');
+        }
 
         // List state information.
         parent::populateState('a.title', 'asc');
@@ -159,7 +152,7 @@ class ProjectforkModelTasklists extends JModelList
               ->join('LEFT', '#__pf_milestones AS m ON m.id = a.milestone_id');
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_projectfork')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
         }
@@ -230,6 +223,13 @@ class ProjectforkModelTasklists extends JModelList
      */
     public function getAuthors()
     {
+        // Load only if project filter is set
+        $project = (int) $this->getState('filter.project');
+
+        if ($project <= 0) {
+            return array();
+        }
+
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -237,6 +237,7 @@ class ProjectforkModelTasklists extends JModelList
         $query->select('u.id AS value, u.name AS text')
               ->from('#__users AS u')
               ->join('INNER', '#__pf_task_lists AS a ON a.created_by = u.id')
+              ->where('a.project_id = ' . $db->quote($project))
               ->group('u.id')
               ->order('u.name');
 

@@ -56,10 +56,8 @@ class ProjectforkModelMilestones extends JModelList
      */
     public function getListQuery()
     {
-        // Create a new query object.
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
-
         $user  = JFactory::getUser();
 
         // Select the required fields from the table.
@@ -103,7 +101,7 @@ class ProjectforkModelMilestones extends JModelList
         $query->join('LEFT', '#__pf_task_lists AS tl ON tl.milestone_id = a.id');
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_projectfork')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
         }

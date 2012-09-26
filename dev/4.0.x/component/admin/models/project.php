@@ -675,7 +675,8 @@ class ProjectforkModelProject extends JModelAdmin
             return ($access->get('project.edit') || ($access->get('project.edit.own') && $record->created_by == $user->id));
         }
         else {
-            return false;
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('project.edit');
         }
     }
 

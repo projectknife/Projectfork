@@ -11,7 +11,7 @@ defined('_JEXEC') or die();
 
 
 // Base this model on the backend version.
-require_once JPATH_ADMINISTRATOR . '/components/com_projectfork/models/tasklist.php';
+JLoader::register('ProjectforkModelTasklist', JPATH_ADMINISTRATOR . '/components/com_projectfork/models/tasklist.php');
 
 
 /**

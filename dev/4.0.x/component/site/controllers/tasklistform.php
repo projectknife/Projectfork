@@ -33,6 +33,13 @@ class ProjectforkControllerTasklistForm extends JControllerForm
      */
     protected $view_list = 'tasks';
 
+    /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
+	protected $text_prefix = 'COM_PROJECTFORK_TASKLIST';
+
 
     /**
      * Constructor
@@ -109,6 +116,29 @@ class ProjectforkControllerTasklistForm extends JControllerForm
         $model = parent::getModel($name, $prefix, $config);
 
         return $model;
+    }
+
+
+    /**
+     * Method to check if you can add a new record.
+     *
+     * @param     array      $data    An array of input data.
+     *
+     * @return    boolean
+     */
+    protected function allowAdd($data = array())
+    {
+        if (isset($data['milestone_id'])) {
+            $access = ProjectforkHelperAccess::getActions('milestone', (int) $data['milestone_id']);
+        }
+        elseif (isset($data['project_id'])) {
+            $access = ProjectforkHelperAccess::getActions('project', (int) $data['project_id']);
+        }
+        else {
+            $access = ProjectforkHelperAccess::getActions(null, 0, true);
+        }
+
+        return $access->get('tasklist.create');
     }
 
 

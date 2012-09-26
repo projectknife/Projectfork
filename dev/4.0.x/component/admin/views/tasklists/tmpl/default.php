@@ -35,15 +35,13 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                 <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
             </select>
 
-            <select name="filter_access" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_ACCESS');?></option>
-                <?php echo JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'));?>
-            </select>
+            <?php if ($this->state->get('filter.project')) : ?>
+                <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
+                    <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+                    <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
+                </select>
+            <?php endif; ?>
 
-            <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
-            </select>
             <?php echo JHtml::_('projectfork.filterProject');?>
         </div>
     </fieldset>
@@ -55,23 +53,22 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                 <th width="1%">
                     <input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
                 </th>
-                <th width="5%">
+                <th width="3%">
                     <?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $list_dir, $list_order); ?>
                 </th>
                 <th>
                     <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                 </th>
-                <th width="15%">
-                    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'p.title', $list_dir, $list_order); ?>
-                </th>
+                <?php if (!$this->state->get('filter.project')) : ?>
+                    <th width="15%">
+                        <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'p.title', $list_dir, $list_order); ?>
+                    </th>
+                <?php endif; ?>
                 <th width="15%">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONE', 'm.title', $list_dir, $list_order); ?>
                 </th>
                 <th width="15%">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
-                </th>
-                <th width="10%">
-                    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_ON', 'a.created', $list_dir, $list_order); ?>
                 </th>
                 <th width="10%">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access', $list_dir, $list_order); ?>
@@ -109,16 +106,17 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                         <?php echo $this->escape($item->title); ?>
                     <?php endif; ?>
                 </td>
-                <td><?php echo $this->escape($item->project_title); ?></td>
-                <td><?php echo $this->escape($item->milestone_title); ?></td>
-                <td class="center">
+                <?php if (!$this->state->get('filter.project')) : ?>
+                    <td><?php echo $this->escape($item->project_title); ?></td>
+                <?php endif; ?>
+                <td>
+                    <?php echo $this->escape($item->milestone_title); ?>
+                </td>
+                <td>
                     <?php echo $this->escape($item->author_name); ?>
                 </td>
-                <td class="center nowrap">
-                    <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
-                </td>
-                <td class="center">
-                    <?php echo $this->escape($item->access_level); ?>
+                <td>
+                    <?php echo $this->escape(JHtml::_('projectfork.truncate', $item->access_level)); ?>
                 </td>
                 <td class="center">
                     <?php echo (int) $item->id; ?>
@@ -128,7 +126,7 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="9">
+                <td colspan="8">
                     <?php echo $this->pagination->getListFooter(); ?>
                 </td>
             </tr>

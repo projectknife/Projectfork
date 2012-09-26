@@ -16,10 +16,18 @@ jimport('joomla.application.component.controllerform');
 class ProjectforkControllerMilestone extends JControllerForm
 {
     /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
+    protected $text_prefix = "COM_PROJECTFORK_MILESTONE";
+
+
+    /**
      * Class constructor.
      *
      * @param     array              $config    A named array of configuration variables
-     * @return    jcontrollerform               
+     * @return    jcontrollerform
      */
     public function __construct($config = array())
     {

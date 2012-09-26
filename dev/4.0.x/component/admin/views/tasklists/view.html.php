@@ -50,7 +50,7 @@ class ProjectforkViewTasklists extends JViewLegacy
      */
     protected function addToolbar()
     {
-        $access = ProjectforkHelper::getActions();
+        $access = ProjectforkHelper::getActions(NULL, 0, true);
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_TASKLISTS_TITLE'), 'article.png');
 

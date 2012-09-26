@@ -39,16 +39,11 @@
             label="JGLOBAL_FIELD_MODIFIED_BY_LABEL"
             class="readonly" readonly="true" filter="unset"
         />
-        <field name="access" type="inheritaccess"
-            label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC"
-            class="inputbox" size="1"
-            onchange="PFform.reload('rules');"
-        />
-        <field name="rules" type="inheritrules"
-            label="JCONFIG_PERMISSIONS_LABEL"
-            component="com_projectfork" section="tasklist" validate="rules" filter="rules"
+        <field name="rules" type="groupaccess"
+            component="com_projectfork" section="tasklist" inheritonly="true" filter="ProjectforkHelperForm::filterRules" validate="groupaccess"
         />
         <field name="id" type="hidden" readonly="true"/>
+        <field name="access" type="inheritaccess" hidden="true" readonly="true"/>
         <field name="asset_id" type="hidden" filter="unset"/>
         <field name="alias" type="hidden" readonly="true"/>
         <field name="created" type="hidden" readonly="true"/>

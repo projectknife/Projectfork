@@ -11,7 +11,7 @@ defined('_JEXEC') or die();
 
 
 // Base this model on the backend version.
-require_once JPATH_ADMINISTRATOR.'/components/com_projectfork/models/milestone.php';
+JLoader::register('ProjectforkModelMilestone', JPATH_ADMINISTRATOR . '/components/com_projectfork/models/milestone.php');
 
 
 /**

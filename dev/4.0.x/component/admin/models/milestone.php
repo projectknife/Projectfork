@@ -99,12 +99,10 @@ class ProjectforkModelMilestone extends JModelAdmin
         $form = $this->loadForm('com_projectfork.milestone', 'milestone', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) return false;
 
-
         // Check if a project id is already selected. If not, set the currently active project as value
         $project_id = (int) $form->getValue('project_id');
         if (!$this->getState($this->getName() . '.id') && $project_id == 0) {
-            $app       = JFactory::getApplication();
-            $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
+            $active_id = ProjectforkHelper::getActiveProjectId();
 
             $form->setValue('project_id', null, $active_id);
         }
@@ -216,21 +214,6 @@ class ProjectforkModelMilestone extends JModelAdmin
         $this->cleanCache();
 
         return true;
-
-        // Delete the records
-        $success = parent::delete($pks);
-
-        // Cancel if something went wrong
-        if (!$success) return false;
-
-        $tasklists = JTable::getInstance('Tasklist', 'PFTable');
-        $tasks     = JTable::getInstance('Task', 'PFTable');
-
-        // Delete all other items referenced to each project
-        if (!$tasklists->deleteByReference($pks, 'milestone_id')) $success = false;
-        if (!$tasks->deleteByReference($pks, 'milestone_id'))     $success = false;
-
-        return $success;
     }
 
 
@@ -336,7 +319,8 @@ class ProjectforkModelMilestone extends JModelAdmin
      */
     public function publish(&$pks, $value = 1)
     {
-        $result = parent::publish($pks, $value);
+        $result  = parent::publish($pks, $value);
+        $changes = array('state' => $value);
 
         if ($result) {
             // State change succeeded. Now update all children
@@ -490,10 +474,13 @@ class ProjectforkModelMilestone extends JModelAdmin
         // Check for existing item.
         if (!empty($record->id)) {
             $access = ProjectforkHelperAccess::getActions('milestone', $record->id);
-            return $access->get('milestone.edit');
+            $user   = JFactory::getUser();
+
+            return ($access->get('milestone.edit') || ($access->get('milestone.edit.own') && $record->created_by == $user->id));
         }
         else {
-            return false;
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('milestone.edit');
         }
     }
 }
