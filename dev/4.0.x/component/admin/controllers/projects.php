@@ -19,6 +19,11 @@ jimport('joomla.application.component.controlleradmin');
  */
 class ProjectforkControllerProjects extends JControllerAdmin
 {
+    /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
     protected $text_prefix = "COM_PROJECTFORK_PROJECTS";
 
 
@@ -27,7 +32,7 @@ class ProjectforkControllerProjects extends JControllerAdmin
      *
      * @param    array          $config    An optional associative array of configuration settings
 
-     * @see      jcontroller               
+     * @see      jcontroller
      */
     public function __construct($config = array())
     {
@@ -40,7 +45,7 @@ class ProjectforkControllerProjects extends JControllerAdmin
      *
      * @param     string    $name      The name of the model.
      * @param     string    $prefix    The prefix for the PHP class name.
-     * @return    jmodel               
+     * @return    jmodel
      */
     public function getModel($name = 'Project', $prefix = 'ProjectforkModel', $config = array('ignore_request' => true))
     {

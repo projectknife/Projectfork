@@ -60,7 +60,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                             <?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_projectfork'), 'value', 'text', $this->state->get('filter.category'));?>
                         </select>
                     </div>
-                    <?php if (!$this->access->get('project.edit.state') && !$this->access->get('project.edit')) : ?>
+                    <?php if ($this->access->get('project.edit.state') || $this->access->get('project.edit')) : ?>
                         <div class="filter-author btn-group">
                             <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
@@ -123,14 +123,11 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                                         <i class="icon-edit"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
                                     </a>
                                 <?php endif; ?>
-                                <a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute($item->slug));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_MILESTONES');?>">
+                                <a class="btn btn-mini hasTip" href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute($item->slug));?>" rel="tooltip" data-placement="bottom" title="::<?php echo JText::_('JGRID_HEADING_MILESTONES');?>">
                                     <i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?>
                                 </a>
-                                <a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->slug));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_TASKLISTS');?>">
-                                    <i class="icon-th-list"></i> <?php echo (int) $item->tasklists;?>
-                                </a>
-                                <a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->slug));?>" rel="tooltip" data-placement="bottom" title="<?php echo JText::_('JGRID_HEADING_TASKS');?>">
-                                    <i class="icon-ok"></i> <?php echo (int) $item->tasks;?>
+                                <a class="btn btn-mini hasTip" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->slug));?>" rel="tooltip" data-placement="bottom" title="::<?php echo JText::_('JGRID_HEADING_TASKLISTS_AND_TASKS');?>">
+                                    <i class="icon-th-list"></i> <?php echo (int) $item->tasklists;?> / <?php echo (int) $item->tasks;?>
                                 </a>
                             </div>
                         </div>

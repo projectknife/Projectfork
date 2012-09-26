@@ -111,7 +111,7 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                 <td>
                     <?php echo $this->escape($item->category_title); ?>
                 </td>
-                <td class="center">
+                <td>
                     <?php echo $this->escape($item->manager_name); ?>
                 </td>
                 <td class="center nowrap">

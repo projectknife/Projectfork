@@ -27,6 +27,7 @@ JLoader::register('ProjectforkHelperContextMenu', JPATH_BASE . '/components/com_
 
 // Add include paths
 JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/html');
+JForm::addRulePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/models/rules');
 
 JLoader::registerPrefix('Projectfork', JPATH_SITE . '/components/com_projectfork/libraries/projectfork');
 

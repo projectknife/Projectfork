@@ -95,16 +95,23 @@ class ProjectforkViewProjectForm extends JViewLegacy
         $menu    = $menus->getActive();
         $title   = null;
 
+        $def_title = JText::_('COM_PROJECTFORK_PAGE_' . ($this->item->id > 0 ? 'EDIT' : 'ADD') . '_PROJECT');
+
         // Because the application sets a default page title,
         // we need to get it from the menu item itself
         if ($menu) {
-            $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
+            if (strpos($menu->link, 'view=projects') !== false) {
+                $this->params->def('page_heading', $def_title);
+            }
+            else {
+                $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
+            }
         }
         else {
-            $this->params->def('page_heading', JText::_('COM_PROJECTFORK_FORM_EDIT_PROJECT'));
+            $this->params->def('page_heading', $def_title);
         }
 
-        $title = $this->params->def('page_title', JText::_('COM_PROJECTFORK_FORM_EDIT_PROJECT'));
+        $title = $this->params->def('page_title', $def_title);
 
         if ($app->getCfg('sitename_pagetitles', 0) == 1) {
             $title = JText::sprintf('JPAGETITLE', $app->getCfg('sitename'), $title);
@@ -115,20 +122,7 @@ class ProjectforkViewProjectForm extends JViewLegacy
 
         $this->document->setTitle($title);
 
-
         $pathway = $app->getPathWay();
         $pathway->addItem($title, '');
-
-        if ($this->params->get('menu-meta_description')) {
-            $this->document->setDescription($this->params->get('menu-meta_description'));
-        }
-
-        if ($this->params->get('menu-meta_keywords')) {
-            $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
-        }
-
-        if ($this->params->get('robots')) {
-            $this->document->setMetadata('robots', $this->params->get('robots'));
-        }
     }
 }

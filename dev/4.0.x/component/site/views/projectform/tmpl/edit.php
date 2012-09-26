@@ -13,7 +13,6 @@ defined('_JEXEC') or die();
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.calendar');
-JHtml::_('behavior.formvalidation');
 JHtml::_('projectfork.script.form');
 
 $params = $this->state->get('params');
@@ -24,23 +23,23 @@ $create_list = $access->get('tasklist.create');
 $create_task = $access->get('task.create');
 ?>
 <script type="text/javascript">
-	Joomla.submitbutton = function(task) {
-		if (task == 'projectform.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
-			<?php echo $this->form->getField('description')->save(); ?>
-			Joomla.submitform(task);
-		} else {
-			alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
-		}
+Joomla.submitbutton = function(task)
+{
+	if (task == 'projectform.cancel' || document.getElementById('jform_title').value != '') {
+		<?php echo $this->form->getField('description')->save(); ?>
+		Joomla.submitform(task);
+	} else {
+		alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 	}
+}
 </script>
 <div class="edit item-page<?php echo $this->pageclass_sfx; ?>">
+
 <?php if ($params->get('show_page_heading', 0)) : ?>
-<h1>
-	<?php echo $this->escape($params->get('page_heading')); ?>
-</h1>
+<h1><?php echo $this->escape($params->get('page_heading')); ?></h1>
 <?php endif; ?>
 
-<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="item-form" class="form-validate form-inline">
+<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="item-form" class="form-inline">
 	<fieldset>
 		<div class="formelm-buttons btn-toolbar">
 		    <div class="btn-group">
@@ -110,8 +109,10 @@ $create_task = $access->get('task.create');
 		</div>
 	</fieldset>
 
+    <hr />
+
     <?php echo JHtml::_('tabs.start', 'projectform', array('useCookie' => 'true')) ;?>
-    <?php echo JHtml::_('tabs.panel', 'Publishing', 'project-publishing') ;?>
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_PUBLISHING'), 'project-publishing') ;?>
     <fieldset>
         <div class="formelm control-group">
         	<div class="control-label">
@@ -165,47 +166,16 @@ $create_task = $access->get('task.create');
 		<?php endif; ?>
     </fieldset>
 
-    <?php echo JHtml::_('tabs.panel', 'Attachments', 'project-attachments') ;?>
+    <?php if ($this->item->id) : ?>
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'project-attachments') ;?>
     <fieldset>
     	<div class="formelm control-group">
     		<?php echo $this->form->getInput('attachment'); ?>
     	</div>
     </fieldset>
+    <?php endif; ?>
 
-    <?php echo JHtml::_('tabs.panel', 'Permissions', 'project-permissions') ;?>
-    <fieldset>
-        <div class="formelm">
-        	<div class="control-label">
-		    	<?php echo $this->form->getLabel('access_action'); ?>
-		    </div>
-		    <div class="controls">
-				<?php echo $this->form->getInput('access_action'); ?>
-			</div>
-		</div>
-        <div class="formelm" id="jform_access_element">
-        	<div class="control-label">
-		    	<?php echo $this->form->getLabel('access'); ?>
-		    </div>
-		    <div class="controls">
-				<?php echo $this->form->getInput('access'); ?>
-			</div>
-		</div>
-        <div class="formelm" id="jform_access_title_element" style="display: none;">
-        	<div class="control-label">
-		    	<?php echo $this->form->getLabel('access_title'); ?>
-		    </div>
-		    <div class="controls">
-				<?php echo $this->form->getInput('access_title'); ?>
-			</div>
-		</div>
-        <div class="formlm" id="jform_rules_element">
-            <div id="jform_rules_reload" class="controls">
-                <?php echo $this->form->getInput('rules'); ?>
-            </div>
-        </div>
-    </fieldset>
-
-    <?php echo JHtml::_('tabs.panel', 'Options', 'project-options') ;?>
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_DETAILS_FIELDSET'), 'project-options') ;?>
     <fieldset>
         <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
 			<?php foreach ($fieldSets as $name => $fieldSet) : ?>
@@ -222,6 +192,17 @@ $create_task = $access->get('task.create');
                     <?php endforeach; ?>
                 </fieldset>
 			<?php endforeach; ?>
+    </fieldset>
+
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'project-permissions') ;?>
+    <fieldset>
+        <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+        <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+        <div class="formlm" id="jform_rules_element">
+            <div id="jform_rules_reload" class="controls">
+                <?php echo $this->form->getInput('rules'); ?>
+            </div>
+        </div>
     </fieldset>
 
     <?php echo JHtml::_('tabs.end') ;?>

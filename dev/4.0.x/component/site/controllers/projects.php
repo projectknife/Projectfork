@@ -22,9 +22,16 @@ class ProjectforkControllerProjects extends JControllerAdmin
     /**
      * The default list view
      *
-     * @var    string    
+     * @var    string
      */
     protected $view_list = 'projects';
+
+    /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
+    protected $text_prefix = "COM_PROJECTFORK_PROJECTS";
 
 
     /**
