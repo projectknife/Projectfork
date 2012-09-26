@@ -66,7 +66,17 @@ class ProjectforkHelperQuery
                         $query->where($field . ' = ' . (int) $value);
                     }
                     elseif ($value === '') {
-                        $query->where('(' . $field . ' = 0 OR ' . $field . ' = 1)');
+                        if (JFactory::getApplication()->isSite()) {
+                            // Frontend defaults to published only
+                            $query->where($field . ' = 1');
+                        }
+                        else {
+                            // Backend defaults to published and unpublished
+                            $query->where('(' . $field . ' = 0 OR ' . $field . ' = 1)');
+                        }
+                    }
+                    else {
+                        $query->where('' . $field . ' = 1');
                     }
                     break;
 

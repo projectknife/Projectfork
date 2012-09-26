@@ -14,6 +14,7 @@ $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
 $uid        = $user->get('id');
+$pid        = (int) $this->state->get('filter.project');
 
 $action_count = count($this->actions);
 $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
@@ -51,7 +52,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                         <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
                         <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
                     </div>
-                    <?php if (is_numeric($this->state->get('filter.project'))) : ?>
+                    <?php if ($pid) : ?>
                         <div class="filter-author btn-group">
                             <select id="filter_author" name="filter_author" class="inputbox input-medium" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
@@ -73,6 +74,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 
             <?php
             $k = 0;
+            $current_project = '';
             foreach($this->items AS $i => $item) :
                 $access = ProjectforkHelperAccess::getActions('milestone', $item->id);
 
@@ -91,6 +93,10 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                 if ($progress < 67)   $progress_class = 'warning';
                 if ($progress < 34)   $progress_class = 'danger label-important';
             ?>
+                <?php if ($item->project_title != $current_project && $pid <= 0) : ?>
+                    <h3><?php echo $this->escape($item->project_title);?></h3>
+                    <hr />
+                <?php $current_project = $item->project_title; endif; ?>
                 <div class="well well-<?php echo $k;?>">
                     <?php
                         $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
@@ -109,16 +115,10 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                         </span>
                     <?php endif; ?>
                     <h4 class="milestone-title">
+                        <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                         <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestoneRoute($item->slug, $item->project_slug));?>">
-                            <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                             <?php echo $this->escape($item->title);?>
                         </a>
-                        <small>
-                            in <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->project_slug));?>">
-                            <?php echo $this->escape($item->project_title);?>
-                            </a>
-                            by <?php echo $this->escape($item->author_name);?>
-                        </small>
                         <a href="#milestone-<?php echo $item->id;?>" class="btn btn-mini" data-toggle="collapse">
                             <?php echo JText::_('COM_PROJECTFORK_DETAILS_LABEL');?> <span class="caret"></span>
                         </a>
@@ -127,10 +127,13 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                         <hr />
                         <div class="small">
                             <span class="label access pull-right">
-                                <i class="icon-user icon-white"></i> <?php echo $this->escape($item->access_level);?>
+                                <i class="icon-user icon-white"></i> <?php echo $this->escape($item->author_name);?>
+                            </span>
+                            <span class="label access pull-right">
+                                <i class="icon-lock icon-white"></i> <?php echo $this->escape($item->access_level);?>
                             </span>
 
-                            <?php echo $this->escape($item->description);?>
+                            <p><?php echo $this->escape($item->description);?></p>
 
                             <span class="list-created">
                                 <?php echo JHtml::_('date', $item->created, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>

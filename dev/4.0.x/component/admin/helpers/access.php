@@ -27,7 +27,7 @@ class ProjectforkHelperAccess
      */
     public static function getActions($asset_name = NULL, $asset_id = 0, $active_project = false)
     {
-        static $results       = array();
+        static $results        = array();
         static $project_assets = array();
 
         if (!count($project_assets)) $project_assets = self::getAssetMap('project');
@@ -36,7 +36,6 @@ class ProjectforkHelperAccess
 
         if ($asset_name) $asset .= '.' . $asset_name;
         if ($asset_id)   $asset .= '.' . $asset_id;
-
 
         if ($active_project || (in_array($asset_name, $project_assets) && $asset_id == 0)) {
             $pid = (int) JFactory::getApplication()->getUserState('com_projectfork.project.active.id', 0);

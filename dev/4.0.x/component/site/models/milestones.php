@@ -30,9 +30,9 @@ class ProjectforkModelMilestones extends JModelList
     public function __construct($config = array())
     {
         // Register dependencies
-        JLoader::register('ProjectforkHelperQuery',  JPATH_SITE . '/components/com_projectfork/helpers/query.php');
         JLoader::register('ProjectforkHelper',       JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
         JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+        JLoader::register('ProjectforkHelperQuery',  JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
 
         // Set field filter
         if (empty($config['filter_fields'])) {
@@ -122,7 +122,16 @@ class ProjectforkModelMilestones extends JModelList
         $query->group('a.id');
 
         // Add the list ordering clause.
-        $query->order($this->getState('list.ordering', 'a.title') . ' ' . $this->getState('list.direction', 'ASC'));
+        $project = (int) $this->getState('filter.project');
+        $order   = $this->getState('list.ordering', 'a.title');
+
+        if ($project <= 0) {
+            if ($order != 'project_title') {
+                $order = 'project_title ASC, ' . $order;
+            }
+        }
+
+        $query->order($order . ' ' . $this->getState('list.direction', 'ASC'));
 
         return $query;
     }
@@ -172,7 +181,8 @@ class ProjectforkModelMilestones extends JModelList
 
         // Return empty array if no project is select
         $project = (int) $this->getState('filter.project');
-        if ($project < 0) {
+
+        if ($project <= 0) {
             return array();
         }
 
@@ -247,9 +257,8 @@ class ProjectforkModelMilestones extends JModelList
         $this->setState('filter.search', $search);
 
         // Filter - Project
-        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         // Filter - Author
         $author = $app->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', '');

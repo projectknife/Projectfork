@@ -90,9 +90,9 @@ class ProjectforkViewProjectForm extends JViewLegacy
     protected function _prepareDocument()
     {
         $app     = JFactory::getApplication();
-        $menus   = $app->getMenu();
+        $menu    = $app->getMenu()->getActive();
         $pathway = $app->getPathway();
-        $menu    = $menus->getActive();
+
         $title   = null;
 
         $def_title = JText::_('COM_PROJECTFORK_PAGE_' . ($this->item->id > 0 ? 'EDIT' : 'ADD') . '_PROJECT');
@@ -124,5 +124,17 @@ class ProjectforkViewProjectForm extends JViewLegacy
 
         $pathway = $app->getPathWay();
         $pathway->addItem($title, '');
+
+        if ($this->params->get('menu-meta_description')) {
+            $this->document->setDescription($this->params->get('menu-meta_description'));
+        }
+
+        if ($this->params->get('menu-meta_keywords')) {
+            $this->document->setMetadata('keywords', $this->params->get('menu-meta_keywords'));
+        }
+
+        if ($this->params->get('robots')) {
+            $this->document->setMetadata('robots', $this->params->get('robots'));
+        }
     }
 }
