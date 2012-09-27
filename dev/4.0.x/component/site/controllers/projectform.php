@@ -113,6 +113,21 @@ class ProjectforkControllerProjectform extends JControllerForm
 
 
     /**
+     * Method to check if you can add a new record.
+     *
+     * @param     array      $data    An array of input data.
+     *
+     * @return    boolean
+     */
+    protected function allowAdd($data = array())
+    {
+        $access = ProjectforkHelperAccess::getActions();
+
+        return $access->get('project.create');
+    }
+
+
+    /**
      * Method override to check if you can edit an existing record.
      *
      * @param     array      $data    An array of input data.
