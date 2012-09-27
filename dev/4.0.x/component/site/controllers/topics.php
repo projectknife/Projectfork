@@ -26,6 +26,13 @@ class ProjectforkControllerTopics extends JControllerAdmin
      */
     protected $view_list = 'topics';
 
+    /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
+	protected $text_prefix = 'COM_PROJECTFORK_TOPICS';
+
 
     /**
      * Method to get a model object, loading it if required.
