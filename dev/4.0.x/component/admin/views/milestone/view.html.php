@@ -55,7 +55,6 @@ class ProjectforkViewMilestone extends JViewLegacy
         $checked_out = !($this->item->checked_out == 0 || $this->item->checked_out == $uid);
         $access      = ProjectforkHelperAccess::getActions('milestone', $this->item->id);
 
-
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_PAGE_' . ($checked_out ? 'VIEW_MILESTONE' : ($is_new ? 'ADD_MILESTONE' : 'EDIT_MILESTONE'))), 'article-add.png');
 
         // Built the actions for new and existing records.

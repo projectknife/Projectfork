@@ -27,7 +27,7 @@ Joomla.submitbutton = function(task)
     }
 }
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=topic&id='.(int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=topic&id=' .(int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 
     <div class="width-60 fltlft">
         <fieldset class="adminform">
@@ -45,7 +45,7 @@ Joomla.submitbutton = function(task)
     </div>
 
     <div class="width-40 fltrt">
-        <?php echo JHtml::_('sliders.start','project-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
+        <?php echo JHtml::_('sliders.start','topic-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
 
             <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
             <fieldset class="panelform">
@@ -59,26 +59,29 @@ Joomla.submitbutton = function(task)
                 </ul>
             </fieldset>
 
-            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_TOPIC_FIELDSET_RULES'), 'access-rules'); ?>
+            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'attachments'); ?>
             <fieldset class="panelform">
-                <ul class="adminformlist">
+				<ul class="adminformlist">
                     <li>
-                        <?php echo $this->form->getLabel('access');?>
-                        <div id="jform_access_reload"><?php echo $this->form->getInput('access'); ?></div>
-                    </li>
-				    <li>
-                        <label id="jform_access_exist-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
-                            <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
-                        </label>
-                    </li>
-                    <li>
-                        <div id="jform_access_groups">
-    			            <div class="clr"></div>
-                            <div id="jform_rules_reload"><?php echo $this->form->getInput('rules'); ?></div>
-                        </div>
+                        <?php echo $this->form->getInput('attachment'); ?>
                     </li>
                 </ul>
             </fieldset>
+
+            <?php $fieldsets = $this->form->getFieldsets('attribs'); ?>
+			<?php foreach ($fieldsets as $name => $fieldset) : ?>
+				<?php echo JHtml::_('sliders.panel', JText::_($fieldset->label), $name . '-options'); ?>
+				<?php if (isset($fieldset->description) && trim($fieldset->description)) : ?>
+					<p><?php echo $this->escape(JText::_($fieldset->description));?></p>
+				<?php endif; ?>
+				<fieldset class="panelform">
+					<ul class="adminformlist">
+					    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
+						    <li><?php echo $field->label . $field->input; ?></li>
+					    <?php endforeach; ?>
+					</ul>
+				</fieldset>
+			<?php endforeach; ?>
 
        <?php echo JHtml::_('sliders.end'); ?>
        <div class="clr"></div>
@@ -86,7 +89,28 @@ Joomla.submitbutton = function(task)
 
     <div class="clr"></div>
 
+    <div class="width-100 fltlft">
+		<?php echo JHtml::_('sliders.start', 'permissions-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
+
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'access-rules'); ?>
+			<fieldset class="panelform">
+                <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+                <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+				<div id="jform_rules_element">
+                    <div id="jform_rules_reload" style="clear: both;">
+                        <?php echo $this->form->getInput('rules'); ?>
+                    </div>
+                </div>
+			</fieldset>
+		<?php echo JHtml::_('sliders.end'); ?>
+	</div>
+
     <div>
+        <div id="jform_access_element">
+            <div id="jform_access_reload">
+                <?php echo $this->form->getInput('access'); ?>
+            </div>
+        </div>
         <?php
             echo $this->form->getInput('alias');
             echo $this->form->getInput('created');

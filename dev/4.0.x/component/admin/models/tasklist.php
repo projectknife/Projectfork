@@ -438,7 +438,8 @@ class ProjectforkModelTasklist extends JModelAdmin
             return $access->get('tasklist.edit.state');
         }
         else {
-            return parent::canEditState('com_projectfork');
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('tasklist.edit.state');
         }
     }
 

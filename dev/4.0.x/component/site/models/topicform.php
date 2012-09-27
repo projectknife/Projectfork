@@ -11,7 +11,7 @@ defined('_JEXEC') or die();
 
 
 // Base this model on the backend version.
-require_once JPATH_ADMINISTRATOR.'/components/com_projectfork/models/topic.php';
+JLoader::register('ProjectforkModelTopic', JPATH_ADMINISTRATOR . '/components/com_projectfork/models/topic.php');
 
 
 /**
@@ -69,6 +69,10 @@ class ProjectforkModelTopicForm extends ProjectforkModelTopic
         // Convert attrib field to Registry.
         $value->params = new JRegistry;
         $value->params->loadString($value->attribs);
+
+        // Get the attachments
+        $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
+        $value->attachment = $attachments->getItems('topic', $value->id);
 
         // Compute selected asset permissions.
         $uid    = JFactory::getUser()->get('id');

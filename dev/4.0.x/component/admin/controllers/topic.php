@@ -16,6 +16,14 @@ jimport('joomla.application.component.controllerform');
 class ProjectforkControllerTopic extends JControllerForm
 {
     /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
+    protected $text_prefix = "COM_PROJECTFORK_TOPIC";
+
+
+    /**
      * Class constructor.
      *
      * @param    array    $config    A named array of configuration variables

@@ -435,7 +435,8 @@ class ProjectforkModelMilestone extends JModelAdmin
             return $access->get('milestone.delete');
         }
         else {
-            return parent::canDelete('com_projectfork');
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('milestone.delete');
         }
     }
 
@@ -456,7 +457,8 @@ class ProjectforkModelMilestone extends JModelAdmin
             return $access->get('milestone.edit.state');
         }
         else {
-            return parent::canEditState('com_projectfork');
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('milestone.edit.state');
         }
     }
 

@@ -112,7 +112,7 @@ class ProjectforkModelTopics extends JModelList
         $query->group('a.id');
 
         // Add the list ordering clause.
-        $query->order($this->getState('list.ordering', 'a.created').' ' . $this->getState('list.direction', 'DESC'));
+        $query->order($this->getState('list.ordering', 'a.created') .' ' . $this->getState('list.direction', 'DESC'));
 
         return $query;
     }
@@ -160,6 +160,13 @@ class ProjectforkModelTopics extends JModelList
         $user   = JFactory::getUser();
         $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
 
+        // Return empty array if no project is select
+        $project = (int) $this->getState('filter.project');
+
+        if ($project <= 0) {
+            return array();
+        }
+
         // Construct the query
         $query->select('u.id AS value, u.name AS text');
         $query->from('#__users AS u');
@@ -173,7 +180,7 @@ class ProjectforkModelTopics extends JModelList
 
         // Filter fields
         $filters = array();
-        $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
+        $filters['a.project_id'] = array('INT-NOTZERO', $project);
 
         if (!$access->get('topic.edit.state') && !$access->get('topic.edit')) {
             $filters['a.state'] = array('STATE', '1');
@@ -231,9 +238,8 @@ class ProjectforkModelTopics extends JModelList
         $this->setState('filter.search', $value);
 
         // Filter - Project
-        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         // Filter - Author
         $author = $app->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', '');

@@ -30,20 +30,12 @@ class ProjectforkModelTopics extends JModelList
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'id', 'a.id',
-                'project_id', 'a.project_id', 'project_title',
-                'title', 'a.title',
-                'description', 'a.description',
-                'alias', 'a.alias',
-                'created', 'a.created',
-                'created_by', 'a.created_by',
-                'modified', 'a.modified',
-                'modified_by', 'a.modified_by',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
-                'attribs', 'a.attribs',
-                'access', 'a.access', 'access_level',
-                'state', 'a.state',
+                'a.id', 'a.project_id', 'project_title',
+                'a.title', 'a.description', 'a.alias',
+                'a.created', 'a.created_by', 'a.modified',
+                'a.modified_by', 'a.checked_out',
+                'a.checked_out_time', 'a.attribs',
+                'a.access', 'access_level', 'a.state',
                 'replies'
             );
         }
@@ -58,7 +50,7 @@ class ProjectforkModelTopics extends JModelList
      *
      * @return    void
      */
-    protected function populateState($ordering = null, $direction = null)
+    protected function populateState($ordering = 'a.created', $direction = 'desc')
     {
         // Initialise variables.
         $app = JFactory::getApplication();
@@ -78,12 +70,15 @@ class ProjectforkModelTopics extends JModelList
         $access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', '');
         $this->setState('filter.access', $access);
 
-        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
+
+        if (!$project) {
+            $this->setState('filter.author_id', '');
+        }
 
         // List state information.
-        parent::populateState('a.created', 'desc');
+        parent::populateState($ordering, $direction);
     }
 
 
@@ -223,7 +218,13 @@ class ProjectforkModelTopics extends JModelList
      */
     public function getAuthors()
     {
-        // Create a new query object.
+        // Load only if project filter is set
+        $project = (int) $this->getState('filter.project');
+
+        if ($project <= 0) {
+            return array();
+        }
+
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -231,6 +232,7 @@ class ProjectforkModelTopics extends JModelList
         $query->select('u.id AS value, u.name AS text')
               ->from('#__users AS u')
               ->join('INNER', '#__pf_topics AS a ON a.created_by = u.id')
+              ->where('a.project_id = ' . $db->quote($project))
               ->group('u.id')
               ->order('u.name');
 
