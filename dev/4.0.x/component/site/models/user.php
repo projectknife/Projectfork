@@ -10,8 +10,9 @@
 defined('_JEXEC') or die();
 
 
-require_once JPATH_ADMINISTRATOR . '/components/com_users/models/user.php';
-
+// Base this on the backend users model
+JLoader::register('UsersModelUser', JPATH_ADMINISTRATOR . '/components/com_users/models/user.php');
+JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
 
 /**
  * Projectfork User Model
@@ -33,7 +34,7 @@ class ProjectforkModelUser extends UsersModelUser
         $query = $db->getQuery(true);
 
         $access = ProjectforkHelperAccess::getActions();
-        $groups    = implode(',', $user->getAuthorisedViewLevels());
+        $groups = implode(',', $user->getAuthorisedViewLevels());
 
         $query->select('id')
               ->from('#__pf_projects')
@@ -44,7 +45,7 @@ class ProjectforkModelUser extends UsersModelUser
         }
 
         $db->setQuery((string) $query);
-        $projects = (array) $db->loadResultArray();
+        $projects = (array) $db->loadColumn();
 
         return $projects;
     }

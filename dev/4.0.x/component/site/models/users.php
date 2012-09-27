@@ -11,7 +11,7 @@ defined('_JEXEC') or die();
 
 
 // Base this on the backend users model
-require_once JPATH_ADMINISTRATOR . '/components/com_users/models/users.php';
+JLoader::register('UsersModelUsers', JPATH_ADMINISTRATOR . '/components/com_users/models/users.php');
 
 
 /**
@@ -52,9 +52,8 @@ class ProjectforkModelUsers extends UsersModelUsers
         $groups = array();
 
         // Filter - Project
-        $pid = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $pid = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $pid);
-        ProjectforkHelper::setActiveProject($pid);
 
         // Override group filter by active project
         if ($pid) {
@@ -78,11 +77,13 @@ class ProjectforkModelUsers extends UsersModelUsers
                 {
                     $tmp_groups = $model->getUserGroups($project);
 
-                    // Get group ids
-                    if (is_array($tmp_groups)) {
-                        foreach($tmp_groups AS $group)
-                        {
-                            $groups[] = (int) $group->value;
+                    if ($tmp_groups !== false) {
+                        // Get group ids
+                        if (is_array($tmp_groups)) {
+                            foreach($tmp_groups AS $group)
+                            {
+                                $groups[] = (int) $group;
+                            }
                         }
                     }
                 }
