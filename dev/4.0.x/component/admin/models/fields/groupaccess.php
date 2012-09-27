@@ -380,7 +380,7 @@ class JFormFieldGroupAccess extends JFormField
 
      * @return    array                   The html array
      */
-    protected function getSiteHTML()
+    protected function getSiteHTML($component, $section, $asset = '')
     {
         $html   = array();
         $html[] = '<div id="permissions-sliders">';

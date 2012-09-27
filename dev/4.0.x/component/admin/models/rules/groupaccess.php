@@ -87,7 +87,7 @@ class JFormRuleGroupAccess extends JFormRule
 
         // Initialise some field attributes.
         $section  = $element['section'] ? (string) $element['section'] : '';
-        $component = $element['component'] ? (string) $element['component'] : '';
+        $component = $element['component'] ? (string) $element['component'] : 'com_projectfork';
 
         // Get the asset actions for the element.
         $elActions = JAccess::getActions($component, $section);

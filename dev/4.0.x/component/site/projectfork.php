@@ -21,6 +21,7 @@ JFactory::getLanguage()->load('com_projectfork', JPATH_ADMINISTRATOR . '/compone
 // Register classes to autoload
 JLoader::register('ProjectforkHelper',            JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
 JLoader::register('ProjectforkHelperAccess',      JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+JLoader::register('ProjectforkHelperForm',        JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/form.php');
 JLoader::register('ProjectforkHelperRoute',       JPATH_BASE . '/components/com_projectfork/helpers/route.php');
 JLoader::register('ProjectforkHelperToolbar',     JPATH_BASE . '/components/com_projectfork/helpers/toolbar.php');
 JLoader::register('ProjectforkHelperContextMenu', JPATH_BASE . '/components/com_projectfork/helpers/contextmenu.php');
