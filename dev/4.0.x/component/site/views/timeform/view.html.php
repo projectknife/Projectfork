@@ -39,8 +39,8 @@ class ProjectforkViewTimeForm extends JViewLegacy
 
 
         // Permission check.
-        if (empty($this->item->id)) {
-            $access = ProjectforkHelperAccess::getActions('time');
+        if ($this->item->id <= 0) {
+            $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
             $authorised = $access->get('time.create');
         }
         else {
@@ -59,21 +59,14 @@ class ProjectforkViewTimeForm extends JViewLegacy
             return false;
         }
 
-        // Create a shortcut to the parameters.
-        $params = &$this->state->params;
-
-
         //Escape strings for HTML output
-        $this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
+        $this->pageclass_sfx = htmlspecialchars($this->state->params->get('pageclass_sfx'));
 
-
-        $this->params = $params;
+        $this->params = $this->state->params;
         $this->user   = $user;
-
 
         // Prepare the document
         $this->_prepareDocument();
-
 
         // Display the view
         parent::display($tpl);
@@ -87,22 +80,27 @@ class ProjectforkViewTimeForm extends JViewLegacy
     protected function _prepareDocument()
     {
         $app     = JFactory::getApplication();
-        $menus   = $app->getMenu();
+        $menu    = $app->getMenu()->getActive();
         $pathway = $app->getPathway();
         $title   = null;
 
+        $def_title = JText::_('COM_PROJECTFORK_PAGE_' . ($this->item->id > 0 ? 'EDIT' : 'ADD') . '_TIME');
+
         // Because the application sets a default page title,
         // we need to get it from the menu item itself
-        $menu = $menus->getActive();
-
         if ($menu) {
-            $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
+            if (strpos($menu->link, 'view=timesheet') !== false) {
+                $this->params->def('page_heading', $def_title);
+            }
+            else {
+                $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
+            }
         }
         else {
-            $this->params->def('page_heading', JText::_('COM_PROJECTFORK_FORM_EDIT_TIME'));
+            $this->params->def('page_heading', $def_title);
         }
 
-        $title = $this->params->def('page_title', JText::_('COM_PROJECTFORK_FORM_EDIT_TIME'));
+        $title = $this->params->def('page_title', $def_title);
 
         if ($app->getCfg('sitename_pagetitles', 0) == 1) {
             $title = JText::sprintf('JPAGETITLE', $app->getCfg('sitename'), $title);
@@ -110,8 +108,8 @@ class ProjectforkViewTimeForm extends JViewLegacy
         elseif ($app->getCfg('sitename_pagetitles', 0) == 2) {
             $title = JText::sprintf('JPAGETITLE', $title, $app->getCfg('sitename'));
         }
-        $this->document->setTitle($title);
 
+        $this->document->setTitle($title);
 
         $pathway = $app->getPathWay();
         $pathway->addItem($title, '');

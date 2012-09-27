@@ -425,32 +425,6 @@ class PFTableTask extends JTable
     }
 
 
-    public function delete($pk = null)
-    {
-        if (!parent::delete($pk)) return false;
-
-        $k  = $this->_tbl_key;
-        $pk = (is_null($pk)) ? $this->$k : $pk;
-
-        $ref = JTable::getInstance('UserRef', 'PFTable');
-
-        $this->_db->setQuery(
-            'SELECT id FROM #__pf_ref_users WHERE item_type = ' . $this->_db->quote('task')
-            . ' AND item_id = ' . $this->_db->quote($pk));
-
-        $references = (array) $this->_db->loadResultArray();
-        $success    = true;
-
-        foreach($references AS $reference)
-        {
-            $success = $ref->delete($reference);
-        }
-
-        return $success;
-    }
-
-
-
     public function publish($pks = null, $state = 1, $userId = 0)
     {
         return $this->setState($pks, $state, $userId);

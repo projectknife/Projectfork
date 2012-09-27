@@ -160,12 +160,6 @@
 		<action name="task.delete" title="COM_PROJECTFORK_THIS_TASK_ACTION_DELETE" description="COM_PROJECTFORK_THIS_TASK_ACTION_DELETE_DESC" />
 		<action name="task.edit" title="COM_PROJECTFORK_THIS_TASK_ACTION_EDIT" description="COM_PROJECTFORK_THIS_TASK_ACTION_EDIT_DESC" />
 		<action name="task.edit.state" title="COM_PROJECTFORK_THIS_TASK_ACTION_EDITSTATE" description="COM_PROJECTFORK_THIS_TASK_ACTION_EDITSTATE_DESC" />
-
-        <action name="time.create" title="COM_PROJECTFORK_TIME_ACTION_CREATE" description="COM_PROJECTFORK_TIME_ACTION_CREATE_DESC" />
-		<action name="time.delete" title="COM_PROJECTFORK_TIME_ACTION_DELETE" description="COM_PROJECTFORK_TIME_ACTION_DELETE_DESC" />
-		<action name="time.edit" title="COM_PROJECTFORK_TIME_ACTION_EDIT" description="COM_PROJECTFORK_TIME_ACTION_EDIT_DESC" />
-		<action name="time.edit.state" title="COM_PROJECTFORK_TIME_ACTION_EDITSTATE" description="COM_PROJECTFORK_TIME_ACTION_EDITSTATE_DESC" />
-		<action name="time.edit.own" title="COM_PROJECTFORK_TIME_ACTION_EDITOWN" description="COM_PROJECTFORK_TIME_ACTION_EDITOWN_DESC" />
 	</section>
     <section name="topic">
         <action name="topic.delete" title="COM_PROJECTFORK_THIS_TOPIC_ACTION_DELETE" description="COM_PROJECTFORK_THIS_TOPIC_ACTION_DELETE_DESC" />

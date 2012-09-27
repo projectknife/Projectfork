@@ -23,7 +23,7 @@ class PFTableTime extends JTable
      * Constructor
      *
      * @param     database         $db    A database connector object
-     * @return    jtableproject           
+     * @return    jtableproject
      */
     public function __construct(&$db)
     {
@@ -36,12 +36,12 @@ class PFTableTime extends JTable
      * The default name is in the form table_name.id
      * where id is the value of the primary key of the table.
      *
-     * @return    string    
+     * @return    string
      */
     protected function _getAssetName()
     {
         $k = $this->_tbl_key;
-        return 'com_projectfork.time.'.(int) $this->$k;
+        return 'com_projectfork.time.' . (int) $this->$k;
     }
 
 
@@ -49,9 +49,9 @@ class PFTableTime extends JTable
      * Method to get the parent asset id for the record
      *
      * @param     jtable     $table    A JTable object for the asset parent
-     * @param     integer    $id       
+     * @param     integer    $id
      *
-     * @return    integer              
+     * @return    integer
      */
     protected function _getAssetParentId($table = null, $id = null)
     {
@@ -61,18 +61,7 @@ class PFTableTime extends JTable
 
         $query = $this->_db->getQuery(true);
 
-
-        if ($this->task_id) {
-            // Build the query to get the asset id for the parent task.
-            $query->select('asset_id')
-                  ->from('#__pf_tasks')
-                  ->where('id = '.(int) $this->task_id);
-
-            // Get the asset id from the database.
-            $this->_db->setQuery((string) $query);
-            $result = $this->_db->loadResult();
-        }
-        elseif ($this->project_id) {
+        if ($this->project_id) {
             // Build the query to get the asset id for the parent project.
             $query->select('asset_id')
                   ->from('#__pf_projects')
@@ -81,13 +70,55 @@ class PFTableTime extends JTable
             // Get the asset id from the database.
             $this->_db->setQuery((string) $query);
             $result = $this->_db->loadResult();
+
+            if ($result) $asset_id = (int) $result;
+        }
+
+        if (!$asset_id) {
+            // No asset found, fall back to the component
+            $query->clear();
+            $query->select($this->_db->quoteName('id'))
+                  ->from($this->_db->quoteName('#__assets'))
+                  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_projectfork"));
+
+            // Get the asset id from the database.
+            $this->_db->setQuery($query);
+            $result = $this->_db->loadResult();
+
+            if ($result) $asset_id = (int) $result;
         }
 
         // Return the asset id.
-        if ($result) $asset_id = (int) $result;
         if ($asset_id) return $asset_id;
 
         return parent::_getAssetParentId($table, $id);
+    }
+
+
+    /**
+     * Method to get the access level of the parent asset
+     *
+     * @return    integer
+     */
+    protected function _getParentAccess()
+    {
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $project = (int) $this->project_id;
+
+        if ($project > 0) {
+            $query->select('access')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . $db->quote($project));
+
+            $db->setQuery($query);
+            $access = (int) $db->loadResult();
+        }
+
+        if (!$access) $access = 1;
+
+        return $access;
     }
 
 
@@ -124,6 +155,27 @@ class PFTableTime extends JTable
      */
     public function check()
     {
+        // Check if a project is selected
+        if ((int) $this->project_id <= 0) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_SELECT_PROJECT'));
+            return false;
+        }
+
+        // Check if a task is selected
+        if ((int) $this->task_id <= 0) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_SELECT_TASK'));
+            return false;
+        }
+
+        // Check for selected access level
+        if ($this->access <= 0) {
+            $this->access = $this->_getParentAccess();
+        }
+
+        // Make sure we have a time
+        if ($this->log_time <= 0) {
+            $this->log_time = 1;
+        }
 
         return true;
     }
@@ -146,7 +198,7 @@ class PFTableTime extends JTable
             $this->modified_by = $user->get('id');
         }
         else {
-            // New item. A created_by field can be set by the user, so we don't touch it if set.
+            // New item
             $this->created = $date->toSql();
             if (empty($this->created_by)) $this->created_by = $user->get('id');
         }
@@ -245,141 +297,6 @@ class PFTableTime extends JTable
     public function publish($pks = null, $state = 1, $userId = 0)
     {
         return $this->setState($pks, $state, $userId);
-    }
-
-
-    /**
-     * Deletes all items by a reference field
-     *
-     * @param     mixed      $id       The parent item id(s)
-     * @param     string     $field    The parent field name
-     *
-     * @return    boolean              True on success, False on error
-     */
-    public function deleteByReference($id, $field)
-    {
-        $db    = $this->_db;
-        $query = $db->getQuery(true);
-
-        // Generate the WHERE clause
-        $where = $db->quoteName($field) . (is_array($id) ? ' IN(' . implode(', ', $id) . ')' : ' = ' . (int) $id );
-
-        if (is_array($id) && count($id) === 1) {
-            $where = $db->quoteName($field) . ' = ' . (int) $id[0];
-        }
-
-        // Delete the records. Note that the assets have already been deleted
-        $query->delete($this->_db->quoteName($this->_tbl))
-              ->where($where);
-
-        $db->setQuery((string) $query);
-        $db->query();
-
-        return true;
-    }
-
-
-    /**
-     * Updates all items by reference data and parent item
-     *
-     * @param     integer    $id       The parent item id
-     * @param     string     $field    The parent field name
-     * @param     array      $data     The parent data
-     * @return    boolean              True on success, False on error
-     */
-    public function updateByReference($id, $field, $data)
-    {
-        $db        = $this->_db;
-        $fields    = array_keys($data);
-        $null_date = $db->getNullDate();
-        $pk        = $this->_tbl_key;
-
-
-        // Check if the fields exist
-        foreach($fields AS $i => $tbl_field)
-        {
-            if (!property_exists($this, $tbl_field)) {
-                unset($fields[$i]);
-                unset($data[$tbl_field]);
-            }
-        }
-
-        $tbl_fields = implode(', ', array_keys($data));
-
-        // Return if no fields are left to update
-        if (count($fields) == 0) {
-            return true;
-        }
-
-        // Find access children if access field is in the data
-        $access_children = array();
-        if (in_array('access', $fields)) {
-            $access_children = array_keys(ProjectforkHelper::getChildrenOfAccess($data['access']));
-        }
-
-        // Get the items we have to update
-        // Get the items we have to update
-        $where = $db->quoteName($field) . (is_array($id) ? ' IN(' . implode(', ', $id) . ')' : ' = ' . (int) $id );
-
-        if (is_array($id) && count($id) === 1) {
-            $where = $db->quoteName($field) . ' = ' . (int) $id[0];
-        }
-
-        $query = $db->getQuery(true);
-        $query->select($this->_tbl_key . ', ' . $tbl_fields)
-              ->from($db->quoteName($this->_tbl))
-              ->where($where);
-
-        $db->setQuery((string) $query);
-
-        // Get the result
-        $list = (array) $db->loadObjectList();
-
-
-        // Update each item
-        foreach($list AS $item)
-        {
-            $updates = array();
-
-            foreach($data AS $key => $val)
-            {
-                switch($key)
-                {
-                    case 'access':
-                        if ($val != $item->$key && !in_array($item->$key, $access_children)) {
-                            $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
-                        }
-                        break;
-
-                    case 'state':
-                        if ($val != $item->$key) {
-                            // Do not publish/unpublish items that are currently archived or trashed
-                            // Also, do not publish items that are unpublished
-                            if (($item->$key == '2' || $item->$key == '-2' || $item->$key == '0') && ($val == '0' || $val == '1')) {
-                                continue;
-                            }
-
-                            $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
-                        }
-                        break;
-
-                    default:
-                        if ($item->$key != $val) $updates[$key] = $db->quoteName($key) . ' = ' . $db->quote($val);
-                        break;
-                }
-            }
-
-            if (count($updates)) {
-                $query->clear();
-
-                $query->update($db->quoteName($this->_tbl))
-                      ->set(implode(', ', $updates))
-                      ->where($db->quoteName($this->_tbl_key) . ' = ' . (int) $item->$pk);
-
-                $db->setQuery((string) $query);
-                $db->query();
-            }
-        }
     }
 
 

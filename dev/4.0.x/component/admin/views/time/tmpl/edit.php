@@ -64,41 +64,20 @@ Joomla.submitbutton = function(task)
                 </ul>
             </fieldset>
 
-            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_TIME_FIELDSET_RULES'), 'access-rules'); ?>
-            <fieldset class="panelform">
-                <ul class="adminformlist">
-                    <li>
-                        <?php echo $this->form->getLabel('access');?>
-                        <div id="jform_access_reload"><?php echo $this->form->getInput('access'); ?></div>
-                    </li>
-				    <li>
-                        <label id="jform_access_exist-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
-                            <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
-                        </label>
-                    </li>
-                    <li>
-                        <div id="jform_access_groups">
-    			            <div class="clr"></div>
-                            <div id="jform_rules_reload"><?php echo $this->form->getInput('rules'); ?></div>
-                        </div>
-                    </li>
-                </ul>
-            </fieldset>
-
-            <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
-            <?php foreach ($fieldSets as $name => $fieldSet) : ?>
-                <?php echo JHtml::_('sliders.panel', JText::_($fieldSet->label), $name.'-options'); ?>
-                <?php if (isset($fieldSet->description) && trim($fieldSet->description)) : ?>
-                    <p class="tip"><?php echo $this->escape(JText::_($fieldSet->description));?></p>
-                <?php endif; ?>
-                <fieldset class="panelform">
-                    <ul class="adminformlist">
-                        <?php foreach ($this->form->getFieldset($name) as $field) : ?>
-                            <li><?php echo $field->label . $field->input; ?></li>
-                        <?php endforeach; ?>
-                    </ul>
-                </fieldset>
-            <?php endforeach; ?>
+            <?php $fieldsets = $this->form->getFieldsets('attribs'); ?>
+			<?php foreach ($fieldsets as $name => $fieldset) : ?>
+				<?php echo JHtml::_('sliders.panel', JText::_($fieldset->label), $name . '-options'); ?>
+				<?php if (isset($fieldset->description) && trim($fieldset->description)) : ?>
+					<p><?php echo $this->escape(JText::_($fieldset->description));?></p>
+				<?php endif; ?>
+				<fieldset class="panelform">
+					<ul class="adminformlist">
+					    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
+						    <li><?php echo $field->label . $field->input; ?></li>
+					    <?php endforeach; ?>
+					</ul>
+				</fieldset>
+			<?php endforeach; ?>
 
        <?php echo JHtml::_('sliders.end'); ?>
        <div class="clr"></div>
@@ -106,7 +85,28 @@ Joomla.submitbutton = function(task)
 
     <div class="clr"></div>
 
+    <div class="width-100 fltlft">
+		<?php echo JHtml::_('sliders.start', 'permissions-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
+
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'access-rules'); ?>
+			<fieldset class="panelform">
+                <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+                <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+				<div id="jform_rules_element">
+                    <div id="jform_rules_reload" style="clear: both;">
+                        <?php echo $this->form->getInput('rules'); ?>
+                    </div>
+                </div>
+			</fieldset>
+		<?php echo JHtml::_('sliders.end'); ?>
+	</div>
+
     <div>
+        <div id="jform_access_element">
+            <div id="jform_access_reload">
+                <?php echo $this->form->getInput('access'); ?>
+            </div>
+        </div>
         <?php
             echo $this->form->getInput('created');
             echo $this->form->getInput('id');

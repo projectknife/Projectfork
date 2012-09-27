@@ -36,15 +36,12 @@ $total_time = 0;
                 <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
             </select>
 
-            <select name="filter_access" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_ACCESS');?></option>
-                <?php echo JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'));?>
-            </select>
-
-            <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
-            </select>
+            <?php if ($this->state->get('filter.project')) : ?>
+                <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
+                    <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+                    <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
+                </select>
+            <?php endif; ?>
             <?php echo JHtml::_('projectfork.filterProject');?>
         </div>
     </fieldset>
@@ -62,19 +59,21 @@ $total_time = 0;
                 <th>
                     <?php echo JHtml::_('grid.sort', 'COM_PROJECTFORK_TASK_TITLE', 'a.task_title', $list_dir, $list_order); ?>
                 </th>
-                <th width="20%">
-                    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'project_title', $list_dir, $list_order); ?>
-                </th>
+                <?php if (!$this->state->get('filter.project')) : ?>
+                    <th width="20%">
+                        <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'project_title', $list_dir, $list_order); ?>
+                    </th>
+                <?php endif; ?>
                 <th width="5%">
                     <?php echo JHtml::_('grid.sort', 'JDATE', 'a.log_date', $list_dir, $list_order); ?>
                 </th>
-                <th width="5%">
+                <th width="10%">
                     <?php echo JHtml::_('grid.sort', 'COM_PROJECTFORK_TIME_SPENT_HEADING', 'a.log_time', $list_dir, $list_order); ?>
                 </th>
-                <th width="10%">
+                <th width="15%">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
                 </th>
-                <th width="10%">
+                <th width="15%">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access', $list_dir, $list_order); ?>
                 </th>
                 <th width="1%" class="nowrap">
@@ -113,7 +112,9 @@ $total_time = 0;
                         <?php echo $this->escape($item->task_title); ?>
                     <?php endif; ?>
                 </td>
-                <td><?php echo $this->escape($item->project_title); ?></td>
+                <?php if (!$this->state->get('filter.project')) : ?>
+                    <td><?php echo $this->escape($item->project_title); ?></td>
+                <?php endif; ?>
                 <td class="center nowrap">
                     <?php echo JHtml::_('date', $item->log_date, JText::_('DATE_FORMAT_LC4')); ?>
                 </td>

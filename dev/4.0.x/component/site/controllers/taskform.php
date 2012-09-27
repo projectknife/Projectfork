@@ -114,6 +114,32 @@ class ProjectforkControllerTaskform extends JControllerForm
 
 
     /**
+     * Method to check if you can add a new record.
+     *
+     * @param     array      $data    An array of input data.
+     *
+     * @return    boolean
+     */
+    protected function allowAdd($data = array())
+    {
+        if (isset($data['list_id'])) {
+            $access = ProjectforkHelperAccess::getActions('tasklist', (int) $data['list_id']);
+        }
+        elseif (isset($data['milestone_id'])) {
+            $access = ProjectforkHelperAccess::getActions('milestone', (int) $data['milestone_id']);
+        }
+        elseif (isset($data['project_id'])) {
+            $access = ProjectforkHelperAccess::getActions('project', (int) $data['project_id']);
+        }
+        else {
+            $access = ProjectforkHelperAccess::getActions(null, 0, true);
+        }
+
+        return $access->get('task.create');
+    }
+
+
+    /**
      * Method override to check if you can edit an existing record.
      *
      * @param     array      $data    An array of input data.

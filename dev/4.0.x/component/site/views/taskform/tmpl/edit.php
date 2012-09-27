@@ -264,6 +264,10 @@ Joomla.submitbutton = function(task)
 
     <?php echo JHtml::_('tabs.end') ;?>
 
+    <div id="jform_access_element">
+        <div id="jform_access_reload"><?php echo $this->form->getInput('access'); ?></div>
+    </div>
+
     <?php
         echo $this->form->getInput('alias');
         echo $this->form->getInput('created');

@@ -28,6 +28,23 @@ class ProjectforkModelTime extends JModelAdmin
 
 
     /**
+	 * Constructor.
+	 *
+	 * @param   array  $config  An optional associative array of configuration settings.
+	 *
+	 * @see     JController
+	 */
+    public function __construct($config = array())
+    {
+        // Register dependencies
+        JLoader::register('ProjectforkHelperAccess',     JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+        JLoader::register('ProjectforkHelperQuery',      JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
+
+        parent::__construct($config);
+    }
+
+
+    /**
      * Returns a Table object, always creating it.
      *
      * @param     string    The table type to instantiate
@@ -83,8 +100,7 @@ class ProjectforkModelTime extends JModelAdmin
         $project_id = (int) $form->getValue('project_id');
 
         if (!$this->getState($this->getName() . '.id') && $project_id == 0) {
-            $app       = JFactory::getApplication();
-            $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
+            $active_id = ProjectforkHelper::getActiveProjectId();
 
             $form->setValue('project_id', null, $active_id);
         }
@@ -102,16 +118,68 @@ class ProjectforkModelTime extends JModelAdmin
      */
     public function save($data)
     {
-       // Convert minutes to seconds
-       if (isset($data['log_time'])) {
-           $data['log_time'] = intval($data['log_time']) * 60;
-       }
+        $record = $this->getTable();
+        $key    = $record->getKeyName();
+        $pk     = (!empty($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
+        $is_new = true;
 
-       if (parent::save($data)) {
-           return true;
-       }
+        if ($pk > 0) {
+            if ($record->load($pk)) {
+                $is_new = false;
+            }
+        }
 
-       return false;
+        // Handle permissions and access level
+        if (isset($data['rules'])) {
+            $access = ProjectforkHelperAccess::getViewLevelFromRules($data['rules'], intval($data['access']));
+
+            if ($access) {
+                $data['access'] = $access;
+            }
+        }
+        else {
+            if ($is_new) {
+                $data['access'] = 1;
+            }
+            else {
+                if (isset($data['access'])) {
+                    unset($data['access']);
+                }
+            }
+        }
+
+        // Try to convert log string to time
+        if (isset($data['log_time'])) {
+            if (!is_numeric($data['log_time'])) {
+                $log_time = strtotime($data['log_time']);
+
+                if ($log_time === false || $log_time < 0) {
+                    $data['log_time'] = 1;
+                }
+                else {
+                    $data['log_time'] = $log_time - time();
+                }
+            }
+            else {
+                // not a literal time, so convert minutes to secs
+                $data['log_time'] = $data['log_time'] * 60;
+            }
+        }
+
+        if (parent::save($data)) {
+            $id = $this->getState($this->getName() . '.id');
+
+            // Load the just updated row
+            $updated = $this->getTable();
+            if ($updated->load($id) === false) return false;
+
+            // Set the active project
+            ProjectforkHelper::setActiveProject($updated->project_id);
+
+            return true;
+        }
+
+        return false;
     }
 
 
@@ -154,12 +222,12 @@ class ProjectforkModelTime extends JModelAdmin
         if (!empty($record->id)) {
             if ($record->state != -2) return false;
 
-            $access = ProjectforkHelperAccess::getActions('reply', $record->id);
-            return $access->get('reply.delete');
+            $access = ProjectforkHelperAccess::getActions('time', $record->id);
+            return $access->get('time.delete');
         }
         else {
             $access = ProjectforkHelperAccess::getActions();
-            return $access->get('reply.delete');
+            return $access->get('time.delete');
         }
     }
 
@@ -176,11 +244,12 @@ class ProjectforkModelTime extends JModelAdmin
     {
         // Check for existing item.
         if (!empty($record->id)) {
-            $access = ProjectforkHelperAccess::getActions('reply', $record->id);
-            return $access->get('reply.edit.state');
+            $access = ProjectforkHelperAccess::getActions('time', $record->id);
+            return $access->get('time.edit.state');
         }
         else {
-            return parent::canEditState('com_projectfork');
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('time.edit.state');
         }
     }
 
@@ -197,12 +266,14 @@ class ProjectforkModelTime extends JModelAdmin
     {
         // Check for existing item.
         if (!empty($record->id)) {
-            $access = ProjectforkHelperAccess::getActions('reply', $record->id);
-            return $access->get('reply.edit');
+            $access = ProjectforkHelperAccess::getActions('time', $record->id);
+            $user   = JFactory::getUser();
+
+            return ($access->get('time.edit') || ($access->get('time.edit.own') && $record->created_by == $user->id));
         }
         else {
             $access = ProjectforkHelperAccess::getActions();
-            return $access->get('reply.edit');
+            return $access->get('time.edit');
         }
     }
 }

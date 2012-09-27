@@ -135,45 +135,39 @@ Joomla.submitbutton = function(task)
         <?php endif; ?>
     </fieldset>
 
-    <?php echo JHtml::_('tabs.panel', 'Permissions', 'time-permissions') ;?>
+    <?php
+    $fieldsets = $this->form->getFieldsets('attribs');
+    if (count($fieldsets)) :
+        echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_DETAILS_FIELDSET'), 'milestone-options');
+		foreach ($fieldsets as $name => $fieldset) :
+            ?>
+			<fieldset>
+                <?php foreach ($this->form->getFieldset($name) as $field) : ?>
+                    <div class="formelm control-group">
+                    	<div class="control-label"><?php echo $field->label; ?></div>
+            		    <div class="controls"><?php echo $field->input; ?></div>
+            		</div>
+                <?php endforeach; ?>
+            </fieldset>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'milestone-permissions') ;?>
     <fieldset>
-        <div class="formelm control-group">
-    		<div class="control-label">
-    	    	<?php echo $this->form->getLabel('access'); ?>
-    	    </div>
-    	    <div class="controls" id="jform_access_reload">
-    	    	<?php echo $this->form->getInput('access'); ?>
-    	    </div>
-    	</div>
-        <div class="formelm control-group">
-            <label id="jform_access_exist-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
-                <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
-            </label>
-        </div>
-        <div class="formelm control-group">
-            <div id="jform_rules_reload">
+        <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+        <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+        <div class="formlm" id="jform_rules_element">
+            <div id="jform_rules_reload" class="controls">
                 <?php echo $this->form->getInput('rules'); ?>
             </div>
         </div>
     </fieldset>
 
-    <?php echo JHtml::_('tabs.panel', 'Options', 'topic-options') ;?>
-        <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
-            <?php foreach ($fieldSets as $name => $fieldSet) : ?>
-                <fieldset>
-                    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
-                        <div class="formelm control-group" id="jform_access-li">
-                            <div class="control-label">
-                                <?php echo $field->label; ?>
-                            </div>
-                            <div class="controls">
-                                <?php echo $field->input; ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </fieldset>
-            <?php endforeach; ?>
     <?php echo JHtml::_('tabs.end') ;?>
+
+    <div id="jform_access_element">
+        <div id="jform_access_reload"><?php echo $this->form->getInput('access'); ?></div>
+    </div>
 
     <?php
         echo $this->form->getInput('created');

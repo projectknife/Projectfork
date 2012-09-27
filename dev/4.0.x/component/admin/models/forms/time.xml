@@ -9,7 +9,6 @@
         <field name="task_id" type="task"
             label="COM_PROJECTFORK_FIELD_TASK_LABEL" description="COM_PROJECTFORK_FIELD_TASK_DESC"
             class="inputbox" size="1" required="true" view="time"
-            onchange="PFform.reload('access,rules');"
         />
         <field name="description" type="text"
             label="COM_PROJECTFORK_FIELD_DESCRIPTION_LABEL" description="COM_PROJECTFORK_FIELD_DESCRIPTION_DESC"
@@ -53,16 +52,11 @@
             label="JGLOBAL_FIELD_MODIFIED_BY_LABEL"
             class="readonly" readonly="true" filter="unset"
         />
-        <field name="access" type="inheritaccess"
-            label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC"
-            class="inputbox" size="1"
-            onchange="PFform.reload('rules');"
-        />
-        <field name="rules" type="inheritrules"
-            label="JCONFIG_PERMISSIONS_LABEL"
-            class="inputbox" component="com_projectfork" section="time" validate="rules" filter="rules"
+        <field name="rules" type="groupaccess"
+            component="com_projectfork" section="time" inheritonly="true" filter="ProjectforkHelperForm::filterRules" validate="groupaccess"
         />
         <field name="id" type="hidden" readonly="true"/>
+        <field name="access" type="inheritaccess" hidden="true" readonly="true"/>
         <field name="asset_id" type="hidden" filter="unset"/>
         <field name="elements" type="hidden"/>
         <field name="created" type="hidden" readonly="true"/>

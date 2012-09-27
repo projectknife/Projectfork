@@ -30,21 +30,13 @@ class ProjectforkModelTimesheet extends JModelList
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'id', 'a.id',
-                'project_id', 'a.project_id', 'project_title',
+                'a.id', 'a.project_id', 'project_title',
                 'task_id', 'a.task_id', 'task_title',
-                'description', 'a.description',
-                'created', 'a.created',
-                'created_by', 'a.created_by',
-                'modified', 'a.modified',
-                'modified_by', 'a.modified_by',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
-                'attribs', 'a.attribs',
-                'access', 'a.access', 'access_level',
-                'state', 'a.state',
-                'log_date', 'a.log_date',
-                'log_time', 'a.log_time'
+                'a.description', 'a.created', 'a.created_by',
+                'a.modified', 'a.modified_by',
+                'a.checked_out', 'a.checked_out_time',
+                'a.attribs', 'a.access', 'access_level',
+                'a.state', 'a.log_date', 'a.log_time'
             );
         }
 
@@ -58,7 +50,7 @@ class ProjectforkModelTimesheet extends JModelList
      *
      * @return    void
      */
-    protected function populateState($ordering = null, $direction = null)
+    protected function populateState($ordering = 'a.log_date', $direction = 'desc')
     {
         // Initialise variables.
         $app = JFactory::getApplication();
@@ -78,15 +70,19 @@ class ProjectforkModelTimesheet extends JModelList
         $access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', '');
         $this->setState('filter.access', $access);
 
-        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         $task = $this->getUserStateFromRequest($this->context . '.filter.task', 'filter_task', '');
         $this->setState('filter.task', $task);
 
+        if (!$project) {
+            $this->setState('filter.author_id', '');
+            $this->setState('filter.assigned_id', '');
+        }
+
         // List state information.
-        parent::populateState('a.log_date', 'desc');
+        parent::populateState($ordering, $direction);
     }
 
 
@@ -233,7 +229,13 @@ class ProjectforkModelTimesheet extends JModelList
      */
     public function getAuthors()
     {
-        // Create a new query object.
+        // Load only if project filter is set
+        $project = (int) $this->getState('filter.project');
+
+        if ($project <= 0) {
+            return array();
+        }
+
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -241,13 +243,13 @@ class ProjectforkModelTimesheet extends JModelList
         $query->select('u.id AS value, u.name AS text')
               ->from('#__users AS u')
               ->join('INNER', '#__pf_timesheet AS a ON a.created_by = u.id')
+              ->where('a.project_id = ' . $db->quote($project))
               ->group('u.id')
               ->order('u.name');
 
-        // Setup the query
         $db->setQuery((string) $query);
 
         // Return the result
-        return $db->loadObjectList();
+        return (array) $db->loadObjectList();
     }
 }

@@ -33,6 +33,13 @@ class ProjectforkControllerTimeform extends JControllerForm
      */
     protected $view_list = 'timesheet';
 
+    /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
+	protected $text_prefix = 'COM_PROJECTFORK_TIME';
+
 
     /**
      * Method to add a new record.
@@ -130,7 +137,12 @@ class ProjectforkControllerTimeform extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $access = ProjectforkHelperAccess::getActions(null, 0, true);
+        if (isset($data['project_id'])) {
+            $access = ProjectforkHelperAccess::getActions('project', (int) $data['project_id']);
+        }
+        else {
+            $access = ProjectforkHelperAccess::getActions(null, 0, true);
+        }
 
         return $access->get('time.create');
     }

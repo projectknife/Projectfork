@@ -16,9 +16,16 @@ jimport('joomla.application.component.controllerform');
 class ProjectforkControllerTime extends JControllerForm
 {
     /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
+    protected $text_prefix = "COM_PROJECTFORK_TIME";
+
+    /**
      * The URL view list variable.
      *
-     * @var    string    
+     * @var    string
      */
     protected $view_list = 'timesheet';
 
