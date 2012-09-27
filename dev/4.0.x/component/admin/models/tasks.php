@@ -28,28 +28,16 @@ class ProjectforkModelTasks extends JModelList
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'id', 'a.id',
-                'project_id', 'a.project_id', 'project_title',
-                'list_id', 'a.list_id', 'tasklist_title', 'tasklist',
-                'milestone_id', 'a.milestone_id', 'milestone_title',
-                'title', 'a.title',
-                'description', 'a.description',
-                'alias', 'a.alias',
-                'created', 'a.created',
-                'created_by', 'a.created_by',
-                'modified', 'a.modified',
-                'modified_by', 'a.modified_by',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
-                'attribs', 'a.attribs',
-                'access', 'a.access', 'access_level',
-                'state', 'a.state',
-                'priority', 'a.priority',
-                'complete', 'a.complete',
-                'start_date', 'a.start_date',
-                'end_date', 'a.end_date',
-                'ordering', 'a.ordering',
-                'parentid', 'a.parentid',
+                'a.id', 'a.project_id', 'project_title',
+                'a.list_id', 'tasklist_title', 'tasklist',
+                'a.milestone_id', 'milestone_title',
+                'a.title', 'a.description', 'a.alias',
+                'a.created', 'a.created_by', 'a.modified',
+                'a.modified_by', 'a.checked_out',
+                'a.checked_out_time', 'a.attribs',
+                'a.access', 'access_level', 'a.state',
+                'a.priority', 'a.complete', 'a.start_date',
+                'a.end_date', 'a.ordering', 'a.parentid',
                 'assigned_id'
             );
         }
@@ -87,15 +75,21 @@ class ProjectforkModelTasks extends JModelList
         $access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', '');
         $this->setState('filter.access', $access);
 
-        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
-        $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
-
         $task_list = $this->getUserStateFromRequest($this->context . '.filter.tasklist', 'filter_tasklist', '');
         $this->setState('filter.tasklist', $task_list);
 
         $milestone = $this->getUserStateFromRequest($this->context . '.filter.milestone', 'filter_milestone', '');
         $this->setState('filter.milestone', $milestone);
+
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
+        $this->setState('filter.project', $project);
+
+        if (!$project) {
+            $this->setState('filter.author_id', '');
+            $this->setState('filter.assigned_id', '');
+            $this->setState('filter.tasklist', '');
+            $this->setState('filter.milestone', '');
+        }
 
         // List state information.
         parent::populateState('a.ordering', 'asc');
@@ -275,6 +269,13 @@ class ProjectforkModelTasks extends JModelList
      */
     public function getAuthors()
     {
+        // Load only if project filter is set
+        $project = (int) $this->getState('filter.project');
+
+        if ($project <= 0) {
+            return array();
+        }
+
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -282,6 +283,7 @@ class ProjectforkModelTasks extends JModelList
         $query->select('u.id AS value, u.name AS text')
               ->from('#__users AS u')
               ->join('INNER', '#__pf_tasks AS a ON a.created_by = u.id')
+              ->where('a.project_id = ' . $db->quote($project))
               ->group('u.id')
               ->order('u.name');
 
@@ -299,7 +301,13 @@ class ProjectforkModelTasks extends JModelList
      */
     public function getMilestones()
     {
-        // Create a new query object.
+        // Load only if project filter is set
+        $project = (int) $this->getState('filter.project');
+
+        if ($project <= 0) {
+            return array();
+        }
+
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -307,6 +315,7 @@ class ProjectforkModelTasks extends JModelList
         $query->select('m.id AS value, m.title AS text')
               ->from('#__pf_milestones AS m')
               ->join('INNER', '#__pf_tasks AS a ON a.milestone_id = m.id')
+              ->where('a.project_id = ' . $db->quote($project))
               ->group('m.id')
               ->order('m.title');
 
@@ -324,6 +333,13 @@ class ProjectforkModelTasks extends JModelList
      */
     public function getTaskLists()
     {
+        // Load only if project filter is set
+        $project = (int) $this->getState('filter.project');
+
+        if ($project <= 0) {
+            return array();
+        }
+
         // Create a new query object.
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
@@ -332,6 +348,7 @@ class ProjectforkModelTasks extends JModelList
         $query->select('t.id AS value, t.title AS text')
               ->from('#__pf_task_lists AS t')
               ->join('INNER', '#__pf_tasks AS a ON a.list_id = t.id')
+              ->where('a.project_id = ' . $db->quote($project))
               ->group('t.id')
               ->order('t.title');
 
@@ -349,6 +366,13 @@ class ProjectforkModelTasks extends JModelList
      */
     public function getAssignedUsers()
     {
+        // Load only if project filter is set
+        $project = (int) $this->getState('filter.project');
+
+        if ($project <= 0) {
+            return array();
+        }
+
         // Create a new query object.
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
@@ -357,7 +381,9 @@ class ProjectforkModelTasks extends JModelList
         $query->select('u.id AS value, u.name AS text')
               ->from('#__users AS u')
               ->join('INNER', '#__pf_ref_users AS a ON a.user_id = u.id')
+              ->join('INNER', '#__pf_tasks AS t ON a.id = a.item_id')
               ->where('a.item_type = ' . $db->quote('task'))
+              ->where('t.project_id = ' . $db->quote($project))
               ->group('u.id')
               ->order('u.name');
 

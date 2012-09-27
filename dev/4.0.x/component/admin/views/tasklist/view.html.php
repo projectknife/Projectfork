@@ -53,7 +53,7 @@ class ProjectforkViewTasklist extends JViewLegacy
         JRequest::setVar('hidemainmenu', true);
 
         $uid         = JFactory::getUser()->get('id');
-        $access      = ProjectforkHelper::getActions('tasklist', $this->item->id);
+        $access      = ProjectforkHelperAccess::getActions('tasklist', $this->item->id);
         $checked_out = !($this->item->checked_out == 0 || $this->item->checked_out == $uid);
         $is_new      = ($this->item->id == 0);
 

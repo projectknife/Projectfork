@@ -11,7 +11,7 @@ defined('_JEXEC') or die();
 
 
 // Base this model on the backend version.
-require_once JPATH_ADMINISTRATOR . '/components/com_projectfork/models/task.php';
+JLoader::register('ProjectforkModelTask', JPATH_ADMINISTRATOR . '/components/com_projectfork/models/task.php');
 
 
 /**
@@ -135,14 +135,12 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
             $table->load((int) $pk);
 
             // Access checks.
-            if (!$this->canEditState($table))
-            {
+            if (!$this->canEditState($table)) {
                 // Prune items that you can't change.
                 unset($pks[$i]);
                 JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'));
             }
-            elseif ($table->priority != $priority[$pk])
-            {
+            elseif ($table->priority != $priority[$pk]) {
                 $table->priority = $priority[$pk];
 
                 if (!$table->store()) {
@@ -182,8 +180,7 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
             $table->load((int) $pk);
 
             // Access checks.
-            if (!$this->canEditState($table))
-            {
+            if (!$this->canEditState($table)) {
                 // Prune items that you can't change.
                 unset($pks[$i]);
                 JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'));
@@ -226,8 +223,7 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
             $table->load((int) $pk);
 
             // Access checks.
-            if (!$this->canEditState($table))
-            {
+            if (!$this->canEditState($table)) {
                 // Prune items that you can't change.
                 unset($pks[$i]);
                 JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'));
@@ -246,6 +242,17 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
         $this->cleanCache();
 
         return true;
+    }
+
+
+    /**
+     * Get the return URL.
+     *
+     * @return    string    The return URL.
+     */
+    public function getReturnPage()
+    {
+        return base64_encode($this->getState('return_page'));
     }
 
 

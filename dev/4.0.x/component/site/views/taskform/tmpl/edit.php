@@ -129,7 +129,7 @@ Joomla.submitbutton = function(task)
 	</fieldset>
 
     <?php echo JHtml::_('tabs.start', 'taskform', array('useCookie' => 'true')) ;?>
-    <?php echo JHtml::_('tabs.panel', 'Publishing', 'task-publishing') ;?>
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_PUBLISHING'), 'task-publishing') ;?>
     <fieldset>
     	<div class="formelm control-group">
     		<div class="control-label">
@@ -214,11 +214,11 @@ Joomla.submitbutton = function(task)
     	</div>
     </fieldset>
 
-    <?php $fieldSets = $this->form->getFieldsets('users'); ?>
-	<?php foreach ($fieldSets as $name => $fieldSet) : ?>
-		<?php echo JHtml::_('tabs.panel',JText::_($fieldSet->label), $name.'-options'); ?>
-		<?php if (isset($fieldSet->description) && trim($fieldSet->description)) : ?>
-			<p class="tip"><?php echo $this->escape(JText::_($fieldSet->description));?></p>
+    <?php $fieldsets = $this->form->getFieldsets('users'); ?>
+	<?php foreach ($fieldsets as $name => $fieldset) : ?>
+		<?php echo JHtml::_('tabs.panel', JText::_($fieldset->label), $name . '-options'); ?>
+		<?php if (isset($fieldset->description) && trim($fieldset->description)) : ?>
+			<p><?php echo $this->escape(JText::_($fieldset->description));?></p>
 		<?php endif; ?>
 		<fieldset>
 			    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
@@ -234,44 +234,33 @@ Joomla.submitbutton = function(task)
 		</fieldset>
 	<?php endforeach; ?>
 
-    <?php echo JHtml::_('tabs.panel', 'Permissions', 'task-permissions') ;?>
+    <?php
+    $fieldsets = $this->form->getFieldsets('attribs');
+    if (count($fieldsets)) :
+        echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_DETAILS_FIELDSET'), 'milestone-options');
+		foreach ($fieldsets as $name => $fieldset) :
+            ?>
+			<fieldset>
+                <?php foreach ($this->form->getFieldset($name) as $field) : ?>
+                    <div class="formelm control-group">
+                    	<div class="control-label"><?php echo $field->label; ?></div>
+            		    <div class="controls"><?php echo $field->input; ?></div>
+            		</div>
+                <?php endforeach; ?>
+            </fieldset>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'milestone-permissions') ;?>
     <fieldset>
-    	<div class="formelm control-group">
-    		<div class="control-label">
-    	    	<?php echo $this->form->getLabel('access'); ?>
-    	    </div>
-    	    <div class="controls" id="jform_access_reload">
-    	    	<?php echo $this->form->getInput('access'); ?>
-    	    </div>
-    	</div>
-        <div class="formelm control-group">
-            <label id="jform_access_exist-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
-                <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
-            </label>
-        </div>
-        <div class="formelm control-group">
-            <div id="jform_rules_reload">
+        <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+        <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+        <div class="formlm" id="jform_rules_element">
+            <div id="jform_rules_reload" class="controls">
                 <?php echo $this->form->getInput('rules'); ?>
             </div>
         </div>
     </fieldset>
-
-    <?php echo JHtml::_('tabs.panel', 'Options', 'task-options') ;?>
-        <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
-			<?php foreach ($fieldSets as $name => $fieldSet) : ?>
-				<fieldset>
-                    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
-                    	<div class="formelm control-group" id="jform_access-li">
-                    		<div class="control-label">
-                    	    	<?php echo $field->label; ?>
-                    	    </div>
-                    	    <div class="controls">
-                    			<?php echo $field->input; ?>
-                    		</div>
-                    	</div>
-                    <?php endforeach; ?>
-                </fieldset>
-			<?php endforeach; ?>
 
     <?php echo JHtml::_('tabs.end') ;?>
 

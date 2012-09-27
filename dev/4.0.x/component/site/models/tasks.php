@@ -455,9 +455,8 @@ class ProjectforkModelTasks extends JModelList
         $this->setState('filter.search', $search);
 
         // Filter - Project
-        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         // Filter - Milestone
         $milestone = $app->getUserStateFromRequest($this->context . '.filter.milestone', 'filter_milestone', '');

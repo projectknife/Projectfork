@@ -40,7 +40,6 @@ class ProjectforkModelTasklist extends JModelAdmin
         JLoader::register('ProjectforkHelper',           JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
         JLoader::register('ProjectforkHelperAccess',     JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
         JLoader::register('ProjectforkHelperQuery',      JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
-        JLoader::register('ProjectforkHelperRepository', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/repository.php');
 
         parent::__construct($config);
     }
@@ -417,7 +416,8 @@ class ProjectforkModelTasklist extends JModelAdmin
             return $access->get('tasklist.delete');
         }
         else {
-            return parent::canDelete('com_projectfork');
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('tasklist.delete');
         }
     }
 

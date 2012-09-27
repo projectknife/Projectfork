@@ -219,11 +219,11 @@ class JFormFieldUserRef extends JFormFieldUser
         if (!$access) return '';
 
         $groups     = array();
-        $group_list = (array) ProjectforkHelper::getGroupsByAccess($access);
+        $group_list = (array) ProjectforkHelperAccess::getGroupsByAccessLevel($access);
 
         foreach($group_list AS $group)
         {
-            $groups[] = (int) $group->value;
+            $groups[] = (int) $group;
         }
 
         if (!count($groups)) $groups = '';
