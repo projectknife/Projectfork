@@ -35,11 +35,6 @@ $save_order = ($list_order == 'a.ordering');
                 <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
             </select>
 
-            <select name="filter_access" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_ACCESS');?></option>
-                <?php echo JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'));?>
-            </select>
-
             <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
                 <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
                 <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
@@ -60,14 +55,11 @@ $save_order = ($list_order == 'a.ordering');
                 <th>
                     <?php echo JHtml::_('grid.sort', 'JGLOBAL_DESCRIPTION', 'a.description', $list_dir, $list_order); ?>
                 </th>
-                <th width="10%">
+                <th width="15%">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
                 </th>
-                <th width="5%">
-                    <?php echo JHtml::_('grid.sort', 'JDATE', 'a.created', $list_dir, $list_order); ?>
-                </th>
                 <th width="10%">
-                    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access', $list_dir, $list_order); ?>
+                    <?php echo JHtml::_('grid.sort', 'JDATE', 'a.created', $list_dir, $list_order); ?>
                 </th>
                 <th width="1%" class="nowrap">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $list_dir, $list_order); ?>
@@ -110,9 +102,6 @@ $save_order = ($list_order == 'a.ordering');
                     <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
                 </td>
                 <td class="center">
-                    <?php echo $this->escape($item->access_level); ?>
-                </td>
-                <td class="center">
                     <?php echo (int) $item->id; ?>
                 </td>
             </tr>
@@ -120,7 +109,7 @@ $save_order = ($list_order == 'a.ordering');
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="7">
+                <td colspan="6">
                     <?php echo $this->pagination->getListFooter(); ?>
                 </td>
             </tr>

@@ -18,10 +18,6 @@ JHtml::_('projectfork.script.form');
 
 // Create shortcut to parameters.
 $params = $this->state->get('params');
-
-// This checks if the editor config options have ever been saved. If they haven't they will fall back to the original settings.
-$editoroptions = isset($params->show_publishing_options);
-if (!$editoroptions) $params->show_urls_images_frontend = '0';
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task)
@@ -62,7 +58,7 @@ Joomla.submitbutton = function(task)
     </fieldset>
 
     <?php echo JHtml::_('tabs.start', 'replyform', array('useCookie' => 'true')) ;?>
-    <?php echo JHtml::_('tabs.panel', 'Publishing', 'reply-publishing') ;?>
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_PUBLISHING'), 'reply-publishing') ;?>
     <fieldset>
         <div class="formelm control-group">
             <div class="control-label">
@@ -92,45 +88,46 @@ Joomla.submitbutton = function(task)
         <?php endif; ?>
     </fieldset>
 
-    <?php echo JHtml::_('tabs.panel', 'Permissions', 'reply-permissions') ;?>
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'reply-attachments') ;?>
     <fieldset>
-        <div class="formelm control-group">
-    		<div class="control-label">
-    	    	<?php echo $this->form->getLabel('access'); ?>
-    	    </div>
-    	    <div class="controls" id="jform_access_reload">
-    	    	<?php echo $this->form->getInput('access'); ?>
-    	    </div>
+    	<div class="formelm control-group">
+    		<?php echo $this->form->getInput('attachment'); ?>
     	</div>
-        <div class="formelm control-group">
-            <label id="jform_access_exist-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
-                <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
-            </label>
-        </div>
-        <div class="formelm control-group">
-            <div id="jform_rules_reload">
+    </fieldset>
+
+    <?php
+    $fieldsets = $this->form->getFieldsets('attribs');
+    if (count($fieldsets)) :
+        echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_DETAILS_FIELDSET'), 'reply-options');
+		foreach ($fieldsets as $name => $fieldset) :
+            ?>
+			<fieldset>
+                <?php foreach ($this->form->getFieldset($name) as $field) : ?>
+                    <div class="formelm control-group">
+                    	<div class="control-label"><?php echo $field->label; ?></div>
+            		    <div class="controls"><?php echo $field->input; ?></div>
+            		</div>
+                <?php endforeach; ?>
+            </fieldset>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'reply-permissions') ;?>
+    <fieldset>
+        <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+        <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+        <div class="formlm" id="jform_rules_element">
+            <div id="jform_rules_reload" class="controls">
                 <?php echo $this->form->getInput('rules'); ?>
             </div>
         </div>
     </fieldset>
 
-    <?php echo JHtml::_('tabs.panel', 'Options', 'reply-options') ;?>
-        <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
-            <?php foreach ($fieldSets as $name => $fieldSet) : ?>
-                <fieldset>
-                    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
-                        <div class="formelm control-group" id="jform_access-li">
-                            <div class="control-label">
-                                <?php echo $field->label; ?>
-                            </div>
-                            <div class="controls">
-                                <?php echo $field->input; ?>
-                            </div>
-                        </div>
-                    <?php endforeach; ?>
-                </fieldset>
-            <?php endforeach; ?>
     <?php echo JHtml::_('tabs.end') ;?>
+
+    <div id="jform_access_element">
+        <div id="jform_access_reload"><?php echo $this->form->getInput('access'); ?></div>
+    </div>
 
     <?php
         echo $this->form->getInput('project_id');

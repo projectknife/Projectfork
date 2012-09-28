@@ -16,6 +16,14 @@ jimport('joomla.application.component.controllerform');
 class ProjectforkControllerReply extends JControllerForm
 {
     /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
+    protected $text_prefix = "COM_PROJECTFORK_REPLY";
+
+
+    /**
      * Class constructor.
      *
      * @param    array    $config    A named array of configuration variables
@@ -31,39 +39,19 @@ class ProjectforkControllerReply extends JControllerForm
      *
      * @param     array      $data    An array of input data.
      *
-     * @return    boolean             
+     * @return    boolean
      */
     protected function allowAdd($data = array())
     {
-        $user = JFactory::getUser();
+        $topic  = (isset($data['topic_id']) ? (int) $data['topic_id'] : JRequest::getUInt('filter_topic'));
+        $access = ProjectforkHelperAccess::getActions('topic', $topic);
 
-        $topic  = (int) JRequest::getUInt('filter_topic', 0);
-        $access = $user->authorise('core.create', $this->option);
-
-        if (isset($data['topic_id'])) {
-            $topic = (int) $data['topic_id'];
+        if (!$topic) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_TOPIC_NOT_FOUND'));
+            return false;
         }
 
-        // Verify topic access
-        if ($topic) {
-            $model = JModel::getInstance('Topic', 'ProjectforkModel');
-            $item  = $model->getItem($topic);
-
-            if (!empty($item)) {
-                if (!$user->authorise('core.admin')) {
-                    if (!in_array($item->access, $user->getAuthorisedViewLevels())) {
-                        $this->setError(JText::_('COM_PROJECTFORK_WARNING_TOPIC_ACCESS_DENIED'));
-                        $access = false;
-                    }
-                }
-            }
-            else {
-                $this->setError(JText::_('COM_PROJECTFORK_WARNING_TOPIC_NOT_FOUND'));
-                $access = false;
-            }
-        }
-
-        return ($access && ($topic > 0));
+        return $access->get('reply.create');
     }
 
 

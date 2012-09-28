@@ -11,11 +11,11 @@ defined('_JEXEC') or die();
 
 
 // Base this model on the backend version.
-require_once JPATH_ADMINISTRATOR . '/components/com_projectfork/models/reply.php';
+JLoader::register('ProjectforkModelReply', JPATH_ADMINISTRATOR . '/components/com_projectfork/models/reply.php');
 
 
 /**
- * Projectfork Component Topic Form Model
+ * Projectfork Component Reply Form Model
  *
  */
 class ProjectforkModelReplyForm extends ProjectforkModelReply
@@ -70,9 +70,13 @@ class ProjectforkModelReplyForm extends ProjectforkModelReply
         $value->params = new JRegistry;
         $value->params->loadString($value->attribs);
 
+        // Get the attachments
+        $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
+        $value->attachment = $attachments->getItems('reply', $value->id);
+
         // Compute selected asset permissions.
         $uid    = JFactory::getUser()->get('id');
-        $access = ProjectforkHelperAccess::getActions('topic', $value->id);
+        $access = ProjectforkHelperAccess::getActions('reply', $value->id);
 
         // Check general edit permission first.
         if ($access->get('reply.edit')) {
@@ -93,7 +97,7 @@ class ProjectforkModelReplyForm extends ProjectforkModelReply
         }
         else {
             // New item
-            $access = ProjectforkHelper::getActions();
+            $access = ProjectforkHelper::getActions('topic', $this->getState($this->getName() . '.topic'));
             $value->params->set('access-change', $access->get('reply.edit.state'));
         }
 
@@ -151,13 +155,12 @@ class ProjectforkModelReplyForm extends ProjectforkModelReply
             $topic = JRequest::getUInt('filter_topic', 0);
             $this->setState($this->getName() . '.topic', $topic);
 
-            $project = (int) $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+            $project = ProjectforkHelper::getActiveProjectId('filter_project');
 
             if ($project) {
                 $this->setState($this->getName() . '.project', $project);
-                ProjectforkHelper::setActiveProject($project);
             }
-            elseif($topic) {
+            elseif ($topic) {
                 $table = $this->getTable('Topic');
 
                 if ($table->load($topic)) {

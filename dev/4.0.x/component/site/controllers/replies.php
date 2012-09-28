@@ -26,6 +26,13 @@ class ProjectforkControllerReplies extends JControllerAdmin
      */
     protected $view_list = 'replies';
 
+    /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
+    protected $text_prefix = "COM_PROJECTFORK_REPLIES";
+
 
     /**
      * Method to get a model object, loading it if required.
