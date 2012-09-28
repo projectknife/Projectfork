@@ -54,7 +54,7 @@ class ProjectforkModelDirectories extends JModelList
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
 
-        if ((int) $this->getState('filter.project') == 0) {
+        if ((int) $this->getState('filter.project') <= 0) {
             return array();
         }
 
@@ -197,9 +197,8 @@ class ProjectforkModelDirectories extends JModelList
         $author_id = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
         $this->setState('filter.author_id', $author_id);
 
-        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         $parent_id = JRequest::getCmd('filter_parent_id', '');
         $this->setState('filter.parent_id', $parent_id);

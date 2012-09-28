@@ -82,7 +82,7 @@ $project    = (int) $this->state->get('filter.project');
         <tfoot>
             <tr>
                 <td colspan="10">
-
+                    <?php if ($this->pagination) echo $this->pagination->getListFooter(); ?>
                 </td>
             </tr>
         </tfoot>

@@ -294,7 +294,7 @@ class ProjectforkHelper
                     return $cur_state;
                 }
 
-                return (int) $new_state;
+                return $new_state;
             }
         }
 

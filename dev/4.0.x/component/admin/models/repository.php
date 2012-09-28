@@ -69,6 +69,22 @@ class ProjectforkModelRepository extends JModelList
         $items['notes']       = $notes->getItems();
         $items['files']       = $files->getItems();
 
+        if ($dir->getError()) {
+            $this->setError($dir->getError());
+        }
+
+        if ($dirs->getError()) {
+            $this->setError($dirs->getError());
+        }
+
+        if ($notes->getError()) {
+            $this->setError($notes->getError());
+        }
+
+        if ($files->getError()) {
+            $this->setError($files->getError());
+        }
+
         // Add the items to the internal cache.
         $this->cache[$store] = $items;
 
@@ -90,19 +106,18 @@ class ProjectforkModelRepository extends JModelList
         // Adjust the context to support modal layouts.
         if ($layout = JRequest::getVar('layout')) $this->context .= '.' . $layout;
 
-        $search = $this->getUserStateFromRequest($this->context.'.filter.search', 'filter_search');
+        $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
 
-        $author_id = $app->getUserStateFromRequest($this->context.'.filter.author_id', 'filter_author_id');
+        $author_id = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
         $this->setState('filter.author_id', $author_id);
 
-        $access = $this->getUserStateFromRequest($this->context.'.filter.access', 'filter_access', '');
+        $access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', '');
         $this->setState('filter.access', $access);
 
         // Filter - Project
-        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         // Filter - Parent id
         $parent_id = JRequest::getCmd('filter_parent_id', '');
@@ -141,6 +156,7 @@ class ProjectforkModelRepository extends JModelList
 
         $this->setState('filter.parent_id',  $parent_id);
 
+        // Override the user input to control the other models
         JRequest::setVar('filter_parent_id', $parent_id);
         JRequest::setVar('filter_project',   $project);
 

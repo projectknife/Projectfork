@@ -159,9 +159,8 @@ class ProjectforkModelNotes extends JModelList
         $author_id = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
         $this->setState('filter.author_id', $author_id);
 
-        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         $dir_id = JRequest::getCmd('filter_parent_id', JRequest::getCmd('filter_dir_id', ''));
         $this->setState('filter.dir_id', $dir_id);

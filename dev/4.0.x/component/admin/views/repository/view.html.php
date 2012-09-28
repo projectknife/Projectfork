@@ -19,6 +19,7 @@ class ProjectforkViewRepository extends JViewLegacy
     protected $state;
     protected $authors;
     protected $nulldate;
+    protected $pagination;
 
 
     /**
@@ -39,6 +40,14 @@ class ProjectforkViewRepository extends JViewLegacy
             return false;
         }
 
+        if ($this->items['directory']->id == '1') {
+            $this->pagination = null;
+            //$this->pagination = $this->get('Pagination');
+        }
+        else {
+            $this->pagination = null;
+        }
+
         if ($this->getLayout() !== 'modal') $this->addToolbar();
 
         parent::display($tpl);
@@ -57,7 +66,7 @@ class ProjectforkViewRepository extends JViewLegacy
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_REPO_TITLE'), 'article.png');
 
-        if ($state->get('filter.project')) {
+        if ($state->get('filter.project') && $this->items['directory']->id > 1) {
             if ($access->get('directory.create')) {
                 JToolBarHelper::custom('directory.add', 'new.png', 'new_f2.png', 'JTOOLBAR_ADD_DIRECTORY', false);
             }
