@@ -22,33 +22,39 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 <form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=projects'); ?>" method="post" name="adminForm" id="adminForm">
 
     <fieldset id="filter-bar">
-        <div class="filter-search fltlft">
-            <label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
+        <div class="filter-search fltlft btn-toolbar pull-left">
+            <div class="fltlft btn-group pull-left">
+            	<label class="filter-search-lbl element-invisible" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
             <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
-
-            <button type="submit" class="btn"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
-            <button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
+            </div>
+            <div class="fltlft btn-group pull-left">
+            	<button type="submit" class="btn hasTooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><span class="element-invisible"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></span><span aria-hidden="true" class="icon-search"></span></button>
+            	<button type="button" class="btn hasTooltip" onclick="document.id('filter_search').value='';this.form.submit();" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><span class="element-invisible"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></span><span aria-hidden="true" class="icon-cancel-2"></span></button>
+            </div>
         </div>
-        <div class="filter-select fltrt">
-            <select name="filter_published" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-                <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
-            </select>
-
-            <select name="filter_category" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_CATEGORY');?></option>
-                <?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_projectfork'), 'value', 'text', $this->state->get('filter.category'));?>
-            </select>
-
-            <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
-            </select>
+        <div class="filter-select fltrt btn-toolbar pull-right">
+        	<div class="fltrt btn-group">
+	            <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
+	                <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+	                <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
+	            </select>
+            </div>
+            <div class="fltrt btn-group">
+	            <select name="filter_category" class="inputbox input-medium" onchange="this.form.submit()">
+	                <option value=""><?php echo JText::_('JOPTION_SELECT_CATEGORY');?></option>
+	                <?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_projectfork'), 'value', 'text', $this->state->get('filter.category'));?>
+	            </select>
+            </div>
+            <div class="fltrt btn-group">
+	            <select name="filter_author_id" class="inputbox input-medium" onchange="this.form.submit()">
+	                <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+	                <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
+	            </select>
+            </div>
         </div>
     </fieldset>
-    <div class="clr"></div>
-
-    <table class="adminlist">
+    <div class="clr clearfix"></div>
+    <table class="adminlist table table-striped">
         <thead>
             <tr>
                 <th width="1%">

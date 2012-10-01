@@ -189,7 +189,7 @@ class JFormFieldGroupAccess extends JFormField
     {
         $html   = array();
         $html[] = '<div id="permissions-sliders">';
-        $html[] = '<ul id="rules">';
+        $html[] = '<ul id="rules" class="unstyled">';
 
         foreach($this->groups AS $i => $item)
         {
@@ -201,9 +201,9 @@ class JFormFieldGroupAccess extends JFormField
                 }
             }
 
-            $html[] = '<li class="usergroup">';
+            $html[] = '<li class="usergroup clearfix">';
             $html[] = '     <div style="float:left">';
-            $html[] = '         <button type="button" onclick="jQuery(\'#group-rules-' . $gid . '\').toggle();">Permissions</button>';
+            $html[] = '         <button type="button" class="btn" onclick="jQuery(\'#group-rules-' . $gid . '\').toggle();">Permissions</button>';
             $html[] = '     </div>';
             $html[] = '     <div style="float:left">';
             $html[] = '         ';
@@ -240,7 +240,7 @@ class JFormFieldGroupAccess extends JFormField
             $html[] = '     </div>';
             $html[] = '     <div class="clr"></div>';
             $html[] = '     <div class="mypanel" id="group-rules-' . $gid . '" style="display:none;">';
-            $html[] = '         <table class="group-rules">';
+            $html[] = '         <table class="group-rules table table-condensed table-striped small">';
             $html[] = '             <thead>';
             $html[] = '                 <tr>';
             $html[] = '                     <th class="actions" id="actions-th' . $gid . '">';
