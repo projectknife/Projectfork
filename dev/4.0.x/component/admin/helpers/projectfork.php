@@ -29,57 +29,59 @@ class ProjectforkHelper
      */
     public static function addSubmenu($view)
     {
-        JSubMenuHelper::addEntry(
+        $class = version_compare(JVERSION, '3.0.0', 'ge') ? 'JHtmlSidebar' : 'JSubMenuHelper';
+
+        $class::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_DASHBOARD'),
             'index.php?option=com_projectfork&view=dashboard',
             ($view == 'dashboard')
         );
 
-        JSubMenuHelper::addEntry(
+        $class::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_PROJECTS'),
             'index.php?option=com_projectfork&view=projects',
             ($view == 'projects')
         );
 
         if ($view == 'projects' || $view == 'categories') {
-                JSubMenuHelper::addEntry(
+                $class::addEntry(
                 JText::_('COM_PROJECTFORK_SUBMENU_CATEGORIES'),
                 'index.php?option=com_categories&extension=com_projectfork',
                 ($view == 'categories')
             );
         }
 
-        JSubMenuHelper::addEntry(
+        $class::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_MILESTONES'),
             'index.php?option=com_projectfork&view=milestones',
             ($view == 'milestones')
         );
 
-        JSubMenuHelper::addEntry(
+        $class::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS'),
             'index.php?option=com_projectfork&view=tasklists',
             ($view == 'tasklists')
         );
 
-        JSubMenuHelper::addEntry(
+        $class::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_TASKS'),
             'index.php?option=com_projectfork&view=tasks',
             ($view == 'tasks')
         );
 
-        JSubMenuHelper::addEntry(
+        $class::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_TIME_TRACKING'),
             'index.php?option=com_projectfork&view=timesheet',
             ($view == 'timesheet')
         );
 
-        JSubMenuHelper::addEntry(
+        $class::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_REPO'),
             'index.php?option=com_projectfork&view=repository',
             ($view == 'repository')
         );
 
-        JSubMenuHelper::addEntry(
+        $class::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_DISCUSSIONS'),
             'index.php?option=com_projectfork&view=topics',
             ($view == 'topics')
@@ -91,14 +93,14 @@ class ProjectforkHelper
 
             if ($append) $append .= '&filter_topic=' . $topic;
 
-            JSubMenuHelper::addEntry(
+            $class::addEntry(
                 JText::_('COM_PROJECTFORK_SUBMENU_REPLIES'),
                 'index.php?option=com_projectfork&view=replies' . $append,
                 ($view == 'replies')
             );
         }
 
-        JSubMenuHelper::addEntry(
+        $class::addEntry(
             JText::_('COM_PROJECTFORK_SUBMENU_COMMENTS'),
             'index.php?option=com_projectfork&view=comments',
             ($view == 'comments')

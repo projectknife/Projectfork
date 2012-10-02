@@ -20,6 +20,7 @@ class ProjectforkViewProjects extends JViewLegacy
     protected $state;
     protected $authors;
     protected $nulldate;
+    protected $sidebar;
 
 
     /**
@@ -81,6 +82,12 @@ class ProjectforkViewProjects extends JViewLegacy
         elseif ($access->get('project.edit.state')) {
             JToolBarHelper::trash('projects.trash');
             JToolBarHelper::divider();
+        }
+
+        // Deal with Joomla 3 sidebar
+        if (version_compare(JVERSION, '3.0.0', 'ge')) {
+            ProjectforkHelper::addSubmenu($this->getName());
+            $this->sidebar = JHtmlSidebar::render();
         }
     }
 }

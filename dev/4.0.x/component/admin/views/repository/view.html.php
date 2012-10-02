@@ -20,6 +20,7 @@ class ProjectforkViewRepository extends JViewLegacy
     protected $authors;
     protected $nulldate;
     protected $pagination;
+    protected $sidebar;
 
 
     /**
@@ -83,6 +84,12 @@ class ProjectforkViewRepository extends JViewLegacy
                 JToolBarHelper::divider();
                 JToolBarHelper::deleteList('', 'repository.delete','JTOOLBAR_DELETE');
             }
+        }
+
+        // Deal with Joomla 3 sidebar
+        if (version_compare(JVERSION, '3.0.0', 'ge')) {
+            ProjectforkHelper::addSubmenu($this->getName());
+            $this->sidebar = JHtmlSidebar::render();
         }
     }
 }
