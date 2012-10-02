@@ -42,7 +42,7 @@ abstract class ProjectforkStyle
         $params = JComponentHelper::getParams('com_projectfork');
 
         // Load only if doc type is HTML
-        if (JFactory::getDocument()->getType() == 'html' && $params->get('bootstrap_css', '1') != '-1') {
+        if (JFactory::getDocument()->getType() == 'html' && $params->get('bootstrap_css') != '0') {
             $dispatcher	= JDispatcher::getInstance();
             $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkStyleBootstrap');
         }

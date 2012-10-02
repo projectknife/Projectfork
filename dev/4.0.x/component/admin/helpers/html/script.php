@@ -49,7 +49,7 @@ abstract class ProjectforkScript
         }
 
         // Load only of doc type is HTML
-        if (JFactory::getDocument()->getType() == 'html' && $load != '-1') {
+        if (JFactory::getDocument()->getType() == 'html' && $load != '0') {
             $dispatcher	= JDispatcher::getInstance();
             $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptjQuery');
         }
@@ -78,7 +78,7 @@ abstract class ProjectforkScript
         $params = JComponentHelper::getParams('com_projectfork');
 
         // Load only of doc type is HTML
-        if (JFactory::getDocument()->getType() == 'html' && $params->get('bootstrap_js') != '-1') {
+        if (JFactory::getDocument()->getType() == 'html' && $params->get('bootstrap_js') != '0') {
             $dispatcher	= JDispatcher::getInstance();
             $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptBootstrap');
         }
