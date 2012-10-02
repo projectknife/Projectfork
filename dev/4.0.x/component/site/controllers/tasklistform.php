@@ -244,7 +244,7 @@ class ProjectforkControllerTasklistForm extends JControllerForm
      *
      * @return    void
      */
-    protected function postSaveHook(JModel &$model, $validData)
+    protected function postSaveHook(&$model, $validData)
     {
         $task = $this->getTask();
         $id   = (int) $model->getState('tasklistform.id');

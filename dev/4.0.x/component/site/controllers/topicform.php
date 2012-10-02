@@ -249,7 +249,7 @@ class ProjectforkControllerTopicform extends JControllerForm
      *
      * @return    void
      */
-    protected function postSaveHook(JModel &$model, $data)
+    protected function postSaveHook(&$model, $data)
     {
         $task = $this->getTask();
 
