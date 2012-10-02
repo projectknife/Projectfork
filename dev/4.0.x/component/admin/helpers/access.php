@@ -197,7 +197,7 @@ class ProjectforkHelperAccess
         // Handle public access
         if ($access == '1') {
             $query->select($fields)
-                  ->from('#__usergroups');
+                  ->from('#__usergroups AS a');
 
             $db->setQuery((string) $query);
             $groups = (array) $db->loadColumn();
