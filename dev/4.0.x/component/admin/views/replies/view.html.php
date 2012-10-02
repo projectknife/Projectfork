@@ -49,8 +49,6 @@ class ProjectforkViewReplies extends JViewLegacy
      */
     protected $nulldate;
 
-    protected $sidebar;
-
 
     /**
      * Display the view
@@ -118,12 +116,6 @@ class ProjectforkViewReplies extends JViewLegacy
         elseif ($access->get('reply.edit.state')) {
             JToolBarHelper::trash('replies.trash');
             JToolBarHelper::divider();
-        }
-
-        // Deal with Joomla 3 sidebar
-        if (version_compare(JVERSION, '3.0.0', 'ge')) {
-            ProjectforkHelper::addSubmenu($this->getName());
-            $this->sidebar = JHtmlSidebar::render();
         }
     }
 }

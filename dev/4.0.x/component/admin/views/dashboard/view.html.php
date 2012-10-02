@@ -15,8 +15,6 @@ jimport('joomla.application.component.view');
 
 class ProjectforkViewDashboard extends JViewLegacy
 {
-    protected $sidebar;
-
     /**
      * Display the view
      *
@@ -42,12 +40,6 @@ class ProjectforkViewDashboard extends JViewLegacy
 
         if ($acl->get('core.admin')) {
             JToolBarHelper::preferences('com_projectfork');
-        }
-
-        // Deal with Joomla 3 sidebar
-        if (version_compare(JVERSION, '3.0.0', 'ge')) {
-            ProjectforkHelper::addSubmenu($this->getName());
-            $this->sidebar = JHtmlSidebar::render();
         }
     }
 }

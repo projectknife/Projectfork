@@ -49,8 +49,6 @@ class ProjectforkViewTopics extends JViewLegacy
      */
     protected $nulldate;
 
-    protected $sidebar;
-
 
     /**
      * Display the view
@@ -118,12 +116,6 @@ class ProjectforkViewTopics extends JViewLegacy
         elseif ($access->get('topic.edit.state')) {
             JToolBarHelper::trash('topics.trash');
             JToolBarHelper::divider();
-        }
-
-        // Deal with Joomla 3 sidebar
-        if (version_compare(JVERSION, '3.0.0', 'ge')) {
-            ProjectforkHelper::addSubmenu($this->getName());
-            $this->sidebar = JHtmlSidebar::render();
         }
     }
 }

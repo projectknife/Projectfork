@@ -19,7 +19,6 @@ class ProjectforkViewTasklists extends JViewLegacy
     protected $pagination;
     protected $state;
     protected $authors;
-    protected $sidebar;
 
 
     /**
@@ -79,12 +78,6 @@ class ProjectforkViewTasklists extends JViewLegacy
         elseif ($access->get('tasklist.edit.state')) {
             JToolBarHelper::trash('tasklists.trash');
             JToolBarHelper::divider();
-        }
-
-        // Deal with Joomla 3 sidebar
-        if (version_compare(JVERSION, '3.0.0', 'ge')) {
-            ProjectforkHelper::addSubmenu($this->getName());
-            $this->sidebar = JHtmlSidebar::render();
         }
     }
 }
