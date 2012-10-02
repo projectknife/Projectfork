@@ -30,7 +30,7 @@ class ProjectforkHelper
     public static function addSubmenu($view)
     {
         if (version_compare(JVERSION, '3.0.0', 'ge')) {
-            $views = array('dasbboard', 'projects', 'categories', 'milestones', 'tasklists', 'tasks',
+            $views = array('dashboard', 'projects', 'categories', 'milestones', 'tasklists', 'tasks',
                 'timesheet', 'repository', 'topics', 'replies', 'comments', '');
 
             if (!in_array($view, $views)) {
