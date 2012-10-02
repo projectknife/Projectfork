@@ -137,12 +137,13 @@ class ProjectforkModelAttachments extends JModelList
      */
     public function save($data = array(), $item_type = NULL, $item_id = 0, $project_id = 0)
     {
-        $item_type  = (!empty($item_type)    ? $item_type        : $this->getState('item.type'));
+        $item_type  = ($item_type            ? $item_type        : $this->getState('item.type'));
         $item_id    = ((int) $item_id > 0    ? (int) $item_id    : $this->getState('item.id'));
         $project_id = ((int) $project_id > 0 ? (int) $project_id : $this->getState('item.project'));
+        $success    = true;
 
         // Check if an item is set
-        if (empty($item_type) || !$item_id || !$project_id) {
+        if (!$item_type || !$item_id || !$project_id) {
             $this->setError(JText::_('COM_PROJECTFORK_WARNING_ATTACHMENTS_NO_ITEM_REFERENCE'));
             return false;
         }
@@ -167,7 +168,7 @@ class ProjectforkModelAttachments extends JModelList
         // Save attachments
         foreach ($data AS $item)
         {
-            if (empty($item)) continue;
+            if (empty($item) || $item == '') continue;
 
             $item_data = array(
                 'id'         => 0,
@@ -179,6 +180,7 @@ class ProjectforkModelAttachments extends JModelList
 
             if (!$attachment->save($item_data)) {
                 $this->setError($attachment->getError());
+                $success = false;
             }
         }
 
@@ -186,10 +188,11 @@ class ProjectforkModelAttachments extends JModelList
         if (count($delete)) {
             if (!$attachment->delete($delete)) {
                 $this->setError($attachment->getError());
+                $success = false;
             }
         }
 
-        return true;
+        return $success;
     }
 
 
@@ -208,7 +211,6 @@ class ProjectforkModelAttachments extends JModelList
         // Item type
         $value = str_replace('form', '', JRequest::getCmd('view', ''));
         $this->setState('item.type', $value);
-
 
         // Item id
         $value = JRequest::getUint('id');

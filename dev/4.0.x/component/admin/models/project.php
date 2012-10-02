@@ -227,8 +227,12 @@ class ProjectforkModelProject extends JModelAdmin
             if (isset($data['attachment']) && !$is_new) {
                 $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
 
-                if ($attachments->getState('item.id') == 0) {
-                    $attachments->setState('item.id', $this->getState($this->getName() . '.id'));
+                if ((int) $attachments->getState('item.id') == 0) {
+                    $attachments->setState('item.id', $id);
+                }
+
+                if ((int) $attachments->getState('item.project') == 0) {
+                    $attachments->setState('item.project', $id);
                 }
 
                 if (!$attachments->save($data['attachment'])) {
