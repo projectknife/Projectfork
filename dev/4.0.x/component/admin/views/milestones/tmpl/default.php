@@ -21,33 +21,41 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 <form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=milestones'); ?>" method="post" name="adminForm" id="adminForm">
 
     <fieldset id="filter-bar">
-        <div class="filter-search fltlft">
-            <label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
-            <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
-            <button type="submit" class="btn"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
-            <button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
+        <div class="filter-search fltlft btn-toolbar pull-left">
+        	<div class="fltlft btn-group pull-left">
+            	<label class="filter-search-lbl element-invisible" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
+            	<input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
+        	</div>
+        	<div class="fltlft btn-group pull-left hidden-phone">
+            	<button type="submit" class="btn hasTooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><span class="element-invisible"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></span><span aria-hidden="true" class="icon-search"></span></button>
+            	<button type="button" class="btn hasTooltip" onclick="document.id('filter_search').value='';this.form.submit();" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><span class="element-invisible"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></span><span aria-hidden="true" class="icon-cancel-2"></span></button>
+        	</div>
+        	<div class="fltrt btn-group pull-left">
+           		<?php echo JHtml::_('projectfork.filterProject');?>
+        	</div>
         </div>
-        <div class="filter-select fltrt">
-            <select name="filter_published" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-                <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
-            </select>
-
+        <div class="filter-select fltrt btn-toolbar pull-right hidden-phone">
+        	<div class="fltrt btn-group">
+            	<select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
+                	<option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+                	<?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
+                </select>
+        	</div>
             <?php if ($this->state->get('filter.project')) : ?>
-            <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
-            </select>
+            <div class="fltrt btn-group">
+	            <select name="filter_author_id" class="inputbox input-medium" onchange="this.form.submit()">
+	                <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+	                <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
+	            </select>
+            </div>
             <?php endif; ?>
-            <?php echo JHtml::_('projectfork.filterProject');?>
         </div>
     </fieldset>
-    <div class="clr"></div>
-
-    <table class="adminlist">
+    <div class="clr clearfix"></div>
+    <table class="adminlist table table-striped">
         <thead>
             <tr>
-                <th width="1%">
+                <th width="1%" class="hidden-phone">
                     <input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
                 </th>
                 <th width="5%">
@@ -56,19 +64,19 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                 <th>
                     <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                 </th>
-                <th width="15%">
+                <th width="15%" class="hidden-phone">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'project_title', $list_dir, $list_order); ?>
                 </th>
-                <th width="15%">
+                <th width="15%" class="hidden-phone">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
                 </th>
-                <th width="10%">
+                <th width="10%" class="hidden-phone">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_START_DATE', 'a.start_date', $list_dir, $list_order); ?>
                 </th>
-                <th width="10%">
+                <th width="10%" class="hidden-phone">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
                 </th>
-                <th width="1%" class="nowrap">
+                <th width="1%" class="nowrap hidden-phone">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $list_dir, $list_order); ?>
                 </th>
             </tr>
@@ -84,7 +92,7 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
             $can_change   = ($access->get('milestone.edit.state') && $can_checkin);
             ?>
             <tr class="row<?php echo $i % 2; ?>">
-                <td class="center">
+                <td class="center hidden-phone">
                     <?php echo JHtml::_('grid.id', $i, $item->id); ?>
                 </td>
                 <td class="center">
@@ -101,17 +109,17 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                         <?php echo $this->escape($item->title); ?>
                     <?php endif; ?>
                 </td>
-                <td><?php echo $this->escape($item->project_title); ?></td>
-                <td>
+                <td class="hidden-phone"><?php echo $this->escape($item->project_title); ?></td>
+                <td class="hidden-phone">
                     <?php echo $this->escape($item->author_name); ?>
                 </td>
-                <td class="center nowrap">
+                <td class="center nowrap hidden-phone">
                     <?php echo (($item->start_date == $this->nulldate) ? JText::_('DATE_NOT_SET') : JHtml::_('date', $item->start_date, JText::_('DATE_FORMAT_LC4'))); ?>
                 </td>
-                <td class="center nowrap">
+                <td class="center nowrap hidden-phone">
                     <?php echo (($item->end_date == $this->nulldate) ? JText::_('DATE_NOT_SET') : JHtml::_('date', $item->end_date, JText::_('DATE_FORMAT_LC4'))); ?>
                 </td>
-                <td class="center">
+                <td class="center hidden-phone">
                     <?php echo (int) $item->id; ?>
                 </td>
             </tr>

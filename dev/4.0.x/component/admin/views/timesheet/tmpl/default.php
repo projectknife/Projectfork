@@ -23,34 +23,41 @@ $total_time = 0;
 <form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=timesheet'); ?>" method="post" name="adminForm" id="adminForm">
 
     <fieldset id="filter-bar">
-        <div class="filter-search fltlft">
-            <label class="filter-search-lbl" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
-            <input type="text" name="filter_search" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
-
-            <button type="submit" class="btn"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></button>
-            <button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
+        <div class="filter-search fltlft btn-toolbar pull-left">
+        	<div class="fltlft btn-group pull-left">
+	            <label class="filter-search-lbl element-invisible" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
+	            <input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
+        	</div>
+        	<div class="fltlft btn-group pull-left hidden-phone">
+	            <button type="submit" class="btn hasTooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><span class="element-invisible"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></span><span aria-hidden="true" class="icon-search"></span></button>
+	            	<button type="button" class="btn hasTooltip" onclick="document.id('filter_search').value='';this.form.submit();" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><span class="element-invisible"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></span><span aria-hidden="true" class="icon-cancel-2"></span></button>
+        	</div>
+        	<div class="fltrt btn-group pull-left">
+           		<?php echo JHtml::_('projectfork.filterProject');?>
+        	</div>
         </div>
-        <div class="filter-select fltrt">
-            <select name="filter_published" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-                <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
-            </select>
-
+        <div class="filter-select fltrt btn-toolbar pull-right hidden-phone">
+        	<div class="fltrt btn-group">
+	            <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
+	                <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
+	                <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
+	            </select>
+        	</div>
             <?php if ($this->state->get('filter.project')) : ?>
-                <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
-                    <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                    <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
-                </select>
+            	<div class="fltrt btn-group">
+	                <select name="filter_author_id" class="inputbox input-medium" onchange="this.form.submit()">
+	                    <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+	                    <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
+	                </select>
+            	</div>
             <?php endif; ?>
-            <?php echo JHtml::_('projectfork.filterProject');?>
         </div>
     </fieldset>
-    <div class="clr"></div>
-
-    <table class="adminlist">
+    <div class="clr clearfix"></div>
+    <table class="adminlist table table-striped">
         <thead>
             <tr>
-                <th width="1%">
+                <th width="1%" class="hidden-phone">
                     <input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
                 </th>
                 <th width="5%">
@@ -60,23 +67,23 @@ $total_time = 0;
                     <?php echo JHtml::_('grid.sort', 'COM_PROJECTFORK_TASK_TITLE', 'a.task_title', $list_dir, $list_order); ?>
                 </th>
                 <?php if (!$this->state->get('filter.project')) : ?>
-                    <th width="20%">
+                    <th width="20%" class="hidden-phone">
                         <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'project_title', $list_dir, $list_order); ?>
                     </th>
                 <?php endif; ?>
-                <th width="5%">
+                <th width="5%" class="hidden-phone">
                     <?php echo JHtml::_('grid.sort', 'JDATE', 'a.log_date', $list_dir, $list_order); ?>
                 </th>
-                <th width="10%">
+                <th width="10%" class="hidden-phone">
                     <?php echo JHtml::_('grid.sort', 'COM_PROJECTFORK_TIME_SPENT_HEADING', 'a.log_time', $list_dir, $list_order); ?>
                 </th>
-                <th width="15%">
+                <th width="15%" class="hidden-phone">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
                 </th>
-                <th width="15%">
+                <th width="15%" class="hidden-phone">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ACCESS', 'a.access', $list_dir, $list_order); ?>
                 </th>
-                <th width="1%" class="nowrap">
+                <th width="1%" class="nowrap hidden-phone">
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_ID', 'a.id', $list_dir, $list_order); ?>
                 </th>
             </tr>
@@ -94,7 +101,7 @@ $total_time = 0;
             $can_change   = ($access->get('time.edit.state') && $can_checkin);
             ?>
             <tr class="row<?php echo $i % 2; ?>">
-                <td class="center">
+                <td class="center hidden-phone">
                     <?php echo JHtml::_('grid.id', $i, $item->id); ?>
                 </td>
                 <td class="center">
@@ -113,29 +120,29 @@ $total_time = 0;
                     <?php endif; ?>
                 </td>
                 <?php if (!$this->state->get('filter.project')) : ?>
-                    <td><?php echo $this->escape($item->project_title); ?></td>
+                    <td class="hidden-phone"><?php echo $this->escape($item->project_title); ?></td>
                 <?php endif; ?>
                 <td class="center nowrap">
                     <?php echo JHtml::_('date', $item->log_date, JText::_('DATE_FORMAT_LC4')); ?>
                 </td>
-                <td class="center nowrap">
+                <td class="center nowrap hidden-phone">
                     <?php echo JHtml::_('timesheet.format', $item->log_time); ?>
                 </td>
-                <td class="center">
+                <td class="center hidden-phone">
                     <?php echo $this->escape($item->author_name); ?>
                 </td>
-                <td class="center">
+                <td class="center hidden-phone">
                     <?php echo $this->escape($item->access_level); ?>
                 </td>
-                <td class="center">
+                <td class="center hidden-phone">
                     <?php echo (int) $item->id; ?>
                 </td>
             </tr>
             <?php endforeach; ?>
             <tr>
                 <td colspan="5" style="text-align: right"><strong><?php echo JText::_('COM_PROJECTFORK_TOTALTIME_SPENT_HEADING'); ?></strong></td>
-                <td class="center nowrap"><strong><?php echo JHtml::_('timesheet.format', $total_time); ?></strong></td>
-                <td colspan="3"></td>
+                <td class="center nowrap hidden-phone"><strong><?php echo JHtml::_('timesheet.format', $total_time); ?></strong></td>
+                <td class="hidden-phone" colspan="3"></td>
             </tr>
         </tbody>
         <tfoot>
