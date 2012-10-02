@@ -19,20 +19,28 @@
     </fieldset>
 
 	<fieldset name="compat_parameters" label="COM_PROJECTFORK_CONFIG_COMPAT_LABEL" description="COM_PROJECTFORK_CONFIG_COMPAT_DESC">
-       <field name="projectfork_css" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_CSS_LABEL" description="COM_PROJECTFORK_CONFIG_CSS_DESC">
+       <field name="projectfork_css" type="list" default="1" label="COM_PROJECTFORK_CONFIG_CSS_LABEL" description="COM_PROJECTFORK_CONFIG_CSS_DESC">
 		    <option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-        <field name="bootstrap_css" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_BOOTSTRAP_CSS_LABEL" description="COM_PROJECTFORK_CONFIG_BOOTSTRAP_CSS_DESC">
+        <field name="bootstrap_css" type="list" default="" label="COM_PROJECTFORK_CONFIG_BOOTSTRAP_CSS_LABEL" description="COM_PROJECTFORK_CONFIG_BOOTSTRAP_CSS_DESC">
+		    <option value="">JAUTO</option>
 		    <option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-        <field name="bootstrap_js" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_BOOTSTRAP_JS_LABEL" description="COM_PROJECTFORK_CONFIG_BOOTSTRAP_JS_DESC">
-		    <option value="0">JNO</option>
+        <field name="bootstrap_js" type="list" default="" label="COM_PROJECTFORK_CONFIG_BOOTSTRAP_JS_LABEL" description="COM_PROJECTFORK_CONFIG_BOOTSTRAP_JS_DESC">
+		    <option value="">JAUTO</option>
+            <option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-        <field name="jquery" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_JQUERY_LABEL" description="COM_PROJECTFORK_CONFIG_JQUERY_DESC">
-		    <option value="0">JNO</option>
+        <field name="jquery_site" type="list" default="" label="COM_PROJECTFORK_CONFIG_JQUERY_SITE_LABEL" description="COM_PROJECTFORK_CONFIG_JQUERY_DESC">
+		    <option value="">JAUTO</option>
+            <option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+        <field name="jquery_admin" type="list" default="" label="COM_PROJECTFORK_CONFIG_JQUERY_ADMIN_LABEL" description="COM_PROJECTFORK_CONFIG_JQUERY_DESC">
+		    <option value="">JAUTO</option>
+            <option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
 

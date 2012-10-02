@@ -41,10 +41,17 @@ abstract class ProjectforkScript
 
         $params = JComponentHelper::getParams('com_projectfork');
 
+        if (JFactory::getApplication()->isSite()) {
+            $load = $params->get('jquery_site');
+        }
+        else {
+            $load = $params->get('jquery_admin');
+        }
+
         // Load only of doc type is HTML
-        if (JFactory::getDocument()->getType() == 'html' && $params->get('jquery', '1') == '1') {
-            JHtml::_('script', 'com_projectfork/jquery/jquery.min.js', false, true, false, false, false);
-            JHtml::_('script', 'com_projectfork/jquery/jquery.noconflict.js', false, true, false, false, false);
+        if (JFactory::getDocument()->getType() == 'html' && $load != '-1') {
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptjQuery');
         }
 
         self::$loaded[__METHOD__] = true;
@@ -71,8 +78,9 @@ abstract class ProjectforkScript
         $params = JComponentHelper::getParams('com_projectfork');
 
         // Load only of doc type is HTML
-        if (JFactory::getDocument()->getType() == 'html' && $params->get('bootstrap_js', '1') == '1') {
-            JHtml::_('script', 'com_projectfork/bootstrap/bootstrap.min.js', false, true, false, false, false);
+        if (JFactory::getDocument()->getType() == 'html' && $params->get('bootstrap_js') != '-1') {
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptBootstrap');
         }
 
         self::$loaded[__METHOD__] = true;
@@ -98,9 +106,8 @@ abstract class ProjectforkScript
 
         // Load only of doc type is HTML
         if (JFactory::getDocument()->getType() == 'html') {
-            JHtml::_('script', 'com_projectfork/flot/jquery.flot.min.js', false, true, false, false, false);
-            JHtml::_('script', 'com_projectfork/flot/jquery.flot.pie.min.js', false, true, false, false, false);
-            JHtml::_('script', 'com_projectfork/flot/jquery.flot.resize.min.js', false, true, false, false, false);
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptFlot');
         }
 
         self::$loaded[__METHOD__] = true;
@@ -126,7 +133,8 @@ abstract class ProjectforkScript
 
         // Load only of doc type is HTML
         if (JFactory::getDocument()->getType() == 'html') {
-            JHtml::_('script', 'com_projectfork/projectfork/comments.js', false, true, false, false, false);
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptComments');
         }
 
         self::$loaded[__METHOD__] = true;
@@ -152,7 +160,8 @@ abstract class ProjectforkScript
 
         // Load only of doc type is HTML
         if (JFactory::getDocument()->getType() == 'html') {
-            JHtml::_('script', 'com_projectfork/projectfork/form.js', false, true, false, false, false);
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptForm');
         }
 
         self::$loaded[__METHOD__] = true;
@@ -173,9 +182,120 @@ abstract class ProjectforkScript
 
         // Load only of doc type is HTML
         if (JFactory::getDocument()->getType() == 'html') {
-            JHtml::_('script', 'com_projectfork/projectfork/projectfork.js', false, true, false, false, false);
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptCore');
         }
 
         self::$loaded[__METHOD__] = true;
     }
 }
+
+
+/**
+ * Stupid but necessary way of adding jQuery to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that jQuery is not already loaded
+ *
+ */
+function triggerProjectforkScriptjQuery()
+{
+    $params = JComponentHelper::getParams('com_projectfork');
+
+    if (JFactory::getApplication()->isSite()) {
+        $load = $params->get('jquery_site');
+    }
+    else {
+        $load = $params->get('jquery_admin');
+    }
+
+    // Auto-load
+    if ($load == '') {
+        $scripts = (array) array_keys(JFactory::getDocument()->_scripts);
+        $string  = implode('', $scripts);
+
+        if (stripos($string, 'jquery') === false) {
+            JHtml::_('script', 'com_projectfork/jquery/jquery.min.js', false, true, false, false, false);
+            JHtml::_('script', 'com_projectfork/jquery/jquery.noconflict.js', false, true, false, false, false);
+        }
+    }
+
+    // Force load
+    if ($load == '1') {
+        JHtml::_('script', 'com_projectfork/jquery/jquery.min.js', false, true, false, false, false);
+        JHtml::_('script', 'com_projectfork/jquery/jquery.noconflict.js', false, true, false, false, false);
+    }
+}
+
+
+/**
+ * Stupid but necessary way of adding Bootstrap JS to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that Bootstrap JS is not already loaded
+ *
+ */
+function triggerProjectforkScriptBootstrap()
+{
+    $params = JComponentHelper::getParams('com_projectfork');
+
+    $load = $params->get('bootstrap_js');
+
+    // Auto-load
+    if ($load == '') {
+        $scripts = (array) array_keys(JFactory::getDocument()->_scripts);
+        $string  = implode('', $scripts);
+
+        if (stripos($string, 'bootstrap') === false) {
+            JHtml::_('script', 'com_projectfork/bootstrap/bootstrap.min.js', false, true, false, false, false);
+        }
+    }
+
+    // Force load
+    if ($load == '1') {
+        JHtml::_('script', 'com_projectfork/bootstrap/bootstrap.min.js', false, true, false, false, false);
+    }
+}
+
+
+/**
+ * Stupid but necessary way of adding jQuery Flot to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that flot is loaded after jQuery
+ *
+ */
+function triggerProjectforkScriptFlot()
+{
+    JHtml::_('script', 'com_projectfork/flot/jquery.flot.min.js', false, true, false, false, false);
+    JHtml::_('script', 'com_projectfork/flot/jquery.flot.pie.min.js', false, true, false, false, false);
+    JHtml::_('script', 'com_projectfork/flot/jquery.flot.resize.min.js', false, true, false, false, false);
+}
+
+
+/**
+ * Stupid but necessary way of adding PF comments JS to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that the comments JS is loaded after jQuery
+ *
+ */
+function triggerProjectforkScriptComments()
+{
+    JHtml::_('script', 'com_projectfork/projectfork/comments.js', false, true, false, false, false);
+}
+
+
+/**
+ * Stupid but necessary way of adding PF form JS to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that the form JS is loaded after jQuery
+ *
+ */
+function triggerProjectforkScriptForm()
+{
+    JHtml::_('script', 'com_projectfork/projectfork/form.js', false, true, false, false, false);
+}
+
+
+/**
+ * Stupid but necessary way of adding PF core JS to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that the core JS is loaded after jQuery
+ *
+ */
+function triggerProjectforkScriptCore()
+{
+    JHtml::_('script', 'com_projectfork/projectfork/projectfork.js', false, true, false, false, false);
+}
+

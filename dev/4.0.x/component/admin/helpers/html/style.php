@@ -22,7 +22,7 @@ abstract class ProjectforkStyle
     /**
      * Array containing information for loaded files
      *
-     * @var    array    $loaded    
+     * @var    array    $loaded
      */
     protected static $loaded = array();
 
@@ -30,7 +30,7 @@ abstract class ProjectforkStyle
     /**
      * Method to load bootstrap CSS
      *
-     * @return    void    
+     * @return    void
      */
     public static function bootstrap()
     {
@@ -42,9 +42,9 @@ abstract class ProjectforkStyle
         $params = JComponentHelper::getParams('com_projectfork');
 
         // Load only if doc type is HTML
-        if (JFactory::getDocument()->getType() == 'html' && $params->get('bootstrap_css', '1') == '1') {
-            JHtml::_('stylesheet', 'com_projectfork/bootstrap/bootstrap.min.css', false, true, false, false, false);
-            JHtml::_('stylesheet', 'com_projectfork/bootstrap/bootstrap-responsive.min.css', false, true, false, false, false);
+        if (JFactory::getDocument()->getType() == 'html' && $params->get('bootstrap_css', '1') != '-1') {
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkStyleBootstrap');
         }
 
         self::$loaded[__METHOD__] = true;
@@ -54,7 +54,7 @@ abstract class ProjectforkStyle
     /**
      * Method to load Projectfork CSS
      *
-     * @return    void    
+     * @return    void
      */
     public static function projectfork()
     {
@@ -74,5 +74,41 @@ abstract class ProjectforkStyle
 
         self::$loaded[__METHOD__] = true;
     }
+}
 
+
+/**
+ * Stupid but necessary way of adding bootstrap JS to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that the CSS is only added if not already found
+ *
+ */
+function triggerProjectforkStyleBootstrap()
+{
+    $params = JComponentHelper::getParams('com_projectfork');
+
+    $load = $params->get('bootstrap_css');
+
+    // Auto-load
+    if ($load == '') {
+        $css = (array) array_keys(JFactory::getDocument()->_styleSheets);
+        $string  = implode('', $css);
+
+        $isis  = stripos($string, 'isis/css/template.css');
+        $proto = stripos($string, 'protostar/css/template.css');
+        $strap = stripos($string, 'bootstrap');
+        $j3000 = version_compare(JVERSION, '3.0.0', 'ge');
+
+        if ($j3000 || $isis !== false || $proto !== false || $strap !== false) {
+            return;
+        }
+
+        JHtml::_('stylesheet', 'com_projectfork/bootstrap/bootstrap.min.css', false, true, false, false, false);
+        JHtml::_('stylesheet', 'com_projectfork/bootstrap/bootstrap-responsive.min.css', false, true, false, false, false);
+    }
+
+    // Force load
+    if ($load == '1') {
+        JHtml::_('stylesheet', 'com_projectfork/bootstrap/bootstrap.min.css', false, true, false, false, false);
+        JHtml::_('stylesheet', 'com_projectfork/bootstrap/bootstrap-responsive.min.css', false, true, false, false, false);
+    }
 }
