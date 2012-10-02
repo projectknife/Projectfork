@@ -27,7 +27,7 @@ if (!$editoroptions) $params->show_urls_images_frontend = '0';
 Joomla.submitbutton = function(task)
 {
     if (task == 'directoryform.cancel' document.formvalidator.isValid(document.id('item-form'))) {
-        Joomla.submitform(task);
+        Joomla.submitform(task, document.getElementById('item-form'));
     } else {
         alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
     }

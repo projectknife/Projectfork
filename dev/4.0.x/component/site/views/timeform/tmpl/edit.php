@@ -23,7 +23,7 @@ $params = $this->state->get('params');
 Joomla.submitbutton = function(task)
 {
     if (task == 'timeform.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
-        Joomla.submitform(task);
+        Joomla.submitform(task, document.getElementById('item-form'));
     } else {
         alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
     }

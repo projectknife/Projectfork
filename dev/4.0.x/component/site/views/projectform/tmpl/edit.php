@@ -27,7 +27,7 @@ Joomla.submitbutton = function(task)
 {
 	if (task == 'projectform.cancel' || document.getElementById('jform_title').value != '') {
 		<?php echo $this->form->getField('description')->save(); ?>
-		Joomla.submitform(task);
+		Joomla.submitform(task, document.getElementById('item-form'));
 	} else {
 		alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 	}
