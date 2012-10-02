@@ -48,7 +48,7 @@ class ProjectforkModelUsers extends UsersModelUsers
 
         $app    = JFactory::getApplication();
         $user   = JFactory::getUser();
-        $model  = JModelLegacy::getInstance('Projectform', 'ProjectforkModel');
+        $model  = $this->getInstance('Projectform', 'ProjectforkModel', array('ignore_request' => true));
         $groups = array();
 
         // Filter - Project
@@ -63,7 +63,7 @@ class ProjectforkModelUsers extends UsersModelUsers
             if (is_array($tmp_groups)) {
                 foreach($tmp_groups AS $group)
                 {
-                    $groups[] = (int) $group->value;
+                    $groups[] = (int) $group;
                 }
             }
         }

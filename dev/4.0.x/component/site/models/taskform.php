@@ -186,7 +186,7 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
                 JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'));
             }
 
-            $refs = JModel::getInstance('UserRefs', 'ProjectforkModel', array('ignore_request' => true));
+            $refs = $this->getInstance('UserRefs', 'ProjectforkModel', array('ignore_request' => true));
 
             if (!$refs->store($uids, 'task', $pk)) {
                 return false;
