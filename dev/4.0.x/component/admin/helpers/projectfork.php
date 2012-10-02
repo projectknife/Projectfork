@@ -100,7 +100,7 @@ class ProjectforkHelper
 
             if ($append) $append .= '&filter_topic=' . $topic;
 
-            $class::addEntry(
+            JSubMenuHelper::addEntry(
                 JText::_('COM_PROJECTFORK_SUBMENU_REPLIES'),
                 'index.php?option=com_projectfork&view=replies' . $append,
                 ($view == 'replies')
