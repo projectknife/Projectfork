@@ -33,6 +33,7 @@ Joomla.submitbutton = function(task)
         <fieldset class="adminform">
 			<legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_DIRECTORY') : JText::_('COM_PROJECTFORK_EDIT_DIRECTORY'); ?></legend>
 			<ul class="adminformlist">
+				<li><?php echo $this->form->getLabel('parent_id').$this->form->getInput('parent_id'); ?></li>
 				<li><?php echo $this->form->getLabel('title').$this->form->getInput('title'); ?></li>
 				<li><?php echo $this->form->getLabel('description').$this->form->getInput('description'); ?></li>
 			</ul>
@@ -51,27 +52,6 @@ Joomla.submitbutton = function(task)
 						<li><?php echo $this->form->getLabel('modified_by').$this->form->getInput('modified_by'); ?></li>
 						<li><?php echo $this->form->getLabel('modified').$this->form->getInput('modified'); ?></li>
 					<?php endif; ?>
-                </ul>
-            </fieldset>
-
-            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_DIRECTORY_FIELDSET_RULES'), 'access-rules'); ?>
-            <fieldset class="panelform">
-                <ul class="adminformlist">
-                    <li>
-                        <?php echo $this->form->getLabel('access');?>
-                        <div id="jform_access_reload"><?php echo $this->form->getInput('access'); ?></div>
-                    </li>
-                    <li>
-                        <label id="jform_access_exist-lbl" class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
-                            <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
-                        </label>
-                    </li>
-                    <li>
-                        <div id="jform_access_groups">
-                            <div class="clr"></div>
-                            <div id="jform_rules_reload"><?php echo $this->form->getInput('rules'); ?></div>
-                        </div>
-                    </li>
                 </ul>
             </fieldset>
 
@@ -103,11 +83,31 @@ Joomla.submitbutton = function(task)
 
     <div class="clr"></div>
 
+    <div class="width-100 fltlft">
+		<?php echo JHtml::_('sliders.start', 'permissions-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
+
+			<?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'access-rules'); ?>
+			<fieldset class="panelform">
+                <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+                <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+				<div id="jform_rules_element">
+                    <div id="jform_rules_reload" style="clear: both;">
+                        <?php echo $this->form->getInput('rules'); ?>
+                    </div>
+                </div>
+			</fieldset>
+		<?php echo JHtml::_('sliders.end'); ?>
+	</div>
+
     <div>
+        <div id="jform_access_element">
+            <div id="jform_access_reload">
+                <?php echo $this->form->getInput('access'); ?>
+            </div>
+        </div>
 		<?php
             echo $this->form->getInput('created');
             echo $this->form->getInput('project_id');
-            echo $this->form->getInput('parent_id');
             echo $this->form->getInput('id');
             echo $this->form->getInput('elements');
         ?>

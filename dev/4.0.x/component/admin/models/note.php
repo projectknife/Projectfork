@@ -297,17 +297,17 @@ class ProjectforkModelNote extends JModelAdmin
     public function save($data)
     {
         // Initialise variables;
-        $table = $this->getTable();
-        $pk    = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
-        $date  = JFactory::getDate();
-        $isNew = true;
+        $table  = $this->getTable();
+        $pk     = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
+        $date   = JFactory::getDate();
+        $is_new = true;
 
         $old_path = null;
 
         // Load the row if saving an existing item.
         if ($pk > 0) {
             if ($table->load($pk)) {
-                $isNew = false;
+                $is_new = false;
 
                 if (!empty($table->path)) {
                     $old_path = $table->path;
@@ -329,6 +329,25 @@ class ProjectforkModelNote extends JModelAdmin
         if (!$table->bind($data)) {
             $this->setError($table->getError());
             return false;
+        }
+
+        // Handle permissions and access level
+        if (isset($data['rules'])) {
+            $access = ProjectforkHelperAccess::getViewLevelFromRules($data['rules'], intval($data['access']));
+
+            if ($access) {
+                $data['access'] = $access;
+            }
+        }
+        else {
+            if ($is_new) {
+                $data['access'] = 1;
+            }
+            else {
+                if (isset($data['access'])) {
+                    unset($data['access']);
+                }
+            }
         }
 
         // Check the data.
@@ -421,7 +440,7 @@ class ProjectforkModelNote extends JModelAdmin
             return $access->get('note.delete');
         }
         else {
-            $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
+            $access = ProjectforkHelperAccess::getActions();
             return $access->get('note.delete');
         }
     }
@@ -511,7 +530,8 @@ class ProjectforkModelNote extends JModelAdmin
             return $access->get('note.edit.state');
         }
         else {
-            return parent::canEditState('com_projectfork');
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('note.edit.state');
         }
     }
 
@@ -529,7 +549,9 @@ class ProjectforkModelNote extends JModelAdmin
         // Check for existing item.
         if (!empty($record->id)) {
             $access = ProjectforkHelperAccess::getActions('note', $record->id);
-            return $access->get('note.edit');
+            $user   = JFactory::getUser();
+
+            return ($access->get('note.edit') || ($access->get('note.edit.own') && $record->created_by == $user->id));
         }
         else {
             $access = ProjectforkHelperAccess::getActions();
@@ -571,7 +593,7 @@ class ProjectforkModelNote extends JModelAdmin
             $dir_id = JRequest::getUInt('filter_parent_id', 0);
             $this->setState($this->getName() . '.dir_id', $dir_id);
 
-            $project = (int) $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+            $project = ProjectforkHelper::getActiveProjectId('filter_project');
 
             if ($project) {
                 $this->setState($this->getName() . '.project', $project);

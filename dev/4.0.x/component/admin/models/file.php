@@ -417,15 +417,15 @@ class ProjectforkModelFile extends JModelAdmin
     public function save($data)
     {
         // Initialise variables;
-        $table = $this->getTable();
-        $pk    = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
-        $date  = JFactory::getDate();
-        $isNew = true;
+        $table  = $this->getTable();
+        $pk     = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
+        $date   = JFactory::getDate();
+        $is_new = true;
 
         // Load the row if saving an existing item.
         if ($pk > 0) {
             if ($table->load($pk)) {
-                $isNew = false;
+                $is_new = false;
             }
             else {
                 $pk = 0;
@@ -433,7 +433,7 @@ class ProjectforkModelFile extends JModelAdmin
         }
 
         // Delete the old file if a new one is uploaded
-        if (!$isNew && isset($data['file_name'])) {
+        if (!$is_new && isset($data['file_name'])) {
             $this->deleteFile($table->file_name, $table->project_id);
         }
 
@@ -451,6 +451,25 @@ class ProjectforkModelFile extends JModelAdmin
 
         if (isset($data['file_name'])) {
             $data['file_extension'] = JFile::getExt($data['file_name']);
+        }
+
+        // Handle permissions and access level
+        if (isset($data['rules'])) {
+            $access = ProjectforkHelperAccess::getViewLevelFromRules($data['rules'], intval($data['access']));
+
+            if ($access) {
+                $data['access'] = $access;
+            }
+        }
+        else {
+            if ($is_new) {
+                $data['access'] = 1;
+            }
+            else {
+                if (isset($data['access'])) {
+                    unset($data['access']);
+                }
+            }
         }
 
         // Bind the data.
@@ -625,7 +644,7 @@ class ProjectforkModelFile extends JModelAdmin
             return $access->get('file.delete');
         }
         else {
-            $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
+            $access = ProjectforkHelperAccess::getActions();
             return $access->get('file.delete');
         }
     }
@@ -766,7 +785,8 @@ class ProjectforkModelFile extends JModelAdmin
             return $access->get('file.edit.state');
         }
         else {
-            return parent::canEditState('com_projectfork');
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('note.edit');
         }
     }
 
@@ -784,7 +804,9 @@ class ProjectforkModelFile extends JModelAdmin
         // Check for existing item.
         if (!empty($record->id)) {
             $access = ProjectforkHelperAccess::getActions('file', $record->id);
-            return $access->get('file.edit');
+            $user   = JFactory::getUser();
+
+            return ($access->get('file.edit') || ($access->get('file.edit.own') && $record->created_by == $user->id));
         }
         else {
             $access = ProjectforkHelperAccess::getActions();
@@ -826,7 +848,7 @@ class ProjectforkModelFile extends JModelAdmin
             $dir_id = JRequest::getUInt('filter_parent_id', 0);
             $this->setState($this->getName() . '.dir_id', $dir_id);
 
-            $project = (int) $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+            $project = ProjectforkHelper::getActiveProjectId('filter_project');
 
             if ($project) {
                 $this->setState($this->getName() . '.project', $project);

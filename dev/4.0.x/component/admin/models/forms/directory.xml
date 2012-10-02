@@ -1,7 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
 	<fieldset>
-		<field name="title" type="text"
+		<field name="parent_id" type="repodir"
+            label="COM_PROJECTFORK_FIELD_DIRECTORY_TITLE" description="COM_PROJECTFORK_FIELD_DIRECTORY_DESC"
+            class="inputbox" required="true"
+        />
+        <field name="title" type="text"
             label="JGLOBAL_TITLE" description="JFIELD_TITLE_DESC"
             class="inputbox" size="30" required="true" maxlength="56"
         />
@@ -20,27 +24,20 @@
 		    label="JGLOBAL_FIELD_MODIFIED_BY_LABEL"
 		    class="readonly" readonly="true" filter="unset"
 		/>
-        <field name="access" type="inheritaccess"
-            label="JFIELD_ACCESS_LABEL" description="JFIELD_ACCESS_DESC"
-            class="inputbox" size="1"
-            onchange="PFform.reload('rules');"
-        />
-        <field name="rules" type="inheritrules"
-            label="JCONFIG_PERMISSIONS_LABEL"
-            validate="rules" filter="rules" component="com_projectfork" section="directory"
+        <field name="rules" type="groupaccess"
+            component="com_projectfork" section="directory" inheritonly="true" filter="ProjectforkHelperForm::filterRules" validate="groupaccess"
         />
         <field name="asset_id" type="hidden" filter="unset"/>
+        <field name="access" type="inheritaccess" hidden="true" readonly="true"/>
 		<field name="id" type="hidden"/>
 		<field name="elements" type="hidden"/>
 		<field name="project_id" type="hidden" readonly="true"/>
 		<field name="created" type="hidden"/>
-        <field name="parent_id" type="hidden" readonly="true"/>
 		<field name="lft" type="hidden" filter="unset"/>
 		<field name="rgt" type="hidden" filter="unset"/>
 		<field name="level" type="hidden" filter="unset"/>
 		<field name="checked_out" type="hidden" filter="unset" />
 		<field name="checked_out_time" type="hidden" filter="unset" />
-
 	</fieldset>
 	<fields name="attribs">
 

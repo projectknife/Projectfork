@@ -31,11 +31,6 @@ $project    = (int) $this->state->get('filter.project');
             <button type="button" onclick="document.id('filter_search').value='';this.form.submit();"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></button>
         </div>
         <div class="filter-select fltrt">
-            <select name="filter_access" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_ACCESS');?></option>
-                <?php echo JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'));?>
-            </select>
-
             <?php if ($project) : ?>
                 <select name="filter_parent_id" class="inputbox" onchange="this.form.submit()">
                     <option value=""><?php echo JText::_('JOPTION_SELECT_DIRECTORY');?></option>
@@ -81,7 +76,7 @@ $project    = (int) $this->state->get('filter.project');
         </tbody>
         <tfoot>
             <tr>
-                <td colspan="10">
+                <td colspan="7">
                     <?php if ($this->pagination) echo $this->pagination->getListFooter(); ?>
                 </td>
             </tr>
@@ -89,7 +84,6 @@ $project    = (int) $this->state->get('filter.project');
     </table>
 
     <?php echo $this->loadTemplate('batch'); ?>
-
 
     <input type="hidden" name="boxchecked" value="0" />
     <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />

@@ -38,9 +38,9 @@ class ProjectforkModelDirectory extends JModelAdmin
     public function __construct($config = array())
     {
         // Register dependencies
+        JLoader::register('ProjectforkHelper', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
         JLoader::register('ProjectforkHelperRepository', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/repository.php');
         JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
-        JLoader::register('ProjectforkHelper', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
 
         parent::__construct($config);
     }
@@ -509,17 +509,17 @@ class ProjectforkModelDirectory extends JModelAdmin
     public function save($data)
     {
         // Initialise variables;
-        $table = $this->getTable();
-        $pk    = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
-        $date  = JFactory::getDate();
-        $isNew = true;
+        $table  = $this->getTable();
+        $pk     = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
+        $date   = JFactory::getDate();
+        $is_new = true;
 
         $old_path = null;
 
         // Load the row if saving an existing item.
         if ($pk > 0) {
             if ($table->load($pk)) {
-                $isNew = false;
+                $is_new = false;
 
                 if (!empty($table->path)) {
                     $old_path = $table->path;
@@ -549,8 +549,27 @@ class ProjectforkModelDirectory extends JModelAdmin
         }
 
         // Set the new parent id if parent id not matched OR while New/Save as Copy.
-        if ($table->parent_id != $data['parent_id'] || $isNew) {
+        if ($table->parent_id != $data['parent_id'] || $is_new) {
             $table->setLocation($data['parent_id'], 'last-child');
+        }
+
+        // Handle permissions and access level
+        if (isset($data['rules'])) {
+            $access = ProjectforkHelperAccess::getViewLevelFromRules($data['rules'], intval($data['access']));
+
+            if ($access) {
+                $data['access'] = $access;
+            }
+        }
+        else {
+            if ($is_new) {
+                $data['access'] = 1;
+            }
+            else {
+                if (isset($data['access'])) {
+                    unset($data['access']);
+                }
+            }
         }
 
         // Bind the data.
@@ -567,7 +586,7 @@ class ProjectforkModelDirectory extends JModelAdmin
 
         // Store the data.
         if (!$table->store()) {
-            $this->setError($table->getError() . 'argh');
+            $this->setError($table->getError());
             return false;
         }
 
@@ -622,7 +641,6 @@ class ProjectforkModelDirectory extends JModelAdmin
             $result = JFolder::move($old_path, $new_path);
 
             if ($result !== true) {
-                $this->setError($result . ': ' . $old . ' TO ' . $new);
                 return false;
             }
 
@@ -1021,7 +1039,8 @@ class ProjectforkModelDirectory extends JModelAdmin
             return $access->get('directory.edit.state');
         }
         else {
-            return parent::canEditState('com_projectfork');
+            $access = ProjectforkHelperAccess::getActions();
+            return $access->get('directory.edit.state');
         }
     }
 
@@ -1039,7 +1058,9 @@ class ProjectforkModelDirectory extends JModelAdmin
         // Check for existing item.
         if (!empty($record->id)) {
             $access = ProjectforkHelperAccess::getActions('directory', $record->id);
-            return $access->get('directory.edit');
+            $user   = JFactory::getUser();
+
+            return ($access->get('directory.edit') || ($access->get('directory.edit.own') && $record->created_by == $user->id));
         }
         else {
             $access = ProjectforkHelperAccess::getActions();
@@ -1078,7 +1099,7 @@ class ProjectforkModelDirectory extends JModelAdmin
         $key   = $table->getKeyName();
 
         // Get the pk of the record from the request.
-        $pk = JRequest::getInt($key);
+        $pk = JRequest::getUInt($key);
         $this->setState($this->getName() . '.id', $pk);
 
         if ($pk) {
@@ -1097,7 +1118,7 @@ class ProjectforkModelDirectory extends JModelAdmin
             $parent_id = JRequest::getUInt('filter_parent_id', 0);
             $this->setState($this->getName() . '.parent_id', $parent_id);
 
-            $project = (int) $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+            $project = ProjectforkHelper::getActiveProjectId('filter_project');
 
             if ($project) {
                 $this->setState($this->getName() . '.project', $project);
