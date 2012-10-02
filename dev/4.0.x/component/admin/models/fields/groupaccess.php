@@ -168,7 +168,7 @@ class JFormFieldGroupAccess extends JFormField
      */
     protected function getHTML($component, $section, $asset = '')
     {
-        if (JFactory::getApplication()->isSite()) {
+        if (JFactory::getApplication()->isSite() || version_compare(JVERSION, '3.0.0', 'ge')) {
             return $this->getSiteHTML($component, $section, $asset);
         }
 
@@ -617,7 +617,7 @@ class JFormFieldGroupAccess extends JFormField
               ->order('p.lft');
 
         $db->setQuery((string) $query);
-        $path = (array) $db->loadResultArray();
+        $path = (array) $db->loadColumn();
 
         return $path;
     }
