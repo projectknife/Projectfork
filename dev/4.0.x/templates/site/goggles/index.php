@@ -4,15 +4,33 @@
 	defined('_JEXEC') or die;
 
     // Include the document helper
-    require_once(dirname(__FILE__).'/helpers/document.php');
+    JLoader::register('TemplateHelperDocument', dirname(__FILE__) . '/helpers/document.php');
 
 	$app = JFactory::getApplication();
 	$doc = JFactory::getDocument();
+
+    // Detect bootstrap and jQuery in document header
+    $isset_jquery = TemplateHelperDocument::headContains('jquery', 'script');
+    $isset_bsjs   = TemplateHelperDocument::headContains('bootstrap', 'script');
+    $isset_bscss  = TemplateHelperDocument::headContains('bootstrap', 'stylesheet');
+
+    if ($this->params->get('bootstrap_javascript', 1)) {
+        if (!$isset_jquery) {
+            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/jquery.js');
+        }
+
+        if (!$isset_bsjs) {
+            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/bootstrap.min.js');
+        }
+
+        $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/application.js');
+    }
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-	<?php
+	<jdoc:include type="head" />
+    <?php
     // Detecting Home
     $menu = & JSite::getMenu();
     if ($menu->getActive() == $menu->getDefault()) :
@@ -51,24 +69,8 @@
     else :
     	$span = "span12";
     endif;
-
-    // Detect bootstrap and jQuery in document header
-    $isset_jquery = TemplateDocHelper::headContains('jquery', 'script');
-    $isset_bsjs   = TemplateDocHelper::headContains('bootstrap', 'script');
-    $isset_bscss  = TemplateDocHelper::headContains('bootstrap', 'stylesheet');
 	?>
-
-	<jdoc:include type="head" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<?php if($this->params->get('bootstrap_javascript', 1)):?>
-        <?php if (!$isset_jquery) : ?>
-		    <script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/js/jquery.js"></script>
-        <?php endif; ?>
-        <?php if (!$isset_bsjs) : ?>
-		    <script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/js/bootstrap.min.js"></script>
-        <?php endif; ?>
-		<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/js/application.js"></script>
-	<?php endif;?>
 	<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/system/css/general.css" type="text/css" />
 	<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/system/css/system.css" type="text/css" />
 	<?php if($this->params->get('bootstrap_css', 1) && !$isset_bscss):?>

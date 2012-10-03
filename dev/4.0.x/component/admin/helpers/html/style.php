@@ -67,9 +67,8 @@ abstract class ProjectforkStyle
 
         // Load only if doc type is HTML
         if (JFactory::getDocument()->getType() == 'html' && $params->get('projectfork_css', '1') == '1') {
-            JHtml::_('stylesheet', 'com_projectfork/projectfork/icons.css', false, true, false, false, false);
-            JHtml::_('stylesheet', 'com_projectfork/projectfork/layout.css', false, true, false, false, false);
-            JHtml::_('stylesheet', 'com_projectfork/projectfork/theme.css', false, true, false, false, false);
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkStyleCore');
         }
 
         self::$loaded[__METHOD__] = true;
@@ -78,7 +77,7 @@ abstract class ProjectforkStyle
 
 
 /**
- * Stupid but necessary way of adding bootstrap JS to the document head.
+ * Stupid but necessary way of adding bootstrap CSS to the document head.
  * This function is called by the "onCompileHead" system event and makes sure that the CSS is only added if not already found
  *
  */
@@ -111,4 +110,17 @@ function triggerProjectforkStyleBootstrap()
         JHtml::_('stylesheet', 'com_projectfork/bootstrap/bootstrap.min.css', false, true, false, false, false);
         JHtml::_('stylesheet', 'com_projectfork/bootstrap/bootstrap-responsive.min.css', false, true, false, false, false);
     }
+}
+
+
+/**
+ * Stupid but necessary way of adding projectfork CSS to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that the CSS is loader after bootstrap
+ *
+ */
+function triggerProjectforkStyleCore()
+{
+    JHtml::_('stylesheet', 'com_projectfork/projectfork/icons.css', false, true, false, false, false);
+    JHtml::_('stylesheet', 'com_projectfork/projectfork/layout.css', false, true, false, false, false);
+    JHtml::_('stylesheet', 'com_projectfork/projectfork/theme.css', false, true, false, false, false);
 }
