@@ -89,7 +89,7 @@
 
 	<?php if($this->params->get('color')):?>
 		<style type="text/css">
-			.navbar-inner{
+			.navbar-inverse .navbar-inner{
 				background: <?php echo $this->params->get('color');?>;
 			}
 			.sidebar-nav h3{
@@ -101,7 +101,7 @@
 
 <body class="site <?php echo $option . " view-" . $view . " layout-" . $layout . " task-" . $task . " itemid-" . $itemid . " ";?>  <?php if($siteHome): echo "homepage";endif;?> ">
 	<!-- Top Navigation -->
-	<div class="navbar navbar-fixed-top">
+	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container-fluid"> <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a> <a class="brand" href="<?php echo $this->baseurl; ?>"><?php echo $sitename; ?></a>
 				<div class="nav-collapse">
