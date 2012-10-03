@@ -118,6 +118,42 @@ class PFTableDirectory extends JTableNested
 
 
     /**
+     * Method to get the access level of the parent asset
+     *
+     * @return    integer
+     */
+    protected function _getParentAccess()
+    {
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $dir     = (int) $this->parent_id;
+        $project = (int) $this->project_id;
+
+        if ($dir > 1) {
+            $query->select('access')
+                  ->from('#__pf_repo_dirs')
+                  ->where('id = ' . $db->quote($dir));
+
+            $db->setQuery($query);
+            $access = (int) $db->loadResult();
+        }
+        elseif ($project > 0) {
+            $query->select('access')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . $db->quote($project));
+
+            $db->setQuery($query);
+            $access = (int) $db->loadResult();
+        }
+
+        if (!$access) $access = 1;
+
+        return $access;
+    }
+
+
+    /**
      * Overloaded bind function
      *
      * @param     array    $array     Named array
@@ -131,6 +167,12 @@ class PFTableDirectory extends JTableNested
             $registry = new JRegistry;
             $registry->loadArray($array['attribs']);
             $array['attribs'] = (string) $registry;
+        }
+
+        // Bind the rules.
+        if (isset($array['rules']) && is_array($array['rules'])) {
+            $rules = new JRules($array['rules']);
+            $this->setRules($rules);
         }
 
         return parent::bind($array, $ignore);
@@ -158,6 +200,17 @@ class PFTableDirectory extends JTableNested
         $registry->loadString($this->attribs);
 
         $this->attribs = (string) $registry;
+
+        // Check if a project is selected
+        if ((int) $this->project_id <= 0) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_SELECT_PROJECT'));
+            return false;
+        }
+
+        // Check for selected access level
+        if ($this->access <= 0) {
+            $this->access = $this->_getParentAccess();
+        }
 
         return true;
     }
