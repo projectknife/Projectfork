@@ -133,6 +133,7 @@
 				</div>
 				<div class="span10 navbar-search">
 					<jdoc:include type="modules" name="searchload" style="none" />
+					<jdoc:include type="modules" name="position-0" style="none" />
 				</div>
 			</div>
 		</div>
@@ -172,6 +173,21 @@
 				    	if($user->authorise('create', 'com_projectfork.task')) :
 				    ?>
 				    	<li><a href="index.php?option=com_projectfork&view=taskform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
+				    <?php
+				    	endif;
+				    	if($user->authorise('create', 'com_projectfork.time')) :
+				    ?>
+				    	<li><a href="index.php?option=com_projectfork&view=timeform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
+				    <?php
+				    	endif;
+				    	if($user->authorise('create', 'com_projectfork.topic')) :
+				    ?>
+				    	<li><a href="index.php?option=com_projectfork&view=topicform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
+				    <?php
+				    	endif;
+				    	if($user->authorise('create', 'com_projectfork.file')) :
+				    ?>
+				    	<li><a href="index.php?option=com_projectfork&view=fileform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
 				    <?php
 				    	endif;
 				    ?>
