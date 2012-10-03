@@ -59,7 +59,7 @@ class JFormFieldRepoAttachment extends JFormField
      */
     protected function getHTML()
     {
-        if (JFactory::getApplication()->isSite()) {
+        if (JFactory::getApplication()->isSite() || version_compare(JVERSION, '3.0.0', 'ge')) {
             return $this->getSiteHTML();
         }
 
