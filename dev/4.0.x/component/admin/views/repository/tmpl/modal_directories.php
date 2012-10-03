@@ -13,6 +13,7 @@ $function = JRequest::getCmd('function', 'pfSelectAttachment');
 $user     = JFactory::getUser();
 $uid      = $user->get('id');
 $this_dir = $this->items['directory'];
+$j3000    = version_compare(JVERSION, '3.0.0', 'ge');
 
 $link_append = '&layout=modal&tmpl=component&function=' . $function;
 
@@ -39,13 +40,17 @@ foreach ($this->items['directories'] as $i => $item) :
     ?>
     <tr class="row<?php echo $i % 2; ?>">
         <td>
-            <button class="btn" onclick="<?php echo $js; ?>">
-                &radic;
-            </button>
+            <?php if (!$j3000) : ?>
+                [<a href="javascript:void(0);" onclick="<?php echo $js; ?>"><?php echo JText::_('JACTION_SELECT');?></a>]
+            <?php else : ?>
+                <a class="btn" href="javascript:void(0);" onclick="<?php echo $js; ?>">
+                    <i class="icon-ok"></i>
+                </a>
+            <?php endif; ?>
         </td>
         <td>
             <a href="<?php echo $link;?>">
-                <?php echo JText::_($this->escape($item->title)); ?>
+                <?php echo $this->escape($item->title); ?>
             </a>
         </td>
         <td>

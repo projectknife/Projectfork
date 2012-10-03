@@ -52,6 +52,7 @@ class ProjectforkControllerFile extends JControllerForm
         $data      = JRequest::getVar('jform', array(), 'post', 'array');
         $file_form = JRequest::getVar('jform', '', 'files', 'array');
         $context   = $this->option . ".edit." . $this->context;
+        $layout    = JRequest::getVar('layout');
         $files     = array();
 
         if (empty($urlVar)) $urlVar = $key;
@@ -106,12 +107,22 @@ class ProjectforkControllerFile extends JControllerForm
                 $this->setError($error);
                 $this->setMessage($error, 'error');
 
-                $this->setRedirect(
-                    JRoute::_(
-                        'index.php?option=' . $this->option . '&view=' . $this->view_item
-                        . $this->getRedirectToItemAppend($record_id, $urlVar), false
-                    )
-                );
+                if ($layout != 'modal') {
+                    $this->setRedirect(
+                        JRoute::_(
+                            'index.php?option=' . $this->option . '&view=' . $this->view_item
+                            . $this->getRedirectToItemAppend($record_id, $urlVar), false
+                        )
+                    );
+                }
+                else {
+                    $this->setRedirect(
+        				JRoute::_(
+        					'index.php?option=' . $this->option . '&view=' . $this->view_list
+        					. $this->getRedirectToListAppend(), false
+        				)
+        			);
+                }
 
                 return false;
             }
@@ -174,7 +185,7 @@ class ProjectforkControllerFile extends JControllerForm
             }
         }
 
-        return ($access && ($dir_id > 0));
+        return ($access && ($dir_id > 1));
     }
 
 
@@ -229,6 +240,8 @@ class ProjectforkControllerFile extends JControllerForm
         $tmpl    = JRequest::getCmd('tmpl');
         $project = JRequest::getUint('filter_project');
         $parent  = JRequest::getUint('filter_parent_id');
+        $layout  = JRequest::getCmd('layout');
+        $func    = JRequest::getCmd('function');
         $append  = '';
 
         // Setup redirect info.
@@ -242,6 +255,14 @@ class ProjectforkControllerFile extends JControllerForm
 
         if ($tmpl) {
             $append .= '&tmpl=' . $tmpl;
+        }
+
+        if ($layout) {
+            $append .= '&layout=' . $layout;
+        }
+
+        if ($func) {
+            $append .= '&function=' . $func;
         }
 
         return $append;

@@ -11,6 +11,7 @@ defined('_JEXEC') or die();
 
 
 $function = JRequest::getCmd('function', 'pfSelectAttachment');
+$j3000    = version_compare(JVERSION, '3.0.0', 'ge');
 
 foreach ($this->items['files'] as $i => $item) :
     $js = 'if (window.parent) window.parent.'
@@ -22,12 +23,16 @@ foreach ($this->items['files'] as $i => $item) :
     ?>
     <tr class="row<?php echo $i % 2; ?>">
         <td>
-            <button class="btn" onclick="<?php echo $js; ?>">
-                &radic;
-            </button>
+            <?php if (!$j3000) : ?>
+                [<a href="javascript:void(0);" onclick="<?php echo $js; ?>"><?php echo JText::_('JACTION_SELECT');?></a>]
+            <?php else : ?>
+                <a class="btn" href="javascript:void(0);" onclick="<?php echo $js; ?>">
+                    <i class="icon-ok"></i>
+                </a>
+            <?php endif; ?>
         </td>
         <td>
-            <?php echo JText::_($this->escape($item->title)); ?>
+            <?php echo $this->escape($item->title); ?>
         </td>
         <td>
             <?php echo JHtml::_('projectfork.truncate', $item->description); ?>

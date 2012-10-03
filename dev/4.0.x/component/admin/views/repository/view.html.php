@@ -60,13 +60,12 @@ class ProjectforkViewRepository extends JViewLegacy
      */
     protected function addToolbar()
     {
-        $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
-        $user   = JFactory::getUser();
-        $state  = $this->state;
-
-        JToolBarHelper::title(JText::_('COM_PROJECTFORK_REPO_TITLE'), 'article.png');
+        $state = $this->get('State');
 
         if ($state->get('filter.project') && $this->items['directory']->id > 1) {
+            $access = ProjectforkHelperAccess::getActions('directory', $this->items['directory']->id);
+
+            JToolBarHelper::title(JText::_('COM_PROJECTFORK_REPO_TITLE'), 'article.png');
             if ($access->get('directory.create')) {
                 JToolBarHelper::custom('directory.add', 'new.png', 'new_f2.png', 'JTOOLBAR_ADD_DIRECTORY', false);
             }
