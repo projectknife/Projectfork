@@ -36,13 +36,16 @@
         <action name="directory.create" title="COM_PROJECTFORK_DIRECTORY_ACTION_CREATE" description="COM_PROJECTFORK_DIRECTORY_ACTION_CREATE_DESC" />
 		<action name="directory.delete" title="COM_PROJECTFORK_DIRECTORY_ACTION_DELETE" description="COM_PROJECTFORK_DIRECTORY_ACTION_DELETE_DESC" />
 		<action name="directory.edit" title="COM_PROJECTFORK_DIRECTORY_ACTION_EDIT" description="COM_PROJECTFORK_DIRECTORY_ACTION_EDIT_DESC" />
-		<action name="directory.edit.state" title="COM_PROJECTFORK_DIRECTORY_ACTION_EDITSTATE" description="COM_PROJECTFORK_DIRECTORY_ACTION_EDITSTATE_DESC" />
 		<action name="directory.edit.own" title="COM_PROJECTFORK_DIRECTORY_ACTION_EDITOWN" description="COM_PROJECTFORK_DIRECTORY_ACTION_EDITOWN_DESC" />
+
+        <action name="file.create" title="COM_PROJECTFORK_FILE_ACTION_CREATE" description="COM_PROJECTFORK_FILE_ACTION_CREATE_DESC" />
+		<action name="file.delete" title="COM_PROJECTFORK_FILE_ACTION_DELETE" description="COM_PROJECTFORK_FILE_ACTION_DELETE_DESC" />
+		<action name="file.edit" title="COM_PROJECTFORK_FILE_ACTION_EDIT" description="COM_PROJECTFORK_FILE_ACTION_EDIT_DESC" />
+		<action name="file.edit.own" title="COM_PROJECTFORK_FILE_ACTION_EDITOWN" description="COM_PROJECTFORK_FILE_ACTION_EDITOWN_DESC" />
 
         <action name="note.create" title="COM_PROJECTFORK_NOTE_ACTION_CREATE" description="COM_PROJECTFORK_NOTE_ACTION_CREATE_DESC" />
 		<action name="note.delete" title="COM_PROJECTFORK_NOTE_ACTION_DELETE" description="COM_PROJECTFORK_NOTE_ACTION_DELETE_DESC" />
 		<action name="note.edit" title="COM_PROJECTFORK_NOTE_ACTION_EDIT" description="COM_PROJECTFORK_NOTE_ACTION_EDIT_DESC" />
-		<action name="note.edit.state" title="COM_PROJECTFORK_NOTE_ACTION_EDITSTATE" description="COM_PROJECTFORK_NOTE_ACTION_EDITSTATE_DESC" />
 		<action name="note.edit.own" title="COM_PROJECTFORK_NOTE_ACTION_EDITOWN" description="COM_PROJECTFORK_NOTE_ACTION_EDITOWN_DESC" />
 
         <action name="topic.create" title="COM_PROJECTFORK_TOPIC_ACTION_CREATE" description="COM_PROJECTFORK_TOPIC_ACTION_CREATE_DESC" />
@@ -101,13 +104,16 @@
         <action name="directory.create" title="COM_PROJECTFORK_DIRECTORY_ACTION_CREATE" description="COM_PROJECTFORK_DIRECTORY_ACTION_CREATE_DESC" />
 		<action name="directory.delete" title="COM_PROJECTFORK_DIRECTORY_ACTION_DELETE" description="COM_PROJECTFORK_DIRECTORY_ACTION_DELETE_DESC" />
 		<action name="directory.edit" title="COM_PROJECTFORK_DIRECTORY_ACTION_EDIT" description="COM_PROJECTFORK_DIRECTORY_ACTION_EDIT_DESC" />
-		<action name="directory.edit.state" title="COM_PROJECTFORK_DIRECTORY_ACTION_EDITSTATE" description="COM_PROJECTFORK_DIRECTORY_ACTION_EDITSTATE_DESC" />
 		<action name="directory.edit.own" title="COM_PROJECTFORK_DIRECTORY_ACTION_EDITOWN" description="COM_PROJECTFORK_DIRECTORY_ACTION_EDITOWN_DESC" />
+
+        <action name="file.create" title="COM_PROJECTFORK_FILE_ACTION_CREATE" description="COM_PROJECTFORK_FILE_ACTION_CREATE_DESC" />
+		<action name="file.delete" title="COM_PROJECTFORK_FILE_ACTION_DELETE" description="COM_PROJECTFORK_FILE_ACTION_DELETE_DESC" />
+		<action name="file.edit" title="COM_PROJECTFORK_FILE_ACTION_EDIT" description="COM_PROJECTFORK_FILE_ACTION_EDIT_DESC" />
+		<action name="file.edit.own" title="COM_PROJECTFORK_FILE_ACTION_EDITOWN" description="COM_PROJECTFORK_FILE_ACTION_EDITOWN_DESC" />
 
         <action name="note.create" title="COM_PROJECTFORK_NOTE_ACTION_CREATE" description="COM_PROJECTFORK_NOTE_ACTION_CREATE_DESC" />
 		<action name="note.delete" title="COM_PROJECTFORK_NOTE_ACTION_DELETE" description="COM_PROJECTFORK_NOTE_ACTION_DELETE_DESC" />
 		<action name="note.edit" title="COM_PROJECTFORK_NOTE_ACTION_EDIT" description="COM_PROJECTFORK_NOTE_ACTION_EDIT_DESC" />
-		<action name="note.edit.state" title="COM_PROJECTFORK_NOTE_ACTION_EDITSTATE" description="COM_PROJECTFORK_NOTE_ACTION_EDITSTATE_DESC" />
 		<action name="note.edit.own" title="COM_PROJECTFORK_NOTE_ACTION_EDITOWN" description="COM_PROJECTFORK_NOTE_ACTION_EDITOWN_DESC" />
 
         <action name="topic.create" title="COM_PROJECTFORK_TOPIC_ACTION_CREATE" description="COM_PROJECTFORK_TOPIC_ACTION_CREATE_DESC" />
@@ -185,13 +191,20 @@
     <section name="directory">
         <action name="directory.delete" title="COM_PROJECTFORK_THIS_DIRECTORY_ACTION_DELETE" description="COM_PROJECTFORK_THIS_DIRECTORY_ACTION_DELETE_DESC" />
 		<action name="directory.edit" title="COM_PROJECTFORK_THIS_DIRECTORY_ACTION_EDIT" description="COM_PROJECTFORK_THIS_DIRECTORY_ACTION_EDIT_DESC" />
-		<action name="directory.edit.state" title="COM_PROJECTFORK_THIS_DIRECTORY_ACTION_EDITSTATE" description="COM_PROJECTFORK_THIS_DIRECTORY_ACTION_EDITSTATE_DESC" />
+
+        <action name="file.create" title="COM_PROJECTFORK_FILE_ACTION_CREATE" description="COM_PROJECTFORK_FILE_ACTION_CREATE_DESC" />
+		<action name="file.delete" title="COM_PROJECTFORK_FILE_ACTION_DELETE" description="COM_PROJECTFORK_FILE_ACTION_DELETE_DESC" />
+		<action name="file.edit" title="COM_PROJECTFORK_FILE_ACTION_EDIT" description="COM_PROJECTFORK_FILE_ACTION_EDIT_DESC" />
+		<action name="file.edit.own" title="COM_PROJECTFORK_FILE_ACTION_EDITOWN" description="COM_PROJECTFORK_FILE_ACTION_EDITOWN_DESC" />
 
         <action name="note.create" title="COM_PROJECTFORK_NOTE_ACTION_CREATE" description="COM_PROJECTFORK_NOTE_ACTION_CREATE_DESC" />
 		<action name="note.delete" title="COM_PROJECTFORK_NOTE_ACTION_DELETE" description="COM_PROJECTFORK_NOTE_ACTION_DELETE_DESC" />
 		<action name="note.edit" title="COM_PROJECTFORK_NOTE_ACTION_EDIT" description="COM_PROJECTFORK_NOTE_ACTION_EDIT_DESC" />
-		<action name="note.edit.state" title="COM_PROJECTFORK_NOTE_ACTION_EDITSTATE" description="COM_PROJECTFORK_NOTE_ACTION_EDITSTATE_DESC" />
 		<action name="note.edit.own" title="COM_PROJECTFORK_NOTE_ACTION_EDITOWN" description="COM_PROJECTFORK_NOTE_ACTION_EDITOWN_DESC" />
+    </section>
+    <section name="file">
+		<action name="file.delete" title="COM_PROJECTFORK_THIS_FILE_ACTION_DELETE" description="COM_PROJECTFORK_THIS_FILE_ACTION_DELETE_DESC" />
+		<action name="file.edit" title="COM_PROJECTFORK_THIS_FILE_ACTION_EDIT" description="COM_PROJECTFORK_THIS_FILE_ACTION_EDIT_DESC" />
     </section>
     <section name="note">
         <action name="note.delete" title="COM_PROJECTFORK_THIS_NOTE_ACTION_DELETE" description="COM_PROJECTFORK_THIS_NOTE_ACTION_DELETE_DESC" />

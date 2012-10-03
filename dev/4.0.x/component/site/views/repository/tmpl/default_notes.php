@@ -29,8 +29,7 @@ foreach ($this->items['notes'] as $i => $item) :
             <?php echo JHtml::_('grid.id', $x, $item->id, false, 'nid'); ?>
         </td>
         <td>
-            <i class="icon-pencil"></i>
-            <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
+            <i class="icon-pencil"></i> <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
             <a href="<?php echo JRoute::_($link);?>">
                 <?php echo JText::_($this->escape($item->title)); ?>
             </a>

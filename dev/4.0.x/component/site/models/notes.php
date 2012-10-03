@@ -126,9 +126,6 @@ class ProjectforkModelNotes extends JModelList
         $order_col = $this->state->get('list.ordering', 'a.title');
         $order_dir = $this->state->get('list.direction', 'desc');
 
-        $query->order($db->escape($order_col . ' ' . $order_dir))
-              ->group('a.id');
-
         return $query;
     }
 
@@ -191,9 +188,8 @@ class ProjectforkModelNotes extends JModelList
         $this->setState('filter.search', $search);
 
         // Filter - Project
-        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         // Filter - Author
         $author = $app->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', '');

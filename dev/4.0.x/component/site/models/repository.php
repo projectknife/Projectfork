@@ -75,6 +75,22 @@ class ProjectforkModelRepository extends JModelList
         $items['notes']       = $notes->getItems();
         $items['files']       = $files->getItems();
 
+        if ($dir->getError()) {
+            $this->setError($dir->getError());
+        }
+
+        if ($dirs->getError()) {
+            $this->setError($dirs->getError());
+        }
+
+        if ($notes->getError()) {
+            $this->setError($notes->getError());
+        }
+
+        if ($files->getError()) {
+            $this->setError($files->getError());
+        }
+
         // Add the items to the internal cache.
         $this->cache[$store] = $items;
 
@@ -109,9 +125,8 @@ class ProjectforkModelRepository extends JModelList
         $this->setState('filter.search', $search);
 
         // Filter - Project
-        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         // Filter - Parent id
         $parent_id = JRequest::getUInt('filter_parent_id', '');
@@ -121,13 +136,13 @@ class ProjectforkModelRepository extends JModelList
 
         if (!$parent_id && !empty($path)  && $project > 0) {
             // No parent folder given. Try to find it from the path
-             $dir = $this->getInstance('DirectoryForm', 'ProjectforkModel', $config = array('ignore_request' => true));
-             $item = $dir->getItemFromProjectPath($project, $path);
+            $dir = $this->getInstance('DirectoryForm', 'ProjectforkModel', $config = array('ignore_request' => true));
+            $item = $dir->getItemFromProjectPath($project, $path);
 
-             if ($item) {
+            if ($item) {
                 $parent_id = $item->id;
                 JRequest::setVar('filter_parent_id', $parent_id);
-             }
+            }
         }
 
         if (!$parent_id  && $project > 0) {
