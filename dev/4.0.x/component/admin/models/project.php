@@ -129,7 +129,7 @@ class ProjectforkModelProject extends JModelAdmin
 
         $jinput = JFactory::getApplication()->input;
         $user   = JFactory::getUser();
-        $id     =  $jinput->get('id', 0);
+        $id     = (int) $jinput->get('id', 0);
 
         $item_access = ProjectforkHelperAccess::getActions('project', $id);
         $access      = ProjectforkHelperAccess::getActions();
@@ -140,6 +140,10 @@ class ProjectforkModelProject extends JModelAdmin
             // Disable fields for display.
             $form->setFieldAttribute('state', 'disabled', 'true');
             $form->setFieldAttribute('state', 'filter', 'unset');
+        }
+
+        if ($id) {
+            ProjectforkHelper::setActiveProject($id);
         }
 
         return $form;

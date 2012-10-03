@@ -133,6 +133,7 @@ class ProjectforkControllerFileForm extends JControllerForm
         $data      = JRequest::getVar('jform', array(), 'post', 'array');
         $file_form = JRequest::getVar('jform', '', 'files', 'array');
         $context   = $this->option . ".edit." . $this->context;
+        $layout    = JRequest::getVar('layout');
         $files     = array();
 
         if (empty($urlVar)) $urlVar = $key;
@@ -187,12 +188,22 @@ class ProjectforkControllerFileForm extends JControllerForm
                 $this->setError($error);
                 $this->setMessage($error, 'error');
 
-                $this->setRedirect(
-                    JRoute::_(
-                        'index.php?option=' . $this->option . '&view=' . $this->view_item
-                        . $this->getRedirectToItemAppend($record_id, $urlVar), false
-                    )
-                );
+                if ($layout != 'modal') {
+                    $this->setRedirect(
+                        JRoute::_(
+                            'index.php?option=' . $this->option . '&view=' . $this->view_item
+                            . $this->getRedirectToItemAppend($record_id, $urlVar), false
+                        )
+                    );
+                }
+                else {
+                    $this->setRedirect(
+        				JRoute::_(
+        					'index.php?option=' . $this->option . '&view=' . $this->view_list
+        					. $this->getRedirectToListAppend(), false
+        				)
+        			);
+                }
 
                 return false;
             }
@@ -335,17 +346,33 @@ class ProjectforkControllerFileForm extends JControllerForm
      */
     protected function getRedirectToListAppend()
     {
-        // Need to override the parent method completely.
         $tmpl    = JRequest::getCmd('tmpl');
-        $project = JRequest::getUint('filter_project', 0);
-        $parent  = JRequest::getUint('filter_parent_id', 0);
+        $project = JRequest::getUint('filter_project');
+        $parent  = JRequest::getUint('filter_parent_id');
+        $layout  = JRequest::getCmd('layout');
+        $func    = JRequest::getCmd('function');
         $append  = '';
 
-
         // Setup redirect info.
-        if ($project) $append .= '&filter_project=' . $project;
-        if ($parent)  $append .= '&filter_parent_id=' . $parent;
-        if ($tmpl)    $append .= '&tmpl=' . $tmpl;
+        if ($project) {
+            $append .= '&filter_project=' . $project;
+        }
+
+        if ($parent) {
+            $append .= '&filter_parent_id=' . $parent;
+        }
+
+        if ($tmpl) {
+            $append .= '&tmpl=' . $tmpl;
+        }
+
+        if ($layout) {
+            $append .= '&layout=' . $layout;
+        }
+
+        if ($func) {
+            $append .= '&function=' . $func;
+        }
 
         return $append;
     }
@@ -386,8 +413,8 @@ class ProjectforkControllerFileForm extends JControllerForm
     {
         $task = $this->getTask();
 
-        if ($task == 'save') {
+        /*if ($task == 'save') {
             $this->setRedirect(JRoute::_('index.php?option=com_projectfork&view=' . $this->view_list, false));
-        }
+        }*/
     }
 }
