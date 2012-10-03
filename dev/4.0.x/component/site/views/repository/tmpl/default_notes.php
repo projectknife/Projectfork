@@ -47,7 +47,7 @@ foreach ($this->items['notes'] as $i => $item) :
         <td>
             <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
         </td>
-        <td class="center">
+        <td>
             <?php echo JHtml::_('projectfork.truncate', $item->description, 128); ?> <i class="icon-user"></i> <?php echo $this->escape($item->author_name); ?>
         </td>
     </tr>

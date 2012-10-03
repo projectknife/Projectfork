@@ -64,7 +64,7 @@ foreach ($this->items['directories'] as $i => $item) :
         <td>
             <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
         </td>
-        <td class="center">
+        <td>
             <?php echo $this->escape($item->description); ?> <i class="icon-user"></i> <?php echo $this->escape($item->author_name); ?>
         </td>
     </tr>
