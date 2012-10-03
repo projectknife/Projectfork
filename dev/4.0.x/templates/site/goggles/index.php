@@ -8,23 +8,38 @@
 
 	$app = JFactory::getApplication();
 	$doc = JFactory::getDocument();
-
-    // Detect bootstrap and jQuery in document header
-    $isset_jquery = TemplateHelperDocument::headContains('jquery', 'script');
-    $isset_bsjs   = TemplateHelperDocument::headContains('bootstrap', 'script');
-    $isset_bscss  = TemplateHelperDocument::headContains('bootstrap', 'stylesheet');
-
-    if ($this->params->get('bootstrap_javascript', 1)) {
-        if (!$isset_jquery) {
-            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/jquery.js');
-        }
-
-        if (!$isset_bsjs) {
-            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/bootstrap.min.js');
-        }
-
-        $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/application.js');
-    }
+	
+	// Settings for Joomla 3.0.x
+	if (version_compare(JVERSION, '3.0.0', 'ge')) {
+		// Add JavaScript Frameworks
+		JHtml::_('bootstrap.framework');
+	}
+	// Settings for Joomla 2.5.x
+	else {
+		// Detect bootstrap and jQuery in document header
+	    $isset_jquery = TemplateHelperDocument::headContains('jquery', 'script');
+	    $isset_bsjs   = TemplateHelperDocument::headContains('bootstrap', 'script');
+	    $isset_bscss  = TemplateHelperDocument::headContains('bootstrap', 'stylesheet');
+	
+	    if ($this->params->get('bootstrap_javascript', 1)) {
+	        if (!$isset_jquery) {
+	            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/jquery.js');
+	        }
+	
+	        if (!$isset_bsjs) {
+	            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/bootstrap.min.js');
+	        }
+	
+	        $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/application.js');
+	    }
+	    // Add 2.5 System Stylesheets
+		$doc->addStyleSheet('templates/system/css/general.css');
+		$doc->addStyleSheet('templates/system/css/system.css');
+	}
+	
+	// Add Template Stylesheet
+	$doc->addStyleSheet('templates/'.$this->template.'/css/template.css');
+    
 ?>
 <!DOCTYPE html>
 <html>
@@ -71,13 +86,7 @@
     endif;
 	?>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/system/css/general.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/system/css/system.css" type="text/css" />
-	<?php if($this->params->get('bootstrap_css', 1) && !$isset_bscss):?>
-		<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/css/template.css" type="text/css" />
-	<?php else: ?>
-		<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/css/theme.css" type="text/css" />
-	<?php endif;?>
+
 	<?php if($this->params->get('color')):?>
 		<style type="text/css">
 			.navbar-inner{
