@@ -98,12 +98,11 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                 ?>
                 <li class="span3">
                     <div class="thumbnail">
-                        <?php /*
-                        <a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=dashboard&id='.intval($item->id).':' . $item->alias);?>">
-                            <img src="http://placehold.it/260x180" alt="">
-                        </a>
-                        */
-                        ?>
+                        <?php if (!empty($item->logo_img)) : ?>
+                            <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->id.':' . $item->alias));?>">
+                                <img src="<?php echo $item->logo_img;?>" alt="<?php echo $this->escape($item->title);?>" style="max-width:260px;max-height:180px;" />
+                            </a>
+                        <?php endif ; ?>
                         <div class="caption">
                             <h3>
                                 <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>

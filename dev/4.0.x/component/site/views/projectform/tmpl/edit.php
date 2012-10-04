@@ -39,7 +39,7 @@ Joomla.submitbutton = function(task)
 <h1><?php echo $this->escape($params->get('page_heading')); ?></h1>
 <?php endif; ?>
 
-<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="item-form" class="form-inline">
+<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="item-form" class="form-inline" enctype="multipart/form-data">
 	<fieldset>
 		<div class="formelm-buttons btn-toolbar">
 		    <div class="btn-group">

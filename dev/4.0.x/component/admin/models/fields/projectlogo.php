@@ -104,6 +104,33 @@ class JFormFieldProjectLogo extends JFormField
      */
     protected function getSiteHTML()
     {
+        $html = array();
 
+        $base_url  = JURI::root(true) . '/media/com_projectfork/repo/0/logo';
+        $base_path = JPATH_ROOT . '/media/com_projectfork/repo/0/logo';
+        $img       = (int) $this->value;
+        $img_url   = null;
+
+        if (JFile::exists($base_path . '/' . $img . '.jpg')) {
+            $img_url = $base_url . '/' . $img . '.jpg';
+        }
+        elseif (JFile::exists($base_path . '/' . $img . '.jpeg')) {
+            $img_url = $base_url . '/' . $img . '.jpeg';
+        }
+        elseif (JFile::exists($base_path . '/' . $img . '.png')) {
+            $img_url = $base_url . '/' . $img . '.png';
+        }
+        elseif (JFile::exists($base_path . '/' . $img . '.gif')) {
+            $img_url = $base_url . '/' . $img . '.gif';
+        }
+
+        if ($img_url) {
+            $html[] = '<div class="well"><img src="' . $img_url . '" style="max-width:160px;max-height:100px"/></div>';
+            $html[] = '<span class="faux-label"><input type="checkbox" name="' . $this->name . '[delete]" value="1"/>' . JText::_('JACTION_DELETE_IMAGE') . '</span>';
+        }
+
+        $html[] = '<input type="file" name="' . $this->name . '" id="' . $this->id . '"/>';
+
+        return $html;
     }
 }
