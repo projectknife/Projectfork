@@ -1,0 +1,205 @@
+/* Projectfork Icons CSS */
+
+/* Recent Activity (Activity Stream) */
+#projectfork .list-type span{
+	display: block;
+	padding: 4px 10px;
+	margin: 0 auto;
+	text-align: center;
+	-moz-border-radius: 8px;
+	-webkit-border-radius: 8px;
+	border-radius: 8px;
+	color: #FFF;
+	font-weight: bold;
+	text-shadow: 0 1px 1px #000;
+}
+#projectfork .type-comment{
+	background: blue;
+}
+#projectfork .type-file{
+	background: green;
+}
+#projectfork .type-milestone{
+	background: purple;
+}
+#projectfork .type-project{
+	background: black;
+}
+#projectfork .type-task{
+	background: red;
+}
+#projectfork .type-task-list{
+	background: orange;
+}
+
+/* Save Ordering buttons */
+#projectfork a.saveorder {
+    background: url("../images/filesave.png") no-repeat scroll 0 0 transparent;
+    display: block;
+    float: right;
+    height: 16px;
+    margin-right: 8px;
+    overflow: hidden;
+    width: 16px;
+}
+#projectfork a.saveorder.inactive {
+    background-position: 0 -16px;
+}
+#projectfork td.list-ordering span {
+    background-repeat: no-repeat;
+    float: left;
+    height: 13px;
+    text-align: center;
+    width: 20px;
+}
+#projectfork .jgrid span.uparrow {
+    background-image: url("../images/uparrow.png") no-repeat scroll 0 0 transparent;
+}
+#projectfork .jgrid span.downarrow {
+    background-image: url("../images/downarrow.png") no-repeat scroll 0 0 transparent;
+}
+
+/* Projectfork Layout CSS */
+
+/* Basic HTML */
+.hr-condensed{
+	margin: 5px 0;
+}
+#projectfork ul li
+{
+    list-style: none;
+}
+
+#projectfork .inline-block{
+	display: inline-block;
+}
+
+/* Recent Activity Module (Activity Stream) */
+#projectfork .activity-list .list-type,
+#projectfork .activity-list .list-action,
+#projectfork .activity-list .list-owner,
+#projectfork .activity-list .list-time{
+	width: 15%;
+}
+
+/* Current Projects Module */
+#projectfork .project-list .list-milestones,
+#projectfork .project-list .list-tasks{
+	width: 5%;
+}
+
+/* Calendar Module */
+#projectfork .calendar-weekday,
+#projectfork .calendar-weekend{
+	width: 14.3%;
+	padding: 5px;
+}
+#projectfork .calendar-day{
+	height: 80px;
+}
+#projectfork .calendar-item{
+	white-space: nowrap;
+	font-size: 10px;
+	letter-spacing: -0.02em;
+	max-width: 100px;
+	overflow: hidden;
+}
+
+/* Table layout */
+#projectfork td.list-ordering input
+{
+    text-align: center;
+    width: 20px;
+    margin-right: 5px;
+}
+
+/* Project Grid Well */
+.well-projects{
+	padding: 5px;
+}
+
+/* Milestones */
+.milestone-edit{
+	margin-left: 4px;
+	margin-top: -2px;
+}
+.milestone-edit .dropdown-menu{
+	right:0;left:auto;
+}
+
+/* Tasks */
+.icon-move:hover{
+	cursor:hand;
+	cursor:grab;
+	cursor:-moz-grab;
+	cursor:-webkit-grab;
+}
+
+/* Thumbnails Wrapping in Fluid Rows */
+.view-users .row-fluid .thumbnails,
+.view-projects .row-fluid .thumbnails{
+	margin-left: -20px;
+}
+.row-fluid .thumbnails > li[class*="span"]:first-child,
+.row-fluid .thumbnails > li[class*="span"]{
+	margin-left: 20px;
+}
+
+/* Dashboard */
+.view-dashboard .moduletable{
+	margin-bottom: 10px;
+}
+
+/* Users */
+.thumbnail.pull-left{
+	margin: 0 10px 10px 0;
+}
+.thumbnail.pull-right{
+	margin: 0 0 10px 10px;
+}
+
+/* Timesheet */
+.thumbnail-timesheet{
+	height: 90px;
+}
+/* Projectfork Theme CSS */
+
+/* Due Date Module */
+#projectfork .overdue {
+	color: red;
+}
+
+/* Calendar Module */
+#projectfork .today{
+	background: #FFFFCC;
+}
+#projectfork .calendar-weekend{
+	background: #EEE;
+}
+
+/* General Classes */
+.small{
+	font-size: 12px;
+}
+
+/* Bootstrap Classes */
+#projectfork .page-header{
+	padding-bottom: 5px;
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+/* Milestone Progress */
+.progress.progress-milestone{
+	margin-bottom: 0;
+}
+
+/* Completed Task */
+.task-complete{
+	opacity:0.4;filter:alpha(opacity=40);
+}
+
+/* Modal */
+body.modal{
+	padding: 10px;
+}
