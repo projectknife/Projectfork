@@ -29,10 +29,10 @@ if ($this_dir->parent_id > 1) : ?>
 <?php
 foreach ($this->items['directories'] as $i => $item) :
     $link   = ProjectforkHelperRoute::getRepositoryRoute($item->project_slug, $item->slug, $item->path);
-    $icon   = ($item->protected == '1' ? 'icon-star' : 'icon-folder-close');
+    $icon   = ($item->protected == '1' ? 'icon-warning' : 'icon-folder');
 
     if ($item->parent_id == '1') {
-        $icon = 'icon-home';
+        $icon = 'icon-folder-2';
     }
 
     $js = 'if (window.parent) window.parent.'

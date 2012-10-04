@@ -30,8 +30,8 @@ foreach ($this->items['files'] as $i => $item) :
             <?php echo JHtml::_('grid.id', $x, $item->id, false, 'fid'); ?>
         </td>
         <td>
-            <i class="icon-file icon-<?php echo $icon;?>"></i>
             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
+            <i class="icon-flag-2 icon-<?php echo $icon;?>"></i>
             <a href="<?php echo JRoute::_($link);?>">
                 <?php echo JText::_($this->escape($item->title)); ?>
             </a>

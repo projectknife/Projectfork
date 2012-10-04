@@ -28,10 +28,10 @@ if ($this_dir->parent_id > 1) : ?>
 <?php
 foreach ($this->items['directories'] as $i => $item) :
     $access = ProjectforkHelperAccess::getActions('directory', $item->id);
-    $icon   = ($item->protected == '1' ? 'icon-star' : 'icon-folder-close');
+    $icon   = ($item->protected == '1' ? 'icon-warning' : 'icon-folder');
 
     if ($item->parent_id == '1') {
-        $icon = 'icon-home';
+        $icon = 'icon-folder-2';
     }
 
     $can_create   = $access->get('directory.create');
