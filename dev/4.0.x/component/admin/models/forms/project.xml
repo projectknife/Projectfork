@@ -86,6 +86,10 @@
                 label="COM_PROJECTFORK_FIELD_PHONE_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_PHONE_DESC"
                 class="inputbox" size="30" filter="tel"
             />
+            <field name="logo" type="projectlogo"
+                label="COM_PROJECTFORK_FIELD_PROJECT_IMG_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_IMG_DESC"
+                class="inputbox"
+            />
         </fieldset>
     </fields>
 </form>

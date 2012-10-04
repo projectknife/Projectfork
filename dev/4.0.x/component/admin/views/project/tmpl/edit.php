@@ -28,7 +28,7 @@ Joomla.submitbutton = function(task)
 	}
 }
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=project&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
+<form action="<?php echo JRoute::_('index.php?option=com_projectfork&view=project&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate" enctype="multipart/form-data">
  <div class="row-fluid">
 	    <div class="width-60 fltlft span7">
 	        <fieldset class="adminform">

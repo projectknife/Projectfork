@@ -114,6 +114,98 @@ class ProjectforkModelProject extends JModelAdmin
 
 
     /**
+     * Method to delete a project logo
+     *
+     * @param     integer    The project id
+     *
+     * @return    boolean     True on success, False on error
+     **/
+    public function deleteLogo($pk = NULL)
+    {
+        $pk = (!empty($pk)) ? (int) $pk : (int) $this->getState($this->getName() . '.id');
+
+        $base_path = JPATH_ROOT . '/media/com_projectfork/repo/0/logo';
+        $img_path  = NULL;
+
+        if (JFile::exists($base_path . '/' . $pk . '.jpg')) {
+            $img_path = $base_path . '/' . $pk . '.jpg';
+        }
+        elseif (JFile::exists($base_path . '/' . $pk . '.jpeg')) {
+            $img_path = $base_path . '/' . $pk . '.jpeg';
+        }
+        elseif (JFile::exists($base_path . '/' . $pk . '.png')) {
+            $img_path = $base_path . '/' . $pk . '.png';
+        }
+        elseif (JFile::exists($base_path . '/' . $pk . '.gif')) {
+            $img_path = $base_path . '/' . $pk . '.gif';
+        }
+
+        // No image found
+        if (!$img_path) {
+            return true;
+        }
+
+        if (!JFile::delete($img_path)) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public function saveLogo($file = NULL, $pk = NULL)
+    {
+        $pk = (!empty($pk)) ? (int) $pk : (int) $this->getState($this->getName() . '.id');
+
+        if (empty($file)) {
+            $file_form = JRequest::getVar('jform', '', 'files', 'array');
+
+            if (is_array($file_form)) {
+                if (isset($file_form['name']['attribs']['logo'])) {
+                    $file = array();
+
+                    $file['name']     = $file_form['name']['attribs']['logo'];
+                    $file['type']     = $file_form['type']['attribs']['logo'];
+                    $file['tmp_name'] = $file_form['tmp_name']['attribs']['logo'];
+                    $file['error']    = $file_form['error']['attribs']['logo'];
+                    $file['size']     = $file_form['size']['attribs']['logo'];
+                }
+            }
+
+            if (empty($file)) {
+                return true;
+            }
+        }
+
+        if (!$pk) {
+            return false;
+        }
+
+        if (empty($file)) {
+            return false;
+        }
+
+        if (!ProjectforkProcImage::isImage($file['name'], $file['tmp_name'])) {
+            return false;
+        }
+
+        // Delete any previous logo
+        if (!$this->deleteLogo($pk)) {
+            return false;
+        }
+
+        $uploadpath = JPATH_ROOT . '/media/com_projectfork/repo/0/logo';
+        $name = $pk . '.' . strtolower(JFile::getExt($file['name']));
+
+        if (JFile::upload($file['tmp_name'], $uploadpath . '/' . $name) === true) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    /**
      * Method to get the record form.
      *
      * @param     array      Data for the form.
@@ -243,6 +335,11 @@ class ProjectforkModelProject extends JModelAdmin
                     $this->setError($attachments->getError());
                     return false;
                 }
+            }
+
+            // Handle project logo
+            if (!$this->saveLogo()) {
+                return false;
             }
 
             return true;
