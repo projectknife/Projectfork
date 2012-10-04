@@ -24,13 +24,14 @@ foreach ($this->items['files'] as $i => $item) :
     $can_change   = ($access->get('file.edit.state') && $can_checkin);
     ?>
     <tr class="row<?php echo $i % 2; ?>">
-        <td class="center">
+        <td class="center hidden-phone">
             <?php echo JHtml::_('grid.id', $i, $item->id, false, 'fid'); ?>
         </td>
         <td>
             <?php if ($item->checked_out) : ?>
                 <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'repository.', $can_change); ?>
             <?php endif; ?>
+            <i class="icon-flag-2 hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_FILE_LABEL');?>"></i>
             <?php if ($can_edit || $can_edit_own) : ?>
                 <a href="<?php echo JRoute::_('index.php?option=com_projectfork&' . $edit_link);?>">
                     <?php echo JText::_($this->escape($item->title)); ?>
@@ -42,16 +43,16 @@ foreach ($this->items['files'] as $i => $item) :
         <td>
             <?php echo JHtml::_('projectfork.truncate', $item->description); ?>
         </td>
-        <td class="center">
+        <td class="center hidden-phone">
             <?php echo $this->escape($item->author_name); ?>
         </td>
-        <td class="center nowrap">
+        <td class="center nowrap hidden-phone">
             <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
         </td>
-        <td class="center">
+        <td class="center hidden-phone">
             <?php echo $this->escape($item->access_level); ?>
         </td>
-        <td class="center">
+        <td class="center hidden-phone">
             <?php echo (int) $item->id; ?>
         </td>
     </tr>

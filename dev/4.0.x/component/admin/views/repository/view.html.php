@@ -61,11 +61,12 @@ class ProjectforkViewRepository extends JViewLegacy
     protected function addToolbar()
     {
         $state = $this->get('State');
+        
+        JToolBarHelper::title(JText::_('COM_PROJECTFORK_REPO_TITLE'), 'article.png');
 
         if ($state->get('filter.project') && $this->items['directory']->id > 1) {
             $access = ProjectforkHelperAccess::getActions('directory', $this->items['directory']->id);
 
-            JToolBarHelper::title(JText::_('COM_PROJECTFORK_REPO_TITLE'), 'article.png');
             if ($access->get('directory.create')) {
                 JToolBarHelper::custom('directory.add', 'new.png', 'new_f2.png', 'JTOOLBAR_ADD_DIRECTORY', false);
             }
@@ -75,7 +76,7 @@ class ProjectforkViewRepository extends JViewLegacy
             }
 
             if ($access->get('note.create')) {
-                JToolBarHelper::custom('note.add', 'html.png', 'html_f2.png', 'JTOOLBAR_ADD_NOTE', false);
+                JToolBarHelper::custom('note.add', 'copy.png', 'html_f2.png', 'JTOOLBAR_ADD_NOTE', false);
             }
 
             if ($access->get('directory.delete') || $access->get('note.delete') || $access->get('file.delete')) {

@@ -18,10 +18,10 @@ if ($project && $dir) :
     <fieldset class="batch">
     	<legend><?php echo JText::_('COM_PROJECTFORK_BATCH_OPTIONS');?></legend>
     	<?php echo JHtml::_('projectfork.repository.batchItem', $project, $dir);?>
-    	<button type="submit" onclick="Joomla.submitbutton('repository.batch');">
+    	<button type="submit" class="btn btn-primary" onclick="Joomla.submitbutton('repository.batch');">
     		<?php echo JText::_('JGLOBAL_BATCH_PROCESS'); ?>
     	</button>
-    	<button type="button" onclick="document.id('batch-category-id').value='';document.id('batch-access').value='';">
+    	<button type="button" class="btn" onclick="document.id('batch-category-id').value='';document.id('batch-access').value='';">
     		<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>
     	</button>
     </fieldset>
