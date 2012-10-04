@@ -100,7 +100,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                     <div class="thumbnail">
                         <?php if (!empty($item->logo_img)) : ?>
                             <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->id.':' . $item->alias));?>">
-                                <img src="<?php echo $item->logo_img;?>" alt="<?php echo $this->escape($item->title);?>" style="max-width:260px;max-height:180px;" />
+                                <img src="<?php echo $item->logo_img;?>" alt="<?php echo $this->escape($item->title);?>" />
                             </a>
                         <?php endif ; ?>
                         <div class="caption">
