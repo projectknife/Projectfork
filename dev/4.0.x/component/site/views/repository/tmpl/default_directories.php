@@ -28,10 +28,10 @@ if ($this_dir->parent_id > 1) : ?>
 <?php
 foreach ($this->items['directories'] as $i => $item) :
     $access = ProjectforkHelperAccess::getActions('directory', $item->id);
-    $icon   = ($item->protected == '1' ? 'icon-star' : 'icon-folder-close');
+    $icon   = ($item->protected == '1' ? 'icon-warning' : 'icon-folder');
 
     if ($item->parent_id == '1') {
-        $icon = 'icon-home';
+        $icon = 'icon-folder-2';
     }
 
     $can_create   = $access->get('directory.create');
@@ -64,7 +64,7 @@ foreach ($this->items['directories'] as $i => $item) :
         <td>
             <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
         </td>
-        <td class="center">
+        <td>
             <?php echo $this->escape($item->description); ?> <i class="icon-user"></i> <?php echo $this->escape($item->author_name); ?>
         </td>
     </tr>

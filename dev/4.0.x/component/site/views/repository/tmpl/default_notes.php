@@ -29,7 +29,8 @@ foreach ($this->items['notes'] as $i => $item) :
             <?php echo JHtml::_('grid.id', $x, $item->id, false, 'nid'); ?>
         </td>
         <td>
-            <i class="icon-pencil"></i> <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
+            <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
+            <i class="icon-file"></i>
             <a href="<?php echo JRoute::_($link);?>">
                 <?php echo JText::_($this->escape($item->title)); ?>
             </a>
@@ -47,7 +48,7 @@ foreach ($this->items['notes'] as $i => $item) :
         <td>
             <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
         </td>
-        <td class="center">
+        <td>
             <?php echo JHtml::_('projectfork.truncate', $item->description, 128); ?> <i class="icon-user"></i> <?php echo $this->escape($item->author_name); ?>
         </td>
     </tr>
