@@ -101,14 +101,12 @@ function triggerProjectforkStyleBootstrap()
             return;
         }
 
-        JHtml::_('stylesheet', 'com_projectfork/bootstrap/bootstrap.min.css', false, true, false, false, false);
-        JHtml::_('stylesheet', 'com_projectfork/bootstrap/bootstrap-responsive.min.css', false, true, false, false, false);
+        JHtml::_('stylesheet', 'com_projectfork/bootstrap/component.css', false, true, false, false, false);
     }
 
     // Force load
     if ($load == '1') {
-        JHtml::_('stylesheet', 'com_projectfork/bootstrap/bootstrap.min.css', false, true, false, false, false);
-        JHtml::_('stylesheet', 'com_projectfork/bootstrap/bootstrap-responsive.min.css', false, true, false, false, false);
+        JHtml::_('stylesheet', 'com_projectfork/bootstrap/component.css', false, true, false, false, false);
     }
 }
 
@@ -120,7 +118,5 @@ function triggerProjectforkStyleBootstrap()
  */
 function triggerProjectforkStyleCore()
 {
-    JHtml::_('stylesheet', 'com_projectfork/projectfork/icons.css', false, true, false, false, false);
-    JHtml::_('stylesheet', 'com_projectfork/projectfork/layout.css', false, true, false, false, false);
-    JHtml::_('stylesheet', 'com_projectfork/projectfork/theme.css', false, true, false, false, false);
+    JHtml::_('stylesheet', 'com_projectfork/projectfork/styles.css', false, true, false, false, false);
 }
