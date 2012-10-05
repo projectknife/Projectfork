@@ -22,7 +22,7 @@ $params = $this->state->get('params');
 <script type="text/javascript">
 Joomla.submitbutton = function(task)
 {
-    if (task == 'noteform.cancel' document.formvalidator.isValid(document.id('item-form'))) {
+    if (task == 'noteform.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
         <?php echo $this->form->getField('description')->save(); ?>
         Joomla.submitform(task, document.getElementById('item-form'));
     } else {

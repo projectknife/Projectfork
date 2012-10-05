@@ -147,7 +147,7 @@ class ProjectforkControllerNoteform extends JControllerForm
     {
         $acl    = ProjectforkHelperAccess::getActions(null, 0, true);
         $user   = JFactory::getUser();
-        $parent  = JRequest::getUint('filter_parent_id', 0);
+        $parent = JRequest::getUint('filter_parent_id', 0);
 
         $can_create = $acl->get('note.create');
         $access     = true;
@@ -158,7 +158,7 @@ class ProjectforkControllerNoteform extends JControllerForm
 
         // Verify topic access
         if ($parent) {
-            $model = JModel::getInstance('DirectoryForm', 'ProjectforkModel', array('ignore_request' => true));
+            $model = $this->getModel('DirectoryForm', 'ProjectforkModel', array('ignore_request' => true));
             $item  = $model->getItem($parent);
 
             if (!empty($item)) {
