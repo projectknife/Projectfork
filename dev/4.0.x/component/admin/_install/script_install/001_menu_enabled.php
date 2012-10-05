@@ -82,6 +82,9 @@ $menu_items[] = array('title' => 'Discussions',
 $menu_items[] = array('title' => 'Users',
                       'alias' => 'project-members',
                       'link'  => $base_link . '&view=users');
+$menu_items[] = array('title' => 'My Page',
+                      'alias' => 'user-profile',
+                      'link'  => $base_link . '&view=user');
 
 
 // Iterate through each item
