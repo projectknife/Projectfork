@@ -84,12 +84,21 @@ class ProjectforkModelUser extends UsersModelUser
 
     public function saveAvatar($pk, $file)
     {
+        JLoader::register('ProjectforkHelperRepository', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/repository.php');
+
         if (!ProjectforkProcImage::isImage($file['name'], $file['tmp_name'])) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_NOT_AN_IMAGE'));
             return false;
         }
 
         // Delete any previous avatar
         if (!$this->deleteAvatar($pk)) {
+            return false;
+        }
+
+        if ($file['error']) {
+            $error = ProjectforkHelperRepository::getFileErrorMsg($file['error'], $file['name']);
+            $this->setError($error);
             return false;
         }
 

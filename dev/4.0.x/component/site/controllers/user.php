@@ -82,6 +82,66 @@ class ProjectforkControllerUser extends JControllerForm
     }
 
 
+    public function deleteAvatar()
+    {
+        // Check for request forgeries.
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+        $user   = JFactory::getUser();
+        $access = ProjectforkHelperAccess::getActions();
+        $id     = JRequest::getUInt('id');
+        $model  = $this->getModel();
+
+        // Access check
+        if ($user->id != $id) {
+            if (!$access->get('core.admin')) {
+                $this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
+			    $this->setMessage($this->getError(), 'error');
+
+                $this->setRedirect(
+    				JRoute::_(
+    					'index.php?option=' . $this->option . '&view=' . $this->view_item
+    					. $this->getRedirectToItemAppend($id), false
+    				)
+    			);
+                return false;
+            }
+        }
+
+        if (!$id) {
+            $this->setRedirect(
+				JRoute::_(
+					'index.php?option=' . $this->option . '&view=' . $this->view_item
+					. $this->getRedirectToItemAppend($id), false
+				)
+			);
+            return false;
+        }
+
+        if (!$model->deleteAvatar($id)) {
+            $this->setError($model->getError());
+			$this->setMessage($this->getError(), 'error');
+            $this->setRedirect(
+				JRoute::_(
+					'index.php?option=' . $this->option . '&view=' . $this->view_item
+					. $this->getRedirectToItemAppend($id), false
+				)
+			);
+
+            return false;
+        }
+
+        $this->setRedirect(
+			JRoute::_(
+				'index.php?option=' . $this->option . '&view=' . $this->view_item
+				. $this->getRedirectToItemAppend($id), false
+			)
+		);
+
+        return true;
+    }
+
+
     /**
      * Method to upload or delete a user avatar image
      *
@@ -92,9 +152,27 @@ class ProjectforkControllerUser extends JControllerForm
         // Check for request forgeries.
 		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
 
-        $file  = JRequest::getVar('avatar', '', 'files', 'array');
-        $id    = JRequest::getUInt('id');
-        $model = $this->getModel();
+        $user   = JFactory::getUser();
+        $access = ProjectforkHelperAccess::getActions();
+        $file   = JRequest::getVar('avatar', '', 'files', 'array');
+        $id     = JRequest::getUInt('id');
+        $model  = $this->getModel();
+
+        // Access check
+        if ($user->id != $id) {
+            if (!$access->get('core.admin')) {
+                $this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
+			    $this->setMessage($this->getError(), 'error');
+
+                $this->setRedirect(
+    				JRoute::_(
+    					'index.php?option=' . $this->option . '&view=' . $this->view_item
+    					. $this->getRedirectToItemAppend($id), false
+    				)
+    			);
+                return false;
+            }
+        }
 
         if (!empty($file['tmp_name'])) {
             if (!$model->saveAvatar($id, $file)) {
@@ -118,6 +196,8 @@ class ProjectforkControllerUser extends JControllerForm
 				. $this->getRedirectToItemAppend($id), false
 			)
 		);
+
+        return true;
     }
 
 

@@ -22,8 +22,9 @@
 
 defined('_JEXEC') or die;
 
-$item = &$this->item;
-$user = JFactory::getUser();
+$item   = &$this->item;
+$user   = JFactory::getUser();
+$access = ProjectforkHelperAccess::getActions();
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-user">
 
@@ -48,14 +49,19 @@ $user = JFactory::getUser();
                 <div id="user-details">
                     <div class="well">
                         <div class="item-description">
-	                        <?php if ($user->id == $item->id) : ?>
+	                        <?php if ($user->id == $item->id || $access->get('core.admin')) : ?>
+                                <div class="pull-left">
                                 <img alt="<?php echo $this->escape($this->item->name);?>"
                                      src="<?php echo JHtml::_('projectfork.avatar.path', $item->id);?>"
-                                     class="thumbnail pull-left"
+                                     class="thumbnail"
                                      style="cursor: pointer;"
                                      width="90"
                                      onclick="jQuery('#avatar-file').click();"
                                 />
+                                <button class="button btn" onclick="Joomla.submitform('user.deleteAvatar', document.getElementById('item-form'))">
+                                    <?php echo JText::_('JACTION_DELETE_IMAGE'); ?>
+                                </button>
+                                </div>
                                 <div style="display: none;">
                                     <input type="file" name="avatar" id="avatar-file" onchange="Joomla.submitform('user.avatar', document.getElementById('item-form'))"/>
                                 </div>
