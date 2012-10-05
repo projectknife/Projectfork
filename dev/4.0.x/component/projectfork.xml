@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="component" version="1.6" method="upgrade">
+<extension type="component" version="2.5" method="upgrade">
     <name>com_projectfork</name>
     <author>Tobias Kuhn</author>
-    <creationDate>September 2012</creationDate>
+    <creationDate>October 2012</creationDate>
     <copyright>(C) 2006 - 2012 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>support@projectfork.net</authorEmail>
