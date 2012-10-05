@@ -162,6 +162,10 @@ class ProjectforkModelProject extends JModelAdmin
 
             if (is_array($file_form)) {
                 if (isset($file_form['name']['attribs']['logo'])) {
+                    if ($file_form['name']['attribs']['logo'] == '') {
+                        return true;
+                    }
+
                     $file = array();
 
                     $file['name']     = $file_form['name']['attribs']['logo'];
@@ -169,6 +173,12 @@ class ProjectforkModelProject extends JModelAdmin
                     $file['tmp_name'] = $file_form['tmp_name']['attribs']['logo'];
                     $file['error']    = $file_form['error']['attribs']['logo'];
                     $file['size']     = $file_form['size']['attribs']['logo'];
+
+                    if ($file['error']) {
+                        $error = ProjectforkHelperRepository::getFileErrorMsg($file['error'], $file['name']);
+                        $this->setError($error);
+                        return false;
+                    }
                 }
             }
 
@@ -182,10 +192,12 @@ class ProjectforkModelProject extends JModelAdmin
         }
 
         if (empty($file)) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_NO_FILE_SELECTED'));
             return false;
         }
 
         if (!ProjectforkProcImage::isImage($file['name'], $file['tmp_name'])) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_NOT_AN_IMAGE'));
             return false;
         }
 
@@ -287,6 +299,11 @@ class ProjectforkModelProject extends JModelAdmin
                     unset($data['access']);
                 }
             }
+        }
+
+        // Delete logo?
+        if (isset($data['attribs']['logo']['delete']) && $pk && !$is_new) {
+            $this->deleteLogo($pk);
         }
 
         // Store the record
@@ -468,6 +485,9 @@ class ProjectforkModelProject extends JModelAdmin
                     if (JFolder::exists($repo)) {
                         JFolder::delete($repo);
                     }
+
+                    // Try to delete the logo
+                    $this->deleteLogo($pk);
 
                     // Check if the currently active project is being deleted.
                     // If so, clear it from the session
