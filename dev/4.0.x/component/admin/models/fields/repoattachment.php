@@ -134,9 +134,17 @@ class JFormFieldRepoAttachment extends JFormField
     protected function getSiteHTML()
     {
         $html = array();
-        $link = ProjectforkHelperRoute::getRepositoryRoute()
-              . '&amp;layout=modal&amp;tmpl=component'
-              . '&amp;function=pfSelectAttachment_' . $this->id;
+
+        if (JFactory::getApplication()->isSite()) {
+            $link = ProjectforkHelperRoute::getRepositoryRoute()
+                  . '&amp;layout=modal&amp;tmpl=component'
+                  . '&amp;function=pfSelectAttachment_' . $this->id;
+        }
+        else {
+            $link = 'index.php?option=com_projectfork&amp;view=repository'
+                  . '&amp;layout=modal&amp;tmpl=component'
+                  . '&amp;function=pfSelectAttachment_' . $this->id;
+        }
 
         $html[] = '<ul id="' . $this->id . '_list" class="unstyled">';
 
