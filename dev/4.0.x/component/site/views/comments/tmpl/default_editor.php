@@ -9,9 +9,7 @@
 
 defined('_JEXEC') or die();
 
-
-$avatar = JHtml::image('com_projectfork/projectfork/icons/avatar.jpg', 'avatar', null, true, true);
-
+$user = JFactory::getUser();
 ?>
 <ul class="unstyled" id="comment-editor">
     <li>
@@ -19,7 +17,7 @@ $avatar = JHtml::image('com_projectfork/projectfork/icons/avatar.jpg', 'avatar',
             <div class="row-fluid">
         	   <div class="span1">
 			       <a href="#">
-                       <img class="pull-left thumbnail" width="90" src="<?php echo $avatar; ?>" alt="" />
+                       <img class="pull-left thumbnail" width="90" src="<?php echo JHtml::_('projectfork.avatar.path', $user->id);?>" alt="" />
                    </a>
         	   </div>
         	   <div class="span11">

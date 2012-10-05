@@ -38,13 +38,12 @@ foreach($this->items AS $i => $item) :
 
     $can_create = $this->access->get('comment.create');
     $can_trash  = ($this->access->get('comment.edit.state') || ($this->access->get('comment.edit.own') && $item->created_by == $uid));
-    $avatar     = JHtml::image('com_projectfork/projectfork/icons/avatar.jpg', $item->author_name, null, true, true);
     ?>
     <li id="comment-item-<?php echo $i; ?>">
         <div class="comment-item">
 	        <div class="row-fluid">
 	            <div class="span1">
-                    <a href="#"><img class="thumbnail" width="90" src="<?php echo $avatar; ?>" alt="" /></a>
+                    <a href="#"><img class="thumbnail" width="90" src="<?php echo JHtml::_('projectfork.avatar.path', $item->created_by);?>" alt="" /></a>
                 </div>
                 <div class="span11">
 	                <span class="item-title">

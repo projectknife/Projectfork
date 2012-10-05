@@ -23,6 +23,7 @@
 defined('_JEXEC') or die;
 
 $item = &$this->item;
+$user = JFactory::getUser();
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-user">
 
@@ -32,7 +33,7 @@ $item = &$this->item;
 
     <div class="cat-items">
 
-        <form id="adminForm" name="adminForm" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>">
+        <form id="item-form" name="adminForm" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" enctype="multipart/form-data">
 
             <fieldset class="filters btn-toolbar">
                     <div class="filter-project btn-group">
@@ -40,11 +41,6 @@ $item = &$this->item;
                         <?php if($item) echo $item->event->afterDisplayTitle; ?>
                     </div>
             </fieldset>
-
-            <input type="hidden" name="task" value="" />
-	        <?php echo JHtml::_('form.token'); ?>
-
-
             <div class="clearfix"></div>
 
             <?php if($item) echo $item->event->beforeDisplayContent;?>
@@ -52,8 +48,25 @@ $item = &$this->item;
                 <div id="user-details">
                     <div class="well">
                         <div class="item-description">
-	                        <img alt="<?php echo $this->escape($this->item->name);?>" src="<?php echo JHtml::image('com_projectfork/projectfork/icons/avatar.jpg', 'avatar', null, true, true);?>" class="thumbnail pull-left" width="90" />
-	                        <h5><?php echo $this->escape($this->item->name);?></h5>
+	                        <?php if ($user->id == $item->id) : ?>
+                                <img alt="<?php echo $this->escape($this->item->name);?>"
+                                     src="<?php echo JHtml::_('projectfork.avatar.path', $item->id);?>"
+                                     class="thumbnail pull-left"
+                                     style="cursor: pointer;"
+                                     width="90"
+                                     onclick="jQuery('#avatar-file').click();"
+                                />
+                                <div style="display: none;">
+                                    <input type="file" name="avatar" id="avatar-file" onchange="Joomla.submitform('user.avatar', document.getElementById('item-form'))"/>
+                                </div>
+                            <?php else : ?>
+                                <img alt="<?php echo $this->escape($this->item->name);?>"
+                                     src="<?php echo JHtml::_('projectfork.avatar.path', $item->id);?>"
+                                     class="thumbnail pull-left"
+                                     width="90"
+                                />
+                            <?php endif; ?>
+                            <h5><?php echo $this->escape($this->item->name);?></h5>
 	                        <hr class="hr-condensed" />
 	                        <ul class="unstyled">
                     			<li class="username-item">
@@ -77,6 +90,11 @@ $item = &$this->item;
 
                 <div class="clearfix"></div>
 
+
+            <input type="hidden" name="task" value="" />
+            <input type="hidden" name="id" value="<?php echo (int) $item->id;?>" />
+            <input type="hidden" name="view" value="<?php echo htmlspecialchars($this->get('Name'), ENT_COMPAT, 'UTF-8');?>" />
+	        <?php echo JHtml::_( 'form.token' ); ?>
         </form>
 
         <!-- Begin Dashboard Modules -->

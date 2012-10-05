@@ -49,4 +49,57 @@ class ProjectforkModelUser extends UsersModelUser
 
         return $projects;
     }
+
+
+    public function deleteAvatar($pk)
+    {
+        $base_path = JPATH_ROOT . '/media/com_projectfork/repo/0/avatar';
+        $img_path  = NULL;
+
+        if (JFile::exists($base_path . '/' . $pk . '.jpg')) {
+            $img_path = $base_path . '/' . $pk . '.jpg';
+        }
+        elseif (JFile::exists($base_path . '/' . $pk . '.jpeg')) {
+            $img_path = $base_path . '/' . $pk . '.jpeg';
+        }
+        elseif (JFile::exists($base_path . '/' . $pk . '.png')) {
+            $img_path = $base_path . '/' . $pk . '.png';
+        }
+        elseif (JFile::exists($base_path . '/' . $pk . '.gif')) {
+            $img_path = $base_path . '/' . $pk . '.gif';
+        }
+
+        // No image found
+        if (!$img_path) {
+            return true;
+        }
+
+        if (JFile::delete($img_path) !== true) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public function saveAvatar($pk, $file)
+    {
+        if (!ProjectforkProcImage::isImage($file['name'], $file['tmp_name'])) {
+            return false;
+        }
+
+        // Delete any previous avatar
+        if (!$this->deleteAvatar($pk)) {
+            return false;
+        }
+
+        $uploadpath = JPATH_ROOT . '/media/com_projectfork/repo/0/avatar';
+        $name = $pk . '.' . strtolower(JFile::getExt($file['name']));
+
+        if (JFile::upload($file['tmp_name'], $uploadpath . '/' . $name) === true) {
+            return true;
+        }
+
+        return false;
+    }
 }
