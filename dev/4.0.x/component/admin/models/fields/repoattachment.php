@@ -46,7 +46,18 @@ class JFormFieldRepoAttachment extends JFormField
             $this->value = array();
         }
 
-        $html = $this->getHTML();
+        $project = (int) $this->form->getValue('project_id');
+        $hidden  = '<input type="hidden" name="' . $this->name . '[]" value="" />';
+
+        if (!$project) {
+            $project = ProjectforkHelper::getActiveProjectId();
+        }
+
+        if (!$project) {
+            return '<span class="readonly">' . JText::_('COM_PROJECTFORK_FIELD_PROJECT_REQ') . '</span>' . $hidden;
+        }
+
+        $html = $this->getHTML($project);
 
         return implode("\n", $html);
     }
@@ -57,13 +68,13 @@ class JFormFieldRepoAttachment extends JFormField
      *
      * @return    string              The html field markup
      */
-    protected function getHTML()
+    protected function getHTML($project)
     {
         if (JFactory::getApplication()->isSite() || version_compare(JVERSION, '3.0.0', 'ge')) {
-            return $this->getSiteHTML();
+            return $this->getSiteHTML($project);
         }
 
-        return $this->getAdminHTML();
+        return $this->getAdminHTML($project);
     }
 
 
@@ -72,10 +83,11 @@ class JFormFieldRepoAttachment extends JFormField
      *
      * @return    array     $html     The html field markup
      */
-    protected function getAdminHTML()
+    protected function getAdminHTML($project)
     {
         $html = array();
         $link = 'index.php?option=com_projectfork&amp;view=repository'
+              . '&amp;filter_project=' . (int) $project
               . '&amp;layout=modal&amp;tmpl=component'
               . '&amp;function=pfSelectAttachment_' . $this->id;
 
@@ -131,17 +143,18 @@ class JFormFieldRepoAttachment extends JFormField
      *
      * @return    array     $html     The html field markup
      */
-    protected function getSiteHTML()
+    protected function getSiteHTML($project)
     {
         $html = array();
 
         if (JFactory::getApplication()->isSite()) {
-            $link = ProjectforkHelperRoute::getRepositoryRoute()
+            $link = ProjectforkHelperRoute::getRepositoryRoute($project)
                   . '&amp;layout=modal&amp;tmpl=component'
                   . '&amp;function=pfSelectAttachment_' . $this->id;
         }
         else {
             $link = 'index.php?option=com_projectfork&amp;view=repository'
+                  . '&amp;filter_project=' . (int) $project
                   . '&amp;layout=modal&amp;tmpl=component'
                   . '&amp;function=pfSelectAttachment_' . $this->id;
         }
