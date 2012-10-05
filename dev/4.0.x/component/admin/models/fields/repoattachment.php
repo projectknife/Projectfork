@@ -104,7 +104,7 @@ class JFormFieldRepoAttachment extends JFormField
             }
 
             $html[] = '<li>';
-            $html[] = '<a class="btn btn-mini" onclick="pfRemoveAttachment_' . $this->id . '(this);"><i class="icon-remove"></i> </a>';
+            $html[] = '<div class="btn-group pull-left"><a class="btn btn-mini" onclick="pfRemoveAttachment_' . $this->id . '(this);"><i class="icon-remove"></i> </a></div>';
             $html[] = '&nbsp;';
             $html[] = '<span class="label">' . $icon . htmlspecialchars($item->repo_data->title, ENT_COMPAT, 'UTF-8') . '</span>';
             $html[] = '<input type="hidden" name="' . $this->name . '[]" value="' . htmlspecialchars($item->attachment, ENT_COMPAT, 'UTF-8') . '"/>';
@@ -171,7 +171,7 @@ class JFormFieldRepoAttachment extends JFormField
             }
 
             $html[] = '<li>';
-            $html[] = '<a class="btn btn-mini" onclick="pfRemoveAttachment_' . $this->id . '(this);"><i class="icon-remove"></i> </a>';
+            $html[] = '<div class="btn-group pull-left"><a class="btn btn-mini" onclick="pfRemoveAttachment_' . $this->id . '(this);"><i class="icon-remove"></i> </a></div>';
             $html[] = '&nbsp;';
             $html[] = '<span class="label">' . $icon . htmlspecialchars($item->repo_data->title, ENT_COMPAT, 'UTF-8') . '</span>';
             $html[] = '<input type="hidden" name="' . $this->name . '[]" value="' . htmlspecialchars($item->attachment, ENT_COMPAT, 'UTF-8') . '"/>';
@@ -230,7 +230,7 @@ class JFormFieldRepoAttachment extends JFormField
         $script[] = '}';
         $script[] = 'function pfRemoveAttachment_' . $this->id . '(el)';
         $script[] = '{';
-        $script[] = '    jQuery(el).parent().remove();';
+        $script[] = '    jQuery(el).parent().parent().remove();';
         $script[] = '}';
 
         return $script;
