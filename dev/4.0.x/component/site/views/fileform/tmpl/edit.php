@@ -22,7 +22,7 @@ $params = $this->state->get('params');
 <script type="text/javascript">
 Joomla.submitbutton = function(task)
 {
-    if (task == 'fileform.cancel' document.formvalidator.isValid(document.id('item-form'))) {
+    if (task == 'fileform.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
         Joomla.submitform(task, document.getElementById('item-form'));
     } else {
         alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');

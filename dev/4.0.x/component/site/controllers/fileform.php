@@ -237,7 +237,7 @@ class ProjectforkControllerFileForm extends JControllerForm
 
         // Verify topic access
         if ($parent) {
-            $model = JModel::getInstance('DirectoryForm', 'ProjectforkModel', array('ignore_request' => true));
+            $model = $this->getModel('DirectoryForm', 'ProjectforkModel', array('ignore_request' => true));
             $item  = $model->getItem($parent);
 
             if (!empty($item)) {
