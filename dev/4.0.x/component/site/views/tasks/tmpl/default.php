@@ -70,7 +70,7 @@ JHtml::_('projectfork.ajaxCompleteTask');
                         <div class="filter-tasklist btn-group">
                             <select id="filter_tasklist" name="filter_tasklist" class="inputbox" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_TASKLIST');?></option>
-                                <?php echo JHtml::_('select.options', $this->tasklists, 'value', 'text', $this->state->get('filter.tasklist'));?>
+                                <?php echo JHtml::_('select.options', $this->lists, 'value', 'text', $this->state->get('filter.tasklist'));?>
                             </select>
                         </div>
                         <div class="filter-author btn-group">

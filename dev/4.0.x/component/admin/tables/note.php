@@ -59,11 +59,11 @@ class PFTableNote extends JTable
 
         $query = $this->_db->getQuery(true);
 
-        if ($this->parent_id) {
-            // Build the query to get the asset id for the parent topic.
+        if ($this->dir_id) {
+            // Build the query to get the asset id for the parent directory.
             $query->select('asset_id')
                   ->from('#__pf_repo_dirs')
-                  ->where('id = ' . (int) $this->parent_id);
+                  ->where('id = ' . (int) $this->dir_id);
 
             // Get the asset id from the database.
             $this->_db->setQuery((string) $query);

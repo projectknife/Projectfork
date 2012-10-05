@@ -59,7 +59,9 @@ class ProjectforkControllerDirectoryForm extends JControllerForm
     {
         if (!parent::add()) {
             // Redirect to the return page.
-            $this->setRedirect($this->getReturnPage());
+            $parent  = JRequest::getUint('filter_parent_id');
+            $project = JRequest::getUint('filter_project');
+            $this->setRedirect($this->getReturnPage($parent, $project));
             return false;
         }
 
@@ -76,10 +78,12 @@ class ProjectforkControllerDirectoryForm extends JControllerForm
      */
     public function cancel($key = 'id')
     {
-        $result = parent::cancel($key);
+        $parent  = JRequest::getUint('filter_parent_id');
+        $project = JRequest::getUint('filter_project');
+        $result  = parent::cancel($key);
 
         // Redirect to the return page.
-        $this->setRedirect($this->getReturnPage());
+        $this->setRedirect($this->getReturnPage($parent, $project));
 
         return $result;
     }
@@ -130,10 +134,10 @@ class ProjectforkControllerDirectoryForm extends JControllerForm
     {
         $result  = parent::save($key, $url_var);
         $project = JRequest::getUint('filter_project', 0);
-        $topic   = JRequest::getUint('filter_topic', 0);
+        $parent  = JRequest::getUint('filter_parent_id', 0);
 
         // If ok, redirect to the return page.
-        if ($result) $this->setRedirect($this->getReturnPage($topic, $project));
+        if ($result) $this->setRedirect($this->getReturnPage($parent, $project));
 
         return $result;
     }

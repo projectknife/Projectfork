@@ -130,7 +130,7 @@ class ProjectforkControllerNoteform extends JControllerForm
         $parent  = JRequest::getUint('filter_parent_id', 0);
 
         // If ok, redirect to the return page.
-        if ($result) $this->setRedirect($this->getReturnPage($topic, $project));
+        if ($result) $this->setRedirect($this->getReturnPage($parent, $project));
 
         return $result;
     }
