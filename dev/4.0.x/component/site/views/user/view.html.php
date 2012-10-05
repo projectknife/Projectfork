@@ -36,16 +36,19 @@ class ProjectforkViewUser extends JViewLegacy
         $modules    = JFactory::getDocument()->loadRenderer('modules');
         $dispatcher	= JDispatcher::getInstance();
 
-
         // Escape strings for HTML output
 		$this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
-
 
         // Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseError(500, implode("\n", $errors));
 			return false;
 		}
+
+        if (!$state->get('user.id')) {
+            JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_USER_NOT_FOUND'));
+			return false;
+        }
 
         // Process the content plugins.
         if ($item) {

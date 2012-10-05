@@ -111,4 +111,26 @@ class ProjectforkModelUser extends UsersModelUser
 
         return false;
     }
+
+
+    /**
+	 * Method to auto-populate the model state.
+	 *
+	 * @return  void
+	 */
+	protected function populateState()
+	{
+		// Initialise variables.
+		$table = $this->getTable();
+		$key   = $table->getKeyName();
+
+		// Get the pk of the record from the request.
+		$pk = JRequest::getInt($key, JFactory::getUser()->get('id'));
+
+		$this->setState($this->getName() . '.id', $pk);
+
+		// Load the parameters.
+		$value = JComponentHelper::getParams($this->option);
+		$this->setState('params', $value);
+	}
 }
