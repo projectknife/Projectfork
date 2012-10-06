@@ -41,12 +41,16 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
             <div class="<?php echo $filter_in;?>collapse" id="filters">
                 <div class="well btn-toolbar">
                     <div class="filter-search btn-group pull-left">
-                        <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
+                        <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_SEARCH'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
                     </div>
                     <div class="filter-search-buttons btn-group pull-left">
                         <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
                         <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
                     </div>
+
+                    <div class="clearfix"> </div>
+                    <hr />
+
                     <?php if ($pid) : ?>
                         <div class="filter-author btn-group">
                             <select id="filter_author" name="filter_author" class="inputbox input-medium" onchange="this.form.submit()">

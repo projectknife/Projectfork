@@ -46,9 +46,13 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                         <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
                         <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
                     </div>
+
+                    <div class="clearfix"> </div>
+                    <hr />
+
                     <?php if (is_numeric($this->state->get('filter.project'))) : ?>
                         <div class="filter-author btn-group">
-                            <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
+                            <select id="filter_author" name="filter_author" class="inputbox input-medium" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
                                 <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'), true);?>
                             </select>

@@ -55,27 +55,30 @@ JHtml::_('projectfork.ajaxCompleteTask');
                         </button>
                     </div>
 
+                    <div class="clearfix"> </div>
+                    <hr />
+
                     <?php if ($this->state->get('filter.project')) : ?>
                         <div class="filter-milestone btn-group">
-                            <select onchange="this.form.submit()" class="inputbox" name="filter_milestone" id="milestone">
+                            <select onchange="this.form.submit()" class="inputbox input-medium" name="filter_milestone" id="milestone">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_MILESTONE');?></option>
                                 <?php echo JHtml::_('select.options', $this->milestones, 'value', 'text', $this->state->get('filter.milestone'));?>
                             </select>
                         </div>
                         <div class="filter-tasklist btn-group">
-                            <select id="filter_tasklist" name="filter_tasklist" class="inputbox" onchange="this.form.submit()">
+                            <select id="filter_tasklist" name="filter_tasklist" class="inputbox input-medium" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_TASKLIST');?></option>
                                 <?php echo JHtml::_('select.options', $this->lists, 'value', 'text', $this->state->get('filter.tasklist'));?>
                             </select>
                         </div>
                         <div class="filter-author btn-group">
-                            <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
+                            <select id="filter_author" name="filter_author" class="inputbox input-medium" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
                                 <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'));?>
                             </select>
                         </div>
                         <div class="filter-user btn-group">
-                                <select onchange="this.form.submit()" class="inputbox" name="filter_assigned" id="filter_assigned">
+                                <select onchange="this.form.submit()" class="inputbox input-medium" name="filter_assigned" id="filter_assigned">
                                     <option value=""><?php echo JText::_('JOPTION_SELECT_ASSIGNED_USER');?></option>
                                     <?php echo JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned'));?>
                             </select>
@@ -85,14 +88,14 @@ JHtml::_('projectfork.ajaxCompleteTask');
                     <?php endif; ?>
                     <?php if ($this->access->get('task.edit.state') || $this->access->get('task.edit')) : ?>
                         <div class="filter-status btn-group">
-                                <select onchange="this.form.submit()" class="inputbox" name="filter_published" id="filter_published">
+                                <select onchange="this.form.submit()" class="inputbox input-medium" name="filter_published" id="filter_published">
                                     <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
                                     <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
                             </select>
                         </div>
                     <?php endif; ?>
                     <div class="filter-priority btn-group">
-                        <select onchange="this.form.submit()" class="inputbox" name="filter_priority" id="filter_priority">
+                        <select onchange="this.form.submit()" class="inputbox input-medium" name="filter_priority" id="filter_priority">
                             <option selected="selected" value=""><?php echo JText::_('JOPTION_SELECT_PRIORITY');?></option>
                             <?php echo JHtml::_('select.options', JHtml::_('projectfork.priorityOptions'), 'value', 'text', $this->state->get('filter.priority'), true);?>
                         </select>

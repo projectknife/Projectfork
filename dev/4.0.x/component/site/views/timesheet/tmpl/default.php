@@ -53,6 +53,10 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
                         <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
                         <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
                     </div>
+
+                    <div class="clearfix"> </div>
+                    <hr />
+
                     <?php if ($this->access->get('time.edit.state') || $this->access->get('time.edit')) : ?>
                         <div class="filter-published btn-group">
                             <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
@@ -63,13 +67,13 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
                     <?php endif; ?>
                     <?php if (intval($this->state->get('filter.project')) > 0) : ?>
                         <div class="filter-author btn-group">
-                            <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
+                            <select id="filter_author" name="filter_author" class="inputbox input-medium" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
                                 <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'), true);?>
                             </select>
                         </div>
                         <div class="filter-task btn-group">
-                            <select id="filter_task" name="filter_task" class="inputbox" onchange="this.form.submit()">
+                            <select id="filter_task" name="filter_task" class="inputbox input-medium" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('COM_PROJECTFORK_OPTION_SELECT_TASK');?></option>
                                 <?php echo JHtml::_('select.options', $this->tasks, 'value', 'text', $this->state->get('filter.task'), true);?>
                             </select>
