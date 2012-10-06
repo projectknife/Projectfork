@@ -23,6 +23,7 @@ class ProjectforkViewTasklistForm extends JViewLegacy
     protected $item;
     protected $return_page;
     protected $state;
+    protected $toolbar;
 
 
     public function display($tpl = null)
@@ -36,6 +37,7 @@ class ProjectforkViewTasklistForm extends JViewLegacy
         $this->item        = $this->get('Item');
         $this->form        = $this->get('Form');
         $this->return_page = $this->get('ReturnPage');
+        $this->toolbar     = $this->getToolbar();
 
         // Permission check.
         if ($this->item->id <= 0) {
@@ -123,5 +125,58 @@ class ProjectforkViewTasklistForm extends JViewLegacy
         if ($this->params->get('robots')) {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
+    }
+
+
+    /**
+     * Generates the toolbar for the top of the view
+     *
+     * @return    string    Toolbar with buttons
+     */
+    protected function getToolbar()
+    {
+        $options = array();
+        $access  = ProjectforkHelperAccess::getActions(null, 0, true);
+
+        $create_task = $access->get('task.create');
+        $create_ms   = $access->get('milestone.create');
+
+        $options[] = array(
+            'text' => 'JSAVE',
+            'task' => $this->getName() . '.save');
+
+        $options[] = array(
+            'text' => 'COM_PROJECTFORK_ACTION_2NEW',
+            'task' => $this->getName() . '.save2new');
+
+        $options[] = array(
+            'text' => 'COM_PROJECTFORK_ACTION_2COPY',
+            'task' => $this->getName() . '.save2copy',
+            'options' => array('access' => ($this->item->id > 0)));
+
+        if ($create_task || $create_ms) {
+            $options[] = array('text' => 'divider');
+        }
+
+        $options[] = array(
+            'text' => 'COM_PROJECTFORK_ACTION_2MILESTONE',
+            'task' => $this->getName() . '.save2milestone',
+            'options' => array('access' => $create_ms));
+
+        $options[] = array(
+            'text' => 'COM_PROJECTFORK_ACTION_2TASK',
+            'task' => $this->getName() . '.save2task',
+            'options' => array('access' => $create_task));
+
+        ProjectforkHelperToolbar::dropdownButton($options, array('icon' => 'icon-white icon-ok'));
+
+        ProjectforkHelperToolbar::button(
+            'JCANCEL',
+            $this->getName() . '.cancel',
+            false,
+            array('class' => '', 'icon' => '')
+        );
+
+        return ProjectforkHelperToolbar::render();
     }
 }

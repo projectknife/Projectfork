@@ -33,14 +33,9 @@ JHtml::_('projectfork.ajaxCompleteTask');
         <form id="adminForm" name="adminForm" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>">
 
             <div class="btn-toolbar btn-toolbar-top">
-                <div class="btn-group">
-                    <?php echo $this->toolbar;?>
-                </div>
+                <?php echo $this->toolbar;?>
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('projectfork.filterProject');?>
-                </div>
-                <div class="btn-group">
-                    <a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
                 </div>
             </div>
 

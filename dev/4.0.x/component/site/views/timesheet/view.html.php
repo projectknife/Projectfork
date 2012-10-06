@@ -21,7 +21,6 @@ class ProjectforkViewTimesheet extends JViewLegacy
     protected $pagination;
     protected $params;
     protected $state;
-    protected $actions;
     protected $toolbar;
     protected $authors;
     protected $tasks;
@@ -56,7 +55,6 @@ class ProjectforkViewTimesheet extends JViewLegacy
         $this->authors    = $this->get('Authors');
         $this->tasks      = $this->get('Tasks');
         $this->params     = $this->state->params;
-        $this->actions    = $this->getActions();
         $this->toolbar    = $this->getToolbar();
         $this->access     = ProjectforkHelper::getActions(NULL, 0, true);
         $this->nulldate   = JFactory::getDbo()->getNullDate();
@@ -100,21 +98,17 @@ class ProjectforkViewTimesheet extends JViewLegacy
     protected function prepareDocument()
     {
         $app     = JFactory::getApplication();
-        $menus   = $app->getMenu();
+        $menu    = $app->getMenu()->getActive();
         $pathway = $app->getPathway();
         $title   = null;
 
-        // Because the application sets a default page title,
-        // we need to get it from the menu item itself
-        $menu = $menus->getActive();
-
+        // Because the application sets a default page title, we need to get it from the menu item itself
         if ($menu) {
             $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
         }
         else {
             $this->params->def('page_heading', JText::_('COM_PROJECTFORK_TIMESHEET_TITLE'));
         }
-
 
         // Set the page title
         $title = $this->params->get('page_title', '');
@@ -131,24 +125,20 @@ class ProjectforkViewTimesheet extends JViewLegacy
 
         $this->document->setTitle($title);
 
-
         // Set crawler behavior info
         if ($this->params->get('robots')) {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
-
 
         // Set page description
         if ($this->params->get('menu-meta_description')) {
             $this->document->setDescription($desc);
         }
 
-
         // Set page keywords
         if ($this->params->get('menu-meta_keywords')) {
             $this->document->setMetadata('keywords', $keywords);
         }
-
 
         // Add feed links
         if ($this->params->get('show_feed_link', 1)) {
@@ -169,40 +159,36 @@ class ProjectforkViewTimesheet extends JViewLegacy
     protected function getToolbar()
     {
         $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
-        $tb     = new ProjectforkHelperToolbar();
+        $state  = $this->get('State');
 
-        if ($access->get('time.create')) {
-            $tb->button('COM_PROJECTFORK_ACTION_NEW', 'timeform.add');
-        }
+        ProjectforkHelperToolbar::button(
+            'COM_PROJECTFORK_ACTION_NEW',
+            'timeform.add',
+            false,
+            array('access' => $access->get('time.create'))
+        );
 
-        return $tb->__toString();
-    }
-
-
-    /**
-     * Generates select options for the bulk action menu
-     *
-     * @return    array    The available options
-     */
-    protected function getActions()
-    {
-        $access  = ProjectforkHelperAccess::getActions(NULL, 0, true);
-        $state   = $this->get('State');
         $options = array();
-
         if ($access->get('time.edit.state')) {
-            $options[] = JHtml::_('select.option', 'timesheet.publish', JText::_('COM_PROJECTFORK_ACTION_PUBLISH'));
-            $options[] = JHtml::_('select.option', 'timesheet.unpublish', JText::_('COM_PROJECTFORK_ACTION_UNPUBLISH'));
-            $options[] = JHtml::_('select.option', 'timesheet.archive', JText::_('COM_PROJECTFORK_ACTION_ARCHIVE'));
-            $options[] = JHtml::_('select.option', 'timesheet.checkin', JText::_('COM_PROJECTFORK_ACTION_CHECKIN'));
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_PUBLISH',   'task' => $this->getName() . '.publish');
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_UNPUBLISH', 'task' => $this->getName() . '.unpublish');
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_ARCHIVE',   'task' => $this->getName() . '.archive');
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_CHECKIN',   'task' => $this->getName() . '.checkin');
         }
+
         if ($state->get('filter.published') == -2 && $access->get('time.delete')) {
-            $options[] = JHtml::_('select.option', 'timesheet.delete', JText::_('COM_PROJECTFORK_ACTION_DELETE'));
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_DELETE', 'task' => $this->getName() . '.delete');
         }
         elseif ($access->get('time.edit.state')) {
-            $options[] = JHtml::_('select.option', 'timesheet.trash', JText::_('COM_PROJECTFORK_ACTION_TRASH'));
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_TRASH', 'task' => $this->getName() . '.trash');
         }
 
-        return $options;
+        if (count($options)) {
+            ProjectforkHelperToolbar::listButton($options);
+        }
+
+        ProjectforkHelperToolbar::filterButton();
+
+        return ProjectforkHelperToolbar::render();
     }
 }

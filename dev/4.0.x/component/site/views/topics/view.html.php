@@ -25,7 +25,6 @@ class ProjectforkViewTopics extends JViewLegacy
     protected $state;
     protected $authors;
     protected $params;
-    protected $actions;
     protected $toolbar;
     protected $access;
     protected $menu;
@@ -47,7 +46,6 @@ class ProjectforkViewTopics extends JViewLegacy
         $this->state      = $this->get('State');
         $this->authors    = $this->get('Authors');
         $this->params     = $this->state->params;
-        $this->actions    = $this->getActions();
         $this->toolbar    = $this->getToolbar();
         $this->access     = ProjectforkHelperAccess::getActions(NULL, 0 , true);
         $this->nulldate   = JFactory::getDbo()->getNullDate();
@@ -153,40 +151,36 @@ class ProjectforkViewTopics extends JViewLegacy
     protected function getToolbar()
     {
         $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
-        $tb     = new ProjectforkHelperToolbar();
+        $state  = $this->get('State');
 
-        if ($access->get('topic.create')) {
-            $tb->button('COM_PROJECTFORK_ACTION_NEW', 'topicform.add');
-        }
+        ProjectforkHelperToolbar::button(
+            'COM_PROJECTFORK_ACTION_NEW',
+            'topicform.add',
+            false,
+            array('access' => $access->get('topicform.create'))
+        );
 
-        return $tb->__toString();
-    }
-
-
-    /**
-     * Generates select options for the bulk action menu
-     *
-     * @return    array    The available options
-     */
-    protected function getActions()
-    {
-        $access  = ProjectforkHelperAccess::getActions(NULL, 0, true);
-        $state   = $this->get('State');
         $options = array();
-
         if ($access->get('topic.edit.state')) {
-            $options[] = JHtml::_('select.option', 'topics.publish', JText::_('COM_PROJECTFORK_ACTION_PUBLISH'));
-            $options[] = JHtml::_('select.option', 'topics.unpublish', JText::_('COM_PROJECTFORK_ACTION_UNPUBLISH'));
-            $options[] = JHtml::_('select.option', 'topics.archive', JText::_('COM_PROJECTFORK_ACTION_ARCHIVE'));
-            $options[] = JHtml::_('select.option', 'topics.checkin', JText::_('COM_PROJECTFORK_ACTION_CHECKIN'));
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_PUBLISH',   'task' => $this->getName() . '.publish');
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_UNPUBLISH', 'task' => $this->getName() . '.unpublish');
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_ARCHIVE',   'task' => $this->getName() . '.archive');
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_CHECKIN',   'task' => $this->getName() . '.checkin');
         }
+
         if ($state->get('filter.published') == -2 && $access->get('topic.delete')) {
-            $options[] = JHtml::_('select.option', 'topics.delete', JText::_('COM_PROJECTFORK_ACTION_DELETE'));
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_DELETE', 'task' => $this->getName() . '.delete');
         }
         elseif ($access->get('topic.edit.state')) {
-            $options[] = JHtml::_('select.option', 'topics.trash', JText::_('COM_PROJECTFORK_ACTION_TRASH'));
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_TRASH', 'task' => $this->getName() . '.trash');
         }
 
-        return $options;
+        if (count($options)) {
+            ProjectforkHelperToolbar::listButton($options);
+        }
+
+        ProjectforkHelperToolbar::filterButton();
+
+        return ProjectforkHelperToolbar::render();
     }
 }

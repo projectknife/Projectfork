@@ -23,6 +23,7 @@ class ProjectforkViewTopicForm extends JViewLegacy
     protected $item;
     protected $return_page;
     protected $state;
+    protected $toolbar;
 
 
     public function display($tpl = null)
@@ -36,6 +37,7 @@ class ProjectforkViewTopicForm extends JViewLegacy
         $this->item        = $this->get('Item');
         $this->form        = $this->get('Form');
         $this->return_page = $this->get('ReturnPage');
+        $this->toolbar     = $this->getToolbar();
 
         // Permission check.
         if ($this->item->id <= 0) {
@@ -123,5 +125,40 @@ class ProjectforkViewTopicForm extends JViewLegacy
         if ($this->params->get('robots')) {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
+    }
+
+
+    /**
+     * Generates the toolbar for the top of the view
+     *
+     * @return    string    Toolbar with buttons
+     */
+    protected function getToolbar()
+    {
+        $options = array();
+
+        $options[] = array(
+            'text' => 'JSAVE',
+            'task' => $this->getName() . '.save');
+
+        $options[] = array(
+            'text' => 'COM_PROJECTFORK_ACTION_2NEW',
+            'task' => $this->getName() . '.save2new');
+
+        $options[] = array(
+            'text' => 'COM_PROJECTFORK_ACTION_2COPY',
+            'task' => $this->getName() . '.save2copy',
+            'options' => array('access' => ($this->item->id > 0)));
+
+        ProjectforkHelperToolbar::dropdownButton($options, array('icon' => 'icon-white icon-ok'));
+
+        ProjectforkHelperToolbar::button(
+            'JCANCEL',
+            $this->getName() . '.cancel',
+            false,
+            array('class' => '', 'icon' => '')
+        );
+
+        return ProjectforkHelperToolbar::render();
     }
 }

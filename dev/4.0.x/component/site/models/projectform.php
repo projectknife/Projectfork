@@ -75,8 +75,15 @@ class ProjectforkModelProjectForm extends ProjectforkModelProject
         $value->attachment = $attachments->getItems('project', $value->id);
 
         // Compute selected asset permissions.
-        $uid    = JFactory::getUser()->get('id');
-        $access = ProjectforkHelperAccess::getActions('project', $value->id);
+        $uid = JFactory::getUser()->get('id');
+
+        if ($id) {
+            $access = ProjectforkHelperAccess::getActions('project', $value->id);
+        }
+        else {
+            $access = ProjectforkHelperAccess::getActions();
+        }
+
 
         // Check general edit permission first.
         if ($access->get('project.edit')) {

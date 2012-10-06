@@ -18,8 +18,7 @@ $uid        = $user->get('id');
 $project = (int) $this->state->get('filter.project');
 $topic   = (int) $this->state->get('filter.topic');
 
-$action_count = count($this->actions);
-$filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
+$filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
 
 $return_page     = base64_encode(JFactory::getURI()->toString());
 $link_edit_topic = ProjectforkHelperRoute::getRepliesRoute($topic, $project) . '&task=topicform.edit&id=' . $this->topic->id . '&return=' . $return_page;
@@ -49,12 +48,7 @@ Joomla.submitbutton = function(task)
 
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(ProjectforkHelperRoute::getRepliesRoute($topic, $project)); ?>" method="post">
             <div class="btn-toolbar btn-toolbar-top">
-                <div class="btn-group">
-                    <?php echo $this->toolbar;?>
-                </div>
-                <div class="btn-group">
-                    <a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
-                </div>
+                <?php echo $this->toolbar;?>
             </div>
 
             <div class="clearfix"> </div>

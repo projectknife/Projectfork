@@ -30,14 +30,9 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
     <div class="cat-items">
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute()); ?>" method="post">
             <div class="btn-toolbar btn-toolbar-top">
-                <div class="btn-group">
-                        <?php echo $this->toolbar;?>
-                </div>
+                <?php echo $this->toolbar;?>
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('projectfork.filterProject');?>
-                </div>
-                <div class="btn-group">
-                    <a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
                 </div>
             </div>
 

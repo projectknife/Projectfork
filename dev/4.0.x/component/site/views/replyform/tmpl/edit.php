@@ -22,7 +22,7 @@ $params = $this->state->get('params');
 <script type="text/javascript">
 Joomla.submitbutton = function(task)
 {
-    if (task == 'replyform.cancel' document.formvalidator.isValid(document.id('item-form'))) {
+    if (task == 'replyform.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
         <?php echo $this->form->getField('description')->save(); ?>
         Joomla.submitform(task, document.getElementById('item-form'));
     } else {
@@ -40,12 +40,7 @@ Joomla.submitbutton = function(task)
 <form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="item-form" class="form-validate form-inline">
     <fieldset>
         <div class="formelm-buttons btn-toolbar">
-            <button class="btn btn-primary" type="button" onclick="Joomla.submitbutton('replyform.save')">
-                <?php echo JText::_('JSAVE') ?>
-            </button>
-            <button class="btn" type="button" onclick="Joomla.submitbutton('replyform.cancel')">
-                <?php echo JText::_('JCANCEL') ?>
-            </button>
+            <?php echo $this->toolbar; ?>
         </div>
         <div class="formelm control-group">
             <div class="control-label">

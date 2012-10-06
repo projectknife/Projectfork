@@ -15,7 +15,6 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
 $uid        = $user->get('id');
 
-$action_count = count($this->actions);
 $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-milestones">
@@ -30,14 +29,9 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(ProjectforkHelperRoute::getTopicsRoute()); ?>" method="post">
             <div class="btn-toolbar btn-toolbar-top">
-                <div class="btn-group">
-                    <?php echo $this->toolbar;?>
-                </div>
+                <?php echo $this->toolbar;?>
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('projectfork.filterProject');?>
-                </div>
-                <div class="btn-group">
-                    <a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
                 </div>
             </div>
 

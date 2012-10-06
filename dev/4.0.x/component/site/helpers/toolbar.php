@@ -10,120 +10,269 @@
 defined('_JEXEC') or die();
 
 
-class ProjectforkHelperToolbar
+abstract class ProjectforkHelperToolbar
 {
-    private $buttons;
+    protected static $html = array();
+
+    protected static $group_open = false;
 
 
-    public function __construct()
+    public static function render()
     {
-        $this->buttons = array();
+         return implode("\n", self::$html);
     }
 
 
-    public function button($text, $task = '', $list = false)
+    public static function clear()
     {
-        $this->buttons[] = $this->renderButton($text, $task, $list);
+        self::$html = array();
+        self::$group_open = false;
     }
 
 
-    public function dropdownButton($items, $text, $action = '', $list = false)
+    public static function group()
     {
-        $this->buttons[] = $this->renderDropdownButton($items, $text, $action, $list);
+        if (self::$group_open) {
+            self::$html[] = '</div>';
+            self::$group_open = false;
+        }
+        else {
+            self::$html[] = '<div class="btn-group">';
+            self::$group_open = true;
+        }
     }
 
 
-    protected function renderButton($text, $task = '', $list = false)
+    public static function button($text, $task = '', $list = false, $options = array())
+    {
+        self::$html[] = self::renderButton($text, $task, $list, $options);
+    }
+
+
+    public static function filterButton($target = '#filters')
     {
         $html = array();
-
-        $html[] = '<button class="btn btn-info" ';
-
-        if ($task) {
-            $html[] = 'onclick="';
-
-            if ($list) {
-                $message = JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST');
-                $message = addslashes($message);
-                $html[] = "if (document.adminForm.boxchecked.value==0){alert('$message');}else{Joomla.submitbutton('$task')}";
-            }
-            else {
-                $html[] = "Joomla.submitbutton('$task');";
-            }
-
-            $html[] = '" ';
-        }
-
-        $html[] = '>';
-        $html[] = '<i class="icon-plus icon-white"></i> ';
-        $html[] = addslashes(JText::_($text));
-        $html[] = '</button>';
-
-        return implode('', $html);
-    }
-
-
-    protected function renderLink($text, $task = '', $list = false)
-    {
-        $html = array();
-
-        $html[] = '<a href="javascript:void();" ';
-
-        if ($task) {
-            $html[] = 'onclick="';
-
-            if ($list) {
-                $message = JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST');
-                $message = addslashes($message);
-                $html[] = "if (document.adminForm.boxchecked.value==0){alert('$message');}else{Joomla.submitbutton('$task')}";
-            }
-            else {
-                $html[] = "Joomla.submitbutton('$task');";
-            }
-
-            $html[] = '" ';
-        }
-
-        $html[] = '>';
-        $html[] = addslashes(JText::_($text));
+        $html[] = '<a data-toggle="collapse" data-target="' . $target . '" class="btn">';
+        $html[] = '    <i class="icon-search"></i>';
         $html[] = '</a>';
 
-        return implode('', $html);
+        self::$html[] = implode("\n", $html);
     }
 
 
-    protected function renderDropdownButton($items, $text, $task = '', $list = false)
+    public static function listButton($items, $options = array())
     {
-        $html = array();
+        $list  = array();
+        $html  = array();
+        $class = (isset($options['class']) ? $options['class'] : '');
+        $icon  = (isset($options['icon'])  ? $options['icon']  : 'icon-pencil');
+
+        foreach ($items AS $item)
+        {
+            if (isset($item['options']['access'])) {
+                if ($item['options']['access'] == false) {
+                    continue;
+                }
+            }
+
+            $list[] = $item;
+        }
+
+        $count = count($list);
+
+        if ($count == 0) {
+            return;
+        }
 
         $html[] = '<div class="btn-group">';
-        $html[] = '    ' . $this->renderButton($text, $task, $list);
-        $html[] = '    <button class="btn btn-info dropdown-toggle" data-toggle="dropdown">';
-        $html[] = '        <span class="caret"></span>';
-        $html[] = '    </button>';
+        $html[] = '<a class="btn ' . $class . ' dropdown-toggle" data-toggle="dropdown">';
+        $html[] = '    <i class="' . $icon . '"></i> ';
+        $html[] = '</a>';
         $html[] = '    <ul class="dropdown-menu">';
 
-        if (is_array($items)) {
-            foreach($items AS $task => $item)
-            {
-                $txt  = (isset($item['text']) ? $item['text'] : '');
-                $list = (isset($item['list']) ? (boolean) $item['list'] : false);
+        foreach($list AS $i => $item)
+        {
+            $text = $item['text'];
+            $task = (isset($item['task']) ? $item['task'] : '');
+            $lst  = (isset($item['list']) ? $item['list'] : true);
+            $opts = (isset($item['options']) ? $item['options'] : array());
 
-                $html[] = '<li>';
-                $html[] = $this->renderLink($txt, $task, $list);
-                $html[] = '</li>';
-            }
+            $html[] = self::renderListItem($text, $task, $lst, $opts);
         }
 
         $html[] = '    </ul>';
         $html[] = '</div>';
 
-        return implode('', $html);
+        self::$html[] = implode("\n", $html);
+
     }
 
 
-    public function __toString()
+    public function dropdownButton($items, $options = array())
     {
-        return implode('', $this->buttons);
+        $list  = array();
+        $html  = array();
+        $class = (isset($options['class']) ? $options['class'] : 'btn-info');
+        $icon  = (isset($options['icon'])  ? $options['icon']  : 'icon-plus icon-white');
+
+        foreach ($items AS $item)
+        {
+            if (isset($item['options']['access'])) {
+                if ($item['options']['access'] == false) {
+                    continue;
+                }
+            }
+
+            $list[] = $item;
+        }
+
+        $count = count($list);
+
+        if ($count == 0) {
+            return;
+        }
+
+        if ($count == 1) {
+            $text = $list[0]['text'];
+            $task = (isset($list[0]['task']) ? $list[0]['task'] : '');
+            $lst  = (isset($list[0]['list']) ? $list[0]['list'] : false);
+            $opts = (isset($list[0]['options']) ? $list[0]['options'] : array());
+
+            if (!isset($opts['class']) && isset($options['class'])) {
+                $opts['class'] = $options['class'];
+            }
+
+            if (!isset($opts['icon']) && isset($options['icon'])) {
+                $opts['icon'] = $options['icon'];
+            }
+
+            self::button($text, $task, $lst, $opts);
+        }
+        else {
+            $first = array_pop(array_reverse($list));
+
+            $text = $first['text'];
+            $task = (isset($first['task']) ? $first['task'] : '');
+            $lst  = (isset($first['list']) ? $first['list'] : false);
+            $opts = (isset($first['options']) ? $first['options'] : array());
+
+            if (!isset($opts['class']) && isset($options['class'])) {
+                $opts['class'] = $options['class'];
+            }
+
+            if (!isset($opts['icon']) && isset($options['icon'])) {
+                $opts['icon'] = $options['icon'];
+            }
+
+            $html[] = '<div class="btn-group">';
+            $html[] = self::renderButton($text, $task, $lst, $opts);
+            $html[] = '<a class="btn ' . $class . ' dropdown-toggle" data-toggle="dropdown">';
+            $html[] = '    <span class="caret"></span>';
+            $html[] = '</a>';
+            $html[] = '    <ul class="dropdown-menu">';
+
+            foreach($list AS $i => $item)
+            {
+                if ($i == 0) continue;
+
+                $text = $item['text'];
+                $task = (isset($item['task']) ? $item['task'] : '');
+                $lst  = (isset($item['list']) ? $item['list'] : false);
+                $opts = (isset($item['options']) ? $item['options'] : array());
+
+                $html[] = self::renderListItem($text, $task, $lst, $opts);
+            }
+
+            $html[] = '    </ul>';
+            $html[] = '</div>';
+
+            self::$html[] = implode("\n", $html);
+        }
+    }
+
+
+    protected static function renderButton($text, $task = '', $list = false, $options = array())
+    {
+        $html  = array();
+        $class = (isset($options['class']) ? $options['class'] : 'btn-info');
+        $href  = (isset($options['href'])  ? $options['href']  : 'javascript:void();');
+        $icon  = (isset($options['icon'])  ? $options['icon']  : 'icon-plus icon-white');
+
+        if (isset($options['access'])) {
+            if ($options['access'] == false) {
+                return '';
+            }
+        }
+
+        $html[] = '<a class="btn ' . $class . '" href="' . $href . '"';
+
+        if ($task) {
+            $html[] = 'onclick="';
+
+            if ($list) {
+                $message = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));
+                $html[]  = "if (document.adminForm.boxchecked.value==0){alert('$message');}else{Joomla.submitbutton('$task')}";
+            }
+            else {
+                $html[] = "Joomla.submitbutton('$task');";
+            }
+
+            $html[] = '" ';
+        }
+
+        $html[] = '>';
+        $html[] = '<i class="' . $icon . '"></i> ';
+        $html[] = addslashes(JText::_($text));
+        $html[] = '</a>';
+
+        return implode("\n", $html);
+    }
+
+
+    protected static function renderListItem($text, $task = '', $list = false, $options = array())
+    {
+        $html  = array();
+        $href  = (isset($options['href']) ? $options['href']  : 'javascript:void();');
+        $icon  = (isset($options['icon']) ? $options['icon']  : '');
+
+        if (isset($options['access'])) {
+            if ($options['access'] == false) {
+                return '';
+            }
+        }
+
+        if ($text == 'divider') {
+            $html[] = '<li class="divider"></li>';
+            return implode("\n", $html);
+        }
+
+        $html[] = '<li>';
+        $html[] = '<a href="' . $href . '"';
+
+        if ($task) {
+            $html[] = 'onclick="';
+
+            if ($list) {
+                $message = addslashes(JText::_('JLIB_HTML_PLEASE_MAKE_A_SELECTION_FROM_THE_LIST'));
+                $html[]  = "if (document.adminForm.boxchecked.value==0){alert('$message');}else{Joomla.submitbutton('$task')}";
+            }
+            else {
+                $html[] = "Joomla.submitbutton('$task');";
+            }
+
+            $html[] = '" ';
+        }
+
+        $html[] = '>';
+
+        if ($icon) {
+            $html[] = '<i class="' . $icon . '"></i> ';
+        }
+
+        $html[] = addslashes(JText::_($text));
+        $html[] = '</a>';
+        $html[] = '</li>';
+
+        return implode("\n", $html);
     }
 }

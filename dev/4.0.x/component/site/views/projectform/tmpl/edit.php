@@ -42,57 +42,7 @@ Joomla.submitbutton = function(task)
 <form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="item-form" class="form-inline" enctype="multipart/form-data">
 	<fieldset>
 		<div class="formelm-buttons btn-toolbar">
-		    <div class="btn-group">
-                <button class="btn btn-primary" type="button" onclick="Joomla.submitbutton('projectform.save')">
-    			    <?php echo JText::_('JSAVE') ?>
-    		    </button>
-                <button class="btn btn-primary dropdown-toggle" data-toggle="dropdown">
-                    <span class="caret"></span>
-                </button>
-                <ul class="dropdown-menu">
-                    <li>
-                        <a href="javascript:void();" onclick="javascript:Joomla.submitbutton('projectform.save2new')">
-                            <?php echo JText::_('COM_PROJECTFORK_ACTION_2NEW') ?>
-                        </a>
-                    </li>
-                    <?php if ($this->item->id > 0) : ?>
-                        <li>
-                            <a href="javascript:void();" onclick="javascript:Joomla.submitbutton('projectform.save2copy')">
-                                <?php echo JText::_('COM_PROJECTFORK_ACTION_2COPY') ?>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-                    <?php if ($create_ms || $create_list || $create_task) : ?>
-                        <li class="divider"></li>
-                    <?php endif; ?>
-                    <?php if ($create_ms) : ?>
-                        <li>
-                            <a href="javascript:void();" onclick="javascript:Joomla.submitbutton('projectform.save2milestone')">
-                                <?php echo JText::_('COM_PROJECTFORK_ACTION_2MILESTONE') ?>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-                    <?php if ($create_list) : ?>
-                        <li>
-                            <a href="javascript:void();" onclick="javascript:Joomla.submitbutton('projectform.save2tasklist')">
-                                <?php echo JText::_('COM_PROJECTFORK_ACTION_2TASKLIST') ?>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-                    <?php if ($create_task) : ?>
-                        <li>
-                            <a href="javascript:void();" onclick="javascript:Joomla.submitbutton('projectform.save2task')">
-                                <?php echo JText::_('COM_PROJECTFORK_ACTION_2TASK') ?>
-                            </a>
-                        </li>
-                    <?php endif; ?>
-                </ul>
-            </div>
-            <div class="btn-group">
-                <button class="btn" type="button" onclick="Joomla.submitbutton('projectform.cancel')">
-    			    <?php echo JText::_('JCANCEL') ?>
-    		    </button>
-            </div>
+		    <?php echo $this->toolbar; ?>
 		</div>
 		<div class="formelm control-group">
 			<div class="control-label">

@@ -24,7 +24,6 @@ class ProjectforkViewRepository extends JViewLegacy
     protected $nulldate;
     protected $params;
     protected $state;
-    protected $actions;
     protected $toolbar;
     protected $access;
     protected $menu;
@@ -43,7 +42,6 @@ class ProjectforkViewRepository extends JViewLegacy
         $this->items      = $this->get('Items');
         $this->state      = $this->get('State');
         $this->params     = $this->state->params;
-        $this->actions    = $this->getActions();
         $this->toolbar    = $this->getToolbar();
         $this->access     = ProjectforkHelperAccess::getActions(null, 0, true);
         $this->nulldate   = JFactory::getDbo()->getNullDate();
@@ -153,49 +151,40 @@ class ProjectforkViewRepository extends JViewLegacy
     {
         $dir    = $this->items['directory'];
         $access = ProjectforkHelperAccess::getActions('directory', $dir->id);
-        $tb     = new ProjectforkHelperToolbar();
 
-        $create_dirs  = $access->get('directory.create');
-        $create_notes = $access->get('note.create');
-        $create_files = $access->get('file.create');
+        if ($dir->id > 1) {
+            $create_dir  = $access->get('directory.create');
+            $create_note = $access->get('note.create');
+            $create_file = $access->get('file.create');
 
-        if (empty($dir->id) || $dir->id == 1) {
-            return '';
+            $items = array();
+            $items[] = array('text'    => 'COM_PROJECTFORK_ACTION_NEW_FILE',
+                             'task'    => 'fileform.add',
+                             'options' => array('access' => $create_file));
+
+            $items[] = array('text'    => 'COM_PROJECTFORK_ACTION_NEW_DIRECTORY',
+                             'task'    => 'directoryform.add',
+                             'options' => array('access' => $create_dir));
+
+            $items[] = array('text'    => 'COM_PROJECTFORK_ACTION_NEW_NOTE',
+                             'task'    => 'noteform.add',
+                             'options' => array('access' => $create_note));
+
+            ProjectforkHelperToolbar::dropdownButton($items);
+
+            $items = array();
+            $items[] = array(
+                'text' => 'COM_PROJECTFORK_ACTION_DELETE',
+                'task' => $this->getName() . '.delete',
+                'options' => array('access' => ($access->get('directory.delete') || $access->get('file.delete') || $access->get('note.delete'))));
+
+            if (count($items)) {
+                ProjectforkHelperToolbar::listButton($items);
+            }
         }
 
-        $items = array();
-        $items['directoryform.add'] = array('text' => 'JTOOLBAR_ADD_DIRECTORY');
-        $items['noteform.add'] = array('text' => 'JTOOLBAR_ADD_NOTE');
-        $tb->dropdownButton($items, 'JTOOLBAR_ADD_FILE', 'fileform.add', false);
+        ProjectforkHelperToolbar::filterButton();
 
-        return $tb->__toString();
-    }
-
-
-    /**
-     * Generates select options for the bulk action menu
-     *
-     * @return    array    The available options
-     */
-    protected function getActions()
-    {
-        $access  = ProjectforkHelperAccess::getActions(NULL, 0, true);
-        $state   = $this->get('State');
-        $options = array();
-
-        if ($access->get('milestone.edit.state')) {
-            $options[] = JHtml::_('select.option', 'milestones.publish', JText::_('COM_PROJECTFORK_ACTION_PUBLISH'));
-            $options[] = JHtml::_('select.option', 'milestones.unpublish', JText::_('COM_PROJECTFORK_ACTION_UNPUBLISH'));
-            $options[] = JHtml::_('select.option', 'milestones.archive', JText::_('COM_PROJECTFORK_ACTION_ARCHIVE'));
-            $options[] = JHtml::_('select.option', 'milestones.checkin', JText::_('COM_PROJECTFORK_ACTION_CHECKIN'));
-        }
-        if ($state->get('filter.published') == -2 && $access->get('milestone.delete')) {
-            $options[] = JHtml::_('select.option', 'milestones.delete', JText::_('COM_PROJECTFORK_ACTION_DELETE'));
-        }
-        elseif ($access->get('milestone.edit.state')) {
-            $options[] = JHtml::_('select.option', 'milestones.trash', JText::_('COM_PROJECTFORK_ACTION_TRASH'));
-        }
-
-        return $options;
+        return ProjectforkHelperToolbar::render();
     }
 }

@@ -167,7 +167,7 @@ class ProjectforkModelReplies extends JModelList
             $query = $db->getQuery(true);
 
             $query->select('a.title')
-                  ->from('#__pf_projects')
+                  ->from('#__pf_projects AS a')
                   ->where('a.id = ' . $db->quote($item->project_id));
 
             $db->setQuery($query);

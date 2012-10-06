@@ -23,27 +23,28 @@ class ProjectforkViewProjectForm extends JViewLegacy
     protected $item;
     protected $return_page;
     protected $state;
+    protected $toolbar;
+    protected $params;
+    protected $pageclass_sfx;
 
 
     public function display($tpl = null)
     {
-        // Initialise variables.
-        $app    = JFactory::getApplication();
-        $user   = JFactory::getUser();
+        $this->state  = $this->get('State');
+        $this->item   = $this->get('Item');
+        $this->form   = $this->get('Form');
+        $this->params = $this->state->params;
 
-        // Get model data.
-        $state       = $this->get('State');
-        $item        = $this->get('Item');
-        $form        = $this->get('Form');
-        $return_page = $this->get('ReturnPage');
+        $this->return_page = $this->get('ReturnPage');
+        $this->toolbar     = $this->getToolbar();
 
         // Permission check.
-        if ($item->id <= 0) {
+        if ($this->item->id <= 0) {
             $access     = ProjectforkHelperAccess::getActions();
             $authorised = $access->get('project.create');
         }
         else {
-            $authorised = $item->params->get('access-edit');
+            $authorised = $this->item->params->get('access-edit');
         }
 
         if ($authorised !== true) {
@@ -52,7 +53,7 @@ class ProjectforkViewProjectForm extends JViewLegacy
         }
 
         // Bind form data.
-        if (!empty($item)) $form->bind($item);
+        if (!empty($this->item)) $this->form->bind($this->item);
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {
@@ -60,19 +61,8 @@ class ProjectforkViewProjectForm extends JViewLegacy
             return false;
         }
 
-        // Create a shortcut to the parameters.
-        $params = &$state->params;
-
         //Escape strings for HTML output
-        $this->pageclass_sfx = htmlspecialchars($params->get('pageclass_sfx'));
-
-        // Assign references
-        $this->assignRef('item',        $item);
-        $this->assignRef('state',       $state);
-        $this->assignRef('form',        $form);
-        $this->assignRef('params',      $params);
-        $this->assignRef('return_page', $return_page);
-        $this->assignRef('user',        $user);
+        $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
 
         // Prepare the document
         $this->_prepareDocument();
@@ -93,12 +83,10 @@ class ProjectforkViewProjectForm extends JViewLegacy
         $menu    = $app->getMenu()->getActive();
         $pathway = $app->getPathway();
 
-        $title   = null;
-
+        $title     = null;
         $def_title = JText::_('COM_PROJECTFORK_PAGE_' . ($this->item->id > 0 ? 'EDIT' : 'ADD') . '_PROJECT');
 
-        // Because the application sets a default page title,
-        // we need to get it from the menu item itself
+        // Because the application sets a default page title, we need to get it from the menu item itself
         if ($menu) {
             if (strpos($menu->link, 'view=projects') !== false) {
                 $this->params->def('page_heading', $def_title);
@@ -136,5 +124,70 @@ class ProjectforkViewProjectForm extends JViewLegacy
         if ($this->params->get('robots')) {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
+    }
+
+
+    /**
+     * Generates the toolbar for the top of the view
+     *
+     * @return    string    Toolbar with buttons
+     */
+    protected function getToolbar()
+    {
+        $options = array();
+
+        if ($this->item->id) {
+            $access = ProjectforkHelperAccess::getActions('project', $this->item->id);
+        }
+        else {
+            $access = ProjectforkHelperAccess::getActions();
+        }
+
+        $create_ms   = $access->get('milestone.create');
+        $create_list = $access->get('tasklist.create');
+        $create_task = $access->get('task.create');
+
+        $options[] = array(
+            'text' => 'JSAVE',
+            'task' => $this->getName() . '.save');
+
+        $options[] = array(
+            'text' => 'COM_PROJECTFORK_ACTION_2NEW',
+            'task' => $this->getName() . '.save2new');
+
+        $options[] = array(
+            'text' => 'COM_PROJECTFORK_ACTION_2COPY',
+            'task' => $this->getName() . '.save2copy',
+            'options' => array('access' => ($this->item->id > 0)));
+
+        if ($create_ms || $create_list || $create_task) {
+            $options[] = array('text' => 'divider');
+        }
+
+        $options[] = array(
+            'text' => 'COM_PROJECTFORK_ACTION_2MILESTONE',
+            'task' => $this->getName() . '.save2milestone',
+            'options' => array('access' => $create_ms));
+
+        $options[] = array(
+            'text' => 'COM_PROJECTFORK_ACTION_2TASKLIST',
+            'task' => $this->getName() . '.save2tasklist',
+            'options' => array('access' => $create_list));
+
+        $options[] = array(
+            'text' => 'COM_PROJECTFORK_ACTION_2TASK',
+            'task' => $this->getName() . '.save2task',
+            'options' => array('access' => $create_task));
+
+        ProjectforkHelperToolbar::dropdownButton($options, array('icon' => 'icon-white icon-ok'));
+
+        ProjectforkHelperToolbar::button(
+            'JCANCEL',
+            $this->getName() . '.cancel',
+            false,
+            array('class' => '', 'icon' => '')
+        );
+
+        return ProjectforkHelperToolbar::render();
     }
 }
