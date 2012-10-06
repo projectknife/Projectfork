@@ -433,13 +433,26 @@ class ProjectforkModelFile extends JModelAdmin
         }
 
         // Delete the old file if a new one is uploaded
-        if (!$is_new && isset($data['file_name'])) {
+        if (!$is_new && isset($data['file']['name'])) {
             $this->deleteFile($table->file_name, $table->project_id);
         }
 
         // Use the file name as title if empty
-        if ($data['title'] == '' && isset($data['file_name'])) {
-            $data['title'] = $data['file_name'];
+        if ($data['title'] == '' && isset($data['file']['name'])) {
+            $data['title'] = $data['file']['name'];
+        }
+
+        // Get the other file properties
+        if (isset($data['file']['name'])) {
+            $data['file_name'] = $data['file']['name'];
+        }
+
+        if (isset($data['file']['extension'])) {
+            $data['file_extension'] = $data['file']['extension'];
+        }
+
+        if (isset($data['file']['size'])) {
+            $data['file_size'] = ($data['file']['size'] > 0 ? round($data['file']['size'] / 1024) : 0);
         }
 
         // Make sure the title and alias are always unique
@@ -448,10 +461,6 @@ class ProjectforkModelFile extends JModelAdmin
 
         $data['title'] = $title;
         $data['alias'] = $alias;
-
-        if (isset($data['file_name'])) {
-            $data['file_extension'] = JFile::getExt($data['file_name']);
-        }
 
         // Handle permissions and access level
         if (isset($data['rules'])) {
@@ -542,7 +551,7 @@ class ProjectforkModelFile extends JModelAdmin
         $ext  = JFile::getExt($name);
 
         if (JFile::upload($file['tmp_name'], $uploadpath . '/' . $name, $stream) === true) {
-            return array('file_name' => $name, 'file_size' => $file['size'], 'file_extension' => $ext);
+            return array('name' => $name, 'size' => $file['size'], 'extension' => $ext);
         }
 
         return false;

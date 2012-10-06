@@ -95,12 +95,7 @@ class ProjectforkControllerFile extends JControllerForm
             $result = $model->upload(array_pop($files), $data['project_id']);
 
             if (is_array($result)) {
-                $keys = array_keys($result);
-
-                foreach($keys AS $k)
-                {
-                    $data[$k] = $result[$k];
-                }
+                $data['file'] = $result;
             }
             else {
                 $error = $model->getError();
@@ -128,7 +123,12 @@ class ProjectforkControllerFile extends JControllerForm
             }
         }
 
-        JRequest::setVar('jform', $data, 'post');
+        if (version_compare(JVERSION, '3.0.0', 'ge')) {
+            $this->input->post->set('jform', $data);
+        }
+        else {
+            JRequest::setVar('jform', $data, 'post');
+        }
 
         return parent::save($key, $urlVar);
     }

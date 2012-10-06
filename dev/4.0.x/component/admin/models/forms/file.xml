@@ -11,7 +11,7 @@
         />
         <field name="file" type="file"
             label="COM_PROJECTFORK_FIELD_FILE_LABEL" description="COM_PROJECTFORK_FIELD_FILE_DESC"
-            class="inputbox"
+            class="inputbox" filter="raw"
         />
         <field name="description" type="text"
             label="COM_PROJECTFORK_FIELD_DESCRIPTION_LABEL" description="COM_PROJECTFORK_FIELD_DESCRIPTION_DESC"
