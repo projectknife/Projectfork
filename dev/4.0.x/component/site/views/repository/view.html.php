@@ -151,13 +151,21 @@ class ProjectforkViewRepository extends JViewLegacy
      */
     protected function getToolbar()
     {
-        $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
+        $dir    = $this->items['directory'];
+        $access = ProjectforkHelperAccess::getActions('directory', $dir->id);
         $tb     = new ProjectforkHelperToolbar();
+
+        $create_dirs  = $access->get('directory.create');
+        $create_notes = $access->get('note.create');
+        $create_files = $access->get('file.create');
+
+        if (empty($dir->id) || $dir->id == 1) {
+            return '';
+        }
 
         $items = array();
         $items['directoryform.add'] = array('text' => 'JTOOLBAR_ADD_DIRECTORY');
         $items['noteform.add'] = array('text' => 'JTOOLBAR_ADD_NOTE');
-
         $tb->dropdownButton($items, 'JTOOLBAR_ADD_FILE', 'fileform.add', false);
 
         return $tb->__toString();

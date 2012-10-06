@@ -104,7 +104,7 @@ class ProjectforkModelDirectories extends JModelList
         $parent_id = $this->getState('filter.parent_id');
         $project   = $this->getState('filter.project');
 
-        if ((!is_numeric($parent_id) && empty($search)) || !is_numeric($project)) {
+        if (((!is_numeric($parent_id) || $parent_id == '0') && empty($search)) || !is_numeric($project)) {
             $this->setState('filter.parent_id', '1');
             $parent_id = '1';
         }
