@@ -203,21 +203,21 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
     /**
      * Method to set the completion state of tasks
      *
-     * @param     array    $ids         An array of primary key ids.
-     * @param     array    $complete    An array of state values.
+     * @param     array    $pks         An array of primary key ids.
+     *
      * @return    mixed                 True on success, otherwise false
      */
-    public function setComplete($pks = null, $complete = null)
+    public function complete($pks = null, $state = null)
     {
         // Initialise variables.
         $table = $this->getTable();
-        $conditions = array();
 
         if (empty($pks)) {
-            return JError::raiseWarning(500, JText::_($this->text_prefix . '_ERROR_NO_ITEMS_SELECTED'));
+            JError::raiseWarning(500, JText::_($this->text_prefix . '_ERROR_NO_ITEMS_SELECTED'));
+            return false;
         }
 
-        // update values
+        // Update values
         foreach ($pks as $i => $pk)
         {
             $table->load((int) $pk);
@@ -228,13 +228,22 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
                 unset($pks[$i]);
                 JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'));
             }
-            elseif ($table->complete != $complete[$pk]) {
-                $table->complete = (int) $complete[$pk];
 
-                if (!$table->store()) {
-                    $this->setError($table->getError());
-                    return false;
+            if (is_null($state)) {
+                if ($table->complete == '1') {
+                    $table->complete = '0';
                 }
+                else {
+                    $table->complete = '1';
+                }
+            }
+            else {
+                $table->complete = (int) $state;
+            }
+
+            if (!$table->store()) {
+                $this->setError($table->getError());
+                return false;
             }
         }
 

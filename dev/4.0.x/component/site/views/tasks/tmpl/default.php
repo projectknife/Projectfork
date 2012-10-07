@@ -10,6 +10,9 @@
 defined('_JEXEC') or die();
 
 
+JHtml::_('projectfork.script.listform');
+JHtml::_('projectfork.script.task');
+
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
@@ -181,7 +184,7 @@ JHtml::_('projectfork.ajaxCompleteTask');
                         $can_edit     = $access->get('task.edit');
                         $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
                         $can_edit_own = ($access->get('task.edit.own') && $item->created_by == $uid);
-                        $can_change   = ($access->get('task.edit.state') && $can_checkin);
+                        $can_change   = ($access->get('task.edit.state') || $can_checkin);
 
                         // Task completed javascript
                         $cbjs     = '';
@@ -197,17 +200,20 @@ JHtml::_('projectfork.ajaxCompleteTask');
                         $class = ($item->complete ? 'task-complete' : 'task-incomplete');
                     ?>
                     <li alt="<?php echo (int) $item->id;?>" id="task-<?php echo (int) $item->id;?>" class="<?php echo $class;?>">
+                        <input type="hidden" name="order[]" value="<?php echo (int) $item->ordering;?>"/>
+
                         <div class="btn-toolbar <?php if ($item->complete) : echo "complete"; endif;?>">
-                            <?php if ($action_count) : ?>
-                                <div class="btn-group">
-                                    <i class="icon-move"></i>
-                                    <input type="hidden" name="order[]" value="<?php echo (int) $item->ordering;?>"/>
-                                </div>
-                                <div class="btn-group">
-                                    <input id="complete-cb<?php echo $x;?>" type="checkbox" <?php echo $cbjs . $disabled . $checked;?> value="<?php echo $item->id;?>" name="complete-cid[]"/>
-                                    <input id="cb<?php echo $x;?>" type="checkbox" value="<?php echo $item->id;?>" name="cid[]" style="display: none !important;" onclick="Joomla.isChecked(this.checked);"/>
-                                </div>
+                            <?php if ($can_change) : ?>
+                                <label for="cb<?php echo $x; ?>" class="checkbox pull-left">
+                                    <?php echo JHtml::_('projectfork.id', $x, $item->id); ?>
+                                </label>
                             <?php endif; ?>
+                            <div class="btn-group">
+                                <a class="btn btn-mini"><i class="icon-move"></i></a>
+                            </div>
+                            <div class="btn-group">
+                                <?php echo JHtml::_('projectfork.task.complete', $x, $item->complete, $can_change); ?>
+                            </div>
                             <div class="btn-group">
                                 <?php if (!$item->complete): ?>
                                     <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>" class="task-title">
@@ -248,7 +254,7 @@ JHtml::_('projectfork.ajaxCompleteTask');
                 <?php $list_open = false; endif; ?>
             </div>
 
-            <input type="hidden" name="boxchecked" value="0" />
+            <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
             <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
             <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
             <input type="hidden" name="task" value="" />

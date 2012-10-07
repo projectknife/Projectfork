@@ -198,7 +198,7 @@ class ProjectforkViewTasks extends JViewLegacy
             ProjectforkHelperToolbar::listButton($items);
         }
 
-        ProjectforkHelperToolbar::filterButton();
+        ProjectforkHelperToolbar::filterButton($this->state->get('filter.isset'));
 
         return ProjectforkHelperToolbar::render();
     }

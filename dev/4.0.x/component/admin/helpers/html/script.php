@@ -168,6 +168,11 @@ abstract class ProjectforkScript
     }
 
 
+    /**
+     * Method to load Projectfork list form JS
+     *
+     * @return    void
+     */
     public static function listForm()
     {
         // Only load once
@@ -184,6 +189,33 @@ abstract class ProjectforkScript
         if (JFactory::getDocument()->getType() == 'html') {
             $dispatcher	= JDispatcher::getInstance();
             $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptListForm');
+        }
+
+        self::$loaded[__METHOD__] = true;
+    }
+
+
+    /**
+     * Method to load Projectfork task JS
+     *
+     * @return    void
+     */
+    public static function task()
+    {
+        // Only load once
+        if (!empty(self::$loaded[__METHOD__])) {
+            return;
+        }
+
+        // Load dependencies
+        if (empty(self::$loaded['jQuery'])) {
+            self::jQuery();
+        }
+
+        // Load only of doc type is HTML
+        if (JFactory::getDocument()->getType() == 'html') {
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptTask');
         }
 
         self::$loaded[__METHOD__] = true;
@@ -319,6 +351,17 @@ function triggerProjectforkScriptForm()
 function triggerProjectforkScriptListForm()
 {
     JHtml::_('script', 'com_projectfork/projectfork/list.js', false, true, false, false, false);
+}
+
+
+/**
+ * Stupid but necessary way of adding PF tasks JS to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that the tasks JS is loaded after jQuery
+ *
+ */
+function triggerProjectforkScriptTask()
+{
+    JHtml::_('script', 'com_projectfork/projectfork/task.js', false, true, false, false, false);
 }
 
 

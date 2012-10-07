@@ -17,7 +17,7 @@ jimport('joomla.application.component.controlleradmin');
  * Projectfork Task List Controller
  *
  */
-class ProjectforkControllerTasks extends JControllerAdmin
+class ProjectforkControllerTasks extends ProjectforkControllerAdminJSON
 {
     /**
      * The default view
@@ -83,38 +83,46 @@ class ProjectforkControllerTasks extends JControllerAdmin
      */
     public function complete()
     {
-        // Check for request forgeries.
-        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+        $data = array();
+        $data['success']  = "true";
+        $data['messages'] = array();
+        $data['data']     = array();
+
+        // Check for request forgeries
+        if (!JSession::checkToken()) {
+            $data['success']    = "false";
+            $data['messages'][] = JText::_('JINVALID_TOKEN');
+
+            $this->sendResponse($data);
+        }
 
         // Get the input
-        $pks      = JRequest::getVar('cid', null, 'post', 'array');
-        $complete = JRequest::getVar('complete', null, 'post', 'array');
+        $pks = JRequest::getVar('cid', null, 'post', 'array');
 
-        // Sanitize the input
-        JArrayHelper::toInteger($pks);
-        JArrayHelper::toInteger($order);
-
-        // Get the model
-        $model = $this->getModel();
-
-        // Save the ordering
-        $result = $model->setComplete($pks, $complete);
-
-        // Set the MIME type for JSON output.
-        JFactory::getDocument()->setMimeEncoding('application/json');
-
-        // Change the suggested filename.
-        JResponse::setHeader('Content-Disposition','attachment;filename="' . $this->view_list.'.json"');
-
-        if (!$result) {
-            $data = array('success' => false, 'message' => JText::_($model->getError()));
+        if (empty($pks)) {
+            $data['success']    = "false";
+            $data['messages'][] = JText::_($this->text_prefix . '_NO_ITEM_SELECTED');
         }
         else {
-            $data = array('success' => true, 'message' => JText::_('COM_PROJECTFORK_TASK_UPDATE_SUCCESS'));
+            // Get the model.
+            $model = $this->getModel();
+
+            // Make sure the item ids are integers
+            JArrayHelper::toInteger($pks);
+
+            // Publish the items.
+            if (!$model->complete($pks)) {
+                 $data['success']    = "false";
+                 $data['messages'][] = $model->getError();
+            }
+            else {
+                $ntext = $this->text_prefix . '_N_ITEMS_UPDATED';
+
+                $data['success']    = "true";
+                $data['messages'][] = JText::plural($ntext, count($pks));
+            }
         }
 
-        // Output the JSON data.
-        echo json_encode($data);
-        JFactory::getApplication()->close();
+        $this->sendResponse($data);
     }
 }

@@ -136,9 +136,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                     </div>
                     <hr />
                     <?php echo JHtml::_('projectfork.authorLabel', $item->author_name, $item->created, $this->params->get('date_format')); ?>
-                    <span class="label">
-                        <i class="icon-lock icon-white"></i> <?php echo $this->escape($item->access_level); ?>
-                    </span>
+                    <span class="label"><i class="icon-lock icon-white"></i> <?php echo $this->escape($item->access_level); ?></span>
                     <?php echo JHtml::_('projectfork.dateFormat', $item->end_date, $this->params->get('date_format')); ?>
                     <div class="btn-group pull-right">
                         <a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_slug, $item->slug));?>">
