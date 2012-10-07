@@ -181,6 +181,72 @@ abstract class JHtmlProjectfork
 
 
     /**
+     * Returns a date as literal label
+     *
+     * @param     string    $date      The date
+     * @param     string    $format    The new date format for the tooltip
+     *
+     * @return    string               The label html
+     */
+    public static function dateFormat($date, $format = null)
+    {
+        $string = ProjectforkHelper::relativeDate($date);
+
+        if ($string == false) {
+            return '';
+        }
+
+        $timestamp = strtotime($date);
+        $now       = time();
+        $remaining = $timestamp - $now;
+        $is_past   = ($remaining < 0) ? true : false;
+        $tooltip   = $string . '::' . JHtml::_('date', $date, ($format ? $format : JText::_('DATE_FORMAT_LC1')));
+
+        $html = array();
+        $html[] = '<span class="label ' . ($is_past ? 'label-important' : 'label-success');
+        $html[] = ' hasTip" title="' . $tooltip . '" style="cursor: help">';
+        $html[] = '<i class="icon-' . ($is_past ? 'bell' : 'calendar') . '"></i> ';
+        $html[] = $string;
+        $html[] = '</span>';
+
+        return implode('', $html);
+    }
+
+
+    /**
+     * Returns the author of an item as label
+     *
+     * @param     string    $name      The user name
+     * @param     string    $date      The date
+     * @param     string    $format    The new date format for the tooltip
+     *
+     * @return    string               The label html
+     */
+    public static function authorLabel($name = null, $date = null, $format = null)
+    {
+        if (!$name || !$date) {
+            return '';
+        }
+
+        $string = ProjectforkHelper::relativeDate($date);
+
+        if ($string == false) {
+            return '';
+        }
+
+        $tooltip = $string . '::' . JHtml::_('date', $date, ($format ? $format : JText::_('DATE_FORMAT_LC1')));
+
+        $html = array();
+        $html[] = '<span class="label hasTip" title="' . $tooltip . '" style="cursor: help">';
+        $html[] = '<i class="icon-user"></i> ';
+        $html[] = htmlspecialchars($name, ENT_COMPAT, 'UTF-8');
+        $html[] = '</span>';
+
+        return implode('', $html);
+    }
+
+
+    /**
      * Returns a truncated text. Also strips html tags
      *
      * @param     string    $text     The text to truncate

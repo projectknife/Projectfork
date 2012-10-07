@@ -75,6 +75,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                 $k = 0;
                 foreach($this->items AS $i => $item) :
                     $access = ProjectforkHelperAccess::getActions('project', $item->id);
+                    $link   = ProjectforkHelperRoute::getDashboardRoute($item->slug);
 
                     $can_create   = $access->get('project.create');
                     $can_edit     = $access->get('project.edit');
@@ -95,36 +96,43 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                 <li class="span3">
                     <div class="thumbnail">
                         <?php if (!empty($item->logo_img)) : ?>
-                            <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->id.':' . $item->alias));?>">
+                            <a href="<?php echo JRoute::_($link);?>">
                                 <img src="<?php echo $item->logo_img;?>" alt="<?php echo $this->escape($item->title);?>" />
                             </a>
                         <?php endif ; ?>
                         <div class="caption">
                             <h3>
-                                <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
-                                <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->id.':' . $item->alias));?>" rel="tooltip" data-placement="bottom">
+                                <?php if ($can_change) : ?>
+                                    <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
+                                        <?php echo JHtml::_('grid.id', $i, $item->id); ?>
+                                    </label>
+                                <?php endif; ?>
+
+                                <?php if ($item->checked_out) : ?>
+                                    <i class="icon-lock"></i>
+                                <?php endif; ?>
+
+                                <a href="<?php echo JRoute::_($link);?>" rel="tooltip" data-placement="bottom">
                                     <?php echo $this->escape($item->title);?>
                                 </a>
+
+                                <?php if ($can_edit || $can_edit_own) : ?>
+                                <div class="btn-group pull-right">
+                                    <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_projectfork&task=projectform.edit&id=' . $item->slug);?>">
+                                        <i class="icon-edit"></i>
+                                    </a>
+                                </div>
+                                <?php endif; ?>
                             </h3>
+                            <div class="clearfix"></div>
                             <hr />
                             <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-project">
                                 <div class="bar" style="width: <?php echo ($progress > 0) ? $progress."%": "24px";?>">
                                     <span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $progress;?>%</span>
                                 </div>
                             </div>
-                            <div class="btn-group">
-                                <?php if ($can_edit || $can_edit_own) : ?>
-                                    <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_projectfork&task=projectform.edit&id=' . $item->slug);?>">
-                                        <i class="icon-edit"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
-                                    </a>
-                                <?php endif; ?>
-                                <a class="btn btn-mini hasTip" href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestonesRoute($item->slug));?>" rel="tooltip" data-placement="bottom" title="::<?php echo JText::_('JGRID_HEADING_MILESTONES');?>">
-                                    <i class="icon-map-marker"></i> <?php echo (int) $item->milestones;?>
-                                </a>
-                                <a class="btn btn-mini hasTip" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->slug));?>" rel="tooltip" data-placement="bottom" title="::<?php echo JText::_('JGRID_HEADING_TASKLISTS_AND_TASKS');?>">
-                                    <i class="icon-th-list"></i> <?php echo (int) $item->tasklists;?> / <?php echo (int) $item->tasks;?>
-                                </a>
-                            </div>
+                            <?php echo JHtml::_('projectfork.dateFormat', $item->end_date, $this->params->get('date_format')); ?>
+                            <?php echo JHtml::_('projectfork.authorLabel', $item->author_name, $item->created, $this->params->get('date_format')); ?>
                         </div>
                   </div>
                 </li>
