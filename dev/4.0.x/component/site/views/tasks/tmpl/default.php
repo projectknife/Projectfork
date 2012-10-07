@@ -199,18 +199,15 @@ JHtml::_('projectfork.ajaxCompleteTask');
                         // list item class
                         $class = ($item->complete ? 'task-complete' : 'task-incomplete');
                     ?>
-                    <li alt="<?php echo (int) $item->id;?>" id="task-<?php echo (int) $item->id;?>" class="<?php echo $class;?>">
+                    <li id="list-item-<?php echo $x; ?>" alt="<?php echo (int) $item->id;?>" id="task-<?php echo (int) $item->id;?>" class="<?php echo $class;?>">
                         <input type="hidden" name="order[]" value="<?php echo (int) $item->ordering;?>"/>
 
-                        <div class="btn-toolbar <?php if ($item->complete) : echo "complete"; endif;?>">
+                        <div id="list-toolbar-<?php echo $x; ?>" class="btn-toolbar <?php if ($item->complete) : echo "complete"; endif;?>">
                             <?php if ($can_change) : ?>
                                 <label for="cb<?php echo $x; ?>" class="checkbox pull-left">
                                     <?php echo JHtml::_('projectfork.id', $x, $item->id); ?>
                                 </label>
                             <?php endif; ?>
-                            <div class="btn-group">
-                                <a class="btn btn-mini"><i class="icon-move"></i></a>
-                            </div>
                             <div class="btn-group">
                                 <?php echo JHtml::_('projectfork.task.complete', $x, $item->complete, $can_change); ?>
                             </div>

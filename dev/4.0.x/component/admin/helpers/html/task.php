@@ -21,7 +21,7 @@ abstract class ProjectforkTask
         $html  = array();
 
         if ($can_change) {
-            $class = ($complete ? ' btn-success' : '');
+            $class = ($complete ? ' btn-success active' : '');
 
             $html[] = '<div class="btn-group">';
             $html[] = '<a id="complete-btn-' . $i . '" class="btn btn-mini' . $class . '" href="javascript:void(0);" onclick="PFtask.complete(' . $i . ');">';
