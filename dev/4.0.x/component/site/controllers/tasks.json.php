@@ -50,37 +50,6 @@ class ProjectforkControllerTasks extends ProjectforkControllerAdminJSON
      *
      * @return    string                 JSON encoded response
      */
-    public function saveorder()
-    {
-        // Call parent method to save order
-        $result = parent::saveorder();
-
-        // Set the MIME type for JSON output.
-        JFactory::getDocument()->setMimeEncoding('application/json');
-
-        // Change the suggested filename.
-        JResponse::setHeader('Content-Disposition','attachment;filename="' . $this->view_list.'.json"');
-
-        if (!$result) {
-            $data = array('success' => false, 'message' => JText::sprintf('JLIB_APPLICATION_ERROR_REORDER_FAILED', $model->getError()));
-        }
-        else {
-            $data = array('success' => true, 'message' => JText::_('JLIB_APPLICATION_SUCCESS_ORDERING_SAVED'));
-        }
-
-        // Output the JSON data.
-        echo json_encode($data);
-        JFactory::getApplication()->close();
-    }
-
-
-    /**
-     * Override for json return response
-     *
-     * @see       controlleradmin.php
-     *
-     * @return    string                 JSON encoded response
-     */
     public function complete()
     {
         $data = array();

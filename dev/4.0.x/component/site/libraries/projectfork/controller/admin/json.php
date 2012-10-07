@@ -85,6 +85,54 @@ class ProjectforkControllerAdminJSON extends JControllerAdmin
 
 
     /**
+	 * Method to save the submitted ordering values for records.
+	 *
+	 */
+	public function saveorder()
+	{
+		$data = array();
+        $data['success'] = "true";
+        $data['messages'] = array();
+        $data['data'] = array();
+
+        // Check for request forgeries
+        if (!JSession::checkToken()) {
+            $data['success']    = false;
+            $data['messages'][] = JText::_('JINVALID_TOKEN');
+
+            $this->sendResponse($data);
+        }
+
+		// Get the input
+		$pks   = JRequest::getVar('cid', null, 'post', 'array');
+		$order = JRequest::getVar('order', null, 'post', 'array');
+
+		// Sanitize the input
+		JArrayHelper::toInteger($pks);
+		JArrayHelper::toInteger($order);
+
+		// Get the model
+		$model = $this->getModel();
+
+		// Save the ordering
+		$return = $model->saveorder($pks, $order);
+
+		if ($return === false) {
+			// Reorder failed
+            $data['success']    = "false";
+            $data['messages'][] = JText::sprintf('JLIB_APPLICATION_ERROR_REORDER_FAILED', $model->getError());
+		}
+        else {
+			// Reorder succeeded.
+            $data['success']    = "true";
+            $data['messages'][] = JText::_('JLIB_APPLICATION_SUCCESS_ORDERING_SAVED');
+		}
+
+        $this->sendResponse($data);
+	}
+
+
+    /**
      * Removes an item.
      *
      * @return    void
