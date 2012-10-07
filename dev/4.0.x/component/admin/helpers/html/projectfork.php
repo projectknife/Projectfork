@@ -266,6 +266,29 @@ abstract class JHtmlProjectfork
 
 
     /**
+     * Method to create a checkbox for a grid row.
+     *
+     * @param     integer    $row_num        The row index
+     * @param     integer    $rec_id         The record id
+     * @param     boolean    $checked_out    True if item is checke out
+     * @param     string     $name           The name of the form element
+     *
+     * @return    mixed                      String of html with a checkbox if item is not checked out, null if checked out.
+     */
+    public static function id($row_num, $rec_id, $checked_out = false, $name = 'cid')
+    {
+        if ($checked_out) {
+            return '';
+        }
+        else {
+            return '<input type="checkbox" id="cb' . $row_num . '" name="' . $name . '[]" value="' . $rec_id
+                . '" onclick="Joomla.isChecked(this.checked); PFlist.toggleBulkButton();" title="'
+                . JText::sprintf('JGRID_CHECKBOX_ROW_N', ($row_num + 1)) . '" />';
+        }
+    }
+
+
+    /**
      * Adds a JS script declaration to the doc header which enables
      * ajax reordering of list items.
      *

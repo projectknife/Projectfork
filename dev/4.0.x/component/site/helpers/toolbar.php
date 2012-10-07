@@ -49,10 +49,12 @@ abstract class ProjectforkHelperToolbar
     }
 
 
-    public static function filterButton($target = '#filters')
+    public static function filterButton($isset = false, $target = '#filters')
     {
+        $class = ($isset ? ' btn-success' : '');
+
         $html = array();
-        $html[] = '<a data-toggle="collapse" data-target="' . $target . '" class="btn">';
+        $html[] = '<a data-toggle="collapse" data-target="' . $target . '" class="btn' . $class . '">';
         $html[] = '    <i class="icon-search"></i>';
         $html[] = '</a>';
 
@@ -85,7 +87,7 @@ abstract class ProjectforkHelperToolbar
         }
 
         $html[] = '<div class="btn-group">';
-        $html[] = '<a class="btn ' . $class . ' dropdown-toggle" data-toggle="dropdown">';
+        $html[] = '<a class="btn ' . $class . ' dropdown-toggle disabled" data-toggle="dropdown" id="btn-bulk">';
         $html[] = '    <i class="' . $icon . '"></i> ';
         $html[] = '</a>';
         $html[] = '    <ul class="dropdown-menu">';
@@ -164,6 +166,10 @@ abstract class ProjectforkHelperToolbar
                 $opts['icon'] = $options['icon'];
             }
 
+            if (!isset($opts['id']) && isset($options['id'])) {
+                $opts['id'] = $options['id'];
+            }
+
             $html[] = '<div class="btn-group">';
             $html[] = self::renderButton($text, $task, $lst, $opts);
             $html[] = '<a class="btn ' . $class . ' dropdown-toggle" data-toggle="dropdown">';
@@ -197,6 +203,7 @@ abstract class ProjectforkHelperToolbar
         $class = (isset($options['class']) ? $options['class'] : 'btn-info');
         $href  = (isset($options['href'])  ? $options['href']  : 'javascript:void();');
         $icon  = (isset($options['icon'])  ? $options['icon']  : 'icon-plus icon-white');
+        $id    = (isset($options['id'])    ? ' id="' . $options['id'] . '"' : '');
 
         if (isset($options['access'])) {
             if ($options['access'] == false) {
@@ -220,6 +227,7 @@ abstract class ProjectforkHelperToolbar
             $html[] = '" ';
         }
 
+        $html[] = $id;
         $html[] = '>';
         $html[] = '<i class="' . $icon . '"></i> ';
         $html[] = addslashes(JText::_($text));

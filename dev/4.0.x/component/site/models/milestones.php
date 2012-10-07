@@ -37,7 +37,7 @@ class ProjectforkModelMilestones extends JModelList
         // Set field filter
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'a.id', 'a.title', 'a.created', 'a.modified',
+                'a.id', 'project_title, a.title', 'a.created', 'a.modified',
                 'a.checked_out', 'a.checked_out_time',
                 'a.state', 'a.start_date', 'a.end_date',
                 'author_name', 'editor', 'access_level',
@@ -224,7 +224,7 @@ class ProjectforkModelMilestones extends JModelList
      *
      * @return    void
      */
-    protected function populateState($ordering = 'a.title', $direction = 'ASC')
+    protected function populateState($ordering = 'project_title, a.title', $direction = 'ASC')
     {
         $app    = JFactory::getApplication();
         $access = ProjectforkHelperAccess::getActions(NULL, 0, true);

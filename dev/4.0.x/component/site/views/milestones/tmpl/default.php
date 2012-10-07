@@ -10,6 +10,8 @@
 defined('_JEXEC') or die();
 
 
+JHtml::_('projectfork.script.listform');
+
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
@@ -79,8 +81,9 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 
                 $can_create   = $access->get('milestone.create');
                 $can_edit     = $access->get('milestone.edit');
-                $can_change   = $access->get('milestone.edit.state');
                 $can_edit_own = ($access->get('milestone.edit.own') && $item->created_by == $uid);
+                $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
+                $can_change   = ($access->get('milestone.edit.state') || $can_checkin);
 
                 // Calculate milestone progress
                 $task_count = (int) $item->tasks;
@@ -105,66 +108,44 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 
                         echo $this->menu->render(array('class' => 'btn-mini'));
                     ?>
-                    <div style="display: none !important;">
-                        <?php echo JHtml::_('grid.id', $i, $item->id); ?>
-                    </div>
-                    <?php if ($item->end_date != $this->nulldate) : ?>
-                        <span class="label label-info pull-right"><i class="icon-calendar icon-white"></i>
-                            <?php echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
-                        </span>
-                    <?php endif; ?>
-                    <h4 class="milestone-title">
-                        <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
+                    <h3>
+                        <?php if ($can_change) : ?>
+                            <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
+                                <?php echo JHtml::_('projectfork.id', $i, $item->id); ?>
+                            </label>
+                        <?php endif; ?>
+                        <?php if ($item->checked_out) : ?>
+                            <i class="icon-lock"></i>
+                        <?php endif; ?>
                         <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestoneRoute($item->slug, $item->project_slug));?>">
                             <?php echo $this->escape($item->title);?>
                         </a>
-                        <a href="#milestone-<?php echo $item->id;?>" class="btn btn-mini" data-toggle="collapse">
-                            <?php echo JText::_('COM_PROJECTFORK_DETAILS_LABEL');?> <span class="caret"></span>
-                        </a>
-                    </h4>
-                    <div class="collapse" id="milestone-<?php echo $item->id;?>">
+                    </h3>
+                    <div>
                         <hr />
-                        <div class="small">
-                            <span class="label access pull-right">
-                                <i class="icon-user icon-white"></i> <?php echo $this->escape($item->author_name);?>
-                            </span>
-                            <span class="label access pull-right">
-                                <i class="icon-lock icon-white"></i> <?php echo $this->escape($item->access_level);?>
-                            </span>
-
-                            <p><?php echo $this->escape($item->description);?></p>
-
-                            <span class="list-created">
-                                <?php echo JHtml::_('date', $item->created, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>
-                            </span>
-                            <span class="list-sdate">
-                                <?php if ($item->start_date == $this->nulldate) {
-                                    echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
-                                }
-                                else {
-                                    echo JHtml::_('date', $item->start_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));
-                                }
-                                ?>
+                        <p>
+                            <?php echo $this->escape($item->description);?>
+                        </p>
+                    </div>
+                    <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-milestone">
+                        <div class="bar" style="width: <?php echo ($progress > 0) ? $progress . "%": "24px";?>">
+                            <span class="label label-<?php echo $progress_class;?> pull-right">
+                                <?php echo $progress;?>%
                             </span>
                         </div>
-                        <div class="btn-toolbar">
-                            <div class="btn-group">
-                                <a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_slug, $item->slug));?>">
-                                    <i class="icon-list"></i> <?php echo intval($item->tasklists).' '. JText::_('COM_PROJECTFORK_TASK_LISTS');?>
-                                </a>
-                                <a class="btn" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_slug, $item->slug));?>">
-                                    <i class="icon-ok"></i> <?php echo intval($item->tasks).' '. JText::_('COM_PROJECTFORK_TASKS');?>
-                                </a>
-                            </div>
-                        </div>
-                        <div class="clearfix"></div>
                     </div>
                     <hr />
-                    <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-milestone">
-                        <div class="bar" style="width: <?php echo ($progress > 0) ? $progress."%": "24px";?>">
-                            <span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $progress;?>%</span>
-                        </div>
+                    <?php echo JHtml::_('projectfork.authorLabel', $item->author_name, $item->created, $this->params->get('date_format')); ?>
+                    <span class="label">
+                        <i class="icon-lock icon-white"></i> <?php echo $this->escape($item->access_level); ?>
+                    </span>
+                    <?php echo JHtml::_('projectfork.dateFormat', $item->end_date, $this->params->get('date_format')); ?>
+                    <div class="btn-group pull-right">
+                        <a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_slug, $item->slug));?>">
+                            <i class="icon-list"></i> <?php echo JText::sprintf('JGRID_HEADING_TASKLISTS_AND_TASKS', intval($item->tasklists), intval($item->tasks)); ?>
+                        </a>
                     </div>
+                    <div class="clearfix"></div>
                 </div>
             <?php
             $k = 1 - $k;
@@ -172,20 +153,28 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
             ?>
 
             <div class="filters btn-toolbar">
+                <div class="btn-group filter-order">
+                    <select name="filter_order" class="inputbox input-medium" onchange="this.form.submit()">
+                        <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
+                    </select>
+                </div>
+                <div class="btn-group folder-order-dir">
+                    <select name="filter_order_Dir" class="inputbox input-medium" onchange="this.form.submit()">
+                        <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
+                    </select>
+                </div>
+                <div class="btn-group display-limit">
+                    <?php echo $this->pagination->getLimitBox(); ?>
+                </div>
                 <?php if ($this->pagination->get('pages.total') > 1) : ?>
-                    <div class="pagination">
+                    <div class="btn-group pagination">
                         <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
                         <?php echo $this->pagination->getPagesLinks(); ?>
                     </div>
                 <?php endif; ?>
-
-                <div class="btn-group display-limit">
-                    <?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?>&#160;
-                    <?php echo $this->pagination->getLimitBox(); ?>
-                </div>
             </div>
 
-            <input type="hidden" name="boxchecked" value="0" />
+            <input type="hidden" id="boxchecked" name="boxchecked" value="0"/>
             <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
             <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
             <input type="hidden" name="task" value="" />

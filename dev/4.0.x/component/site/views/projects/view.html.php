@@ -174,7 +174,7 @@ class ProjectforkViewProjects extends JViewLegacy
             ProjectforkHelperToolbar::listButton($options);
         }
 
-        ProjectforkHelperToolbar::filterButton();
+        ProjectforkHelperToolbar::filterButton($this->state->get('filter.isset'));
 
         return ProjectforkHelperToolbar::render();
     }
@@ -208,8 +208,8 @@ class ProjectforkViewProjects extends JViewLegacy
         $options = array();
 
         $options[] = JHtml::_('select.option', '', JText::_('COM_PROJECTFORK_ORDER_SELECT_DIR'));
-        $options[] = JHtml::_('select.option', 'asc', JText::_('COM_PROJECTFORK_ORDER_ASC'));
-        $options[] = JHtml::_('select.option', 'desc', JText::_('COM_PROJECTFORK_ORDER_DESC'));
+        $options[] = JHtml::_('select.option', 'ASC', JText::_('COM_PROJECTFORK_ORDER_ASC'));
+        $options[] = JHtml::_('select.option', 'DESC', JText::_('COM_PROJECTFORK_ORDER_DESC'));
 
         return $options;
     }

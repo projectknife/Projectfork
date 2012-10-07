@@ -168,6 +168,28 @@ abstract class ProjectforkScript
     }
 
 
+    public static function listForm()
+    {
+        // Only load once
+        if (!empty(self::$loaded[__METHOD__])) {
+            return;
+        }
+
+        // Load dependencies
+        if (empty(self::$loaded['jQuery'])) {
+            self::jQuery();
+        }
+
+        // Load only of doc type is HTML
+        if (JFactory::getDocument()->getType() == 'html') {
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptListForm');
+        }
+
+        self::$loaded[__METHOD__] = true;
+    }
+
+
     /**
      * Method to load Projectfork base JS
      *
@@ -286,6 +308,17 @@ function triggerProjectforkScriptComments()
 function triggerProjectforkScriptForm()
 {
     JHtml::_('script', 'com_projectfork/projectfork/form.js', false, true, false, false, false);
+}
+
+
+/**
+ * Stupid but necessary way of adding PF list form JS to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that the list form JS is loaded after jQuery
+ *
+ */
+function triggerProjectforkScriptListForm()
+{
+    JHtml::_('script', 'com_projectfork/projectfork/list.js', false, true, false, false, false);
 }
 
 

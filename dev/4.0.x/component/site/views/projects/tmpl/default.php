@@ -9,6 +9,7 @@
 
 defined('_JEXEC') or die();
 
+JHtml::_('projectfork.script.listform');
 
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
@@ -82,7 +83,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                     $can_edit     = $access->get('project.edit');
                     $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
                     $can_edit_own = ($access->get('project.edit.own') && $item->created_by == $uid);
-                    $can_change   = ($access->get('project.edit.state') && $can_checkin);
+                    $can_change   = ($access->get('project.edit.state') || $can_checkin);
 
                     // Calculate project progress
                     $task_count = (int) $item->tasks;
@@ -111,7 +112,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                             <h3>
                                 <?php if ($can_change) : ?>
                                     <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
-                                        <?php echo JHtml::_('grid.id', $i, $item->id); ?>
+                                        <?php echo JHtml::_('projectfork.id', $i, $item->id); ?>
                                     </label>
                                 <?php endif; ?>
 
@@ -171,7 +172,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                 <?php endif; ?>
             </div>
 
-            <input type="hidden" name="boxchecked" value="0" />
+            <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
             <input type="hidden" name="task" value="" />
             <?php echo JHtml::_('form.token'); ?>
         </form>
