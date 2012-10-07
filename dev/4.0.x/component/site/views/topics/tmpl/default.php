@@ -69,7 +69,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                     <div class="clearfix"> </div>
                 </div>
             </div>
-
+            <div class="row-striped row-discussions">
             <?php
             $k = 0;
             foreach($this->items AS $i => $item) :
@@ -80,24 +80,30 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                 $can_change   = $access->get('topic.edit.state');
                 $can_edit_own = ($access->get('topic.edit.own') && $item->created_by == $uid);
             ?>
-                <div class="well well-<?php echo $k;?>">
-                    <?php
-                        $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
-                        $this->menu->itemEdit('topicform', $item->id, ($can_edit || $can_edit_own));
-                        $this->menu->itemTrash('topics', $i, $can_change);
-                        $this->menu->end();
-
-                        echo $this->menu->render(array('class' => 'btn-mini'));
-                    ?>
+                <div class="row-fluid row-<?php echo $k;?>">
                     <div style="display: none !important;">
                         <?php echo JHtml::_('grid.id', $i, $item->id); ?>
                     </div>
                     <?php if ($item->modified != $this->nulldate) : ?>
-                        <span class="label label-info pull-right"><i class="icon-calendar icon-white"></i>
+                        <span class="list-edited small pull-right"><i class="icon-edit muted"></i>
                             <?php echo JHtml::_('date', $item->modified, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
                         </span>
+                    <?php else: ?>
+                    <span class="list-created small pull-right">
+                        <?php echo JHtml::_('date', $item->created, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>
+                    </span>
                     <?php endif; ?>
-                    <h4 class="milestone-title">
+                    <h3 class="milestone-title">
+                    	<span class="toolbar-inline pull-left">
+                        	<?php
+	                        $this->menu->start(array('class' => 'btn-mini', 'pull' => 'left'));
+	                        $this->menu->itemEdit('topicform', $item->id, ($can_edit || $can_edit_own));
+	                        $this->menu->itemTrash('topics', $i, $can_change);
+	                        $this->menu->end();
+	
+	                        echo $this->menu->render(array('class' => 'btn-mini'));
+		                    ?>
+                        </span>
                         <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTopicRoute($item->slug, $item->project_slug));?>">
                             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                             <?php echo $this->escape($item->title);?>
@@ -106,34 +112,21 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                             in <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->project_slug));?>">
                             <?php echo $this->escape($item->project_title);?>
                             </a>
-                            by <?php echo $this->escape($item->author_name);?>
                         </small>
-                        <a href="#topic-<?php echo $item->id;?>" class="btn btn-mini" data-toggle="collapse">
-                            <?php echo JText::_('COM_PROJECTFORK_DETAILS_LABEL');?> <span class="caret"></span>
-                        </a>
-                    </h4>
-                    <div class="collapse" id="topic-<?php echo $item->id;?>">
-                        <hr />
-                        <div class="small">
-                            <span class="label access pull-right">
-                                <i class="icon-user icon-white"></i> <?php echo $this->escape($item->access_level);?>
-                            </span>
-
-                            <?php echo $item->description;?>
-
-                            <span class="list-created">
-                                <?php echo JHtml::_('date', $item->created, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>
-                            </span>
-                        </div>
-                        <div class="clearfix"> </div>
-                    </div>
-                    <hr />
+                        <span class="label access">
+                            <i class="icon-eye icon-white"></i> <?php echo $this->escape($item->access_level);?>
+                        </span>
+                    </h3>
+                    <blockquote class="item-description" id="topic-<?php echo $item->id;?>">
+                        <?php echo $item->description;?>
+                        <small>by <cite title="<?php echo $this->escape($item->author_name);?>"><?php echo $this->escape($item->author_name);?></cite></small>
+                    </blockquote>
                 </div>
             <?php
             $k = 1 - $k;
             endforeach;
             ?>
-
+            </div>
             <div class="filters btn-toolbar">
                 <?php if ($this->pagination->get('pages.total') > 1) : ?>
                     <div class="pagination">

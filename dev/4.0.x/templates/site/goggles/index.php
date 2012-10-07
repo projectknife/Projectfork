@@ -157,37 +157,37 @@
 				  	<?php
 				  		if($user->authorise('create', 'com_projectfork.project')) :
 				  	?>
-				    	<li><a href="index.php?option=com_projectfork&view=projectform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
+				    	<li><a href="index.php?option=com_projectfork&view=projectform&layout=edit"><i class="icon-briefcase"></i> <?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
 				    <?php
 				    	endif;
 				    	if($user->authorise('create', 'com_projectfork.milestone')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=milestoneform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
+				    	<li><a href="index.php?option=com_projectfork&view=milestoneform&layout=edit"><i class="icon-flag"></i> <?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
 				    <?php
 				    	endif;
 				    	if($user->authorise('create', 'com_projectfork.tasklist')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=tasklistform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
+				    	<li><a href="index.php?option=com_projectfork&view=tasklistform&layout=edit"><i class="icon-list-view"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
 				    <?php
 				    	endif;
 				    	if($user->authorise('create', 'com_projectfork.task')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=taskform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
+				    	<li><a href="index.php?option=com_projectfork&view=taskform&layout=edit"><i class="icon-checkbox"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
 				    <?php
 				    	endif;
 				    	if($user->authorise('create', 'com_projectfork.time')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=timeform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
+				    	<li><a href="index.php?option=com_projectfork&view=timeform&layout=edit"><i class="icon-clock"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
 				    <?php
 				    	endif;
 				    	if($user->authorise('create', 'com_projectfork.topic')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=topicform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
+				    	<li><a href="index.php?option=com_projectfork&view=topicform&layout=edit"><i class="icon-comments-2"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
 				    <?php
 				    	endif;
 				    	if($user->authorise('create', 'com_projectfork.file')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=fileform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
+				    	<li><a href="index.php?option=com_projectfork&view=fileform&layout=edit"><i class="icon-upload"></i> <?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
 				    <?php
 				    	endif;
 				    ?>

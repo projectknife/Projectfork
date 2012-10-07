@@ -168,7 +168,7 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
 
                         if ($percentage > 100) {
                             $percentage = 100;
-                            $percentage_class .= ' progress-danger';
+                            $percentage_class .= ' progress-info';
                         }
                         else {
                             $percentage_class .= ($item->billable == 1) ? ' progress-success' : '';
