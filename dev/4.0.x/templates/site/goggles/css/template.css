@@ -6460,6 +6460,11 @@ div.tip {
 .btn .caret {
   margin-bottom: 0;
 }
+/* Text colors */
+.text-warning{color: #c09853;}
+.text-error{color: #b94a48;}
+.text-info{color: #3a87ad;}
+.text-success{color: #468847;}
 /* Joomla mootools tabs (grrrr) */
 dl.tabs {
   *zoom: 1;
