@@ -130,6 +130,68 @@ var PFlist =
 
 
     /**
+     * Function to enable drag and drop sorting on a list of elements
+     *
+     * @param    string    ls     The list selector
+     * @param    string    v      The name of the view
+     * @param    string    fi     The form id (optional)
+     */
+    sortable: function(ls, v, fi)
+    {
+        jQuery(ls).sortable(
+        {
+            update: function(event, ui)
+            {
+                if (typeof fi == 'undefined') {
+                    fi = 'adminForm';
+                }
+
+                var c   = jQuery(this).children('li');
+                var cbs = jQuery('#' + fi).find('input[name|="cid[]"]');
+
+                for(i = 0; i < c.length; i++)
+                {
+                    var el = jQuery(c[i])
+                    var o  = jQuery('input[name|="order[]"]', el);
+
+                    if (o.length) {
+                        o.val(i);
+                    }
+                }
+
+                cbs.each(function(idx)
+                {
+                    var cb = jQuery(this);
+
+                    if(cb.attr('type') == 'checkbox') {
+                        if(cb.is(':checked') == false) {
+                            cb.trigger('click');
+                        }
+                    }
+                });
+
+                var rq = PFlist.submitform(v + '.saveorder', fi, true);
+
+                rq.done(function(resp)
+                {
+                    cbs.each(function(idx)
+                    {
+                        var cb = jQuery(this);
+
+                        if(cb.attr('type') == 'checkbox') {
+                            if(cb.is(':checked') == true) {
+                                cb.trigger('click');
+                            }
+                        }
+                    });
+                });
+            }
+	   });
+	   jQuery(ls).disableSelection();
+    },
+
+
+    /**
     * Method to display the ajax response messages
     *
     * @param    object    resp    The ajax response object

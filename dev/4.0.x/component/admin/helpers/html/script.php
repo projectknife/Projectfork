@@ -59,6 +59,60 @@ abstract class ProjectforkScript
 
 
     /**
+     * Method to load jQuery UI JS
+     *
+     * @return    void
+     */
+    public static function jQueryUI()
+    {
+        // Only load once
+        if (!empty(self::$loaded[__METHOD__])) {
+            return;
+        }
+
+        // Load dependencies
+        if (empty(self::$loaded['jQuery'])) {
+            self::jQuery();
+        }
+
+        // Load only of doc type is HTML
+        if (JFactory::getDocument()->getType() == 'html') {
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptjQueryUI');
+        }
+
+        self::$loaded[__METHOD__] = true;
+    }
+
+
+    /**
+     * Method to load jQuery Sortable JS
+     *
+     * @return    void
+     */
+    public static function jQuerySortable()
+    {
+        // Only load once
+        if (!empty(self::$loaded[__METHOD__])) {
+            return;
+        }
+
+        // Load dependencies
+        if (empty(self::$loaded['jQueryUI'])) {
+            self::jQueryUI();
+        }
+
+        // Load only of doc type is HTML
+        if (JFactory::getDocument()->getType() == 'html') {
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptjQuerySortable');
+        }
+
+        self::$loaded[__METHOD__] = true;
+    }
+
+
+    /**
      * Method to load bootstrap JS
      *
      * @return    void
@@ -276,6 +330,38 @@ function triggerProjectforkScriptjQuery()
     if ($load == '1') {
         JHtml::_('script', 'com_projectfork/jquery/jquery.min.js', false, true, false, false, false);
         JHtml::_('script', 'com_projectfork/jquery/jquery.noconflict.js', false, true, false, false, false);
+    }
+}
+
+
+/**
+ * Stupid but necessary way of adding jQuery UI to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that flot is loaded after jQuery
+ *
+ */
+function triggerProjectforkScriptjQueryUI()
+{
+    $scripts = (array) array_keys(JFactory::getDocument()->_scripts);
+    $string  = implode('', $scripts);
+
+    if (stripos($string, 'jquery.ui') === false) {
+        JHtml::_('script', 'com_projectfork/jquery/jquery.ui.core.min.js', false, true, false, false, false);
+    }
+}
+
+
+/**
+ * Stupid but necessary way of adding jQuery Sortable to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that flot is loaded after jQuery
+ *
+ */
+function triggerProjectforkScriptjQuerySortable()
+{
+    $scripts = (array) array_keys(JFactory::getDocument()->_scripts);
+    $string  = implode('', $scripts);
+
+    if (stripos($string, 'jquery.ui.sortable') === false) {
+        JHtml::_('script', 'com_projectfork/jquery/jquery.ui.sortable.min.js', false, true, false, false, false);
     }
 }
 

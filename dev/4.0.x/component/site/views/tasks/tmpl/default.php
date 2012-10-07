@@ -10,6 +10,7 @@
 defined('_JEXEC') or die();
 
 
+JHtml::_('projectfork.script.jquerysortable');
 JHtml::_('projectfork.script.listform');
 JHtml::_('projectfork.script.task');
 
@@ -20,10 +21,12 @@ $uid        = $user->get('id');
 
 $action_count = count($this->actions);
 $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
-
-// Enable ajax driven complete/incomplete checkbox
-JHtml::_('projectfork.ajaxCompleteTask');
 ?>
+<script type="text/javascript">
+jQuery(document).ready(function() {
+    PFlist.sortable('.list-tasks', 'tasks');
+});
+</script>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-tasks">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -34,7 +37,6 @@ JHtml::_('projectfork.ajaxCompleteTask');
 
     <div class="cat-items">
         <form id="adminForm" name="adminForm" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>">
-
             <div class="btn-toolbar btn-toolbar-top">
                 <?php echo $this->toolbar;?>
                 <div class="filter-project btn-group">
@@ -116,7 +118,7 @@ JHtml::_('projectfork.ajaxCompleteTask');
 
                 foreach($this->items AS $i => $item) :
                     if ($current_list !== $item->list_title) :
-                        JHtml::_('projectfork.ajaxReorder', 'tasklist_' . $i, 'tasks', $k);
+                        // JHtml::_('projectfork.ajaxReorder', 'tasklist_' . $i, 'tasks', $k);
                         if ($item->list_title) :
                             $access = ProjectforkHelperAccess::getActions('tasklist', $item->list_id);
 
@@ -199,7 +201,7 @@ JHtml::_('projectfork.ajaxCompleteTask');
                         // list item class
                         $class = ($item->complete ? 'task-complete' : 'task-incomplete');
                     ?>
-                    <li id="list-item-<?php echo $x; ?>" alt="<?php echo (int) $item->id;?>" id="task-<?php echo (int) $item->id;?>" class="<?php echo $class;?>">
+                    <li id="list-item-<?php echo $x; ?>" class="<?php echo $class;?>">
                         <input type="hidden" name="order[]" value="<?php echo (int) $item->ordering;?>"/>
 
                         <div id="list-toolbar-<?php echo $x; ?>" class="btn-toolbar <?php if ($item->complete) : echo "complete"; endif;?>">
@@ -212,26 +214,19 @@ JHtml::_('projectfork.ajaxCompleteTask');
                                 <?php echo JHtml::_('projectfork.task.complete', $x, $item->complete, $can_change); ?>
                             </div>
                             <div class="btn-group">
-                                <?php if (!$item->complete): ?>
-                                    <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>" class="task-title">
-                                        <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
-                                        <?php echo $this->escape($item->title);?>
-                                    </a>
-                                <?php else : ?>
-                                    <span class="task-title">
-                                        <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
-                                        <?php echo $this->escape($item->title);?>
-                                    </span>
-                                <?php endif;?>
+                                <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>" class="task-title">
+                                    <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
+                                    <?php echo $this->escape($item->title);?>
+                                </a>
                             </div>
                             <div class="btn-group">
                                 <small><?php echo $this->escape(JHtml::_('projectfork.truncate', $item->description));?></small>
                             </div>
                             <?php
-                                echo $this->menu->assignedUsers($x, $item->id, 'tasks', $item->users, ($can_edit || $can_edit_own), ($item->complete ? 'btn-mini disabled' : 'btn-mini'));
-                                echo $this->menu->priorityList($x, $item->id, 'tasks', $item->priority, ($can_edit || $can_edit_own || $can_change), ($item->complete ? 'btn-mini disabled' : 'btn-mini'));
+                                echo $this->menu->assignedUsers($x, $item->id, 'tasks', $item->users, ($can_edit || $can_edit_own), 'btn-mini');
+                                echo $this->menu->priorityList($x, $item->id, 'tasks', $item->priority, ($can_edit || $can_edit_own || $can_change), 'btn-mini');
 
-                                $this->menu->start(array('class' => ($item->complete ? 'btn-mini disabled' : 'btn-mini')));
+                                $this->menu->start(array('class' => 'btn-mini'));
                                 $this->menu->itemEdit('taskform', $item->id, ($can_edit || $can_edit_own));
                                 $this->menu->itemTrash('tasks', $x, ($can_edit || $can_edit_own));
                                 $this->menu->end();
