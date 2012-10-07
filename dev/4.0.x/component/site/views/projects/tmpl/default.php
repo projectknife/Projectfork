@@ -73,6 +73,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
             <ul class="thumbnails">
                 <?php
                 $k = 0;
+                $current_cat = '';
                 foreach($this->items AS $i => $item) :
                     $access = ProjectforkHelperAccess::getActions('project', $item->id);
                     $link   = ProjectforkHelperRoute::getDashboardRoute($item->slug);
@@ -93,6 +94,12 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                     if ($progress < 67)   $progress_class = 'warning';
                     if ($progress < 34)   $progress_class = 'danger label-important';
                 ?>
+                <?php if ($item->category_title != $current_cat && !is_numeric($this->state->get('filter.category'))) : ?>
+                    </ul>
+                    <h3><?php echo $this->escape($item->category_title);?></h3>
+                    <hr />
+                    <ul class="thumbnails">
+                <?php $current_cat = $item->category_title; endif; ?>
                 <li class="span3">
                     <div class="thumbnail">
                         <?php if (!empty($item->logo_img)) : ?>
@@ -131,8 +138,8 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                                     <span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $progress;?>%</span>
                                 </div>
                             </div>
-                            <?php echo JHtml::_('projectfork.dateFormat', $item->end_date, $this->params->get('date_format')); ?>
                             <?php echo JHtml::_('projectfork.authorLabel', $item->author_name, $item->created, $this->params->get('date_format')); ?>
+                            <?php echo JHtml::_('projectfork.dateFormat', $item->end_date, $this->params->get('date_format')); ?>
                         </div>
                   </div>
                 </li>
@@ -143,22 +150,28 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
             </ul>
 
             <div class="filters btn-toolbar">
+                <div class="btn-group filter-order">
+                    <select name="filter_order" class="inputbox input-medium" onchange="this.form.submit()">
+                        <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
+                    </select>
+                </div>
+                <div class="btn-group folder-order-dir">
+                    <select name="filter_order_Dir" class="inputbox input-medium" onchange="this.form.submit()">
+                        <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
+                    </select>
+                </div>
+                <div class="btn-group display-limit">
+                    <?php echo $this->pagination->getLimitBox(); ?>
+                </div>
                 <?php if ($this->pagination->get('pages.total') > 1) : ?>
                     <div class="btn-group pagination">
                         <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
                         <?php echo $this->pagination->getPagesLinks(); ?>
                     </div>
                 <?php endif; ?>
-
-                <div class="btn-group display-limit">
-                    <?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?>&#160;
-                    <?php echo $this->pagination->getLimitBox(); ?>
-                </div>
             </div>
 
             <input type="hidden" name="boxchecked" value="0" />
-            <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
-            <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
             <input type="hidden" name="task" value="" />
             <?php echo JHtml::_('form.token'); ?>
         </form>

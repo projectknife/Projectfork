@@ -21,13 +21,13 @@ class ProjectforkViewProjects extends JViewLegacy
 {
     protected $pageclass_sfx;
     protected $items;
-    protected $nulldate;
     protected $pagination;
     protected $params;
     protected $state;
-    protected $toolbar;
     protected $access;
-    protected $menu;
+    protected $toolbar;
+    protected $sort_options;
+    protected $order_options;
 
 
     /**
@@ -44,10 +44,11 @@ class ProjectforkViewProjects extends JViewLegacy
         $this->pagination = $this->get('Pagination');
         $this->state      = $this->get('State');
         $this->params     = $this->state->get('params');
-        $this->toolbar    = $this->getToolbar();
-        $this->access     = ProjectforkHelperAccess::getActions();
-        $this->nulldate   = JFactory::getDbo()->getNullDate();
-        $this->menu       = new ProjectforkHelperContextMenu();
+        $this->access     = ProjectforkHelper::getActions();
+
+        $this->toolbar       = $this->getToolbar();
+        $this->sort_options  = $this->getSortOptions();
+        $this->order_options = $this->getOrderOptions();
 
         // Escape strings for HTML output
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
@@ -84,21 +85,17 @@ class ProjectforkViewProjects extends JViewLegacy
     protected function prepareDocument()
     {
         $app     = JFactory::getApplication();
-        $menus   = $app->getMenu();
+        $menu    = $app->getMenu()->getActive();
         $pathway = $app->getPathway();
         $title   = null;
 
-        // Because the application sets a default page title,
-        // we need to get it from the menu item itself
-        $menu = $menus->getActive();
-
+        // Because the application sets a default page title, we need to get it from the menu item itself
         if ($menu) {
             $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
         }
         else {
             $this->params->def('page_heading', JText::_('COM_PROJECTFORK_PROJECTS'));
         }
-
 
         // Set the page title
         $title = $this->params->get('page_title', '');
@@ -114,7 +111,6 @@ class ProjectforkViewProjects extends JViewLegacy
         }
 
         $this->document->setTitle($title);
-
 
         // Set crawler behavior info
         if ($this->params->get('robots')) {
@@ -181,5 +177,40 @@ class ProjectforkViewProjects extends JViewLegacy
         ProjectforkHelperToolbar::filterButton();
 
         return ProjectforkHelperToolbar::render();
+    }
+
+
+    /**
+     * Generates the table sort options
+     *
+     * @return    array    HTML list options
+     */
+    protected function getSortOptions()
+    {
+        $options = array();
+
+        $options[] = JHtml::_('select.option', '', JText::_('COM_PROJECTFORK_ORDER_SELECT'));
+        $options[] = JHtml::_('select.option', 'category_title, a.title', JText::_('COM_PROJECTFORK_ORDER_TITLE'));
+        $options[] = JHtml::_('select.option', 'a.end_date', JText::_('COM_PROJECTFORK_ORDER_DEADLINE'));
+        $options[] = JHtml::_('select.option', 'author_name', JText::_('COM_PROJECTFORK_ORDER_AUTHOR'));
+
+        return $options;
+    }
+
+
+    /**
+     * Generates the table order options
+     *
+     * @return    array    HTML list options
+     */
+    protected function getOrderOptions()
+    {
+        $options = array();
+
+        $options[] = JHtml::_('select.option', '', JText::_('COM_PROJECTFORK_ORDER_SELECT_DIR'));
+        $options[] = JHtml::_('select.option', 'asc', JText::_('COM_PROJECTFORK_ORDER_ASC'));
+        $options[] = JHtml::_('select.option', 'desc', JText::_('COM_PROJECTFORK_ORDER_DESC'));
+
+        return $options;
     }
 }
