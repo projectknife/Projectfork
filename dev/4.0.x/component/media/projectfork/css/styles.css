@@ -203,3 +203,15 @@
 body.modal{
 	padding: 10px;
 }
+/* Row Striped */
+.row-striped > .row-fluid {
+	width: auto;
+}
+.row-striped > .row-fluid > blockquote {
+	margin-bottom: 0;
+}
+/* Inline Toolbar & Button Groups */
+.toolbar-inline {
+	display: inline-block;
+	margin: 0 4px -6px 4px;
+}
