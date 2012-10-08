@@ -221,3 +221,7 @@ body.modal{
 .table h1,.table h2,.table h3,.table h4,.table h5,.table h6 {
 	margin: 0;
 }
+/* Topics */
+h3.topic-title {
+	margin-bottom: 10px;
+}

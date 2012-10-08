@@ -19,7 +19,7 @@ $uid        = $user->get('id');
 
 $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
 ?>
-<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-milestones">
+<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-topics">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
@@ -95,7 +95,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                         <?php echo JHtml::_('date', $item->last_activity, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>
                     </span>
                     <?php endif; ?>
-                    <h3 class="milestone-title">
+                    <h3 class="topic-title">
                     	<span class="toolbar-inline pull-left">
                         	<?php
 	                        $this->menu->start(array('class' => 'btn-mini', 'pull' => 'left'));

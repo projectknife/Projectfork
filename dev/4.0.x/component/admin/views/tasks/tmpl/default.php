@@ -79,11 +79,11 @@ $save_order = ($list_order == 'a.ordering');
                 <th width="5%">
                     <?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $list_dir, $list_order); ?>
                 </th>
-                <th>
+                <th width="20%">
                     <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                 </th>
                 <?php if (!$this->state->get('filter.project')) : ?>
-                    <th width="12%" class="hidden-phone">
+                    <th width="20%" class="hidden-phone">
                         <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'project_title', $list_dir, $list_order); ?>
                     </th>
                 <?php endif; ?>
@@ -97,8 +97,10 @@ $save_order = ($list_order == 'a.ordering');
                         <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKLIST', 'tasklist_title', $list_dir, $list_order); ?>
                     </th>
                 <?php endif; ?>
-                <th width="10%" class="hidden-phone">
-                    <?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ORDERING', 'a.ordering', $list_dir, $list_order); ?>
+                <th width="10%" class="nowrap hidden-phone">
+                    <span class="pull-left">
+                    	<?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ORDERING', 'a.ordering', $list_dir, $list_order); ?>
+                    </span>
                     <?php if ($save_order) :?>
                         <?php echo JHtml::_('grid.order',  $this->items, 'filesave.png', 'tasks.saveorder'); ?>
                     <?php endif; ?>
@@ -141,13 +143,13 @@ $save_order = ($list_order == 'a.ordering');
                     <?php endif; ?>
                 </td>
                 <?php if (!$this->state->get('filter.project')) : ?>
-                    <td class="hidden-phone"><?php echo $this->escape($item->project_title); ?></td>
+                    <td class="hidden-phone small"><?php echo $this->escape($item->project_title); ?></td>
                 <?php endif; ?>
                 <?php if (!$this->state->get('filter.milestone')) : ?>
-                    <td class="hidden-phone"><?php echo $this->escape($item->milestone_title); ?></td>
+                    <td class="hidden-phone small"><?php echo $this->escape($item->milestone_title); ?></td>
                 <?php endif; ?>
                 <?php if (!$this->state->get('filter.tasklist')) : ?>
-                    <td class="hidden-phone"><?php echo $this->escape($item->tasklist_title); ?></td>
+                    <td class="hidden-phone small"><?php echo $this->escape($item->tasklist_title); ?></td>
                 <?php endif; ?>
                 <td class="order hidden-phone">
                     <?php if ($can_change) : ?>
@@ -161,15 +163,15 @@ $save_order = ($list_order == 'a.ordering');
                             <?php endif; ?>
                         <?php endif; ?>
                         <?php $disabled = ($save_order ?  '' : 'disabled="disabled"'); ?>
-                        <input type="text" name="order[]" size="5" value="<?php echo $item->ordering;?>" <?php echo $disabled ?> class="text-area-order" />
+                        <input type="text" name="order[]" size="5" value="<?php echo $item->ordering;?>" <?php echo $disabled ?> class="text-area-order width-10" />
                     <?php else : ?>
                         <?php echo $item->ordering; ?>
                     <?php endif; ?>
                 </td>
-                <td class="center hidden-phone">
+                <td class="center hidden-phone small">
                     <?php echo $this->escape($item->access_level); ?>
                 </td>
-                <td class="center hidden-phone">
+                <td class="center hidden-phone small">
                     <?php echo (int) $item->id; ?>
                 </td>
             </tr>

@@ -205,7 +205,7 @@ abstract class JHtmlProjectfork
         $html = array();
         $html[] = '<span class="label ' . ($is_past ? 'label-important' : 'label-success');
         $html[] = ' hasTip" title="' . $tooltip . '" style="cursor: help">';
-        $html[] = '<i class="icon-' . ($is_past ? 'bell' : 'calendar') . '"></i> ';
+        $html[] = '<i class="icon-' . ($is_past ? 'warning' : 'calendar') . '"></i> ';
         $html[] = $string;
         $html[] = '</span>';
 
