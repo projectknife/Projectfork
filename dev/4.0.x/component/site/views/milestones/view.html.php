@@ -29,6 +29,8 @@ class ProjectforkViewMilestones extends JViewLegacy
     protected $authors;
     protected $access;
     protected $menu;
+    protected $sort_options;
+    protected $order_options;
 
 
     /**
