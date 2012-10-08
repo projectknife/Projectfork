@@ -2,25 +2,28 @@
 <!DOCTYPE install PUBLIC "-//Joomla! 2.5//DTD template 1.0//EN" "http://www.joomla.org/xml/dtd/2.5/template-install.dtd">
 <extension version="2.5" type="template" client="site">
   <name>goggles</name>
-  <version>1.0</version>
-  <creationDate>6/20/2012</creationDate>
+  <version>4.0</version>
+  <creationDate>10/08/2012</creationDate>
   <author>Kyle Ledbetter</author>
   <authorEmail>support@projectfork.net</authorEmail>
   <description>Default Projectfork UI Template based off Bootstrap from Twitter</description>
   <files>
   	<filename>component.php</filename>
+  	<filename>favicon.ico</filename>
+  	<filename>helper.php</filename>
     <filename>index.php</filename>
-    <filename>favicon.ico</filename>
-    <filename>templateDetails.xml</filename>
     <filename>template_preview.png</filename>
     <filename>template_thumbnail.png</filename>
+    <filename>templateDetails.xml</filename>
     <folder>css</folder>
+    <folder>fonts</folder>
     <folder>helpers</folder>
     <folder>html</folder>
     <folder>images</folder>
     <folder>img</folder>
     <folder>js</folder>
     <folder>language</folder>
+    <folder>less</folder>
   </files>
   <positions>
     <position>debug</position>
