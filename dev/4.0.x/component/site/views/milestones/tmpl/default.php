@@ -99,7 +99,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                     <h3><?php echo $this->escape($item->project_title);?></h3>
                     <hr />
                 <?php $current_project = $item->project_title; endif; ?>
-                <div class="well well-<?php echo $k;?>">
+                <div class="well well-small well-<?php echo $k;?>">
                     <?php
                         $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
                         $this->menu->itemEdit('milestoneform', $item->id, ($can_edit || $can_edit_own));
