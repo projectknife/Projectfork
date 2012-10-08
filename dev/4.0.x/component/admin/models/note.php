@@ -386,13 +386,13 @@ class ProjectforkModelNote extends JModelAdmin
 
         // Check if a project and directory is already selected. If not, get them from the current state
         $project_id = (int) $form->getValue('project_id');
-        $parent_id  = (int) $form->getValue('parent_id');
+        $dir_id     = (int) $form->getValue('dir_id');
 
         if (!$project_id) {
             $form->setValue('project_id', null, $this->getState($this->getName() . '.project'));
         }
-        if (!$parent_id) {
-            $form->setValue('parent_id', null, $this->getState($this->getName() . '.parent_id'));
+        if (!$dir_id) {
+            $form->setValue('dir_id', null, $this->getState($this->getName() . '.dir_id'));
         }
 
         return $form;

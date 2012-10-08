@@ -137,7 +137,7 @@ Joomla.submitbutton = function(task)
     <input type="hidden" name="task" value="" />
     <input type="hidden" name="return" value="<?php echo $this->return_page;?>" />
     <input type="hidden" name="view" value="<?php echo htmlspecialchars($this->get('Name'), ENT_COMPAT, 'UTF-8');?>" />
-    <input type="hidden" name="filter_parent_id" value="<?php echo intval($this->form->getValue('parent_id'));?>" />
+    <input type="hidden" name="filter_parent_id" value="<?php echo intval($this->form->getValue('dir_id'));?>" />
     <?php echo JHtml::_( 'form.token' ); ?>
 </form>
 </div>
