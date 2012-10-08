@@ -10,12 +10,14 @@
 defined('_JEXEC') or die();
 
 
+JHtml::_('projectfork.script.listform');
+
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
 $uid        = $user->get('id');
 
-$filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
+$filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-milestones">
 
@@ -90,7 +92,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                         </span>
                     <?php else: ?>
                     <span class="list-created small pull-right">
-                        <?php echo JHtml::_('date', $item->created, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>
+                        <?php echo JHtml::_('date', $item->last_activity, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>
                     </span>
                     <?php endif; ?>
                     <h3 class="milestone-title">
@@ -100,7 +102,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 	                        $this->menu->itemEdit('topicform', $item->id, ($can_edit || $can_edit_own));
 	                        $this->menu->itemTrash('topics', $i, $can_change);
 	                        $this->menu->end();
-	
+
 	                        echo $this->menu->render(array('class' => 'btn-mini'));
 		                    ?>
                         </span>
@@ -127,23 +129,30 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
             endforeach;
             ?>
             </div>
+
             <div class="filters btn-toolbar">
+                <div class="btn-group filter-order">
+                    <select name="filter_order" class="inputbox input-medium" onchange="this.form.submit()">
+                        <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
+                    </select>
+                </div>
+                <div class="btn-group folder-order-dir">
+                    <select name="filter_order_Dir" class="inputbox input-medium" onchange="this.form.submit()">
+                        <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
+                    </select>
+                </div>
+                <div class="btn-group display-limit">
+                    <?php echo $this->pagination->getLimitBox(); ?>
+                </div>
                 <?php if ($this->pagination->get('pages.total') > 1) : ?>
-                    <div class="pagination">
+                    <div class="btn-group pagination">
                         <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
                         <?php echo $this->pagination->getPagesLinks(); ?>
                     </div>
                 <?php endif; ?>
-
-                <div class="btn-group display-limit">
-                    <?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?>&#160;
-                    <?php echo $this->pagination->getLimitBox(); ?>
-                </div>
             </div>
 
-            <input type="hidden" name="boxchecked" value="0" />
-            <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
-            <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
+            <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
             <input type="hidden" name="task" value="" />
             <?php echo JHtml::_('form.token'); ?>
         </form>

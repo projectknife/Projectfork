@@ -44,7 +44,7 @@ class ProjectforkModelUsers extends UsersModelUsers
      */
     protected function populateState($ordering = null, $direction = null)
     {
-        parent::populateState($ordering, $direction);
+        parent::populateState();
 
         $app    = JFactory::getApplication();
         $user   = JFactory::getUser();

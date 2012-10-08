@@ -41,7 +41,7 @@ class ProjectforkModelTimesheet extends JModelList
                 'a.modified_by', 'a.checked_out',
                 'a.checked_out_time', 'a.attribs',
                 'a.access', 'access_level', 'a.state',
-                'a.log_date', 'a.log_time'
+                'a.log_date', 'a.log_time', 'author_name'
             );
         }
 

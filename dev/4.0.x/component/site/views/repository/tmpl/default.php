@@ -10,6 +10,8 @@
 defined('_JEXEC') or die();
 
 
+JHtml::_('projectfork.script.listform');
+
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
@@ -88,9 +90,31 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                 </tfoot>
             </table>
 
-            <input type="hidden" name="boxchecked" value="0" />
-            <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
-            <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
+            <div class="filters btn-toolbar">
+                <div class="btn-group filter-order">
+                    <select name="filter_order" class="inputbox input-medium" onchange="this.form.submit()">
+                        <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
+                    </select>
+                </div>
+                <div class="btn-group folder-order-dir">
+                    <select name="filter_order_Dir" class="inputbox input-medium" onchange="this.form.submit()">
+                        <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
+                    </select>
+                </div>
+                <?php if (!$this->state->get('filter.project')) : ?>
+                    <div class="btn-group display-limit">
+                        <?php echo $this->pagination->getLimitBox(); ?>
+                    </div>
+                    <?php if ($this->pagination->get('pages.total') > 1) : ?>
+                        <div class="btn-group pagination">
+                            <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
+                            <?php echo $this->pagination->getPagesLinks(); ?>
+                        </div>
+                    <?php endif; ?>
+                <?php endif; ?>
+            </div>
+
+            <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
             <input type="hidden" name="task" value="" />
             <?php echo JHtml::_('form.token'); ?>
         </form>

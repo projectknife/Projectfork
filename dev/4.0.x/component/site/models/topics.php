@@ -40,7 +40,7 @@ class ProjectforkModelTopics extends JModelList
                 'a.id', 'a.title', 'a.created', 'a.modified',
                 'a.checked_out', 'a.checked_out_time', 'a.state',
                 'author_name', 'editor', 'access_level',
-                'project_title', 'replies'
+                'project_title', 'replies', 'last_activity'
             );
         }
 
@@ -92,6 +92,10 @@ class ProjectforkModelTopics extends JModelList
         $query->select('COUNT(DISTINCT r.id) AS replies');
         $query->join('LEFT', '#__pf_replies AS r ON r.topic_id = a.id');
 
+        // Join over the replies for last activity
+        $query->select('CASE WHEN MAX(c.created) IS NULL THEN a.created ELSE MAX(c.created) END AS last_activity');
+        $query->join('LEFT', '#__pf_replies AS c ON c.topic_id = a.id');
+
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
@@ -130,6 +134,7 @@ class ProjectforkModelTopics extends JModelList
 
         // Get the global params
         $global_params = JComponentHelper::getParams('com_projectfork', true);
+        $null_date     = JFactory::getDbo()->getNullDate();
 
         foreach ($items as $i => &$item)
         {
@@ -207,7 +212,7 @@ class ProjectforkModelTopics extends JModelList
      *
      * @return    void
      */
-    protected function populateState($ordering = 'a.created', $direction = 'DESC')
+    protected function populateState($ordering = 'last_activity', $direction = 'DESC')
     {
         $app    = JFactory::getApplication();
         $access = ProjectforkHelperAccess::getActions(NULL, 0, true);

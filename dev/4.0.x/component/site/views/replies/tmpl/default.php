@@ -10,6 +10,8 @@
 defined('_JEXEC') or die();
 
 
+JHtml::_('projectfork.script.listform');
+
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
@@ -52,7 +54,7 @@ Joomla.submitbutton = function(task)
 	                <?php echo $this->toolbar;?>
 	            </div>
 	            <div class="clearfix"> </div>
-           
+
 	            <div class="<?php echo $filter_in;?>collapse" id="filters">
 	                <div class="well btn-toolbar">
 	                    <div class="filter-search btn-group pull-left">
@@ -62,10 +64,10 @@ Joomla.submitbutton = function(task)
 	                        <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
 	                        <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
 	                    </div>
-	
+
 	                    <div class="clearfix"> </div>
 	                    <hr />
-	
+
 	                    <?php if ($this->access->get('reply.edit.state') || $this->access->get('reply.edit')) : ?>
 	                        <div class="filter-published btn-group">
 	                            <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
@@ -181,27 +183,34 @@ Joomla.submitbutton = function(task)
                     <input type="hidden" name="jform[topic_id]" value="<?php echo $topic;?>" />
                 </div>
             <?php endif; ?>
+
             <hr />
+
             <div class="filters btn-toolbar">
+                <div class="btn-group filter-order">
+                    <select name="filter_order" class="inputbox input-medium" onchange="this.form.submit()">
+                        <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
+                    </select>
+                </div>
+                <div class="btn-group folder-order-dir">
+                    <select name="filter_order_Dir" class="inputbox input-medium" onchange="this.form.submit()">
+                        <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
+                    </select>
+                </div>
+                <div class="btn-group display-limit">
+                    <?php echo $this->pagination->getLimitBox(); ?>
+                </div>
                 <?php if ($this->pagination->get('pages.total') > 1) : ?>
-                    <div class="pagination">
+                    <div class="btn-group pagination">
                         <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
                         <?php echo $this->pagination->getPagesLinks(); ?>
                     </div>
                 <?php endif; ?>
-
-                <div class="btn-group display-limit">
-                    <?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?>&#160;
-                    <?php echo $this->pagination->getLimitBox(); ?>
-                </div>
             </div>
 
-            <input type="hidden" name="boxchecked" value="0" />
-            <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
-            <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
+            <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
             <input type="hidden" name="filter_project" value="<?php echo $project;?>" />
             <input type="hidden" name="filter_topic" value="<?php echo $topic;?>" />
-
             <input type="hidden" name="task" value="" />
             <?php echo JHtml::_('form.token'); ?>
         </form>

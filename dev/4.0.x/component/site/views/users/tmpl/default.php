@@ -54,7 +54,6 @@ $uid        = $user->get('id');
                 $k = 0;
                 foreach($this->items AS $i => $item) :
                 $asset_name = 'com_users&task=profile.edit&user_id=.' . $item->id;
-                $canEdit    = ($user->authorise('core.edit', $asset_name));
                 $slug       = $item->id.':'.JFilterOutput::stringURLSafe($item->username);
                 ?>
                 <li class="span2">
@@ -71,18 +70,6 @@ $uid        = $user->get('id');
                             <h5>
                                 <?php echo $this->escape($item->username);?>
                             </h5>
-                            <?php if ($canEdit) : ?>
-                            <div class="btn-group">
-                            <?php /* need to find how to view other user profiles
-                                <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_users&view=profile&user_id=' . $this->escape($item->id));?>">
-                                    <i class="icon-user"></i> <?php echo JText::_('COM_PROJECTFORK_PROFILE');?>
-                                </a>
-                            */ ?>
-                                   <!--<a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_users&task=profile.edit&user_id=' . $this->escape($item->id));?>">
-                                       <i class="icon-edit"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
-                                   </a>-->
-                            </div>
-                            <?php endif; ?>
                         </div>
                     </div>
                 </li>
@@ -93,21 +80,28 @@ $uid        = $user->get('id');
             </ul>
 
             <div class="filters btn-toolbar">
+                <div class="btn-group filter-order">
+                    <select name="filter_order" class="inputbox input-medium" onchange="this.form.submit()">
+                        <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
+                    </select>
+                </div>
+                <div class="btn-group folder-order-dir">
+                    <select name="filter_order_Dir" class="inputbox input-medium" onchange="this.form.submit()">
+                        <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
+                    </select>
+                </div>
+                <div class="btn-group display-limit">
+                    <?php echo $this->pagination->getLimitBox(); ?>
+                </div>
                 <?php if ($this->pagination->get('pages.total') > 1) : ?>
                     <div class="btn-group pagination">
                         <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
                         <?php echo $this->pagination->getPagesLinks(); ?>
                     </div>
                 <?php endif; ?>
-                <div class="btn-group display-limit">
-                    <?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?>&#160;
-                    <?php echo $this->pagination->getLimitBox(); ?>
-                </div>
             </div>
 
-            <input type="hidden" name="boxchecked" value="0" />
-            <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
-            <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
+            <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
             <input type="hidden" name="task" value="" />
             <?php echo JHtml::_('form.token'); ?>
         </form>

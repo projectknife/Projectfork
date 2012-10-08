@@ -17,7 +17,6 @@ class ProjectforkViewTimesheet extends JViewLegacy
 {
     protected $pageclass_sfx;
     protected $items;
-    protected $nulldate;
     protected $pagination;
     protected $params;
     protected $state;
@@ -31,6 +30,8 @@ class ProjectforkViewTimesheet extends JViewLegacy
     protected $total_billable;
     protected $total_estimated_time;
     protected $total_estimated_cost;
+    protected $sort_options;
+    protected $order_options;
 
     /**
      * Display the view
@@ -55,10 +56,12 @@ class ProjectforkViewTimesheet extends JViewLegacy
         $this->authors    = $this->get('Authors');
         $this->tasks      = $this->get('Tasks');
         $this->params     = $this->state->params;
-        $this->toolbar    = $this->getToolbar();
         $this->access     = ProjectforkHelper::getActions(NULL, 0, true);
-        $this->nulldate   = JFactory::getDbo()->getNullDate();
         $this->menu       = new ProjectforkHelperContextMenu();
+
+        $this->toolbar       = $this->getToolbar();
+        $this->sort_options  = $this->getSortOptions();
+        $this->order_options = $this->getOrderOptions();
 
         // Escape strings for HTML output
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
@@ -187,8 +190,44 @@ class ProjectforkViewTimesheet extends JViewLegacy
             ProjectforkHelperToolbar::listButton($options);
         }
 
-        ProjectforkHelperToolbar::filterButton();
+        ProjectforkHelperToolbar::filterButton($this->state->get('filter.isset'));
 
         return ProjectforkHelperToolbar::render();
+    }
+
+
+    /**
+     * Generates the table sort options
+     *
+     * @return    array    HTML list options
+     */
+    protected function getSortOptions()
+    {
+        $options = array();
+
+        $options[] = JHtml::_('select.option', '', JText::_('COM_PROJECTFORK_ORDER_SELECT'));
+        $options[] = JHtml::_('select.option', 'a.log_date', JText::_('COM_PROJECTFORK_ORDER_LOG_DATE'));
+        $options[] = JHtml::_('select.option', 'a.created', JText::_('COM_PROJECTFORK_ORDER_CREATE_DATE'));
+        $options[] = JHtml::_('select.option', 'task_title', JText::_('COM_PROJECTFORK_ORDER_TASK'));
+        $options[] = JHtml::_('select.option', 'author_name', JText::_('COM_PROJECTFORK_ORDER_AUTHOR'));
+
+        return $options;
+    }
+
+
+    /**
+     * Generates the table order options
+     *
+     * @return    array    HTML list options
+     */
+    protected function getOrderOptions()
+    {
+        $options = array();
+
+        $options[] = JHtml::_('select.option', '', JText::_('COM_PROJECTFORK_ORDER_SELECT_DIR'));
+        $options[] = JHtml::_('select.option', 'ASC', JText::_('COM_PROJECTFORK_ORDER_ASC'));
+        $options[] = JHtml::_('select.option', 'DESC', JText::_('COM_PROJECTFORK_ORDER_DESC'));
+
+        return $options;
     }
 }
