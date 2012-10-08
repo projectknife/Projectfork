@@ -133,7 +133,7 @@ $save_order = ($list_order == 'a.ordering');
                 </td>
                 <td>
                     <?php if ($item->checked_out) : ?>
-                        <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'tasks.', $canCheckin); ?>
+                        <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'tasks.', $can_checkin); ?>
                     <?php endif; ?>
                     <?php if ($can_edit || $can_edit_own) : ?>
                         <a href="<?php echo JRoute::_('index.php?option=com_projectfork&task=task.edit&id=' . $item->id);?>">
