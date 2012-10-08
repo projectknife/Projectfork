@@ -143,7 +143,7 @@ Joomla.submitbutton = function(task)
                         <?php echo JHtml::_('grid.id', $i, $item->id); ?>
                     </div>
                     <blockquote id="topic-<?php echo $item->id;?>">
-                    	<?php if ($item->modified != $this->nulldate) : ?>
+                    	<?php if ($item->modified != JFactory::getDbo()->getNullDate()) : ?>
                         <span class="list-edited small pull-right"><i class="icon-edit muted"></i>
                             <?php echo JHtml::_('date', $item->modified, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
                         </span>
