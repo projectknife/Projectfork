@@ -139,35 +139,26 @@ jQuery(document).ready(function() {
                         endif;
                         ?>
                         <div class="cat-list-row<?php echo $k;?>">
-                            <div class="list-title">
-                                <div class="btn-toolbar">
-                                    <?php if ($action_count) : ?>
-                                        <!--<div class="btn-group">
-                                            <span class="list-select">
-                                                <i class="icon-move"></i>
-                                                <input type="hidden" name="order[]" value="<?php echo $k;?>"/>
-                                            </span>
-                                        </div>-->
-                                    <?php endif; ?>
-                                    <?php if ($item->list_title) : ?>
-                                        <div class="btn-group">
-                                            <h3>
-                                                <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_slug, $item->milestone_slug, $item->list_slug));?>">
-                                                    <?php echo $this->escape($item->list_title);?>
-                                                </a>
-                                                <small><?php echo $this->escape($item->list_description);?></small>
-                                            </h3>
-                                        </div>
-                                        <?php
-                                            $this->menu->start(array('class' => 'btn-mini'));
-                                            $this->menu->itemEdit('tasklistform', $item->list_id, ($can_edit || $can_edit_own));
-                                            $this->menu->itemTrash('tasklists', $x, ($can_edit || $can_edit_own));
-                                            $this->menu->end();
-                                            echo $this->menu->render();
-                                        ?>
-                                    <?php endif; ?>
-                                </div>
-                            </div>
+                        	<?php if ($item->list_title) : ?>
+	                            <div class="list-title btn-toolbar">
+	                            	<div class="btn-group">
+		                                <h3>
+		                                    <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_slug, $item->milestone_slug, $item->list_slug));?>">
+		                                        <?php echo $this->escape($item->list_title);?>
+		                                    </a>
+		                                    <small><?php echo $this->escape($item->list_description);?></small>
+		                                </h3>
+	                            	</div>
+                                    <?php
+                                        $this->menu->start(array('class' => 'btn-mini'));
+                                        $this->menu->itemEdit('tasklistform', $item->list_id, ($can_edit || $can_edit_own));
+                                        $this->menu->itemTrash('tasklists', $x, ($can_edit || $can_edit_own));
+                                        $this->menu->end();
+                                        echo $this->menu->render();
+                                    ?>
+	                                <div class="clearfix"></div>
+	                            </div>
+                            <?php endif; ?>
                             <ul class="list-tasks list-striped list-condensed unstyled" id="tasklist_<?php echo $i;?>">
                         <?php
                         $k            = 1 - $k;
@@ -214,10 +205,10 @@ jQuery(document).ready(function() {
                                 <?php echo JHtml::_('projectfork.task.complete', $x, $item->complete, $can_change); ?>
                             </div>
                             <div class="btn-group">
-                                <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>" class="task-title">
+                                <h5 class="task-title"><a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>">
                                     <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                                     <?php echo $this->escape($item->title);?>
-                                </a>
+                                </a></h5>
                             </div>
                             <div class="btn-group">
                                 <small><?php echo $this->escape(JHtml::_('projectfork.truncate', $item->description));?></small>
