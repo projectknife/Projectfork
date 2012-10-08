@@ -62,9 +62,6 @@ $uid        = $user->get('id');
                         <th id="tableOrdering3" class="list-tasks">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKLISTS_AND_TASKS', 'tasks', $list_dir, $list_order); ?>
                         </th>
-                        <th id="tableOrdering4" class="list-deadline">
-                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
-                        </th>
                     </tr>
                </thead>
                <tbody>
@@ -86,15 +83,6 @@ $uid        = $user->get('id');
                             </td>
                             <td class="list-tasks">
                                 <i class="icon-ok"></i> <?php echo intval($item->tasklists) . ' / ' . intval($item->tasks);?>
-                            </td>
-                            <td class="list-deadline">
-                                <?php if ($item->end_date == $this->nulldate) {
-                                    echo JText::_('COM_PROJECTFORK_DATE_NOT_SET');
-                                }
-                                else {
-                                    echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));
-                                }
-                                ?>
                             </td>
                         </tr>
                     <?php
