@@ -13,6 +13,7 @@ defined('_JEXEC') or die();
 $user     = JFactory::getUser();
 $uid      = $user->get('id');
 $x        = count($this->items['directories']) + count($this->items['notes']);
+$this_dir = $this->items['directory'];
 
 foreach ($this->items['files'] as $i => $item) :
     $link   = ProjectforkHelperRoute::getFileRoute($item->slug, $item->project_slug, $item->dir_slug, $item->path);
@@ -26,9 +27,13 @@ foreach ($this->items['files'] as $i => $item) :
     $can_change   = ($access->get('file.edit.state') && $can_checkin);
     ?>
     <tr class="row<?php echo $i % 2; ?>">
-        <td class="center">
-            <?php echo JHtml::_('grid.id', $x, $item->id, false, 'fid'); ?>
+        <?php if ($this_dir->parent_id >= 1) : ?>
+        <td>
+            <label for="cb<?php echo $x; ?>" class="checkbox">
+                <?php echo JHtml::_('projectfork.id', $x, $item->id, false, 'fid'); ?>
+            </label>
         </td>
+        <?php endif; ?>
         <td>
             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
             <i class="icon-flag-2 icon-<?php echo $icon;?>"></i>

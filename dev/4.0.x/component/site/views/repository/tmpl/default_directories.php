@@ -41,9 +41,13 @@ foreach ($this->items['directories'] as $i => $item) :
     $can_change   = ($access->get('directory.edit.state') && $can_checkin);
     ?>
     <tr class="row<?php echo $i % 2; ?>">
-        <td class="center">
-            <?php echo JHtml::_('grid.id', $i, $item->id, false, 'did'); ?>
+        <?php if ($this_dir->parent_id >= 1) : ?>
+        <td>
+            <label for="cb<?php echo $i; ?>" class="checkbox">
+                <?php echo JHtml::_('projectfork.id', $i, $item->id); ?>
+            </label>
         </td>
+        <?php endif; ?>
         <td>
             <i class="<?php echo $icon;?>"></i>
             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>

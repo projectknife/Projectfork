@@ -59,9 +59,11 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
             <table class="adminlist table table-striped">
                 <thead>
                     <tr>
+                        <?php if ($dir->parent_id >= 1) : ?>
                         <th width="1%">
                             <input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
                         </th>
+                        <?php endif; ?>
                         <th width="25%">
                             <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                         </th>
@@ -101,17 +103,17 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                         <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
                     </select>
                 </div>
-                <?php if (!$this->state->get('filter.project')) : ?>
+                <?php /*if (!$this->state->get('filter.project')) :*/ ?>
                     <div class="btn-group display-limit">
-                        <?php echo $this->pagination->getLimitBox(); ?>
+                        <?php /*echo $this->pagination->getLimitBox();*/ ?>
                     </div>
-                    <?php if ($this->pagination->get('pages.total') > 1) : ?>
+                    <?php /*if ($this->pagination->get('pages.total') > 1) :*/ ?>
                         <div class="btn-group pagination">
-                            <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
-                            <?php echo $this->pagination->getPagesLinks(); ?>
+                            <p class="counter"><?php /*echo $this->pagination->getPagesCounter();*/ ?></p>
+                            <?php /*echo $this->pagination->getPagesLinks();*/ ?>
                         </div>
-                    <?php endif; ?>
-                <?php endif; ?>
+                    <?php /*endif;*/ ?>
+                <?php /*endif;*/ ?>
             </div>
 
             <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
