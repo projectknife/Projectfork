@@ -22,7 +22,7 @@ class ProjectforkModelTask extends JModelItem
     /**
      * Model context string.
      *
-     * @var    string    
+     * @var    string
      */
     protected $_context = 'com_projectfork.task';
 
@@ -36,7 +36,7 @@ class ProjectforkModelTask extends JModelItem
     public function &getItem($pk = null)
     {
         // Initialise variables.
-        $pk = (!empty($pk)) ? $pk : (int) $this->getState('task.id');
+        $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
 
         if ($this->_item === null) $this->_item = array();
 
@@ -161,13 +161,13 @@ class ProjectforkModelTask extends JModelItem
      * Method to auto-populate the model state.
      * Note. Calling getState in this method will result in recursion.
      *
-     * @return    void    
+     * @return    void
      */
     protected function populateState()
     {
         // Load state from the request.
         $pk = JRequest::getInt('id');
-        $this->setState('task.id', $pk);
+        $this->setState($this->getName() . '.id', $pk);
 
         $offset = JRequest::getUInt('limitstart');
         $this->setState('list.offset', $offset);

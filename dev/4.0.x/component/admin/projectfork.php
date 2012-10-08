@@ -22,7 +22,13 @@ jimport('joomla.application.component.helper');
 // Register classes to autoload
 JLoader::register('ProjectforkHelper',       JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
 JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+JLoader::register('ProjectforkHelperQuery',  JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
+JLoader::register('ProjectforkHelperForm',   JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/form.php');
 
-$controller = JController::getInstance('Projectfork');
+JLoader::registerPrefix('Projectfork',       JPATH_SITE . '/components/com_projectfork/libraries/projectfork');
+
+JForm::addRulePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/models/rules');
+
+$controller = JControllerLegacy::getInstance('Projectfork');
 $controller->execute(JRequest::getCmd('task'));
 $controller->redirect();

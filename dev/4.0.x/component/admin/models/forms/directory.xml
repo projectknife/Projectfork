@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<form>
+	<fieldset>
+		<field name="parent_id" type="repodir"
+            label="COM_PROJECTFORK_FIELD_DIRECTORY_TITLE" description="COM_PROJECTFORK_FIELD_DIRECTORY_DESC"
+            class="inputbox" required="true"
+        />
+        <field name="title" type="text"
+            label="JGLOBAL_TITLE" description="JFIELD_TITLE_DESC"
+            class="inputbox" size="30" required="true" maxlength="56"
+        />
+        <field name="description" type="text"
+            label="COM_PROJECTFORK_FIELD_DESCRIPTION_LABEL" description="COM_PROJECTFORK_FIELD_DESCRIPTION_DESC"
+            class="inputbox" size="50" maxlength="128"
+        />
+        <field name="created_by" type="user"
+			label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_CREATED_BY_DESC"
+        />
+		<field name="modified" type="calendar"
+			label="JGLOBAL_FIELD_MODIFIED_LABEL"
+			class="readonly" size="22" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
+        />
+		<field name="modified_by" type="user"
+		    label="JGLOBAL_FIELD_MODIFIED_BY_LABEL"
+		    class="readonly" readonly="true" filter="unset"
+		/>
+        <field name="rules" type="groupaccess"
+            component="com_projectfork" section="directory" inheritonly="true" filter="ProjectforkHelperForm::filterRules" validate="groupaccess"
+        />
+        <field name="asset_id" type="hidden" filter="unset"/>
+        <field name="access" type="inheritaccess" hidden="true" readonly="true"/>
+		<field name="id" type="hidden"/>
+		<field name="elements" type="hidden"/>
+		<field name="project_id" type="hidden" readonly="true"/>
+		<field name="created" type="hidden"/>
+		<field name="lft" type="hidden" filter="unset"/>
+		<field name="rgt" type="hidden" filter="unset"/>
+		<field name="level" type="hidden" filter="unset"/>
+		<field name="checked_out" type="hidden" filter="unset" />
+		<field name="checked_out_time" type="hidden" filter="unset" />
+	</fieldset>
+	<fields name="attribs">
+
+	</fields>
+</form>

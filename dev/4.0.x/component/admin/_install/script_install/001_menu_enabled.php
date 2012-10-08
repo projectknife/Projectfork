@@ -39,13 +39,7 @@ if ($menu_exists) return true;
 
 // Get the Menu model
 JLoader::register('MenusModelMenu', JPATH_ADMINISTRATOR . '/components/com_menus/models/menu.php');
-
-if (!class_exists('JModel')) {
-    $menu_model = new MenusModelMenu();
-}
-else {
-    $menu_model = JModel::getInstance('Menu', 'MenusModel', array('ignore_request' => true));
-}
+$menu_model = new MenusModelMenu(array('ignore_request' => true));
 
 // Create the menu
 $data = array('title'       => 'Projectfork',
@@ -66,25 +60,31 @@ $menu_items = array();
 
 $menu_items[] = array('title' => 'Dashboard',
                       'alias' => 'dashboard',
-                      'link'  => $base_link.'&view=dashboard');
+                      'link'  => $base_link . '&view=dashboard');
 $menu_items[] = array('title' => 'Projects',
                       'alias' => 'projects',
-                      'link'  => $base_link.'&view=projects');
+                      'link'  => $base_link . '&view=projects');
 $menu_items[] = array('title' => 'Milestones',
                       'alias' => 'milestones',
-                      'link'  => $base_link.'&view=milestones');
+                      'link'  => $base_link . '&view=milestones');
 $menu_items[] = array('title' => 'Tasks',
                       'alias' => 'tasks',
-                      'link'  => $base_link.'&view=tasks');
+                      'link'  => $base_link . '&view=tasks');
 $menu_items[] = array('title' => 'Timesheet',
                       'alias' => 'timesheet',
-                      'link'  => $base_link.'&view=timesheet');
+                      'link'  => $base_link . '&view=timesheet');
+$menu_items[] = array('title' => 'Files',
+                      'alias' => 'repository',
+                      'link'  => $base_link . '&view=repository');
 $menu_items[] = array('title' => 'Discussions',
                       'alias' => 'discussions',
-                      'link'  => $base_link.'&view=topics');
+                      'link'  => $base_link . '&view=topics');
 $menu_items[] = array('title' => 'Users',
                       'alias' => 'project-members',
-                      'link'  => $base_link.'&view=users');
+                      'link'  => $base_link . '&view=users');
+$menu_items[] = array('title' => 'My Page',
+                      'alias' => 'user-profile',
+                      'link'  => $base_link . '&view=user');
 
 
 // Iterate through each item

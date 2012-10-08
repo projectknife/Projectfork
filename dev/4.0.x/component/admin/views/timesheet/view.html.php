@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.view');
 
 
-class ProjectforkViewTimesheet extends JView
+class ProjectforkViewTimesheet extends JViewLegacy
 {
     /**
      * A list of topics

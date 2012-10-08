@@ -30,9 +30,9 @@ class ProjectforkModelTopics extends JModelList
     public function __construct($config = array())
     {
         // Register dependencies
-        JLoader::register('ProjectforkHelperQuery',  JPATH_SITE . '/components/com_projectfork/helpers/query.php');
         JLoader::register('ProjectforkHelper',       JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
         JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+        JLoader::register('ProjectforkHelperQuery',  JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
 
         // Set field filter
         if (empty($config['filter_fields'])) {
@@ -40,7 +40,7 @@ class ProjectforkModelTopics extends JModelList
                 'a.id', 'a.title', 'a.created', 'a.modified',
                 'a.checked_out', 'a.checked_out_time', 'a.state',
                 'author_name', 'editor', 'access_level',
-                'project_title', 'replies'
+                'project_title', 'replies', 'last_activity'
             );
         }
 
@@ -92,6 +92,10 @@ class ProjectforkModelTopics extends JModelList
         $query->select('COUNT(DISTINCT r.id) AS replies');
         $query->join('LEFT', '#__pf_replies AS r ON r.topic_id = a.id');
 
+        // Join over the replies for last activity
+        $query->select('CASE WHEN MAX(c.created) IS NULL THEN a.created ELSE MAX(c.created) END AS last_activity');
+        $query->join('LEFT', '#__pf_replies AS c ON c.topic_id = a.id');
+
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
@@ -112,7 +116,7 @@ class ProjectforkModelTopics extends JModelList
         $query->group('a.id');
 
         // Add the list ordering clause.
-        $query->order($this->getState('list.ordering', 'a.created').' ' . $this->getState('list.direction', 'DESC'));
+        $query->order($this->getState('list.ordering', 'a.created') .' ' . $this->getState('list.direction', 'DESC'));
 
         return $query;
     }
@@ -130,6 +134,7 @@ class ProjectforkModelTopics extends JModelList
 
         // Get the global params
         $global_params = JComponentHelper::getParams('com_projectfork', true);
+        $null_date     = JFactory::getDbo()->getNullDate();
 
         foreach ($items as $i => &$item)
         {
@@ -160,6 +165,13 @@ class ProjectforkModelTopics extends JModelList
         $user   = JFactory::getUser();
         $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
 
+        // Return empty array if no project is select
+        $project = (int) $this->getState('filter.project');
+
+        if ($project <= 0) {
+            return array();
+        }
+
         // Construct the query
         $query->select('u.id AS value, u.name AS text');
         $query->from('#__users AS u');
@@ -173,7 +185,7 @@ class ProjectforkModelTopics extends JModelList
 
         // Filter fields
         $filters = array();
-        $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
+        $filters['a.project_id'] = array('INT-NOTZERO', $project);
 
         if (!$access->get('topic.edit.state') && !$access->get('topic.edit')) {
             $filters['a.state'] = array('STATE', '1');
@@ -200,7 +212,7 @@ class ProjectforkModelTopics extends JModelList
      *
      * @return    void
      */
-    protected function populateState($ordering = 'a.created', $direction = 'DESC')
+    protected function populateState($ordering = 'last_activity', $direction = 'DESC')
     {
         $app    = JFactory::getApplication();
         $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
@@ -231,9 +243,8 @@ class ProjectforkModelTopics extends JModelList
         $this->setState('filter.search', $value);
 
         // Filter - Project
-        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         // Filter - Author
         $author = $app->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', '');

@@ -13,42 +13,36 @@ defined('_JEXEC') or die();
 JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.calendar');
-JHtml::_('behavior.formvalidation');
+JHtml::_('projectfork.script.form');
 
-
-// Create shortcut to parameters.
 $params = $this->state->get('params');
+$access = ProjectforkHelperAccess::getActions();
 
-// This checks if the editor config options have ever been saved. If they haven't they will fall back to the original settings.
-$editoroptions = isset($params->show_publishing_options);
-if(!$editoroptions) $params->show_urls_images_frontend = '0';
+$create_ms   = $access->get('milestone.create');
+$create_list = $access->get('tasklist.create');
+$create_task = $access->get('task.create');
 ?>
 <script type="text/javascript">
-	Joomla.submitbutton = function(task) {
-		if (task == 'projectform.cancel' || document.formvalidator.isValid(document.id('adminForm'))) {
-			<?php echo $this->form->getField('description')->save(); ?>
-			Joomla.submitform(task);
-		} else {
-			alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
-		}
+Joomla.submitbutton = function(task)
+{
+	if (task == 'projectform.cancel' || document.getElementById('jform_title').value != '') {
+		<?php echo $this->form->getField('description')->save(); ?>
+		Joomla.submitform(task, document.getElementById('item-form'));
+	} else {
+		alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
 	}
+}
 </script>
 <div class="edit item-page<?php echo $this->pageclass_sfx; ?>">
+
 <?php if ($params->get('show_page_heading', 0)) : ?>
-<h1>
-	<?php echo $this->escape($params->get('page_heading')); ?>
-</h1>
+<h1><?php echo $this->escape($params->get('page_heading')); ?></h1>
 <?php endif; ?>
 
-<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="adminForm" class="form-validate form-inline">
+<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="item-form" class="form-inline" enctype="multipart/form-data">
 	<fieldset>
 		<div class="formelm-buttons btn-toolbar">
-		    <button class="btn btn-primary" type="button" onclick="Joomla.submitbutton('projectform.save')">
-			    <?php echo JText::_('JSAVE') ?>
-		    </button>
-		    <button class="btn" type="button" onclick="Joomla.submitbutton('projectform.cancel')">
-			    <?php echo JText::_('JCANCEL') ?>
-		    </button>
+		    <?php echo $this->toolbar; ?>
 		</div>
 		<div class="formelm control-group">
 			<div class="control-label">
@@ -65,8 +59,10 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
 		</div>
 	</fieldset>
 
+    <hr />
+
     <?php echo JHtml::_('tabs.start', 'projectform', array('useCookie' => 'true')) ;?>
-    <?php echo JHtml::_('tabs.panel', 'Publishing', 'project-publishing') ;?>
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_PUBLISHING'), 'project-publishing') ;?>
     <fieldset>
         <div class="formelm control-group">
         	<div class="control-label">
@@ -120,63 +116,56 @@ if(!$editoroptions) $params->show_urls_images_frontend = '0';
 		<?php endif; ?>
     </fieldset>
 
-    <?php echo JHtml::_('tabs.panel', 'Permissions', 'project-permissions') ;?>
+    <?php if ($this->item->id) : ?>
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'project-attachments') ;?>
     <fieldset>
-        <div class="formelm" id="jform_access-li">
-        	<div class="control-label">
-		    	<?php echo $this->form->getLabel('access'); ?>
-		    </div>
-		    <div class="controls">
-				<?php echo $this->form->getInput('access'); ?>
-			</div>
-		</div>
-        <div class="formelm" id="jform_access_new-li" style="display: none;">
-        	<div class="control-label">
-		    	<?php echo $this->form->getLabel('access_new'); ?>
-		    </div>
-		    <div class="controls">
-				<?php echo $this->form->getInput('access_new'); ?>
-			</div>
-		</div>
-        <div class="formelm" id="jform_access_exist-li" style="display: none;">
-            <label id="jform_access_exist-lbl" class="hasTip control-label" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_DESC');?>">
-                <?php echo JText::_('COM_PROJECTFORK_FIELD_EXISTING_ACCESS_GROUPS_LABEL');?>
-            </label>
-        </div>
-        <div class="formlm" id="jform_access_groups-li">
-            <label id="jform_access_groups-lbl" class="hasTip control-label" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_NEW_ACCESS_GROUPS_DESC');?>">
-                <?php echo JText::_('COM_PROJECTFORK_FIELD_NEW_ACCESS_GROUPS_LABEL');?>
-            </label>
-            <div id="jform_access_groups" class="controls">
-    		    <div class="clr"></div>
+    	<div class="formelm control-group">
+    		<?php echo $this->form->getInput('attachment'); ?>
+    	</div>
+    </fieldset>
+    <?php endif; ?>
+
+    <?php
+    $fieldsets = $this->form->getFieldsets('attribs');
+    if (count($fieldsets)) :
+        echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_DETAILS_FIELDSET'), 'project-options');
+		foreach ($fieldsets as $name => $fieldset) :
+            ?>
+			<fieldset>
+                <?php foreach ($this->form->getFieldset($name) as $field) : ?>
+                    <div class="formelm control-group">
+                    	<div class="control-label"><?php echo $field->label; ?></div>
+            		    <div class="controls"><?php echo $field->input; ?></div>
+            		</div>
+                <?php endforeach; ?>
+            </fieldset>
+        <?php endforeach; ?>
+    <?php endif; ?>
+
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'project-permissions') ;?>
+    <fieldset>
+        <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+        <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+        <div class="formlm" id="jform_rules_element">
+            <div id="jform_rules_reload" class="controls">
                 <?php echo $this->form->getInput('rules'); ?>
             </div>
         </div>
     </fieldset>
 
-    <?php echo JHtml::_('tabs.panel', 'Options', 'project-options') ;?>
-    <fieldset>
-        <?php $fieldSets = $this->form->getFieldsets('attribs'); ?>
-			<?php foreach ($fieldSets as $name => $fieldSet) : ?>
-				<fieldset>
-                    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
-                        <div class="formelm control-group" id="jform_access-li">
-                        	<div class="control-label">
-                		   		<?php echo $field->label; ?>
-                		    </div>
-                		    <div class="controls">
-                				<?php echo $field->input; ?>
-                			</div>
-                		</div>
-                    <?php endforeach; ?>
-                </fieldset>
-			<?php endforeach; ?>
-    </fieldset>
-
     <?php echo JHtml::_('tabs.end') ;?>
+
+    <?php
+        echo $this->form->getInput('alias');
+        echo $this->form->getInput('created');
+        echo $this->form->getInput('id');
+        echo $this->form->getInput('asset_id');
+        echo $this->form->getInput('elements');
+    ?>
 
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="return" value="<?php echo $this->return_page;?>" />
+    <input type="hidden" name="view" value="<?php echo htmlspecialchars($this->get('Name'), ENT_COMPAT, 'UTF-8');?>" />
 	<?php echo JHtml::_( 'form.token' ); ?>
 </form>
 </div>

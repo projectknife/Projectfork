@@ -23,7 +23,7 @@ class ProjectforkModelUserRefs extends JModelList
      * Constructor
      *
      * @param    array          An optional associative array of configuration settings.
-     * @see      jcontroller    
+     * @see      jcontroller
      */
     public function __construct($config = array())
     {
@@ -34,9 +34,7 @@ class ProjectforkModelUserRefs extends JModelList
     /**
      * Method to get a list of user references.
      *
-     * @param     string     The item type
-     * @param     integer    The item id
-     * @return    mixed      An array of data items on success, false on failure.
+     * @return    mixed    An array of data items on success, false on failure.
      */
     public function getItems($item_type, $item_id)
     {
@@ -54,5 +52,79 @@ class ProjectforkModelUserRefs extends JModelList
         $items = (array) $db->loadObjectList();
 
         return $items;
+    }
+
+
+    public function store($users, $item_type = null, $item_id = 0)
+    {
+        $db = $this->getDbo();
+
+        if (is_null($item_type) || $item_type == '') {
+            $item_type = $this->getState('item.type');
+        }
+
+        if ((int) $item_id == 0) {
+            $item_type = (int) $this->getState('item.id');
+        }
+
+        if ($item_id == 0) {
+            $this->setError('COM_PROJECTFORK_ERROR_USER_REFERENCE_ID');
+            return false;
+        }
+
+        if (!is_array($users) || !count($users)) {
+            $this->setError('COM_PROJECTFORK_ERROR_EMPTY_USER_REFERENCE');
+            return false;
+        }
+
+        $list   = $this->getItems($item_type, $item_id);
+        $stored = array();
+
+        foreach($list AS $ref)
+        {
+            $stored[] = (int) $ref->user_id;
+        }
+
+        foreach($users AS $user)
+        {
+            $uid   = (int) $user;
+            $query = $db->getQuery(true);
+
+            if (!$uid || in_array($uid, $stored)) continue;
+
+
+            $query->insert('#__pf_ref_users');
+            $query->values('NULL, ' . $db->quote($item_type) . ', ' . $db->quote($item_id) . ', ' . $db->quote($uid));
+
+            $db->setQuery((string) $query);
+            $db->query();
+
+            if ($db->getError()) {
+                $this->setError('COM_PROJECTFORK_ERROR_DATABASE_USER_REF_STORE_FAILED');
+                return false;
+            }
+
+            $stored[] = $uid;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Method to auto-populate the model state.
+     * Note. Calling getState in this method will result in recursion.
+     *
+     * @return    void
+     */
+    protected function populateState($ordering = 'title', $direction = 'ASC')
+    {
+        // Item type
+        $value = str_replace('form', '', JRequest::getCmd('view', 'taskform'));
+        $this->setState('item.type', $value);
+
+        // Item id
+        $value = JRequest::getUint('id');
+        $this->setState('item.id');
     }
 }

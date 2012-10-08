@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
  * Task list view class.
  *
  */
-class ProjectforkViewTasks extends JView
+class ProjectforkViewTasks extends JViewLegacy
 {
     protected $pageclass_sfx;
     protected $items;
@@ -38,7 +38,7 @@ class ProjectforkViewTasks extends JView
     /**
      * Display the view
      *
-     * @return    void    
+     * @return    void
      */
     public function display($tpl = null)
     {
@@ -55,7 +55,7 @@ class ProjectforkViewTasks extends JView
 
         // Set list limit to 0 if default layout and if a project is selected
         if (($project > 0) && ($layout == '' || $layout == 'default')) {
-            $state->set('list.limit', 0);
+            // $state->set('list.limit', 0);
         }
 
         $this->items      = $this->get('Items');
@@ -66,7 +66,6 @@ class ProjectforkViewTasks extends JView
         $this->authors    = $this->get('Authors');
         $this->assigned   = $this->get('AssignedUsers');
         $this->params     = $this->state->params;
-        $this->actions    = $this->getActions();
         $this->toolbar    = $this->getToolbar();
         $this->access     = ProjectforkHelper::getActions(NULL, 0, true);
         $this->nulldate   = JFactory::getDbo()->getNullDate();
@@ -97,19 +96,16 @@ class ProjectforkViewTasks extends JView
     /**
      * Prepares the document
      *
-     * @return    void    
+     * @return    void
      */
     protected function prepareDocument()
     {
         $app     = JFactory::getApplication();
-        $menus   = $app->getMenu();
+        $menu    = $app->getMenu()->getActive();
         $pathway = $app->getPathway();
         $title   = null;
 
-        // Because the application sets a default page title,
-        // we need to get it from the menu item itself
-        $menu = $menus->getActive();
-
+        // Because the application sets a default page title, we need to get it from the menu item itself
         if ($menu) {
             $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
         }
@@ -166,56 +162,44 @@ class ProjectforkViewTasks extends JView
      */
     protected function getToolbar()
     {
-        $access = ProjectforkHelper::getActions(NULL, 0, true);
-        $tb     = new ProjectforkHelperToolbar();
+        $access = ProjectforkHelperAccess::getActions(null, 0, true);
+        $state  = $this->get('State');
 
         $create_list = $access->get('tasklist.create');
         $create_task = $access->get('task.create');
 
-        if ($create_task && $create_list) {
-            $items = array();
-            $items['tasklistform.add'] = array('text' => 'COM_PROJECTFORK_ACTION_NEW_TASKLIST');
+        $items = array();
+        $items[] = array('text'    => 'COM_PROJECTFORK_ACTION_NEW_TASK',
+                         'task'    => 'taskform.add',
+                         'options' => array('access' => $create_task));
 
-            $tb->dropdownButton($items, 'COM_PROJECTFORK_ACTION_NEW', 'taskform.add', false);
-        }
-        else {
-            if ($create_list) {
-                $tb->button('COM_PROJECTFORK_ACTION_NEW_TASKLIST', 'tasklistform.add');
-            }
-            if ($create_task) {
-                $tb->button('COM_PROJECTFORK_ACTION_NEW_TASK', 'taskform.add');
-            }
-        }
+        $items[] = array('text'    => 'COM_PROJECTFORK_ACTION_NEW_TASKLIST',
+                         'task'    => 'tasklistform.add',
+                         'options' => array('access' => $create_list));
 
-        return $tb->__toString();
-    }
+        ProjectforkHelperToolbar::dropdownButton($items);
 
-
-    /**
-     * Generates select options for the bulk action menu
-     *
-     * @return    array    The available options
-     */
-    protected function getActions()
-    {
-        $access  = ProjectforkHelper::getActions(NULL, 0, true);
-        $state   = $this->get('State');
-        $options = array();
-
-        if ($access->get('task.edit.state')) {
-            $options[] = JHtml::_('select.option', 'tasks.publish', JText::_('COM_PROJECTFORK_ACTION_PUBLISH'));
-            $options[] = JHtml::_('select.option', 'tasks.unpublish', JText::_('COM_PROJECTFORK_ACTION_UNPUBLISH'));
-            $options[] = JHtml::_('select.option', 'tasks.archive', JText::_('COM_PROJECTFORK_ACTION_ARCHIVE'));
-            $options[] = JHtml::_('select.option', 'tasks.checkin', JText::_('COM_PROJECTFORK_ACTION_CHECKIN'));
+        $items = array();
+        if ($access->get('milestone.edit.state')) {
+            $items[] = array('text' => 'COM_PROJECTFORK_ACTION_PUBLISH',   'task' => $this->getName() . '.publish');
+            $items[] = array('text' => 'COM_PROJECTFORK_ACTION_UNPUBLISH', 'task' => $this->getName() . '.unpublish');
+            $items[] = array('text' => 'COM_PROJECTFORK_ACTION_ARCHIVE',   'task' => $this->getName() . '.archive');
+            $items[] = array('text' => 'COM_PROJECTFORK_ACTION_CHECKIN',   'task' => $this->getName() . '.checkin');
         }
 
-        if ($state->get('filter.published') == -2 && $access->get('task.delete')) {
-            $options[] = JHtml::_('select.option', 'tasks.delete', JText::_('COM_PROJECTFORK_ACTION_DELETE'));
+        if ($state->get('filter.published') == -2 && $access->get('milestone.delete')) {
+            $items[] = array('text' => 'COM_PROJECTFORK_ACTION_DELETE', 'task' => $this->getName() . '.delete');
         }
-        elseif ($access->get('task.edit.state')) {
-            $options[] = JHtml::_('select.option', 'tasks.trash', JText::_('COM_PROJECTFORK_ACTION_TRASH'));
+        elseif ($access->get('milestone.edit.state')) {
+            $items[] = array('text' => 'COM_PROJECTFORK_ACTION_TRASH', 'task' => $this->getName() . '.trash');
         }
 
-        return $options;
+        if (count($items)) {
+            ProjectforkHelperToolbar::listButton($items);
+        }
+
+        ProjectforkHelperToolbar::filterButton($this->state->get('filter.isset'));
+
+        return ProjectforkHelperToolbar::render();
     }
 }

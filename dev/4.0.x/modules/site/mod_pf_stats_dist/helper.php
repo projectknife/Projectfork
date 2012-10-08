@@ -1,134 +1,134 @@
 <?php
 /**
-* @package   Projectfork Task Distribution Statistics
-* @copyright Copyright (C) 2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.php
+* @package      Projectfork Task Distribution Statistics
 *
-* This file is part of Projectfork.
-*
-* Projectfork is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*
-* Projectfork is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
+* @author       Tobias Kuhn (eaxs)
+* @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+* @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 **/
 
-// no direct access
-defined('_JEXEC') or die;
+defined('_JEXEC') or die();
 
 
+/**
+ * Module helper class
+ *
+ */
 abstract class modPFstatsDistHelper
 {
-	public static function getProject()
-	{
-	    $item = new stdClass();
+    /**
+     * Method to get the current project id and title
+     *
+     * @return    object    $item    The project data
+     */
+    public static function getProject()
+    {
+        $item = new stdClass();
 
         $item->id    = ProjectforkHelper::getActiveProjectId();
         $item->title = ProjectforkHelper::getActiveProjectTitle();
 
-		return $item;
-	}
+        return $item;
+    }
 
 
+    /**
+     * Method to get the project statistics
+     *
+     * @param     object     $params    The module params
+     * @param     integer    $id        The project id
+     *
+     * @return    array      $data      The stats
+     */
     public static function getStatsProject(&$params, $id = 0)
     {
         $user  = JFactory::getUser();
         $db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+        $query = $db->getQuery(true);
 
         // Get Params
-        $show_c   = (int) $params->get('show_completed', 1);
-        $show_u   = (int) $params->get('show_unassigned', 1);
-        $limit    = (int) $params->get('limit', 5);
+        $show_c = (int) $params->get('show_completed', 1);
+        $show_u = (int) $params->get('show_unassigned', 1);
+        $limit  = (int) $params->get('limit', 5);
 
         // Get the user task distribution
         $query->select('COUNT(a.user_id) AS data')
-              ->from('#__pf_ref_users AS a');
+              ->from('#__pf_ref_users AS a')
+              ->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id')
+              ->where('a.item_type = ' . $db->quote('task'));
 
-        $query->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id');
-        $query->where('a.item_type = '.$db->quote('task'));
+        $query->select('u.name AS label')
+              ->join('LEFT', '#__users AS u ON u.id = a.user_id');
 
-        $query->select('u.name AS label');
-        $query->join('LEFT', '#__users AS u ON u.id = a.user_id');
-
-        if($id) {
-            $query->where('t.project_id = '.$id);
+        if ($id) {
+            $query->where('t.project_id = ' . $id);
         }
 
-        if(!$user->authorise('core.admin')) {
-		    $groups	= implode(',', $user->getAuthorisedViewLevels());
-			$query->where('t.access IN ('.$groups.')');
-		}
+        if (!$user->authorise('core.admin')) {
+            $groups = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('t.access IN (' . $groups . ')');
+        }
 
         // Apply complete stage filter
-        if($show_c == 0) {
+        if ($show_c == 0) {
             $query->where('t.complete = 0');
         }
 
         $query->group('a.user_id');
         $query->order('data', 'desc');
 
-        $db->setQuery($query->__toString(), 0, $limit);
+        $db->setQuery((string) $query, 0, $limit);
         $data = (array) $db->loadObjectList();
 
 
         // Find unassigned tasks if enabled
         $unassigned = 0;
-        if($show_u) {
+        if ($show_u) {
             // Count total amount of tasks
-            $query = $db->getQuery(true);
+            $query->clear();
             $query->select('COUNT(a.id)')
                   ->from('#__pf_tasks AS a');
 
-            if($id) {
-                $query->where('a.project_id = '.$id);
+            if ($id) {
+                $query->where('a.project_id = ' . $id);
             }
 
-            if(!$user->authorise('core.admin')) {
-    		    $groups	= implode(',', $user->getAuthorisedViewLevels());
-    			$query->where('a.access IN ('.$groups.')');
-    		}
+            if (!$user->authorise('core.admin')) {
+                $groups = implode(',', $user->getAuthorisedViewLevels());
+                $query->where('a.access IN (' . $groups . ')');
+            }
 
             // Apply complete stage filter
-            if($show_c == 0) {
+            if ($show_c == 0) {
                 $query->where('a.complete = 0');
             }
 
-            $db->setQuery($query->__toString());
+            $db->setQuery((string) $query);
             $total = (int) $db->loadResult();
 
 
             // Count assigned tasks
-            $query = $db->getQuery(true);
-
+            $query->clear();
             $query->select('COUNT(DISTINCT a.item_id)')
-                  ->from('#__pf_ref_users AS a');
+                  ->from('#__pf_ref_users AS a')
+                  ->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id')
+                  ->where('a.item_type = ' . $db->quote('task'));
 
-            $query->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id');
-            $query->where('a.item_type = '.$db->quote('task'));
-
-            if($id) {
-                $query->where('t.project_id = '.$id);
+            if ($id) {
+                $query->where('t.project_id = ' . $id);
             }
 
             // Apply complete stage filter
-            if($show_c == 0) {
+            if ($show_c == 0) {
                 $query->where('t.complete = 0');
             }
 
-            if(!$user->authorise('core.admin')) {
-    		    $groups	= implode(',', $user->getAuthorisedViewLevels());
-    			$query->where('t.access IN ('.$groups.')');
-    		}
+            if (!$user->authorise('core.admin')) {
+                $groups    = implode(',', $user->getAuthorisedViewLevels());
+                $query->where('t.access IN (' . $groups . ')');
+            }
 
-            $db->setQuery($query->__toString());
+            $db->setQuery((string) $query);
             $assigned = (int) $db->loadResult();
 
 
@@ -155,11 +155,19 @@ abstract class modPFstatsDistHelper
     }
 
 
+    /**
+     * Method to get the user statistics
+     *
+     * @param     object     $params    The module params
+     * @param     integer    $id        The user id
+     *
+     * @return    array      $data      The stats
+     */
     public static function getStatsUser(&$params, $id)
     {
         $user  = JFactory::getUser((int) $id);
         $db    = JFactory::getDbo();
-		$query = $db->getQuery(true);
+        $query = $db->getQuery(true);
         $data  = array();
 
         // Get Params
@@ -169,24 +177,23 @@ abstract class modPFstatsDistHelper
 
         // Get the other users task distribution
         $query->select('COUNT(a.user_id) AS data')
-              ->from('#__pf_ref_users AS a');
+              ->from('#__pf_ref_users AS a')
+              ->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id')
+              ->where('a.item_type = ' . $db->quote('task'));
 
-        $query->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id');
-        $query->where('a.item_type = '.$db->quote('task'));
-
-        if(!$user->authorise('core.admin')) {
-		    $groups	= implode(',', $user->getAuthorisedViewLevels());
-			$query->where('t.access IN ('.$groups.')');
-		}
+        if (!$user->authorise('core.admin')) {
+            $groups = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('t.access IN (' . $groups . ')');
+        }
 
         // Apply complete stage filter
-        if($show_c == 0) {
+        if ($show_c == 0) {
             $query->where('t.complete = 0');
         }
 
         $query->group('a.user_id');
 
-        $db->setQuery($query->__toString());
+        $db->setQuery((string) $query);
 
         $item = new stdClass();
         $item->data  = (int) $db->loadResult();
@@ -196,36 +203,32 @@ abstract class modPFstatsDistHelper
 
 
         // Get the current user task distribution
-        $query = $db->getQuery(true);
+        $query->clear();
+        $query->select('COUNT(a.user_id) AS data, u.name AS label')
+              ->from('#__pf_ref_users AS a')
+              ->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id')
+              ->where('a.item_type = ' . $db->quote('task'))
+              ->join('RIGHT', '#__users AS u ON u.id = '.(int) $id);
 
-        $query->select('COUNT(a.user_id) AS data')
-              ->from('#__pf_ref_users AS a');
-
-        $query->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id');
-        $query->where('a.item_type = '.$db->quote('task'));
-
-        $query->select('u.name AS label');
-        $query->join('RIGHT', '#__users AS u ON u.id = '.(int) $id);
-
-        if(!$user->authorise('core.admin')) {
-		    $groups	= implode(',', $user->getAuthorisedViewLevels());
-			$query->where('t.access IN ('.$groups.')');
-		}
+        if (!$user->authorise('core.admin')) {
+            $groups = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('t.access IN (' . $groups.')');
+        }
 
         // Apply complete stage filter
-        if($show_c == 0) {
+        if ($show_c == 0) {
             $query->where('t.complete = 0');
         }
 
-        $query->where('a.user_id = '. (int) $id);
-        $query->group('a.user_id');
+        $query->where('a.user_id = '. (int) $id)
+              ->group('a.user_id');
 
-        $db->setQuery($query->__toString());
+        $db->setQuery((string) $query);
         $item = $db->loadObject();
 
-        if(is_null($item)) {
+        if (is_null($item)) {
             $item = new stdClass();
-            $item->data = 0;
+            $item->data  = 0;
             $item->label = $user->get('name');
         }
 
@@ -234,23 +237,23 @@ abstract class modPFstatsDistHelper
 
         // Find unassigned tasks if enabled
         $unassigned = 0;
-        if($show_u) {
+        if ($show_u) {
             // Count total amount of tasks
-            $query = $db->getQuery(true);
+            $query->clear();
             $query->select('COUNT(a.id)')
                   ->from('#__pf_tasks AS a');
 
-            if(!$user->authorise('core.admin')) {
-    		    $groups	= implode(',', $user->getAuthorisedViewLevels());
-    			$query->where('a.access IN ('.$groups.')');
-    		}
+            if (!$user->authorise('core.admin')) {
+                $groups = implode(',', $user->getAuthorisedViewLevels());
+                $query->where('a.access IN (' . $groups . ')');
+            }
 
             // Apply complete stage filter
-            if($show_c == 0) {
+            if ($show_c == 0) {
                 $query->where('a.complete = 0');
             }
 
-            $db->setQuery($query->__toString());
+            $db->setQuery((string) $query);
             $total = (int) $db->loadResult();
 
 
@@ -258,22 +261,21 @@ abstract class modPFstatsDistHelper
             $query = $db->getQuery(true);
 
             $query->select('COUNT(DISTINCT a.item_id)')
-                  ->from('#__pf_ref_users AS a');
+                  ->from('#__pf_ref_users AS a')
+                  ->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id')
+                  ->where('a.item_type = ' . $db->quote('task'));
 
-            $query->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id');
-            $query->where('a.item_type = '.$db->quote('task'));
-
-            if(!$user->authorise('core.admin')) {
-    		    $groups	= implode(',', $user->getAuthorisedViewLevels());
-    			$query->where('t.access IN ('.$groups.')');
-    		}
+            if (!$user->authorise('core.admin')) {
+                $groups = implode(',', $user->getAuthorisedViewLevels());
+                $query->where('t.access IN (' . $groups . ')');
+            }
 
             // Apply complete stage filter
-            if($show_c == 0) {
+            if ($show_c == 0) {
                 $query->where('t.complete = 0');
             }
 
-            $db->setQuery($query->__toString());
+            $db->setQuery((string) $query);
             $assigned = (int) $db->loadResult();
 
             // Calculate the amount of unassigned tasks

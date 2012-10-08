@@ -73,7 +73,7 @@ class ProjectforkModelComment extends JModelAdmin
     public function getForm($data = array(), $loadData = true)
     {
         // Get the form.
-        $form = $this->loadForm('com_projectfork.' . $this->getName(), 'comment', array('control' => 'jform', 'load_data' => $loadData));
+        $form = $this->loadForm('com_projectfork.comment' . 'comment', 'comment', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) return false;
 
         $jinput = JFactory::getApplication()->input;

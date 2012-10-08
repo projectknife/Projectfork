@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
  * Feed list view class.
  *
  */
-class ProjectforkViewTasks extends JView
+class ProjectforkViewTasks extends JViewLegacy
 {
     /**
      * Generates a list of RSS feed items.

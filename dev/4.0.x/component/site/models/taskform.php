@@ -11,7 +11,7 @@ defined('_JEXEC') or die();
 
 
 // Base this model on the backend version.
-require_once JPATH_ADMINISTRATOR . '/components/com_projectfork/models/task.php';
+JLoader::register('ProjectforkModelTask', JPATH_ADMINISTRATOR . '/components/com_projectfork/models/task.php');
 
 
 /**
@@ -21,6 +21,25 @@ require_once JPATH_ADMINISTRATOR . '/components/com_projectfork/models/task.php'
 class ProjectforkModelTaskForm extends ProjectforkModelTask
 {
     /**
+     * Constructor.
+     *
+     * @param    array          $config    An optional associative array of configuration settings.
+     *
+     * @see      jcontroller
+     */
+    public function __construct($config = array())
+    {
+       // Register dependencies
+       JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/tables');
+       JForm::addFieldPath(JPATH_ADMINISTRATOR    . '/components/com_projectfork/models/fields');
+       JForm::addFormPath(JPATH_ADMINISTRATOR     . '/components/com_projectfork/models/forms');
+
+       // Call parent constructor
+       parent::__construct($config);
+    }
+
+
+    /**
      * Method to get item data.
      *
      * @param     integer    $id    The id of the item.
@@ -29,7 +48,7 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
     public function getItem($id = null)
     {
         // Initialise variables.
-        $id = (int) (!empty($id)) ? $id : $this->getState('task.id');
+        $id = (int) (!empty($id)) ? $id : $this->getState($this->getName() . '.id');
 
         // Get a row instance.
         $table = $this->getTable();
@@ -61,6 +80,10 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
         if ($value->estimate > 0) {
             $value->estimate = round($value->estimate / 60);
         }
+
+        // Get the attachments
+        $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
+        $value->attachment = $attachments->getItems('task', $value->id);
 
         // Check general edit permission first.
         if ($access->get('task.edit')) {
@@ -112,14 +135,12 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
             $table->load((int) $pk);
 
             // Access checks.
-            if (!$this->canEditState($table))
-            {
+            if (!$this->canEditState($table)) {
                 // Prune items that you can't change.
                 unset($pks[$i]);
                 JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_EDITSTATE_NOT_PERMITTED'));
             }
-            elseif ($table->priority != $priority[$pk])
-            {
+            elseif ($table->priority != $priority[$pk]) {
                 $table->priority = $priority[$pk];
 
                 if (!$table->store()) {
@@ -159,14 +180,13 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
             $table->load((int) $pk);
 
             // Access checks.
-            if (!$this->canEditState($table))
-            {
+            if (!$this->canEditState($table)) {
                 // Prune items that you can't change.
                 unset($pks[$i]);
                 JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'));
             }
 
-            $refs = JModel::getInstance('UserRefs', 'ProjectforkModel', array('ignore_request' => true));
+            $refs = $this->getInstance('UserRefs', 'ProjectforkModel', array('ignore_request' => true));
 
             if (!$refs->store($uids, 'task', $pk)) {
                 return false;
@@ -183,39 +203,47 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
     /**
      * Method to set the completion state of tasks
      *
-     * @param     array    $ids         An array of primary key ids.
-     * @param     array    $complete    An array of state values.
+     * @param     array    $pks         An array of primary key ids.
+     *
      * @return    mixed                 True on success, otherwise false
      */
-    public function setComplete($pks = null, $complete = null)
+    public function complete($pks = null, $state = null)
     {
         // Initialise variables.
         $table = $this->getTable();
-        $conditions = array();
 
         if (empty($pks)) {
-            return JError::raiseWarning(500, JText::_($this->text_prefix . '_ERROR_NO_ITEMS_SELECTED'));
+            JError::raiseWarning(500, JText::_($this->text_prefix . '_ERROR_NO_ITEMS_SELECTED'));
+            return false;
         }
 
-        // update values
+        // Update values
         foreach ($pks as $i => $pk)
         {
             $table->load((int) $pk);
 
             // Access checks.
-            if (!$this->canEditState($table))
-            {
+            if (!$this->canEditState($table)) {
                 // Prune items that you can't change.
                 unset($pks[$i]);
                 JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'));
             }
-            elseif ($table->complete != $complete[$pk]) {
-                $table->complete = (int) $complete[$pk];
 
-                if (!$table->store()) {
-                    $this->setError($table->getError());
-                    return false;
+            if (is_null($state)) {
+                if ($table->complete == '1') {
+                    $table->complete = '0';
                 }
+                else {
+                    $table->complete = '1';
+                }
+            }
+            else {
+                $table->complete = (int) $state;
+            }
+
+            if (!$table->store()) {
+                $this->setError($table->getError());
+                return false;
             }
         }
 
@@ -238,22 +266,6 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
 
 
     /**
-     * Method to get the data that should be injected in the form.
-     *
-     * @return    mixed    The data for the form.
-     */
-    protected function loadFormData()
-    {
-        // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.taskform.data', array());
-
-        if (empty($data)) $data = $this->getItem();
-
-        return $data;
-    }
-
-
-    /**
      * Method to auto-populate the model state.
      * Note. Calling getState in this method will result in recursion.
      *
@@ -263,7 +275,7 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
     {
         // Load state from the request.
         $pk = JRequest::getInt('id');
-        $this->setState('task.id', $pk);
+        $this->setState($this->getName() . '.id', $pk);
 
         $return = JRequest::getVar('return', null, 'default', 'base64');
         $this->setState('return_page', base64_decode($return));

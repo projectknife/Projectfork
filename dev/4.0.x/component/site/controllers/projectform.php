@@ -35,6 +35,21 @@ class ProjectforkControllerProjectform extends JControllerForm
 
 
     /**
+     * Constructor
+     *
+     */
+    public function __construct($config = array())
+	{
+	    parent::__construct($config);
+
+        // Register additional tasks
+        $this->registerTask('save2milestone', 'save');
+		$this->registerTask('save2tasklist', 'save');
+		$this->registerTask('save2task', 'save');
+    }
+
+
+    /**
      * Method to add a new record.
      *
      * @return    boolean    True if the article can be added, false if not.
@@ -81,27 +96,6 @@ class ProjectforkControllerProjectform extends JControllerForm
 
 
     /**
-     * Method to save a record.
-     *
-     * @param     string     $key        The name of the primary key of the URL variable.
-     * @param     string     $url_var    The name of the URL variable if different from the primary key.
-     *
-     * @return    boolean                True if successful, false otherwise.
-     */
-    public function save($key = null, $url_var = 'id')
-    {
-        $result = parent::save($key, $url_var);
-
-        // If ok, redirect to the return page.
-        if ($result) {
-            $this->setRedirect($this->getReturnPage());
-        }
-
-        return $result;
-    }
-
-
-    /**
      * Method to get a model object, loading it if required.
      *
      * @param     string    $name      The model name. Optional.
@@ -115,6 +109,21 @@ class ProjectforkControllerProjectform extends JControllerForm
         $model = parent::getModel($name, $prefix, $config);
 
         return $model;
+    }
+
+
+    /**
+     * Method to check if you can add a new record.
+     *
+     * @param     array      $data    An array of input data.
+     *
+     * @return    boolean
+     */
+    protected function allowAdd($data = array())
+    {
+        $access = ProjectforkHelperAccess::getActions();
+
+        return $access->get('project.create');
     }
 
 
@@ -218,12 +227,35 @@ class ProjectforkControllerProjectform extends JControllerForm
      *
      * @return    void
      */
-    protected function postSaveHook(JModel &$model, $data)
+    protected function postSaveHook(&$model, $data)
     {
         $task = $this->getTask();
 
-        if ($task == 'save') {
-            $this->setRedirect(JRoute::_(ProjectforkHelperRoute::getProjectsRoute(), false));
+        switch($task)
+        {
+            case 'save2copy':
+            case 'save2new':
+                // No redirect because its already set
+                break;
+
+            case 'save2milestone':
+                $link = JRoute::_(ProjectforkHelperRoute::getMilestonesRoute() . '&task=milestoneform.add');
+                $this->setRedirect($link);
+                break;
+
+            case 'save2tasklist':
+                $link = JRoute::_(ProjectforkHelperRoute::getTasksRoute() . '&task=tasklistform.add');
+                $this->setRedirect($link);
+                break;
+
+            case 'save2task':
+                $link = JRoute::_(ProjectforkHelperRoute::getTasksRoute() . '&task=taskform.add');
+                $this->setRedirect($link);
+                break;
+
+            default:
+                $this->setRedirect($this->getReturnPage());
+                break;
         }
     }
 }

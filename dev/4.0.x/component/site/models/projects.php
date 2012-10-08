@@ -29,7 +29,7 @@ class ProjectforkModelProjects extends JModelList
     public function __construct($config = array())
     {
         // Register dependencies
-        JLoader::register('ProjectforkHelperQuery',  JPATH_SITE . '/components/com_projectfork/helpers/query.php');
+        JLoader::register('ProjectforkHelperQuery',  JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
         JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
 
         // Set field filter
@@ -160,7 +160,9 @@ class ProjectforkModelProjects extends JModelList
      */
     public function getItems()
     {
-        $items = parent::getItems();
+        $items     = parent::getItems();
+        $base_path = JPATH_ROOT . '/media/com_projectfork/repo/0/logo';
+        $base_url  = JURI::root(true) . '/media/com_projectfork/repo/0/logo';
 
         // Get the global params
         $global_params = JComponentHelper::getParams('com_projectfork', true);
@@ -175,6 +177,22 @@ class ProjectforkModelProjects extends JModelList
 
             // Create slug
             $items[$i]->slug = $items[$i]->alias ? ($items[$i]->id . ':' . $items[$i]->alias) : $items[$i]->id;
+
+            // Try to find the logo img
+            $items[$i]->logo_img = null;
+
+            if (JFile::exists($base_path . '/' . $items[$i]->id . '.jpg')) {
+                $items[$i]->logo_img = $base_url . '/' . $items[$i]->id . '.jpg';
+            }
+            elseif (JFile::exists($base_path . '/' . $items[$i]->id . '.jpeg')) {
+                $items[$i]->logo_img = $base_url . '/' . $items[$i]->id . '.jpeg';
+            }
+            elseif (JFile::exists($base_path . '/' . $items[$i]->id . '.png')) {
+                $items[$i]->logo_img = $base_url . '/' . $items[$i]->id . '.png';
+            }
+            elseif (JFile::exists($base_path . '/' . $items[$i]->id . '.gif')) {
+                $items[$i]->logo_img = $base_url . '/' . $items[$i]->id . '.gif';
+            }
         }
 
         return $items;

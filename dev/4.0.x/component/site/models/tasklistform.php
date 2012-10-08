@@ -11,7 +11,7 @@ defined('_JEXEC') or die();
 
 
 // Base this model on the backend version.
-require_once JPATH_ADMINISTRATOR . '/components/com_projectfork/models/tasklist.php';
+JLoader::register('ProjectforkModelTasklist', JPATH_ADMINISTRATOR . '/components/com_projectfork/models/tasklist.php');
 
 
 /**
@@ -21,6 +21,25 @@ require_once JPATH_ADMINISTRATOR . '/components/com_projectfork/models/tasklist.
 class ProjectforkModelTasklistForm extends ProjectforkModelTasklist
 {
     /**
+     * Constructor.
+     *
+     * @param    array          $config    An optional associative array of configuration settings.
+     *
+     * @see      jcontroller
+     */
+    public function __construct($config = array())
+    {
+       // Register dependencies
+       JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/tables');
+       JForm::addFieldPath(JPATH_ADMINISTRATOR    . '/components/com_projectfork/models/fields');
+       JForm::addFormPath(JPATH_ADMINISTRATOR     . '/components/com_projectfork/models/forms');
+
+       // Call parent constructor
+       parent::__construct($config);
+    }
+
+
+    /**
      * Method to get item data.
      *
      * @param     integer    The id of the item.
@@ -29,7 +48,7 @@ class ProjectforkModelTasklistForm extends ProjectforkModelTasklist
     public function getItem($id = null)
     {
         // Initialise variables.
-        $id = (int) (!empty($id)) ? $id : $this->getState('tasklist.id');
+        $id = (int) (!empty($id)) ? $id : $this->getState($this->getName() . '.id');
 
         // Get a row instance.
         $table = $this->getTable();
@@ -93,22 +112,6 @@ class ProjectforkModelTasklistForm extends ProjectforkModelTasklist
 
 
     /**
-     * Method to get the data that should be injected in the form.
-     *
-     * @return    mixed    The data for the form.
-     */
-    protected function loadFormData()
-    {
-        // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState('com_projectfork.edit.tasklistform.data', array());
-
-        if (empty($data)) $data = $this->getItem();
-
-        return $data;
-    }
-
-
-    /**
      * Method to auto-populate the model state.
      * Note. Calling getState in this method will result in recursion.
      *
@@ -119,7 +122,7 @@ class ProjectforkModelTasklistForm extends ProjectforkModelTasklist
 
         // Load state from the request.
         $pk = JRequest::getInt('id');
-        $this->setState('tasklist.id', $pk);
+        $this->setState($this->getName() . '.id', $pk);
 
         $return = JRequest::getVar('return', null, 'default', 'base64');
         $this->setState('return_page', base64_decode($return));

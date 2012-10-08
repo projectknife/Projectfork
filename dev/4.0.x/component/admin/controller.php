@@ -13,12 +13,12 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.controller');
 
 
-class ProjectforkController extends JController
+class ProjectforkController extends JControllerLegacy
 {
     /**
      * The default view
      *
-     * @var    string    
+     * @var    string
      */
     protected $default_view = 'dashboard';
 

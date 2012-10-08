@@ -1,99 +1,99 @@
 <?xml version="1.0" encoding="utf-8"?>
 <form>
-	<fieldset>
-		<field name="project_id" type="project" label="COM_PROJECTFORK_FIELD_PROJECT_LABEL"
-			description="COM_PROJECTFORK_FIELD_PROJECT_DESC" class="inputbox" size="30"
-			required="true" view="task" submit="true" session="true"
+    <fieldset>
+        <field name="project_id" type="project"
+            label="COM_PROJECTFORK_FIELD_PROJECT_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_DESC"
+            class="inputbox" size="30" required="true" view="task"
+            onchange="PFform.reload('milestone_id,list_id,access,rules');"
         />
-        <field name="milestone_id" type="milestone" label="COM_PROJECTFORK_FIELD_MILESTONE_LABEL"
-			description="COM_PROJECTFORK_FIELD_MILESTONE_DESC" class="inputbox" submit="true"
+        <field name="milestone_id" type="milestone"
+            label="COM_PROJECTFORK_FIELD_MILESTONE_LABEL" description="COM_PROJECTFORK_FIELD_MILESTONE_DESC"
+            class="inputbox"
+            onchange="PFform.reload('list_id,access,rules');"
         />
-        <field name="list_id" type="tasklist" label="COM_PROJECTFORK_FIELD_TASKLIST_LABEL"
-			description="COM_PROJECTFORK_FIELD_TASKLIST_DESC" class="inputbox" submit="true"
+        <field name="list_id" type="tasklist"
+            label="COM_PROJECTFORK_FIELD_TASKLIST_LABEL" description="COM_PROJECTFORK_FIELD_TASKLIST_DESC"
+            class="inputbox"
+            onchange="PFform.reload('milestone_id,access,rules');"
         />
-        <field name="title" type="text" label="JGLOBAL_TITLE"
-			description="JFIELD_TITLE_DESC" class="inputbox" size="30"
-			required="true"
+        <field name="title" type="text"
+            label="JGLOBAL_TITLE" description="JFIELD_TITLE_DESC"
+            class="inputbox" size="30" required="true"
         />
-		<field name="description" type="editor" class="inputbox" buttons="true"
-			label="COM_PROJECTFORK_FIELD_DESCRIPTION_LABEL" description="COM_PROJECTFORK_FIELD_DESCRIPTION_DESC"
-            filter="JComponentHelper::filterText"
-		/>
-		<field name="state" type="list" label="JSTATUS"
-			description="JFIELD_PUBLISHED_DESC" class="inputbox"
-			filter="intval" size="1" default="1"
-		>
-			<option value="1">JPUBLISHED</option>
-			<option value="0">JUNPUBLISHED</option>
-			<option value="2">JARCHIVED</option>
-			<option value="-2">JTRASHED</option>
-		</field>
-		<field name="access" type="pfaccesslevel" label="JFIELD_ACCESS_LABEL"
-			description="JFIELD_ACCESS_DESC" class="inputbox" size="1" permissions="true"
-			submit="true"
+        <field name="description" type="editor"
+            label="COM_PROJECTFORK_FIELD_DESCRIPTION_LABEL" description="COM_PROJECTFORK_FIELD_DESCRIPTION_DESC"
+            class="inputbox" buttons="true" filter="JComponentHelper::filterText"
         />
+        <field name="state" type="list"
+            label="JSTATUS" description="JFIELD_PUBLISHED_DESC"
+            class="inputbox" filter="intval" size="1" default="1"
+        >
+            <option value="1">JPUBLISHED</option>
+            <option value="0">JUNPUBLISHED</option>
+            <option value="2">JARCHIVED</option>
+            <option value="-2">JTRASHED</option>
+        </field>
         <field name="created_by" type="user"
-			label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_CREATED_BY_DESC"
+            label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_CREATED_BY_DESC"
         />
-        <field name="start_date" type="calendar" class="inputbox"
-			label="COM_PROJECTFORK_FIELD_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_START_DATE_OPTIONAL_DESC"
-			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
+        <field name="start_date" type="calendar"
+            label="COM_PROJECTFORK_FIELD_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_START_DATE_OPTIONAL_DESC"
+            size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" class="inputbox"
         />
-        <field name="end_date" type="calendar" class="inputbox"
-			label="COM_PROJECTFORK_FIELD_DEADLINE_LABEL" description="COM_PROJECTFORK_FIELD_DEADLINE_OPTIONAL_LABEL"
-			size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
+        <field name="end_date" type="calendar"
+            label="COM_PROJECTFORK_FIELD_DEADLINE_LABEL" description="COM_PROJECTFORK_FIELD_DEADLINE_OPTIONAL_LABEL"
+            size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" class="inputbox"
         />
         <field name="estimate" type="text" size="10" default="1"
-			label="COM_PROJECTFORK_FIELD_TIME_ESTIMATE" description="COM_PROJECTFORK_FIELD_TASK_TIME_ESTIMATE_DESC"
+            label="COM_PROJECTFORK_FIELD_TIME_ESTIMATE" description="COM_PROJECTFORK_FIELD_TASK_TIME_ESTIMATE_DESC"
         />
         <field name="rate" type="money"
-			label="COM_PROJECTFORK_FIELD_RATE_LABEL" description="COM_PROJECTFORK_FIELD_RATE_DESC"
+            label="COM_PROJECTFORK_FIELD_RATE_LABEL" description="COM_PROJECTFORK_FIELD_RATE_DESC"
         />
-		<field name="modified" type="calendar" class="readonly"
-			label="JGLOBAL_FIELD_MODIFIED_LABEL"
-			size="22" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
+        <field name="attachment" type="repoattachment"
+            label="COM_PROJECTFORK_FIELD_ATTACHMENT_LABEL" description="COM_PROJECTFORK_FIELD_ATTACHMENT_DESC"
         />
-		<field name="modified_by" type="user"
-		    label="JGLOBAL_FIELD_MODIFIED_BY_LABEL"
-		    class="readonly"
-		    readonly="true"
-		    filter="unset"
-		/>
-		<field
-			name="rules"
-			type="permissions"
-			label="JCONFIG_PERMISSIONS_LABEL"
-			class="inputbox"
-			component="com_projectfork"
-			section="task"
+        <field name="modified" type="calendar"
+            label="JGLOBAL_FIELD_MODIFIED_LABEL"
+            class="readonly" size="22" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
         />
-        <field name="priority" type="list" label="COM_PROJECTFORK_FIELD_PRIORITY_LABEL"
-			description="COM_PROJECTFORK_FIELD_PRIORITY_DESC" class="inputbox"
-			filter="intval" size="1" default="1"
-		>
-			<option value="1">COM_PROJECTFORK_PRIORITY_VERY_LOW</option>
-			<option value="2">COM_PROJECTFORK_PRIORITY_LOW</option>
-			<option value="3">COM_PROJECTFORK_PRIORITY_MEDIUM</option>
-			<option value="4">COM_PROJECTFORK_PRIORITY_HIGH</option>
-			<option value="5">COM_PROJECTFORK_PRIORITY_VERY_HIGH</option>
-		</field>
-		<field name="complete" type="radio" label="COM_PROJECTFORK_FIELD_COMPLETE_LABEL"
-			description="COM_PROJECTFORK_FIELD_TASK_COMPLETE_DESC" class="inputbox"
-			filter="intval" default="0"
-		>
-			<option value="0">JNO</option>
-			<option value="1">JYES</option>
-		</field>
-		<field name="id" type="hidden" readonly="true"/>
-		<field name="asset_id" type="hidden" filter="unset"/>
-		<field name="alias" type="hidden" readonly="true"/>
-		<field name="created" type="hidden" readonly="true"/>
-		<field name="checked_out" type="hidden" filter="unset" />
-		<field name="checked_out_time" type="hidden" filter="unset" />
-	</fieldset>
-	<fields name="users">
-	    <fieldset name="users" label="COM_PROJECTFORK_FIELDSET_ASSIGNED_USERS">
-	        <field name="user0" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
+        <field name="modified_by" type="user"
+            label="JGLOBAL_FIELD_MODIFIED_BY_LABEL"
+            class="readonly" readonly="true" filter="unset"
+        />
+        <field name="priority" type="list"
+            label="COM_PROJECTFORK_FIELD_PRIORITY_LABEL" description="COM_PROJECTFORK_FIELD_PRIORITY_DESC"
+            class="inputbox" filter="intval" size="1" default="1"
+        >
+            <option value="1">COM_PROJECTFORK_PRIORITY_VERY_LOW</option>
+            <option value="2">COM_PROJECTFORK_PRIORITY_LOW</option>
+            <option value="3">COM_PROJECTFORK_PRIORITY_MEDIUM</option>
+            <option value="4">COM_PROJECTFORK_PRIORITY_HIGH</option>
+            <option value="5">COM_PROJECTFORK_PRIORITY_VERY_HIGH</option>
+        </field>
+        <field name="complete" type="radio"
+            label="COM_PROJECTFORK_FIELD_COMPLETE_LABEL" description="COM_PROJECTFORK_FIELD_TASK_COMPLETE_DESC"
+            class="inputbox" filter="intval" default="0"
+        >
+            <option value="0">JNO</option>
+            <option value="1">JYES</option>
+        </field>
+        <field name="rules" type="groupaccess"
+            component="com_projectfork" section="task" inheritonly="true" filter="ProjectforkHelperForm::filterRules" validate="groupaccess"
+        />
+        <field name="id" type="hidden" readonly="true"/>
+        <field name="access" type="inheritaccess" hidden="true" readonly="true"/>
+        <field name="asset_id" type="hidden" filter="unset"/>
+        <field name="alias" type="hidden" readonly="true"/>
+        <field name="created" type="hidden" readonly="true"/>
+        <field name="checked_out" type="hidden" filter="unset" />
+        <field name="checked_out_time" type="hidden" filter="unset" />
+        <field name="elements" type="hidden" />
+    </fieldset>
+
+    <fields name="users">
+        <fieldset name="users" label="COM_PROJECTFORK_FIELDSET_ASSIGNED_USERS">
+            <field name="user0" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
             <field name="user1" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
             <field name="user2" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
             <field name="user3" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
@@ -104,10 +104,5 @@
             <field name="user8" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
             <field name="user9" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
         </fieldset>
-	</fields>
-	<fields name="attribs">
-	    <fieldset name="basic" label="COM_PROJECTFORK_TASK_ATTRIBS_FIELDSET_LABEL">
-
-	    </fieldset>
-	</fields>
+    </fields>
 </form>

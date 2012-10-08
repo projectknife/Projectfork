@@ -33,6 +33,13 @@ class ProjectforkControllerReplyform extends JControllerForm
      */
     protected $view_list = 'replies';
 
+    /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
+    protected $text_prefix = "COM_PROJECTFORK_REPLY";
+
 
     /**
      * Constructor.
@@ -148,40 +155,15 @@ class ProjectforkControllerReplyform extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $acl    = ProjectforkHelperAccess::getActions(null, 0, true);
-        $user   = JFactory::getUser();
-        $topic  = (int) JRequest::getUInt('filter_topic', 0);
+        $topic  = (isset($data['topic_id']) ? (int) $data['topic_id'] : JRequest::getUInt('filter_topic'));
+        $access = ProjectforkHelperAccess::getActions('topic', $topic);
 
-        $can_create = $acl->get('reply.create');
-        $access     = true;
-
-        if (isset($data['topic_id'])) {
-            $topic = (int) $data['topic_id'];
+        if (!$topic) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_TOPIC_NOT_FOUND'));
+            return false;
         }
 
-        // Verify topic access
-        if ($topic) {
-            $model = JModel::getInstance('TopicForm', 'ProjectforkModel', array('ignore_request' => true));
-            $item  = $model->getItem($topic);
-
-            if (!empty($item)) {
-                if (!$user->authorise('core.admin')) {
-                    if (!in_array($item->access, $user->getAuthorisedViewLevels())) {
-                        $this->setError(JText::_('COM_PROJECTFORK_WARNING_TOPIC_ACCESS_DENIED'));
-                        $access = false;
-                    }
-                }
-            }
-            else {
-                $this->setError(JText::_('COM_PROJECTFORK_WARNING_TOPIC_NOT_FOUND'));
-                $access = false;
-            }
-        }
-        else {
-            $access = false;
-        }
-
-        return ($access && $can_create);
+        return $access->get('reply.create');
     }
 
 
@@ -201,7 +183,7 @@ class ProjectforkControllerReplyform extends JControllerForm
         $access = ProjectforkHelperAccess::getActions('reply', $id);
 
         // Check general edit permission first.
-        if ($access->get('topic.edit')) {
+        if ($access->get('reply.edit')) {
             return true;
         }
 
@@ -317,7 +299,7 @@ class ProjectforkControllerReplyform extends JControllerForm
      *
      * @return    void
      */
-    protected function postSaveHook(JModel &$model, $data)
+    protected function postSaveHook(&$model, $data)
     {
         $task = $this->getTask();
 

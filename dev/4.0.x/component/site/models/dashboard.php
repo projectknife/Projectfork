@@ -155,15 +155,20 @@ class ProjectforkModelDashboard extends JModelItem
     {
         $app = JFactory::getApplication();
 
-        // Load state from the request.
-        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'id', '');
+        $id     = JRequest::getVar('id', null);
+        $filter = JRequest::getVar('filter_project', null);
 
-        if (is_numeric(JRequest::getVar('filter_project'))) {
-            $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        if (!is_null($filter)) {
+            $project = ProjectforkHelper::getActiveProjectId('filter_project');
+        }
+        elseif (!is_null($id)) {
+            $project = ProjectforkHelper::getActiveProjectId('id');
+        }
+        else {
+            $project = '';
         }
 
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         $return = JRequest::getVar('return', null, 'default', 'base64');
         $this->setState('return_page', base64_decode($return));

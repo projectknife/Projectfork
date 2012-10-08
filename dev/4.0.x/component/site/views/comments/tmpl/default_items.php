@@ -10,7 +10,6 @@
 defined('_JEXEC') or die();
 
 $user     = JFactory::getUser();
-$avatar   = JFactory::getURI()->base(true) . '/components/com_projectfork/assets/projectfork/images/icons/avatar.jpg';
 $ul_open  = false;
 $level    = 1;
 $uid      = $user->get('id');
@@ -44,19 +43,17 @@ foreach($this->items AS $i => $item) :
         <div class="comment-item">
 	        <div class="row-fluid">
 	            <div class="span1">
-                    <a href="#"><img class="thumbnail" width="90" src="<?php echo $avatar; ?>" alt="" /></a>
+                    <a href="#"><img class="thumbnail" width="90" src="<?php echo JHtml::_('projectfork.avatar.path', $item->created_by);?>" alt="" /></a>
                 </div>
                 <div class="span11">
-	                <span class="item-title">
-	                    <a href="#" id="comment-<?php echo $i; ?>"><?php echo $item->author_name; ?></a>
-	                </span>
-	                <span class="item-date small pull-right">
-	                    <?php echo JHtml::date($item->created); ?>
-	                </span>
 	                <div class="comment-content">
-	                    <div class="well">
+	                    <blockquote>
+	                    	<span class="item-date small pull-right">
+			                    <?php echo JHtml::date($item->created); ?>
+			                </span>
                             <?php echo nl2br($item->description); ?>
-	                        <div class="btn-group pull-right comment-item-actions">
+                            <small><cite title="<?php echo $item->author_name; ?>"><?php echo $item->author_name; ?></cite></small>
+	                        <div class="btn-group comment-item-actions">
 	                            <?php if ($can_create) : ?>
                                     <a class="btn btn-mini btn-add-reply" href="javascript:void(0)">
                                         <i class="icon-comment"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_REPLY'); ?>
@@ -71,7 +68,7 @@ foreach($this->items AS $i => $item) :
                                     </div>
                                 <?php endif; ?>
 	                        </div>
-	                    </div>
+	                    </blockquote>
 	                </div>
                 </div>
 	        </div>

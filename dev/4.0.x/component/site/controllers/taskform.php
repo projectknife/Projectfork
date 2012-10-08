@@ -35,6 +35,20 @@ class ProjectforkControllerTaskform extends JControllerForm
 
 
     /**
+     * Constructor
+     *
+     */
+    public function __construct($config = array())
+	{
+	    parent::__construct($config);
+
+        // Register additional tasks
+		$this->registerTask('save2milestone', 'save');
+		$this->registerTask('save2tasklist', 'save');
+    }
+
+
+    /**
      * Method to add a new record.
      *
      * @return    boolean    True if the item can be added, false if not.
@@ -100,91 +114,28 @@ class ProjectforkControllerTaskform extends JControllerForm
 
 
     /**
-     * Method to save a record.
+     * Method to check if you can add a new record.
      *
-     * @param     string     $key       The name of the primary key of the URL variable.
-     * @param     string     $urlVar    The name of the URL variable if different from the primary key.
+     * @param     array      $data    An array of input data.
      *
-     * @return    boolean               True if successful, false otherwise.
+     * @return    boolean
      */
-    public function save($key = null, $urlVar = 'id')
+    protected function allowAdd($data = array())
     {
-        $result = parent::save($key, $urlVar);
+        if (isset($data['list_id'])) {
+            $access = ProjectforkHelperAccess::getActions('tasklist', (int) $data['list_id']);
+        }
+        elseif (isset($data['milestone_id'])) {
+            $access = ProjectforkHelperAccess::getActions('milestone', (int) $data['milestone_id']);
+        }
+        elseif (isset($data['project_id'])) {
+            $access = ProjectforkHelperAccess::getActions('project', (int) $data['project_id']);
+        }
+        else {
+            $access = ProjectforkHelperAccess::getActions(null, 0, true);
+        }
 
-        // If ok, redirect to the return page.
-        if ($result) $this->setRedirect($this->getReturnPage());
-
-        return $result;
-    }
-
-
-    /**
-     * Sets the project of the task currently being edited.
-     *
-     * @return    void
-     */
-    public function setProject()
-    {
-        // Initialise variables.
-        $app     = JFactory::getApplication();
-        $data    = JRequest::getVar('jform', array(), 'post', 'array');
-        $id      = JRequest::getUInt('id');
-        $project = (int) $data['project_id'];
-
-
-        // Set the project as active
-        ProjectforkHelper::setActiveProject($project);
-
-
-        //Save the data in the session.
-        $app->setUserState('com_projectfork.edit.taskform.id', $id);
-        $app->setUserState('com_projectfork.edit.taskform.data', $data);
-
-        $this->project_id = $project;
-
-        $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_item . $this->getRedirectToItemAppend($id), false));
-    }
-
-
-    /**
-     * Sets the selected milestone of the task form
-     *
-     * @return    void
-     */
-    public function setMilestone()
-    {
-        $id = JRequest::getUInt('id');
-
-        $this->setFormData();
-        $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_item . $this->getRedirectToItemAppend($id), false));
-    }
-
-
-    /**
-     * Sets the selected task list of the task form
-     *
-     * @return    void
-     */
-    public function setTasklist()
-    {
-        $id = JRequest::getUInt('id');
-
-        $this->setFormData();
-        $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_item . $this->getRedirectToItemAppend($id), false));
-    }
-
-
-    /**
-     * Sets the selected access leve of the task form
-     *
-     * @return    void
-     */
-    public function setAccess()
-    {
-        $id = JRequest::getUInt('id');
-
-        $this->setFormData();
-        $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_item . $this->getRedirectToItemAppend($id), false));
+        return $access->get('task.create');
     }
 
 
@@ -246,6 +197,8 @@ class ProjectforkControllerTaskform extends JControllerForm
         $tmpl    = JRequest::getCmd('tmpl');
         $layout  = JRequest::getCmd('layout', 'edit');
         $item_id = JRequest::getUInt('Itemid');
+        $ms_id   = JRequest::getUInt('milestone_id');
+        $list_id = JRequest::getUInt('list_id');
         $return  = $this->getReturnPage();
         $append  = '';
 
@@ -254,6 +207,8 @@ class ProjectforkControllerTaskform extends JControllerForm
 
         $append .= '&layout=edit';
         if ($id)      $append .= '&' . $url_var . '=' . $id;
+        if ($ms_id)   $append .= '&milestone_id=' . $ms_id;
+        if ($list_id) $append .= '&list_id=' . $list_id;
         if ($item_id) $append .= '&Itemid=' . $item_id;
         if ($return)  $append .= '&return=' . base64_encode($return);
 
@@ -288,27 +243,30 @@ class ProjectforkControllerTaskform extends JControllerForm
      *
      * @return    void
      */
-    protected function postSaveHook(JModel &$model, $validData)
+    protected function postSaveHook(&$model, $validData)
     {
         $task = $this->getTask();
 
-        if ($task == 'save') {
-            $this->setRedirect(JRoute::_('index.php?option=com_projectfork&view=' . $this->view_list, false));
+        switch($task)
+        {
+            case 'save2copy':
+            case 'save2new':
+                // No redirect because its already set
+                break;
+
+            case 'save2milestone':
+                $link = JRoute::_(ProjectforkHelperRoute::getMilestonesRoute() . '&task=milestoneform.add');
+                $this->setRedirect($link);
+                break;
+
+            case 'save2tasklist':
+                $link = JRoute::_(ProjectforkHelperRoute::getTasksRoute() . '&task=tasklistform.add');
+                $this->setRedirect($link);
+                break;
+
+            default:
+                $this->setRedirect($this->getReturnPage());
+                break;
         }
-    }
-
-
-    /**
-     * Stores the form data
-     *
-     * @return    void
-     */
-    protected function setFormData()
-    {
-        // Initialise variables.
-        $app  = JFactory::getApplication();
-        $data = JRequest::getVar('jform', array(), 'post', 'array');
-
-        $app->setUserState('com_projectfork.edit.taskform.data', $data);
     }
 }

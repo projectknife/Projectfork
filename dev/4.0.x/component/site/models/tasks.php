@@ -30,10 +30,9 @@ class ProjectforkModelTasks extends JModelList
     public function __construct($config = array())
     {
         // Register dependencies
-        JLoader::register('ProjectforkHelperQuery',  JPATH_SITE . '/components/com_projectfork/helpers/query.php');
+        JLoader::register('ProjectforkHelper',       JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
         JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
-
-        JModel::addIncludePath(JPATH_SITE . '/components/com_projectfork/models', 'ProjectforkModel');
+        JLoader::register('ProjectforkHelperQuery',  JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
 
         // Set field filter
         if (empty($config['filter_fields'])) {
@@ -150,7 +149,7 @@ class ProjectforkModelTasks extends JModelList
             $order_col = 'p.title, m.title ' . $order_dir . ', tl.title';
         }
 
-        $query->order($db->getEscaped($order_col . ' ' . $order_dir));
+        $query->order($db->escape($order_col . ' ' . $order_dir));
 
         return $query;
     }
@@ -165,7 +164,7 @@ class ProjectforkModelTasks extends JModelList
     public function getItems()
     {
         $items = parent::getItems();
-        $ref   = JModel::getInstance('UserRefs', 'ProjectforkModel');
+        $ref   = JModelLegacy::getInstance('UserRefs', 'ProjectforkModel');
 
         // Get the global params
         $global_params = JComponentHelper::getParams('com_projectfork', true);
@@ -264,21 +263,14 @@ class ProjectforkModelTasks extends JModelList
         }
 
         // Construct the query
-        $query->select('m.id AS value, m.title AS text');
-        $query->from('#__pf_milestones AS m');
-        $query->join('INNER', '#__pf_tasks AS a ON a.milestone_id = m.id');
+        $query->select('a.id AS value, a.title AS text');
+        $query->from('#__pf_milestones AS a');
+        // $query->join('LEFT', '#__pf_tasks AS a ON a.milestone_id = m.id');
 
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
-        }
-
-        // Filter by assigned user
-        $assigned = (int) $this->getState('filter.assigned');
-        if ($assigned > 0) {
-            $query->join('INNER', '#__pf_ref_users AS ru ON (ru.item_type = ' . $db->quote('task') . ' AND ru.item_id = a.id)');
-            $query->where('ru.user_id = '. $assigned);
         }
 
         // Filter fields
@@ -293,8 +285,8 @@ class ProjectforkModelTasks extends JModelList
         ProjectforkHelperQuery::buildFilter($query, $filters);
 
         // Group and order
-        $query->group('m.id');
-        $query->order('m.title ASC');
+        // $query->group('a.id');
+        $query->order('a.title ASC');
 
         // Get results
         $db->setQuery((string) $query);
@@ -324,21 +316,14 @@ class ProjectforkModelTasks extends JModelList
         }
 
         // Construct the query
-        $query->select('t.id AS value, t.title AS text');
-        $query->from('#__pf_task_lists AS t');
-        $query->join('INNER', '#__pf_tasks AS a ON a.list_id = t.id');
+        $query->select('a.id AS value, a.title AS text');
+        $query->from('#__pf_task_lists AS a');
+        // $query->join('LEFT', '#__pf_tasks AS a ON a.list_id = t.id');
 
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
-        }
-
-        // Filter by assigned user
-        $assigned = (int) $this->getState('filter.assigned');
-        if ($assigned > 0) {
-            $query->join('INNER', '#__pf_ref_users AS ru ON (ru.item_type = ' . $db->quote('task') . ' AND ru.item_id = a.id)');
-            $query->where('ru.user_id = ' . $assigned);
         }
 
         // Filter fields
@@ -353,8 +338,8 @@ class ProjectforkModelTasks extends JModelList
         ProjectforkHelperQuery::buildFilter($query, $filters);
 
         // Group and order
-        $query->group('t.id');
-        $query->order('t.title ASC');
+        // $query->group('a.id');
+        $query->order('a.title ASC');
 
         // Get results
         $db->setQuery((string) $query);
@@ -456,9 +441,8 @@ class ProjectforkModelTasks extends JModelList
         $this->setState('filter.search', $search);
 
         // Filter - Project
-        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         // Filter - Milestone
         $milestone = $app->getUserStateFromRequest($this->context . '.filter.milestone', 'filter_milestone', '');
@@ -496,7 +480,7 @@ class ProjectforkModelTasks extends JModelList
         // Filter - Is set
         $this->setState('filter.isset',
             (is_numeric($state) || !empty($search) || is_numeric($author) ||
-            is_numeric($assigned) || is_numeric($list) || is_numeric($milestone))
+            is_numeric($assigned) || (is_numeric($list) && $list > 0) || (is_numeric($milestone) && $milestone > 0))
         );
 
         // Call parent method

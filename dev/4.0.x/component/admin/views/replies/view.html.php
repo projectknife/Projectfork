@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.view');
 
 
-class ProjectforkViewReplies extends JView
+class ProjectforkViewReplies extends JViewLegacy
 {
     /**
      * A list of replies
@@ -87,17 +87,16 @@ class ProjectforkViewReplies extends JView
      */
     protected function addToolbar()
     {
-        $access = ProjectforkHelperAccess::getActions();
+        $access = ProjectforkHelperAccess::getActions('topic', (int) $this->state->get('filter.topic'));
         $user   = JFactory::getUser();
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_REPLIES_TITLE'), 'article.png');
 
-
-        if ($access->get('reply.create') && $this->state->get('filter.topic')) {
+        if ($access->get('reply.create')) {
             JToolBarHelper::addNew('reply.add');
         }
 
-        if ($access->get('reply.edit') || $access->get('reply.edit.own')) {
+        if ($access->get('reply.edit')) {
             JToolBarHelper::editList('reply.edit');
         }
 

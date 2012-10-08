@@ -14,11 +14,19 @@ jimport('joomla.application.component.controlleradmin');
 
 
 /**
- * Topic list controller class.
+ * Topic replies controller class.
  *
  */
 class ProjectforkControllerReplies extends JControllerAdmin
 {
+    /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
+    protected $text_prefix = "COM_PROJECTFORK_REPLIES";
+
+
     /**
      * Constructor.
      *

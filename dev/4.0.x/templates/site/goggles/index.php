@@ -4,15 +4,48 @@
 	defined('_JEXEC') or die;
 
     // Include the document helper
-    require_once(dirname(__FILE__).'/helpers/document.php');
+    JLoader::register('TemplateHelperDocument', dirname(__FILE__) . '/helpers/document.php');
 
 	$app = JFactory::getApplication();
 	$doc = JFactory::getDocument();
+	
+	// Settings for Joomla 3.0.x
+	if (version_compare(JVERSION, '3.0.0', 'ge')) {
+		// Add JavaScript Frameworks
+		JHtml::_('bootstrap.framework');
+	}
+	// Settings for Joomla 2.5.x
+	else {
+		// Detect bootstrap and jQuery in document header
+	    $isset_jquery = TemplateHelperDocument::headContains('jquery', 'script');
+	    $isset_bsjs   = TemplateHelperDocument::headContains('bootstrap', 'script');
+	    $isset_bscss  = TemplateHelperDocument::headContains('bootstrap', 'stylesheet');
+	
+	    if ($this->params->get('bootstrap_javascript', 1)) {
+	        if (!$isset_jquery) {
+	            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/jquery.js');
+	        }
+	
+	        if (!$isset_bsjs) {
+	            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/bootstrap.min.js');
+	        }
+	
+	        $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/application.js');
+	    }
+	    // Add 2.5 System Stylesheets
+		$doc->addStyleSheet('templates/system/css/general.css');
+		$doc->addStyleSheet('templates/system/css/system.css');
+	}
+	
+	// Add Template Stylesheet
+	$doc->addStyleSheet('templates/'.$this->template.'/css/template.css');
+    
 ?>
 <!DOCTYPE html>
 <html>
 <head>
-	<?php
+	<jdoc:include type="head" />
+    <?php
     // Detecting Home
     $menu = & JSite::getMenu();
     if ($menu->getActive() == $menu->getDefault()) :
@@ -51,34 +84,12 @@
     else :
     	$span = "span12";
     endif;
-
-    // Detect bootstrap and jQuery in document header
-    $isset_jquery = TemplateDocHelper::headContains('jquery', 'script');
-    $isset_bsjs   = TemplateDocHelper::headContains('bootstrap', 'script');
-    $isset_bscss  = TemplateDocHelper::headContains('bootstrap', 'stylesheet');
 	?>
-
-	<jdoc:include type="head" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<?php if($this->params->get('bootstrap_javascript', 1)):?>
-        <?php if (!$isset_jquery) : ?>
-		    <script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/js/jquery.js"></script>
-        <?php endif; ?>
-        <?php if (!$isset_bsjs) : ?>
-		    <script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/js/bootstrap.min.js"></script>
-        <?php endif; ?>
-		<script src="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/js/application.js"></script>
-	<?php endif;?>
-	<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/system/css/general.css" type="text/css" />
-	<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/system/css/system.css" type="text/css" />
-	<?php if($this->params->get('bootstrap_css', 1) && !$isset_bscss):?>
-		<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/css/template.css" type="text/css" />
-	<?php else: ?>
-		<link rel="stylesheet" href="<?php echo $this->baseurl; ?>/templates/<?php echo $this->template ?>/css/theme.css" type="text/css" />
-	<?php endif;?>
+
 	<?php if($this->params->get('color')):?>
 		<style type="text/css">
-			.navbar-inner{
+			.navbar-inverse .navbar-inner{
 				background: <?php echo $this->params->get('color');?>;
 			}
 			.sidebar-nav h3{
@@ -90,7 +101,7 @@
 
 <body class="site <?php echo $option . " view-" . $view . " layout-" . $layout . " task-" . $task . " itemid-" . $itemid . " ";?>  <?php if($siteHome): echo "homepage";endif;?> ">
 	<!-- Top Navigation -->
-	<div class="navbar navbar-fixed-top">
+	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
 			<div class="container-fluid"> <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a> <a class="brand" href="<?php echo $this->baseurl; ?>"><?php echo $sitename; ?></a>
 				<div class="nav-collapse">
@@ -122,6 +133,7 @@
 				</div>
 				<div class="span10 navbar-search">
 					<jdoc:include type="modules" name="searchload" style="none" />
+					<jdoc:include type="modules" name="position-0" style="none" />
 				</div>
 			</div>
 		</div>
@@ -145,22 +157,37 @@
 				  	<?php
 				  		if($user->authorise('create', 'com_projectfork.project')) :
 				  	?>
-				    	<li><a href="index.php?option=com_projectfork&view=projectform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
+				    	<li><a href="index.php?option=com_projectfork&view=projectform&layout=edit"><i class="icon-briefcase"></i> <?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
 				    <?php
 				    	endif;
 				    	if($user->authorise('create', 'com_projectfork.milestone')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=milestoneform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
+				    	<li><a href="index.php?option=com_projectfork&view=milestoneform&layout=edit"><i class="icon-flag"></i> <?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
 				    <?php
 				    	endif;
 				    	if($user->authorise('create', 'com_projectfork.tasklist')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=tasklistform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
+				    	<li><a href="index.php?option=com_projectfork&view=tasklistform&layout=edit"><i class="icon-list-view"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
 				    <?php
 				    	endif;
 				    	if($user->authorise('create', 'com_projectfork.task')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=taskform&layout=edit"><?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
+				    	<li><a href="index.php?option=com_projectfork&view=taskform&layout=edit"><i class="icon-checkbox"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
+				    <?php
+				    	endif;
+				    	if($user->authorise('create', 'com_projectfork.time')) :
+				    ?>
+				    	<li><a href="index.php?option=com_projectfork&view=timeform&layout=edit"><i class="icon-clock"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
+				    <?php
+				    	endif;
+				    	if($user->authorise('create', 'com_projectfork.topic')) :
+				    ?>
+				    	<li><a href="index.php?option=com_projectfork&view=topicform&layout=edit"><i class="icon-comments-2"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
+				    <?php
+				    	endif;
+				    	if($user->authorise('create', 'com_projectfork.file')) :
+				    ?>
+				    	<li><a href="index.php?option=com_projectfork&view=fileform&layout=edit"><i class="icon-upload"></i> <?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
 				    <?php
 				    	endif;
 				    ?>

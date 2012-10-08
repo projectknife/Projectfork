@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.view');
 
 
-class ProjectforkViewComments extends JView
+class ProjectforkViewComments extends JViewLegacy
 {
     /**
      * A list of topics

@@ -17,20 +17,20 @@ jimport('joomla.application.component.view');
  * Reply list view class.
  *
  */
-class ProjectforkViewReplies extends JView
+class ProjectforkViewReplies extends JViewLegacy
 {
     protected $pageclass_sfx;
     protected $items;
     protected $topic;
-    protected $nulldate;
     protected $pagination;
     protected $params;
     protected $state;
-    protected $actions;
     protected $toolbar;
     protected $authors;
     protected $access;
     protected $menu;
+    protected $sort_options;
+    protected $order_options;
 
 
     /**
@@ -41,6 +41,7 @@ class ProjectforkViewReplies extends JView
     public function display($tpl = null)
     {
         $app    = JFactory::getApplication();
+        $user   = JFactory::getUser();
         $active = $app->getMenu()->getActive();
 
         // Check if the provided topic exists and if we have access
@@ -57,7 +58,7 @@ class ProjectforkViewReplies extends JView
                 return;
             }
 
-            if (!JFactory::getUser()->authorise('core.admin')) {
+            if (!$user->authorise('core.admin')) {
                 if (!in_array($this->topic->access, $user->getAuthorisedViewLevels())) {
                     JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
                     return;
@@ -69,11 +70,12 @@ class ProjectforkViewReplies extends JView
         $this->pagination = $this->get('Pagination');
         $this->authors    = $this->get('Authors');
         $this->params     = $this->state->params;
-        $this->actions    = $this->getActions();
-        $this->toolbar    = $this->getToolbar();
-        $this->access     = ProjectforkHelperAccess::getActions(NULL, 0 , true);
-        $this->nulldate   = JFactory::getDbo()->getNullDate();
+        $this->access     = ProjectforkHelperAccess::getActions('topic', $this->topic->id);
         $this->menu       = new ProjectforkHelperContextMenu();
+
+        $this->toolbar       = $this->getToolbar();
+        $this->sort_options  = $this->getSortOptions();
+        $this->order_options = $this->getOrderOptions();
 
         // Escape strings for HTML output
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
@@ -174,41 +176,70 @@ class ProjectforkViewReplies extends JView
      */
     protected function getToolbar()
     {
-        $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
-        $tb     = new ProjectforkHelperToolbar();
+        $access = ProjectforkHelperAccess::getActions('topic', $this->topic->id);
         $state  = $this->get('State');
 
-        if ($access->get('reply.create') && $state->get('filter.topic')) {
-            $tb->button('COM_PROJECTFORK_ACTION_REPLY', 'replyform.add');
+        ProjectforkHelperToolbar::button(
+            'COM_PROJECTFORK_ACTION_NEW',
+            'replyform.add',
+            false,
+            array('access' => ($state->get('filter.topic') && $access->get('reply.create')))
+        );
+
+        $options = array();
+        if ($access->get('reply.edit.state')) {
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_PUBLISH',   'task' => $this->getName() . '.publish');
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_UNPUBLISH', 'task' => $this->getName() . '.unpublish');
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_ARCHIVE',   'task' => $this->getName() . '.archive');
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_CHECKIN',   'task' => $this->getName() . '.checkin');
         }
 
-        return $tb->__toString();
+        if ($state->get('filter.published') == -2 && $access->get('reply.delete')) {
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_DELETE', 'task' => $this->getName() . '.delete');
+        }
+        elseif ($access->get('reply.edit.state')) {
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_TRASH', 'task' => $this->getName() . '.trash');
+        }
+
+        if (count($options)) {
+            ProjectforkHelperToolbar::listButton($options);
+        }
+
+        ProjectforkHelperToolbar::filterButton($this->state->get('filter.isset'));
+
+        return ProjectforkHelperToolbar::render();
     }
 
 
     /**
-     * Generates select options for the bulk action menu
+     * Generates the table sort options
      *
-     * @return    array    The available options
+     * @return    array    HTML list options
      */
-    protected function getActions()
+    protected function getSortOptions()
     {
-        $access  = ProjectforkHelperAccess::getActions(NULL, 0, true);
-        $state   = $this->get('State');
         $options = array();
 
-        if ($access->get('reply.edit.state')) {
-            $options[] = JHtml::_('select.option', 'topics.publish', JText::_('COM_PROJECTFORK_ACTION_PUBLISH'));
-            $options[] = JHtml::_('select.option', 'topics.unpublish', JText::_('COM_PROJECTFORK_ACTION_UNPUBLISH'));
-            $options[] = JHtml::_('select.option', 'topics.archive', JText::_('COM_PROJECTFORK_ACTION_ARCHIVE'));
-            $options[] = JHtml::_('select.option', 'topics.checkin', JText::_('COM_PROJECTFORK_ACTION_CHECKIN'));
-        }
-        if ($state->get('filter.published') == -2 && $access->get('reply.delete')) {
-            $options[] = JHtml::_('select.option', 'replies.delete', JText::_('COM_PROJECTFORK_ACTION_DELETE'));
-        }
-        elseif ($access->get('reply.edit.state')) {
-            $options[] = JHtml::_('select.option', 'replies.trash', JText::_('COM_PROJECTFORK_ACTION_TRASH'));
-        }
+        $options[] = JHtml::_('select.option', '', JText::_('COM_PROJECTFORK_ORDER_SELECT'));
+        $options[] = JHtml::_('select.option', 'a.created', JText::_('COM_PROJECTFORK_ORDER_CREATE_DATE'));
+        $options[] = JHtml::_('select.option', 'author_name', JText::_('COM_PROJECTFORK_ORDER_AUTHOR'));
+
+        return $options;
+    }
+
+
+    /**
+     * Generates the table order options
+     *
+     * @return    array    HTML list options
+     */
+    protected function getOrderOptions()
+    {
+        $options = array();
+
+        $options[] = JHtml::_('select.option', '', JText::_('COM_PROJECTFORK_ORDER_SELECT_DIR'));
+        $options[] = JHtml::_('select.option', 'ASC', JText::_('COM_PROJECTFORK_ORDER_ASC'));
+        $options[] = JHtml::_('select.option', 'DESC', JText::_('COM_PROJECTFORK_ORDER_DESC'));
 
         return $options;
     }

@@ -1,40 +1,27 @@
 <?php
 /**
-* @package   Projectfork
-* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
-*
-* This file is part of Projectfork.
-*
-* Projectfork is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*
-* Projectfork is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
-**/
+ * @package      Projectfork
+ *
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ */
 
-defined( '_JEXEC' ) or die( 'Restricted access' );
+defined('_JEXEC') or die();
 
 
 // Get the tmp source path
 $installer   = JInstaller::getInstance();
 $source_path = $installer->getPath('source');
 
-$source_tmpl_path_site  = JPath::clean($source_path.'/templates/site');
-$source_tmpl_path_admin = JPath::clean($source_path.'/templates/admin');
+$source_tmpl_path_site  = JPath::clean($source_path . '/templates/site');
+$source_tmpl_path_admin = JPath::clean($source_path . '/templates/admin');
 
 $site_templates_exist  = JFolder::exists($source_tmpl_path_site);
 $admin_templates_exist = JFolder::exists($source_tmpl_path_admin);
 
 // Do nothing if no template folders exist
-if(!$site_templates_exist && !$admin_templates_exist) {
+if (!$site_templates_exist && !$admin_templates_exist) {
     return true;
 }
 
@@ -47,7 +34,7 @@ $admin_tmpl_names = array();
 $db = JFactory::getDbo();
 
 // Find site templates
-if($site_templates_exist) {
+if ($site_templates_exist) {
     // Find all files in the folder
     $site_template_files = (array) JFolder::files($source_tmpl_path_site);
 
@@ -56,14 +43,14 @@ if($site_templates_exist) {
     {
         $ext = JFile::getExt($site_template_file);
 
-        if(!in_array($ext, array('zip', 'gzip', 'tar'))) {
+        if (!in_array($ext, array('zip', 'gzip', 'tar'))) {
             continue;
         }
 
         // Extract the archive
         $archive_name   = JFile::stripExt($site_template_file);
-        $archive_source = JPath::clean($source_tmpl_path_site.'/'.$site_template_file);
-        $unpack_dir     = JPath::clean($source_tmpl_path_site.'/'.$archive_name);
+        $archive_source = JPath::clean($source_tmpl_path_site . '/' . $site_template_file);
+        $unpack_dir     = JPath::clean($source_tmpl_path_site . '/' . $archive_name);
 
         JArchive::extract($archive_source, $unpack_dir);
     }
@@ -73,21 +60,21 @@ if($site_templates_exist) {
 
     foreach($frontend_folders AS $tmpl_name)
     {
-        $manifest_path = $source_tmpl_path_site.'/'.$tmpl_name.'/templateDetails.xml';
+        $manifest_path = $source_tmpl_path_site . '/' . $tmpl_name . '/templateDetails.xml';
 
-        if(JFile::exists($manifest_path)) {
+        if (JFile::exists($manifest_path)) {
             $query = $db->getQuery(true);
 
             $query->select('COUNT(extension_id)')
                   ->from('#__extensions')
-                  ->where('element = '.$db->quote($tmpl_name))
-                  ->where('type = '.$db->quote('template'));
+                  ->where('element = ' . $db->quote($tmpl_name))
+                  ->where('type = ' . $db->quote('template'));
 
-            $db->setQuery($query->__toString());
+            $db->setQuery((string) $query);
             $tmpl_exists = (int) $db->loadResult();
 
-            if(!$tmpl_exists) {
-                $tmpl_paths[] = $source_tmpl_path_site.'/'.$tmpl_name;
+            if (!$tmpl_exists) {
+                $tmpl_paths[] = $source_tmpl_path_site . '/' . $tmpl_name;
                 $site_tmpl_names[] = $tmpl_name;
             }
         }
@@ -95,7 +82,7 @@ if($site_templates_exist) {
 }
 
 // Find admin templates
-if($admin_templates_exist) {
+if ($admin_templates_exist) {
     // Find all files in the folder
     $admin_template_files = (array) JFolder::files($source_tmpl_path_admin);
 
@@ -104,14 +91,14 @@ if($admin_templates_exist) {
     {
         $ext = JFile::getExt($admin_template_file);
 
-        if(!in_array($ext, array('zip', 'gzip', 'tar'))) {
+        if (!in_array($ext, array('zip', 'gzip', 'tar'))) {
             continue;
         }
 
         // Extract the archive
         $archive_name   = JFile::stripExt($admin_template_file);
-        $archive_source = JPath::clean($source_tmpl_path_admin.'/'.$admin_template_file);
-        $unpack_dir     = JPath::clean($source_tmpl_path_admin.'/'.$archive_name);
+        $archive_source = JPath::clean($source_tmpl_path_admin . '/' . $admin_template_file);
+        $unpack_dir     = JPath::clean($source_tmpl_path_admin . '/' . $archive_name);
 
         JArchive::extract($archive_source, $unpack_dir);
     }
@@ -121,21 +108,21 @@ if($admin_templates_exist) {
 
     foreach($backend_folders AS $tmpl_name)
     {
-        $manifest_path = $source_tmpl_path_admin.'/'.$tmpl_name.'/templateDetails.xml';
+        $manifest_path = $source_tmpl_path_admin . '/' . $tmpl_name . '/templateDetails.xml';
 
-        if(JFile::exists($manifest_path)) {
+        if (JFile::exists($manifest_path)) {
             $query = $db->getQuery(true);
 
             $query->select('COUNT(extension_id)')
                   ->from('#__extensions')
-                  ->where('element = '.$db->quote($tmpl_name))
-                  ->where('type = '.$db->quote('template'));
+                  ->where('element = ' . $db->quote($tmpl_name))
+                  ->where('type = ' . $db->quote('template'));
 
-            $db->setQuery($query->__toString());
+            $db->setQuery((string) $query);
             $tmpl_exists = (int) $db->loadResult();
 
-            if(!$tmpl_exists) {
-                $tmpl_paths[] = $source_tmpl_path_admin.'/'.$tmpl_name;
+            if (!$tmpl_exists) {
+                $tmpl_paths[] = $source_tmpl_path_admin . '/' . $tmpl_name;
                 $admin_tmpl_names[] = $tmpl_name;
             }
         }
@@ -151,30 +138,29 @@ foreach($tmpl_paths AS $tmpl)
 }
 unset($installer);
 
-
 // Get extension custom data
 $query = $db->getQuery(true);
 
 $query->select('custom_data')
       ->from('#__extensions')
-      ->where('element = '.$db->quote('com_projectfork'))
-      ->where('type = '.$db->quote('component'));
+      ->where('element = ' . $db->quote('com_projectfork'))
+      ->where('type = ' . $db->quote('component'));
 
-$db->setQuery($query->__toString());
+$db->setQuery((string) $query);
 $custom_data = $db->loadResult();
 $custom_data = ($custom_data == '') ? array() : json_decode($custom_data, true);
 
 
 // Check the data keys
-if(!isset($custom_data['uninstall'])) {
+if (!isset($custom_data['uninstall'])) {
     $custom_data['uninstall'] = array();
 }
 
-if(!isset($custom_data['uninstall']['site_templates'])) {
+if (!isset($custom_data['uninstall']['site_templates'])) {
     $custom_data['uninstall']['site_templates'] = array();
 }
 
-if(!isset($custom_data['uninstall']['admin_templates'])) {
+if (!isset($custom_data['uninstall']['admin_templates'])) {
     $custom_data['uninstall']['admin_templates'] = array();
 }
 
@@ -195,9 +181,9 @@ foreach($admin_tmpl_names AS $tmpl_name)
 $query = $db->getQuery(true);
 
 $query->update('#__extensions')
-      ->set('custom_data = '.$db->quote(json_encode($custom_data)))
-      ->where('element = '.$db->quote('com_projectfork'))
-      ->where('type = '.$db->quote('component'));
+      ->set('custom_data = ' . $db->quote(json_encode($custom_data)))
+      ->where('element = ' . $db->quote('com_projectfork'))
+      ->where('type = ' . $db->quote('component'));
 
-$db->setQuery($query->__toString());
+$db->setQuery((string) $query);
 $db->query();

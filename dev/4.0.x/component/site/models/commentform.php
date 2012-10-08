@@ -21,6 +21,25 @@ require_once JPATH_ADMINISTRATOR . '/components/com_projectfork/models/comment.p
 class ProjectforkModelCommentForm extends ProjectforkModelComment
 {
     /**
+     * Constructor.
+     *
+     * @param    array          $config    An optional associative array of configuration settings.
+     *
+     * @see      jcontroller
+     */
+    public function __construct($config = array())
+    {
+       // Register dependencies
+       JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/tables');
+       JForm::addFieldPath(JPATH_ADMINISTRATOR    . '/components/com_projectfork/models/fields');
+       JForm::addFormPath(JPATH_ADMINISTRATOR     . '/components/com_projectfork/models/forms');
+
+       // Call parent constructor
+       parent::__construct($config);
+    }
+
+
+    /**
      * Method to get item data.
      *
      * @param     integer    $id       The id of the item.

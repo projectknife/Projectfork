@@ -30,9 +30,9 @@ class ProjectforkModelReplies extends JModelList
     public function __construct($config = array())
     {
         // Register dependencies
-        JLoader::register('ProjectforkHelperQuery',  JPATH_SITE . '/components/com_projectfork/helpers/query.php');
         JLoader::register('ProjectforkHelper',       JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
         JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+        JLoader::register('ProjectforkHelperQuery',  JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
 
         // Set field filter
         if (empty($config['filter_fields'])) {
@@ -113,7 +113,7 @@ class ProjectforkModelReplies extends JModelList
         $query->group('a.id');
 
         // Add the list ordering clause.
-        $query->order($this->getState('list.ordering', 'a.created').' ' . $this->getState('list.direction', 'ASC'));
+        $query->order($this->getState('list.ordering', 'a.created') . ' ' . $this->getState('list.direction', 'ASC'));
 
         return $query;
     }
@@ -155,58 +155,32 @@ class ProjectforkModelReplies extends JModelList
      */
     public function getTopic()
     {
-        $db    = $this->getDbo();
-        $query = $db->getQuery(true);
-        $user  = JFactory::getUser();
         $id    = (int) $this->getState('filter.topic');
+        $model = $this->getInstance('TopicForm', 'ProjectforkModel', array('ignore_request' => true));
 
         if ($id == 0) return false;
 
-        $query->select(
-            'a.id, a.asset_id, a.project_id, a.title, a.alias, a.description, a.created,'
-            . 'a.created_by, a.modified, a.modified_by, a.checked_out, '
-            . 'a.checked_out_time, a.attribs, a.access, a.state');
+        $item = $model->getItem($id);
 
-        $query->from('#__pf_topics AS a');
+        if ($item->id > 0) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-        $query->where('a.id = ' . $id);
+            $query->select('a.title')
+                  ->from('#__pf_projects AS a')
+                  ->where('a.id = ' . $db->quote($item->project_id));
 
-        // Join over the users for the checked out user
-        $query->select('uc.name AS editor');
-        $query->join('LEFT', '#__users AS uc ON uc.id = a.checked_out');
+            $db->setQuery($query);
+            $item->project_title = $db->loadResult();
 
-        // Join over the asset groups
-        $query->select('ag.title AS access_level');
-        $query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
+            $query->clear();
+            $query->select('a.name')
+                  ->from('#__users AS a')
+                  ->where('id = ' . $db->quote($item->created_by));
 
-        // Join over the users for the owner
-        $query->select('ua.name AS author_name, ua.email AS author_email');
-        $query->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
-
-        // Join over the projects for project title
-        $query->select('p.title AS project_title, p.alias AS project_alias');
-        $query->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
-
-        // Join over the replies for reply count
-        $query->select('COUNT(DISTINCT r.id) AS replies');
-        $query->join('LEFT', '#__pf_replies AS r ON r.topic_id = a.id');
-
-        // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
-            $groups = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('a.access IN (' . $groups . ')');
+            $db->setQuery($query);
+            $item->author_name = $db->loadResult();
         }
-
-        $db->setQuery((string) $query);
-        $item = $db->loadObject();
-
-        if ($db->getErrorMsg()) {
-            $this->setError($db->getErrorMsg());
-            return false;
-        }
-
-        // Empty result?
-        if (!is_object($item)) return false;
 
         return $item;
     }
@@ -267,8 +241,7 @@ class ProjectforkModelReplies extends JModelList
      */
     protected function populateState($ordering = 'a.created', $direction = 'ASC')
     {
-        $app    = JFactory::getApplication();
-        $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
+        $app = JFactory::getApplication();
 
         // Adjust the context to support modal layouts.
         $layout = JRequest::getCmd('layout');
@@ -285,6 +258,39 @@ class ProjectforkModelReplies extends JModelList
         $state = $app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
         $this->setState('filter.published', $state);
 
+        // Filter - Topic
+        $topic = JRequest::getCmd('filter_topic', '');
+        $this->setState('filter.topic', $topic);
+
+        // Filter - Project
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
+
+        if (!$project && $topic > 0) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('project_id')
+                  ->from('#__pf_topics')
+                  ->where('id = ' . $db->quote((int) $topic));
+
+            $db->setQuery($query);
+            $project = (int) $db->loadResult();
+
+            ProjectforkHelper::setActiveProject($project);
+        }
+
+        $this->setState('filter.project', $project);
+
+        if ($topic) {
+            $access = ProjectforkHelperAccess::getActions('topic', $topic);
+        }
+        elseif ($project) {
+            $access = ProjectforkHelperAccess::getActions('project', $project);
+        }
+        else {
+            $access = ProjectforkHelperAccess::getActions();
+        }
+
         // Filter on published for those who do not have edit or edit.state rights.
         if (!$access->get('reply.edit.state') && !$access->get('reply.edit')){
             $this->setState('filter.published', 1);
@@ -294,15 +300,6 @@ class ProjectforkModelReplies extends JModelList
         // Filter - Search
         $value = JRequest::getString('filter_search', '');
         $this->setState('filter.search', $value);
-
-        // Filter - Topic
-        $value = JRequest::getCmd('filter_topic', '');
-        $this->setState('filter.topic', $value);
-
-        // Filter - Project
-        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
-        $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         // Filter - Author
         $author = $app->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', '');

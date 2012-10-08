@@ -10,6 +10,8 @@
 defined('_JEXEC') or die();
 
 
+JHtml::_('projectfork.script.listform');
+
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
@@ -22,8 +24,7 @@ $list_total_billable = 0.00;
 $billable_percent   = ($this->total_time == 0) ? 0 : round($this->total_time_billable * (100 / $this->total_time));
 $unbillable_percent = ($this->total_time == 0) ? 0 : round($this->total_time_unbillable * (100 / $this->total_time));
 
-$action_count = count($this->actions);
-$filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
+$filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-timesheet">
 
@@ -37,14 +38,9 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(ProjectforkHelperRoute::getTimesheetRoute()); ?>" method="post">
             <div class="btn-toolbar btn-toolbar-top">
-                <div class="btn-group">
-                        <?php echo $this->toolbar;?>
-                </div>
+                <?php echo $this->toolbar; ?>
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('projectfork.filterProject');?>
-                </div>
-                <div class="btn-group">
-                    <a data-toggle="collapse" data-target="#filters" class="btn"><i class="icon-list"></i> <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?> <span class="caret"></span></a>
                 </div>
             </div>
 
@@ -59,6 +55,10 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                         <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
                         <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
                     </div>
+
+                    <div class="clearfix"> </div>
+                    <hr />
+
                     <?php if ($this->access->get('time.edit.state') || $this->access->get('time.edit')) : ?>
                         <div class="filter-published btn-group">
                             <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
@@ -69,13 +69,13 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                     <?php endif; ?>
                     <?php if (intval($this->state->get('filter.project')) > 0) : ?>
                         <div class="filter-author btn-group">
-                            <select id="filter_author" name="filter_author" class="inputbox" onchange="this.form.submit()">
+                            <select id="filter_author" name="filter_author" class="inputbox input-medium" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
                                 <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'), true);?>
                             </select>
                         </div>
                         <div class="filter-task btn-group">
-                            <select id="filter_task" name="filter_task" class="inputbox" onchange="this.form.submit()">
+                            <select id="filter_task" name="filter_task" class="inputbox input-medium" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('COM_PROJECTFORK_OPTION_SELECT_TASK');?></option>
                                 <?php echo JHtml::_('select.options', $this->tasks, 'value', 'text', $this->state->get('filter.task'), true);?>
                             </select>
@@ -170,7 +170,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 
                         if ($percentage > 100) {
                             $percentage = 100;
-                            $percentage_class .= ' progress-danger';
+                            $percentage_class .= ' progress-info';
                         }
                         else {
                             $percentage_class .= ($item->billable == 1) ? ' progress-success' : '';
@@ -241,21 +241,28 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
             </table>
 
             <div class="filters btn-toolbar">
+                <div class="btn-group filter-order">
+                    <select name="filter_order" class="inputbox input-medium" onchange="this.form.submit()">
+                        <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
+                    </select>
+                </div>
+                <div class="btn-group folder-order-dir">
+                    <select name="filter_order_Dir" class="inputbox input-medium" onchange="this.form.submit()">
+                        <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
+                    </select>
+                </div>
+                <div class="btn-group display-limit">
+                    <?php echo $this->pagination->getLimitBox(); ?>
+                </div>
                 <?php if ($this->pagination->get('pages.total') > 1) : ?>
-                    <div class="pagination">
+                    <div class="btn-group pagination">
                         <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
                         <?php echo $this->pagination->getPagesLinks(); ?>
                     </div>
                 <?php endif; ?>
-                <div class="btn-group display-limit">
-                    <?php echo JText::_('JGLOBAL_DISPLAY_NUM'); ?>&#160;
-                    <?php echo $this->pagination->getLimitBox(); ?>
-                </div>
             </div>
 
-            <input type="hidden" name="boxchecked" value="0" />
-            <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
-            <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
+            <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
             <input type="hidden" name="task" value="" />
             <?php echo JHtml::_('form.token'); ?>
         </form>

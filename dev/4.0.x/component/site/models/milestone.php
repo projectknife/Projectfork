@@ -178,7 +178,7 @@ class ProjectforkModelMilestone extends JModelItem
 
         // Adjust the state filter based on permissions
         $access = ProjectforkHelper::getActions();
-        if (!$access->get('milestone.edit.state') && !$access->get('milestone.edit', 'com_projectfork')) {
+        if (!$access->get('milestone.edit.state') && !$access->get('milestone.edit')) {
             $this->setState('filter.published', 1);
             $this->setState('filter.archived', 2);
         }

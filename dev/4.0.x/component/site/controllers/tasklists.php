@@ -22,9 +22,16 @@ class ProjectforkControllerTasklists extends JControllerAdmin
     /**
      * The default list view
      *
-     * @var    string    
+     * @var    string
      */
     protected $view_list = 'tasks';
+
+    /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
+	protected $text_prefix = 'COM_PROJECTFORK_TASKLISTS';
 
 
     /**
@@ -47,7 +54,7 @@ class ProjectforkControllerTasklists extends JControllerAdmin
     /**
      * Override of parent method
      *
-     * @see    jcontrolleradmin    
+     * @see    jcontrolleradmin
      */
     public function delete()
     {
@@ -65,7 +72,7 @@ class ProjectforkControllerTasklists extends JControllerAdmin
     /**
      * Override of parent method
      *
-     * @see    jcontrolleradmin    
+     * @see    jcontrolleradmin
      */
     public function publish()
     {

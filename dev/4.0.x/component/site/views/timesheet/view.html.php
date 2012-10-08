@@ -13,15 +13,13 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.view');
 
 
-class ProjectforkViewTimesheet extends JView
+class ProjectforkViewTimesheet extends JViewLegacy
 {
     protected $pageclass_sfx;
     protected $items;
-    protected $nulldate;
     protected $pagination;
     protected $params;
     protected $state;
-    protected $actions;
     protected $toolbar;
     protected $authors;
     protected $tasks;
@@ -32,6 +30,8 @@ class ProjectforkViewTimesheet extends JView
     protected $total_billable;
     protected $total_estimated_time;
     protected $total_estimated_cost;
+    protected $sort_options;
+    protected $order_options;
 
     /**
      * Display the view
@@ -56,11 +56,12 @@ class ProjectforkViewTimesheet extends JView
         $this->authors    = $this->get('Authors');
         $this->tasks      = $this->get('Tasks');
         $this->params     = $this->state->params;
-        $this->actions    = $this->getActions();
-        $this->toolbar    = $this->getToolbar();
         $this->access     = ProjectforkHelper::getActions(NULL, 0, true);
-        $this->nulldate   = JFactory::getDbo()->getNullDate();
         $this->menu       = new ProjectforkHelperContextMenu();
+
+        $this->toolbar       = $this->getToolbar();
+        $this->sort_options  = $this->getSortOptions();
+        $this->order_options = $this->getOrderOptions();
 
         // Escape strings for HTML output
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
@@ -100,21 +101,17 @@ class ProjectforkViewTimesheet extends JView
     protected function prepareDocument()
     {
         $app     = JFactory::getApplication();
-        $menus   = $app->getMenu();
+        $menu    = $app->getMenu()->getActive();
         $pathway = $app->getPathway();
         $title   = null;
 
-        // Because the application sets a default page title,
-        // we need to get it from the menu item itself
-        $menu = $menus->getActive();
-
+        // Because the application sets a default page title, we need to get it from the menu item itself
         if ($menu) {
             $this->params->def('page_heading', $this->params->get('page_title', $menu->title));
         }
         else {
             $this->params->def('page_heading', JText::_('COM_PROJECTFORK_TIMESHEET_TITLE'));
         }
-
 
         // Set the page title
         $title = $this->params->get('page_title', '');
@@ -131,24 +128,20 @@ class ProjectforkViewTimesheet extends JView
 
         $this->document->setTitle($title);
 
-
         // Set crawler behavior info
         if ($this->params->get('robots')) {
             $this->document->setMetadata('robots', $this->params->get('robots'));
         }
-
 
         // Set page description
         if ($this->params->get('menu-meta_description')) {
             $this->document->setDescription($desc);
         }
 
-
         // Set page keywords
         if ($this->params->get('menu-meta_keywords')) {
             $this->document->setMetadata('keywords', $keywords);
         }
-
 
         // Add feed links
         if ($this->params->get('show_feed_link', 1)) {
@@ -169,39 +162,71 @@ class ProjectforkViewTimesheet extends JView
     protected function getToolbar()
     {
         $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
-        $tb     = new ProjectforkHelperToolbar();
+        $state  = $this->get('State');
 
-        if ($access->get('time.create')) {
-            $tb->button('COM_PROJECTFORK_ACTION_NEW', 'timeform.add');
+        ProjectforkHelperToolbar::button(
+            'COM_PROJECTFORK_ACTION_NEW',
+            'timeform.add',
+            false,
+            array('access' => $access->get('time.create'))
+        );
+
+        $options = array();
+        if ($access->get('time.edit.state')) {
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_PUBLISH',   'task' => $this->getName() . '.publish');
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_UNPUBLISH', 'task' => $this->getName() . '.unpublish');
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_ARCHIVE',   'task' => $this->getName() . '.archive');
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_CHECKIN',   'task' => $this->getName() . '.checkin');
         }
 
-        return $tb->__toString();
+        if ($state->get('filter.published') == -2 && $access->get('time.delete')) {
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_DELETE', 'task' => $this->getName() . '.delete');
+        }
+        elseif ($access->get('time.edit.state')) {
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_TRASH', 'task' => $this->getName() . '.trash');
+        }
+
+        if (count($options)) {
+            ProjectforkHelperToolbar::listButton($options);
+        }
+
+        ProjectforkHelperToolbar::filterButton($this->state->get('filter.isset'));
+
+        return ProjectforkHelperToolbar::render();
     }
 
 
     /**
-     * Generates select options for the bulk action menu
+     * Generates the table sort options
      *
-     * @return    array    The available options
+     * @return    array    HTML list options
      */
-    protected function getActions()
+    protected function getSortOptions()
     {
-        $access  = ProjectforkHelperAccess::getActions(NULL, 0, true);
-        $state   = $this->get('State');
         $options = array();
 
-        if ($access->get('time.edit.state')) {
-            $options[] = JHtml::_('select.option', 'timesheet.publish', JText::_('COM_PROJECTFORK_ACTION_PUBLISH'));
-            $options[] = JHtml::_('select.option', 'timesheet.unpublish', JText::_('COM_PROJECTFORK_ACTION_UNPUBLISH'));
-            $options[] = JHtml::_('select.option', 'timesheet.archive', JText::_('COM_PROJECTFORK_ACTION_ARCHIVE'));
-            $options[] = JHtml::_('select.option', 'timesheet.checkin', JText::_('COM_PROJECTFORK_ACTION_CHECKIN'));
-        }
-        if ($state->get('filter.published') == -2 && $access->get('time.delete')) {
-            $options[] = JHtml::_('select.option', 'timesheet.delete', JText::_('COM_PROJECTFORK_ACTION_DELETE'));
-        }
-        elseif ($access->get('time.edit.state')) {
-            $options[] = JHtml::_('select.option', 'timesheet.trash', JText::_('COM_PROJECTFORK_ACTION_TRASH'));
-        }
+        $options[] = JHtml::_('select.option', '', JText::_('COM_PROJECTFORK_ORDER_SELECT'));
+        $options[] = JHtml::_('select.option', 'a.log_date', JText::_('COM_PROJECTFORK_ORDER_LOG_DATE'));
+        $options[] = JHtml::_('select.option', 'a.created', JText::_('COM_PROJECTFORK_ORDER_CREATE_DATE'));
+        $options[] = JHtml::_('select.option', 'task_title', JText::_('COM_PROJECTFORK_ORDER_TASK'));
+        $options[] = JHtml::_('select.option', 'author_name', JText::_('COM_PROJECTFORK_ORDER_AUTHOR'));
+
+        return $options;
+    }
+
+
+    /**
+     * Generates the table order options
+     *
+     * @return    array    HTML list options
+     */
+    protected function getOrderOptions()
+    {
+        $options = array();
+
+        $options[] = JHtml::_('select.option', '', JText::_('COM_PROJECTFORK_ORDER_SELECT_DIR'));
+        $options[] = JHtml::_('select.option', 'ASC', JText::_('COM_PROJECTFORK_ORDER_ASC'));
+        $options[] = JHtml::_('select.option', 'DESC', JText::_('COM_PROJECTFORK_ORDER_DESC'));
 
         return $options;
     }

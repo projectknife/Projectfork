@@ -28,8 +28,10 @@ class ProjectforkModelTimesheet extends JModelList
      */
     public function __construct($config = array())
     {
-        // Include query helper class
-        require_once JPATH_BASE . '/components/com_projectfork/helpers/query.php';
+        // Register dependencies
+        JLoader::register('ProjectforkHelper',       JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
+        JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+        JLoader::register('ProjectforkHelperQuery',  JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
 
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
@@ -39,7 +41,7 @@ class ProjectforkModelTimesheet extends JModelList
                 'a.modified_by', 'a.checked_out',
                 'a.checked_out_time', 'a.attribs',
                 'a.access', 'access_level', 'a.state',
-                'a.log_date', 'a.log_time'
+                'a.log_date', 'a.log_time', 'author_name'
             );
         }
 
@@ -477,9 +479,9 @@ class ProjectforkModelTimesheet extends JModelList
         $this->setState('filter.search', $search);
 
         // Filter - Project
-        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        // Filter - Project
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         // Filter - Task
         $task = $app->getUserStateFromRequest($this->context . '.filter.task', 'filter_task', '');

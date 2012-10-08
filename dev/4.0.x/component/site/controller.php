@@ -18,7 +18,7 @@ jimport('joomla.application.component.controller');
  *
  * @see    JController
  */
-class ProjectforkController extends JController
+class ProjectforkController extends JControllerLegacy
 {
     /**
      * Constructor
@@ -42,15 +42,14 @@ class ProjectforkController extends JController
     public function display($cachable = false, $urlparams = false)
     {
         // Load CSS and JS assets
-        JHtml::_('projectfork.boostrapCSS');
-        JHtml::_('projectfork.CSS');
+        JHtml::_('projectfork.style.bootstrap');
+        JHtml::_('projectfork.style.projectfork');
 
-        JHtml::_('projectfork.jQuery');
-        JHtml::_('projectfork.boostrapJS');
-        JHtml::_('projectfork.JS');
+        JHtml::_('projectfork.script.jQuery');
+        JHtml::_('projectfork.script.bootstrap');
+        JHtml::_('projectfork.script.projectfork');
 
         JHtml::_('behavior.tooltip');
-
 
         // Override method arguments
         $cachable  = true;

@@ -20,7 +20,7 @@ abstract class JHtmlProjectfork
      * Renders an input field with a select button for choosing a project
      *
      * @param     int       $value         The state value
-     * @param     bool      $can_change    
+     * @param     bool      $can_change
      *
      * @return    string                   The input field html
      */
@@ -181,6 +181,72 @@ abstract class JHtmlProjectfork
 
 
     /**
+     * Returns a date as literal label
+     *
+     * @param     string    $date      The date
+     * @param     string    $format    The new date format for the tooltip
+     *
+     * @return    string               The label html
+     */
+    public static function dateFormat($date, $format = null)
+    {
+        $string = ProjectforkHelper::relativeDate($date);
+
+        if ($string == false) {
+            return '';
+        }
+
+        $timestamp = strtotime($date);
+        $now       = time();
+        $remaining = $timestamp - $now;
+        $is_past   = ($remaining < 0) ? true : false;
+        $tooltip   = $string . '::' . JHtml::_('date', $date, ($format ? $format : JText::_('DATE_FORMAT_LC1')));
+
+        $html = array();
+        $html[] = '<span class="label ' . ($is_past ? 'label-important' : 'label-success');
+        $html[] = ' hasTip" title="' . $tooltip . '" style="cursor: help">';
+        $html[] = '<i class="icon-' . ($is_past ? 'warning' : 'calendar') . '"></i> ';
+        $html[] = $string;
+        $html[] = '</span>';
+
+        return implode('', $html);
+    }
+
+
+    /**
+     * Returns the author of an item as label
+     *
+     * @param     string    $name      The user name
+     * @param     string    $date      The date
+     * @param     string    $format    The new date format for the tooltip
+     *
+     * @return    string               The label html
+     */
+    public static function authorLabel($name = null, $date = null, $format = null)
+    {
+        if (!$name || !$date) {
+            return '';
+        }
+
+        $string = ProjectforkHelper::relativeDate($date);
+
+        if ($string == false) {
+            return '';
+        }
+
+        $tooltip = $string . '::' . JHtml::_('date', $date, ($format ? $format : JText::_('DATE_FORMAT_LC1')));
+
+        $html = array();
+        $html[] = '<span class="label hasTip" title="' . $tooltip . '" style="cursor: help">';
+        $html[] = '<i class="icon-user"></i> ';
+        $html[] = htmlspecialchars($name, ENT_COMPAT, 'UTF-8');
+        $html[] = '</span>';
+
+        return implode('', $html);
+    }
+
+
+    /**
      * Returns a truncated text. Also strips html tags
      *
      * @param     string    $text     The text to truncate
@@ -200,13 +266,36 @@ abstract class JHtmlProjectfork
 
 
     /**
+     * Method to create a checkbox for a grid row.
+     *
+     * @param     integer    $row_num        The row index
+     * @param     integer    $rec_id         The record id
+     * @param     boolean    $checked_out    True if item is checke out
+     * @param     string     $name           The name of the form element
+     *
+     * @return    mixed                      String of html with a checkbox if item is not checked out, null if checked out.
+     */
+    public static function id($row_num, $rec_id, $checked_out = false, $name = 'cid')
+    {
+        if ($checked_out) {
+            return '';
+        }
+        else {
+            return '<input type="checkbox" id="cb' . $row_num . '" name="' . $name . '[]" value="' . $rec_id
+                . '" onclick="Joomla.isChecked(this.checked); PFlist.toggleBulkButton();" title="'
+                . JText::sprintf('JGRID_CHECKBOX_ROW_N', ($row_num + 1)) . '" />';
+        }
+    }
+
+
+    /**
      * Adds a JS script declaration to the doc header which enables
      * ajax reordering of list items.
      *
      * @param     string    $list    The CSS list id selector
      * @param     string    $view    The component view
      *
-     * @return    void               
+     * @return    void
      */
     public static function ajaxReorder($list, $view)
     {
@@ -264,191 +353,5 @@ abstract class JHtmlProjectfork
         $js[] = "});";
 
         $doc->addScriptDeclaration(implode("\n", $js));
-    }
-
-
-    /**
-     * Adds a JS script declaration to the doc header which enables
-     * ajax based task completition through checkboxes.
-     *
-     * @return    void    
-     */
-    public static function ajaxCompleteTask()
-    {
-        $doc = JFactory::getDocument();
-        $js  = array();
-
-        $js[] = "function setTaskComplete(tid, complete) {";
-        $js[] = "    var token = '" . JSession::getFormToken() . "=1';";
-        $js[] = "    var el = document.id('task-'+tid);";
-        $js[] = "    if (complete == true) {var cv = 1;} else { var cv = 0;}";
-        $js[] = "    var req = new Request({";
-        $js[] = "        url:'". htmlspecialchars(JFactory::getURI()->toString()) . "',";
-        $js[] = "        method:'post',";
-        $js[] = "        autoCancel:true,";
-        $js[] = "        format:'json',";
-        $js[] = "        data:'option=com_projectfork&task=tasks.complete&cid[]='+tid+'&complete['+tid+']='+cv+'&tmpl=component&' + token,";
-        $js[] = "        onSuccess: function(responseText, responseXML) {";
-        $js[] = "            var resp = JSON.decode(responseText);";
-        $js[] = "            if (resp.success == true) {";
-        $js[] = "                if (complete == 1) {";
-        $js[] = "                    el.set('class', 'task-complete');";
-        $js[] = "                    var children = el.getElements('.btn-mini');";
-        $js[] = "                    children.each(function(child, idx) { child.toggleClass('disabled'); });";
-        $js[] = "                } else {";
-        $js[] = "                    el.set('class', 'task-incomplete');";
-        $js[] = "                    var children = el.getElements('.btn-mini');";
-        $js[] = "                    children.each(function(child, idx) { child.toggleClass('disabled'); });";
-        $js[] = "                }";
-        $js[] = "            } else {";
-        $js[] = "                el.morph('.alert-error', {duration: 500});";
-        $js[] = "                alert(resp.message);";
-        $js[] = "            }";
-        $js[] = "        },";
-        $js[] = "        onFailure: function(xhr) {";
-        $js[] = "            el.morph('.alert-error', {duration: 500});";
-        $js[] = "            alert('Update failed. Request returned: ' + xhr);";
-        $js[] = "        },";
-        $js[] = "        onException: function(headerName, value) {";
-        $js[] = "            el.morph('.alert-error', {duration: 500});";
-        $js[] = "            alert('Update failed. Header exception: ' + headerName + ' - ' + value);";
-        $js[] = "        }";
-        $js[] = "    }).send();";
-        $js[] = "}";
-
-        $doc->addScriptDeclaration(implode("\n", $js));
-    }
-
-
-    /**
-     * Loads projectfork CSS files
-     *
-     * @return    void    
-     */
-    public static function CSS()
-    {
-        if (!defined('COM_PROJECTFORK_CSS')) {
-            $params = JComponentHelper::getParams('com_projectfork');
-            $doc    = JFactory::getDocument();
-            $uri    = JFactory::getURI();
-
-            if ($doc->getType() == 'html' && $params->get('projectfork_css', '1') == '1') {
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/icons.css');
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/layout.css');
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/projectfork/css/theme.css');
-            }
-
-            define('COM_PROJECTFORK_CSS', 1);
-        }
-    }
-
-
-    /**
-     * Loads projectfork JS files
-     *
-     * @return    void    
-     */
-    public static function JS()
-    {
-        if (!defined('COM_PROJECTFORK_JS')) {
-            jimport( 'joomla.application.component.helper' );
-
-            $doc  = JFactory::getDocument();
-            $uri  = JFactory::getURI();
-
-            if ($doc->getType() == 'html') {
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/projectfork/js/projectfork.js');
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/projectfork/js/comments.js');
-            }
-
-            define('COM_PROJECTFORK_JS', 1);
-        }
-    }
-
-
-    /**
-     * Loads bootstrap CSS files
-     *
-     * @return    void    
-     */
-    public static function boostrapCSS()
-    {
-        if (!defined('COM_PROJECTFORK_BOOSTRAP_CSS')) {
-            $params = JComponentHelper::getParams('com_projectfork');
-            $doc    = JFactory::getDocument();
-            $uri    = JFactory::getURI();
-
-            if ($doc->getType() == 'html' && $params->get('bootstrap_css', '1') == '1') {
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap.min.css');
-                $doc->addStyleSheet($uri->base(true).'/components/com_projectfork/assets/bootstrap/css/bootstrap-responsive.min.css');
-            }
-
-            define('COM_PROJECTFORK_BOOTSTRAP_CSS', 1);
-        }
-    }
-
-
-    /**
-     * Loads bootstrap JS files
-     *
-     * @return    void    
-     */
-    public static function boostrapJS()
-    {
-        if (!defined('COM_PROJECTFORK_BOOSTRAP_JS')) {
-            $params = JComponentHelper::getParams('com_projectfork');
-            $doc    = JFactory::getDocument();
-            $uri    = JFactory::getURI();
-
-            if ($doc->getType() == 'html' && $params->get('bootstrap_js', '1') == '1') {
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/bootstrap/js/bootstrap.min.js');
-            }
-
-            define('COM_PROJECTFORK_BOOTSTRAP_JS', 1);
-        }
-    }
-
-
-    /**
-     * Loads bootstrap JS files
-     *
-     * @return    void    
-     */
-    public static function jQuery()
-    {
-        if (!defined('COM_PROJECTFORK_JQUERY')) {
-            $params = JComponentHelper::getParams('com_projectfork');
-            $doc    = JFactory::getDocument();
-            $uri    = JFactory::getURI();
-
-            if ($doc->getType() == 'html' && $params->get('jquery', '1') == '1') {
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery/jquery.min.js');
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/jquery/jquery.noconflict.js');
-            }
-
-            define('COM_PROJECTFORK_JQUERY', 1);
-        }
-    }
-
-
-    /**
-     * Loads jquery-flot JS files
-     *
-     * @return    void    
-     */
-    public static function jQueryFlot()
-    {
-        if (!defined('COM_PROJECTFORK_JQUERY_FLOT')) {
-            $doc = JFactory::getDocument();
-            $uri = JFactory::getURI();
-
-            if ($doc->getType() == 'html') {
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/flot/jquery.flot.min.js');
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/flot/jquery.flot.pie.min.js');
-                $doc->addScript($uri->base(true).'/components/com_projectfork/assets/flot/jquery.flot.resize.min.js');
-            }
-
-            define('COM_PROJECTFORK_JQUERY_FLOT', 1);
-        }
     }
 }

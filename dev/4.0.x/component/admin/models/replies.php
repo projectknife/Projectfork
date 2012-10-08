@@ -30,19 +30,12 @@ class ProjectforkModelReplies extends JModelList
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'id', 'a.id',
-                'project_id', 'a.project_id', 'project_title',
-                'topic_id', 'a.topic_id', 'topic_title',
-                'description', 'a.description',
-                'created', 'a.created',
-                'created_by', 'a.created_by',
-                'modified', 'a.modified',
-                'modified_by', 'a.modified_by',
-                'checked_out', 'a.checked_out',
-                'checked_out_time', 'a.checked_out_time',
-                'attribs', 'a.attribs',
-                'access', 'a.access', 'access_level',
-                'state', 'a.state'
+                'a.id', 'a.project_id', 'project_title',
+                'a.topic_id', 'topic_title', 'a.description',
+                'a.created', 'a.created_by', 'a.modified',
+                'a.modified_by', 'a.checked_out', 'a.checked_out_time',
+                'a.attribs', 'a.access', 'access_level',
+                'a.state'
             );
         }
 
@@ -56,7 +49,7 @@ class ProjectforkModelReplies extends JModelList
      *
      * @return    void
      */
-    protected function populateState($ordering = null, $direction = null)
+    protected function populateState($ordering = 'a.created', $direction = 'asc')
     {
         // Initialise variables.
         $app = JFactory::getApplication();
@@ -79,12 +72,31 @@ class ProjectforkModelReplies extends JModelList
         $access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', '');
         $this->setState('filter.access', $access);
 
-        $project = $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
+
+        if (!$project && $topic_id > 0) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('project_id')
+                  ->from('#__pf_topics')
+                  ->where('id = ' . $db->quote((int) $topic_id));
+
+            $db->setQuery($query);
+            $project = (int) $db->loadResult();
+
+            ProjectforkHelper::setActiveProject($project);
+        }
+
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
+
+        // Disable author filter if no project or topic is selected
+        if ($project <= 0 || $topic_id <= 0) {
+            $this->setState('filter.author_id', '');
+        }
 
         // List state information.
-        parent::populateState('a.created', 'asc');
+        parent::populateState($ordering, $direction);
     }
 
 
@@ -198,15 +210,15 @@ class ProjectforkModelReplies extends JModelList
         $search = $this->getState('filter.search');
         if (!empty($search)) {
             if (stripos($search, 'id:') === 0) {
-                $query->where('a.id = '.(int) substr($search, 3));
+                $query->where('a.id = '. (int) substr($search, 3));
             }
             elseif (stripos($search, 'manager:') === 0) {
-                $search = $db->Quote('%' . $db->getEscaped(substr($search, 7), true).'%');
-                $query->where('(ua.name LIKE ' . $search.' OR ua.username LIKE ' . $search.')');
+                $search = $db->Quote('%' . $db->escape(substr($search, 7), true) . '%');
+                $query->where('(ua.name LIKE ' . $search.' OR ua.username LIKE ' . $search . ')');
             }
             else {
-                $search = $db->Quote('%' . $db->getEscaped($search, true).'%');
-                $query->where('(a.title LIKE ' . $search.' OR a.alias LIKE ' . $search.')');
+                $search = $db->Quote('%' . $db->escape($search, true).'%');
+                $query->where('(a.title LIKE ' . $search . ' OR a.alias LIKE ' . $search . ')');
             }
         }
 
@@ -214,7 +226,7 @@ class ProjectforkModelReplies extends JModelList
         $order_col = $this->state->get('list.ordering', 'a.created');
         $order_dir = $this->state->get('list.direction', 'asc');
 
-        $query->order($db->getEscaped($order_col . ' ' . $order_dir));
+        $query->order($db->escape($order_col . ' ' . $order_dir));
 
         return $query;
     }
@@ -227,7 +239,14 @@ class ProjectforkModelReplies extends JModelList
      */
     public function getAuthors()
     {
-        // Create a new query object.
+        // Load only if project and topic filter is set
+        $project = (int) $this->getState('filter.project');
+        $topic   = (int) $this->getState('filter.topic');
+
+        if ($project <= 0 || $topic <= 0) {
+            return array();
+        }
+
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
 
@@ -235,10 +254,10 @@ class ProjectforkModelReplies extends JModelList
         $query->select('u.id AS value, u.name AS text')
               ->from('#__users AS u')
               ->join('INNER', '#__pf_replies AS a ON a.created_by = u.id')
+              ->where('a.topic_id = ' . $db->quote($topic))
               ->group('u.id')
               ->order('u.name');
 
-        // Setup the query
         $db->setQuery((string) $query);
 
         // Return the result

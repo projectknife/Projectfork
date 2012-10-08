@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.view');
 
 
-class ProjectforkViewProjects extends JView
+class ProjectforkViewProjects extends JViewLegacy
 {
     protected $items;
     protected $pagination;
@@ -54,7 +54,6 @@ class ProjectforkViewProjects extends JView
     protected function addToolbar()
     {
         $access = ProjectforkHelper::getActions();
-        $user   = JFactory::getUser();
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_PROJECTS_TITLE'), 'article.png');
 

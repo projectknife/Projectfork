@@ -35,7 +35,7 @@ class PFTableProject extends JTable
      * The default name is in the form table_name.id
      * where id is the value of the primary key of the table.
      *
-     * @return    string    
+     * @return    string
      */
     protected function _getAssetName()
     {
@@ -47,7 +47,7 @@ class PFTableProject extends JTable
     /**
      * Method to return the title to use for the asset table.
      *
-     * @return    string    
+     * @return    string
      */
     protected function _getAssetTitle()
     {
@@ -65,11 +65,9 @@ class PFTableProject extends JTable
      */
     protected function _getAssetParentId($table = null, $id = null)
     {
-        // Initialise variables.
         $query    = $this->_db->getQuery(true);
         $asset_id = null;
 
-        // Build the query to get the asset id for the parent category.
         $query->select($this->_db->quoteName('id'))
               ->from($this->_db->quoteName('#__assets'))
               ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_projectfork"));
@@ -101,12 +99,6 @@ class PFTableProject extends JTable
             $registry = new JRegistry;
             $registry->loadArray($array['attribs']);
             $array['attribs'] = (string) $registry;
-        }
-
-        if (isset($array['metadata']) && is_array($array['metadata'])) {
-            $registry = new JRegistry;
-            $registry->loadArray($array['metadata']);
-            $array['metadata'] = (string)$registry;
         }
 
         // Bind the rules.
@@ -149,7 +141,7 @@ class PFTableProject extends JTable
 
         // Check attribs
         $registry = new JRegistry;
-        $registry->loadJSON($this->attribs);
+        $registry->loadString($this->attribs);
 
         $website = $registry->get('website');
         $email   = $registry->get('email');
@@ -160,11 +152,11 @@ class PFTableProject extends JTable
             && (stripos($website, 'https://') === false)
             && (stripos($website, 'ftp://') === false))
         {
-            $registry->setValue('website', 'http://' . $website);
+            $registry->set('website', 'http://' . $website);
         }
 
         // Validate contact email
-        if (!JMailHelper::isEmailAddress($email)) $registry->setValue('email', '');
+        if (!JMailHelper::isEmailAddress($email)) $registry->set('email', '');
 
         $this->attribs = (string) $registry;
 
@@ -185,13 +177,13 @@ class PFTableProject extends JTable
 
         if ($this->id) {
             // Existing item
-            $this->modified    = $date->toMySQL();
+            $this->modified    = $date->toSql();
             $this->modified_by = $user->get('id');
         }
         else {
             // New item. A project created_by field can be set by the user,
             // so we don't touch it if set.
-            $this->created = $date->toMySQL();
+            $this->created = $date->toSql();
             if (empty($this->created_by)) $this->created_by = $user->get('id');
         }
 
@@ -199,7 +191,7 @@ class PFTableProject extends JTable
         $table = JTable::getInstance('Project', 'PFTable');
 
         if ($table->load(array('alias' => $this->alias)) && ($table->id != $this->id || $this->id == 0)) {
-            $this->setError(JText::_('JLIB_DATABASE_ERROR_PROJECT_UNIQUE_ALIAS'));
+            $this->setError(JText::_('COM_PROJECTFORK_ERROR_PROJECT_UNIQUE_ALIAS'));
             return false;
         }
 

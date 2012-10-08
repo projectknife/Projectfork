@@ -1,29 +1,16 @@
 <?php
 /**
-* @package   Projectfork
-* @copyright Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license   http://www.gnu.org/licenses/gpl.html GNU/GPL, see license.txt
-*
-* This file is part of Projectfork.
-*
-* Projectfork is free software. This version may have been modified pursuant
-* to the GNU General Public License, and as distributed it includes or
-* is derivative of works licensed under the GNU General Public License or
-* other free or open source software licenses.
-*
-* Projectfork is distributed in the hope that it will be useful,
-* but WITHOUT ANY WARRANTY; without even the implied warranty of
-* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-* GNU General Public License for more details.
-*
-* You should have received a copy of the GNU General Public License
-* along with Projectfork. If not, see <http://www.gnu.org/licenses/gpl.html>.
-**/
+ * @package      Projectfork
+ *
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ */
 
 defined('JPATH_PLATFORM') or die;
 
+
 jimport('joomla.html.html');
-jimport('joomla.access.access');
 jimport('joomla.form.formfield');
 
 
@@ -33,111 +20,187 @@ jimport('joomla.form.formfield');
  */
 class JFormFieldProject extends JFormField
 {
-	/**
-	 * The form field type.
-	 *
-	 * @var		string
-	 */
-	public $type = 'Project';
+    /**
+     * The form field type.
+     *
+     * @var    string
+     */
+    public $type = 'Project';
 
 
-	/**
-	 * Method to get the field input markup.
-	 *
-	 */
-	protected function getInput()
-	{
-		// Initialize variables.
-        $app      = JFactory::getApplication();
-		$html     = array();
-		$link     = 'index.php?option=com_projectfork&amp;view=projects'
-                  . '&amp;layout=modal&amp;tmpl=component'
-                  . '&amp;function=pfSelectProject_'.$this->id;
+    /**
+     * Method to get the field input markup.
+     *
+     * @return    string    The html field markup
+     */
+    protected function getInput()
+    {
+        // Load the modal behavior script
+        JHtml::_('behavior.modal', 'a.modal_' . $this->id);
+
+        // Add the script to the document head.
+        $script = $this->getJavascript();
+        JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
+
+        // Load the current project title a value is set.
+        $title = ($this->value ? $this->getProjectTitle() : JText::_('COM_PROJECTFORK_SELECT_A_PROJECT'));
+
+        if ($this->value == 0) $this->value = '';
+
+        $html = $this->getHTML($title);
+
+        return implode("\n", $html);
+    }
 
 
-		// Initialize some field attributes.
-		$attr  = $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
-		$attr .= $this->element['size']  ? ' size="'.(int) $this->element['size'].'"'      : '';
-
-        $doSubmit = ($this->element['submit'] == 'true') ? true : false;
-        $session  = ($this->element['session'] == 'true') ? true : false;
-
-        // Get the view
-		$view = (string) JRequest::getCmd('view');
-
-		// Initialize JavaScript field attributes.
-		$onchange = (string) $this->element['onchange'];
-
-		// Load the modal behavior script.
-		JHtml::_('behavior.modal', 'a.modal_'.$this->id);
-
-
-		// Build the javascript
-		$script = array();
-		$script[] = '	function pfSelectProject_'.$this->id.'(id, title) {';
-		$script[] = '		var old_id = document.getElementById("'.$this->id.'_id").value;';
-		$script[] = '		if (old_id != id) {';
-		$script[] = '			document.getElementById("'.$this->id.'_id").value = id;';
-		$script[] = '			document.getElementById("'.$this->id.'_name").value = title;';
-		if($doSubmit) {
-		    $script[] = '			Joomla.submitbutton("'.$view.'.setProject");';
-		}
-        else {
-            $script[] = '		SqueezeBox.close();';
-        }
-		$script[] = '		}';
-		$script[] = '	}';
-
-		// Add the script to the document head.
-		JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
-
-
-		// Load the current project title if available.
-        JTable::addIncludePath(JPATH_ADMINISTRATOR.DS.'components'.DS.'com_projectfork'.DS.'tables');
-		$table = JTable::getInstance('project', 'PFtable');
-
-		if($this->value) {
-			$table->load($this->value);
-		}
-        else {
-		    $active_id = (int) $app->getUserState('com_projectfork.project.active.id', 0);
-
-            if($active_id && $session) {
-                $table->load($active_id);
-                $this->value = $active_id;
-            }
-            else {
-                $table->title = JText::_('COM_PROJECTFORK_SELECT_A_PROJECT');
-            }
-		}
-
-        if ($this->value == 0) {
-            $this->value = '';
+    /**
+     * Method to generate the input markup.
+     *
+     * @param     string    $title    The title of the current value
+     *
+     * @return    string              The html field markup
+     */
+    protected function getHTML($title)
+    {
+        if (JFactory::getApplication()->isSite()) {
+            return $this->getSiteHTML($title);
         }
 
+        return $this->getAdminHTML($title);
+    }
 
-		// Create a dummy text field with the project title.
-		$html[] = '<div class="fltlft">';
-		$html[] = '	<input type="text" id="'.$this->id.'_name"'
-                . ' value="'.htmlspecialchars($table->title, ENT_COMPAT, 'UTF-8').'"'
-                . ' disabled="disabled"'.$attr.' />';
-		$html[] = '</div>';
 
-		// Create the project select button.
-		$html[] = '<div class="button2-left">';
-		$html[] = '  <div class="blank">';
-		if ($this->element['readonly'] != 'true') {
-			$html[] = '		<a class="modal_'.$this->id.'" title="'.JText::_('COM_PROJECTFORK_SELECT_PROJECT').'"'
-                    . ' href="'.$link.'"'
-                    . ' rel="{handler: \'iframe\', size: {x: 800, y: 500}}">';
-			$html[] = '			'.JText::_('COM_PROJECTFORK_SELECT_PROJECT').'</a>';
-		}
-		$html[] = '  </div>';
-		$html[] = '</div>';
+    /**
+     * Method to generate the backend input markup.
+     *
+     * @param     string    $title    The title of the current value
+     *
+     * @return    array     $html     The html field markup
+     */
+    protected function getAdminHTML($title)
+    {
+        $html = array();
+        $link = 'index.php?option=com_projectfork&amp;view=projects'
+              . '&amp;layout=modal&amp;tmpl=component'
+              . '&amp;function=pfSelectProject_' . $this->id;
 
-		// Create the real field, hidden, that stored the project id.
-		$html[] = '<input type="hidden" id="'.$this->id.'_id" name="'.$this->name.'" value="'.(int) $this->value.'" />';
+        // Initialize some field attributes.
+        $attr = $this->element['class'] ? ' class="' . (string) $this->element['class'] . '"' : '';
+        $attr .= $this->element['size'] ? ' size="' . (int) $this->element['size'] . '"'      : '';
 
-		return implode("\n", $html);
-	}
+        // Create a dummy text field with the project title.
+        $html[] = '<div class="fltlft">';
+        $html[] = '    <input type="text" id="' . $this->id . '_name" value="' . htmlspecialchars($title, ENT_COMPAT, 'UTF-8') . '" disabled="disabled"' . $attr . ' />';
+        $html[] = '</div>';
+
+        // Create the project select button.
+        if ($this->element['readonly'] != 'true') {
+            $html[] = '<div class="button2-left">';
+            $html[] = '    <div class="blank">';
+            $html[] = '<a class="modal_' . $this->id . '" title="' . JText::_('COM_PROJECTFORK_SELECT_PROJECT') . '"'
+                    . ' href="' . $link . '" rel="{handler: \'iframe\', size: {x: 800, y: 500}}">';
+            $html[] = JText::_('COM_PROJECTFORK_SELECT_PROJECT') . '</a>';
+            $html[] = '    </div>';
+            $html[] = '</div>';
+        }
+
+        // Create the hidden field, that stores the id.
+        $html[] = '<input type="hidden" id="' . $this->id . '_id" name="' . $this->name . '" value="' . htmlspecialchars($this->value, ENT_COMPAT, 'UTF-8') . '" />';
+
+        return $html;
+    }
+
+
+    /**
+     * Method to generate the frontend input markup.
+     *
+     * @param     string    $title    The title of the current value
+     *
+     * @return    array     $html     The html field markup
+     */
+    protected function getSiteHTML($title)
+    {
+        $html = array();
+        $link = ProjectforkHelperRoute::getProjectsRoute()
+              . '&amp;layout=modal&amp;tmpl=component'
+              . '&amp;function=pfSelectProject_' . $this->id;
+
+        // Initialize some field attributes.
+        $attr  = $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
+        $attr .= $this->element['size']  ? ' size="'.(int) $this->element['size'].'"'      : '';
+
+        // Create a dummy text field with the project title.
+        $html[] = '<input type="text" id="' . $this->id . '_name" value="' . htmlspecialchars($title, ENT_COMPAT, 'UTF-8') . '" disabled="disabled"' . $attr . ' />';
+
+        // Create the project select button.
+        if ($this->element['readonly'] != 'true') {
+            $html[] = '<a class="modal_' . $this->id . ' btn" title="' . JText::_('COM_PROJECTFORK_SELECT_PROJECT') . '"'
+                    . ' href="' . JRoute::_($link) . '" rel="{handler: \'iframe\', size: {x: 800, y: 500}}">';
+            $html[] = JText::_('COM_PROJECTFORK_SELECT_PROJECT') . '</a>';
+        }
+
+        // Create the hidden field, that stores the id.
+        $html[] = '<input type="hidden" id="' . $this->id . '_id" name="' . $this->name . '" value="' . (int) $this->value . '" />';
+
+        return $html;
+    }
+
+
+    /**
+     * Generates the javascript needed for this field
+     *
+     * @param     boolean    $submit    Whether to submit the form or not
+     * @param     string     $view      The name of the view
+     *
+     * @return    array      $script    The generated javascript
+     */
+    protected function getJavascript()
+    {
+        $script   = array();
+        $onchange = $this->element['onchange'] ? $this->element['onchange'] : '';
+
+        $script[] = 'function pfSelectProject_' . $this->id . '(id, title)';
+        $script[] = '{';
+        $script[] = '    var old_id = document.getElementById("' . $this->id . '_id").value;';
+        $script[] = '     if (old_id != id) {';
+        $script[] = '         document.getElementById("' . $this->id . '_id").value = id;';
+        $script[] = '         document.getElementById("' . $this->id . '_name").value = title;';
+        $script[] = '         SqueezeBox.close(); ';
+        $script[] = '         ' . $onchange;
+        $script[] = '     }';
+        $script[] = '}';
+
+        return $script;
+    }
+
+
+    /**
+     * Method to get the title of the currently selected project
+     *
+     * @return    string    The project title
+     */
+    protected function getProjectTitle()
+    {
+        $default = JText::_('COM_PROJECTFORK_SELECT_A_PROJECT');
+
+        if (empty($this->value)) {
+            return $default;
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('title')
+              ->from('#__pf_projects')
+              ->where('id = ' . $db->quote($this->value));
+
+        $db->setQuery((string) $query);
+        $title = $db->loadResult();
+
+        if (empty($title)) {
+            return $default;
+        }
+
+        return $title;
+    }
 }

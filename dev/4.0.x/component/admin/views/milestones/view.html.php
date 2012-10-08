@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.view');
 
 
-class ProjectforkViewMilestones extends JView
+class ProjectforkViewMilestones extends JViewLegacy
 {
     protected $items;
     protected $pagination;
@@ -55,7 +55,7 @@ class ProjectforkViewMilestones extends JView
      */
     protected function addToolbar()
     {
-        $access = ProjectforkHelperAccess::getActions();
+        $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_MILESTONES_TITLE'), 'article.png');
 

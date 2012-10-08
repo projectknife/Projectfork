@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.view');
 
 
-class ProjectforkViewMilestone extends JView
+class ProjectforkViewMilestone extends JViewLegacy
 {
     protected $form;
     protected $item;
@@ -26,8 +26,6 @@ class ProjectforkViewMilestone extends JView
      */
     public function display($tpl = null)
     {
-
-        // Initialiase variables.
         $this->form  = $this->get('Form');
         $this->item  = $this->get('Item');
         $this->state = $this->get('State');
@@ -56,7 +54,6 @@ class ProjectforkViewMilestone extends JView
         $is_new      = ($this->item->id == 0);
         $checked_out = !($this->item->checked_out == 0 || $this->item->checked_out == $uid);
         $access      = ProjectforkHelperAccess::getActions('milestone', $this->item->id);
-
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_PAGE_' . ($checked_out ? 'VIEW_MILESTONE' : ($is_new ? 'ADD_MILESTONE' : 'EDIT_MILESTONE'))), 'article-add.png');
 

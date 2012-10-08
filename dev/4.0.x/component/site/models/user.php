@@ -10,8 +10,9 @@
 defined('_JEXEC') or die();
 
 
-require_once JPATH_ADMINISTRATOR . '/components/com_users/models/user.php';
-
+// Base this on the backend users model
+JLoader::register('UsersModelUser', JPATH_ADMINISTRATOR . '/components/com_users/models/user.php');
+JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
 
 /**
  * Projectfork User Model
@@ -33,7 +34,7 @@ class ProjectforkModelUser extends UsersModelUser
         $query = $db->getQuery(true);
 
         $access = ProjectforkHelperAccess::getActions();
-        $groups    = implode(',', $user->getAuthorisedViewLevels());
+        $groups = implode(',', $user->getAuthorisedViewLevels());
 
         $query->select('id')
               ->from('#__pf_projects')
@@ -44,8 +45,92 @@ class ProjectforkModelUser extends UsersModelUser
         }
 
         $db->setQuery((string) $query);
-        $projects = (array) $db->loadResultArray();
+        $projects = (array) $db->loadColumn();
 
         return $projects;
     }
+
+
+    public function deleteAvatar($pk)
+    {
+        $base_path = JPATH_ROOT . '/media/com_projectfork/repo/0/avatar';
+        $img_path  = NULL;
+
+        if (JFile::exists($base_path . '/' . $pk . '.jpg')) {
+            $img_path = $base_path . '/' . $pk . '.jpg';
+        }
+        elseif (JFile::exists($base_path . '/' . $pk . '.jpeg')) {
+            $img_path = $base_path . '/' . $pk . '.jpeg';
+        }
+        elseif (JFile::exists($base_path . '/' . $pk . '.png')) {
+            $img_path = $base_path . '/' . $pk . '.png';
+        }
+        elseif (JFile::exists($base_path . '/' . $pk . '.gif')) {
+            $img_path = $base_path . '/' . $pk . '.gif';
+        }
+
+        // No image found
+        if (!$img_path) {
+            return true;
+        }
+
+        if (JFile::delete($img_path) !== true) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    public function saveAvatar($pk, $file)
+    {
+        JLoader::register('ProjectforkHelperRepository', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/repository.php');
+
+        if (!ProjectforkProcImage::isImage($file['name'], $file['tmp_name'])) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_NOT_AN_IMAGE'));
+            return false;
+        }
+
+        // Delete any previous avatar
+        if (!$this->deleteAvatar($pk)) {
+            return false;
+        }
+
+        if ($file['error']) {
+            $error = ProjectforkHelperRepository::getFileErrorMsg($file['error'], $file['name']);
+            $this->setError($error);
+            return false;
+        }
+
+        $uploadpath = JPATH_ROOT . '/media/com_projectfork/repo/0/avatar';
+        $name = $pk . '.' . strtolower(JFile::getExt($file['name']));
+
+        if (JFile::upload($file['tmp_name'], $uploadpath . '/' . $name) === true) {
+            return true;
+        }
+
+        return false;
+    }
+
+
+    /**
+	 * Method to auto-populate the model state.
+	 *
+	 * @return  void
+	 */
+	protected function populateState()
+	{
+		// Initialise variables.
+		$table = $this->getTable();
+		$key   = $table->getKeyName();
+
+		// Get the pk of the record from the request.
+		$pk = JRequest::getInt($key, JFactory::getUser()->get('id'));
+
+		$this->setState($this->getName() . '.id', $pk);
+
+		// Load the parameters.
+		$value = JComponentHelper::getParams($this->option);
+		$this->setState('params', $value);
+	}
 }

@@ -20,6 +20,14 @@ jimport('joomla.application.component.controlleradmin');
 class ProjectforkControllerTimesheet extends JControllerAdmin
 {
     /**
+     * The prefix to use with controller messages.
+     *
+     * @var    string
+     */
+    protected $text_prefix = "COM_PROJECTFORK_TIMESHEET";
+
+
+    /**
      * Constructor.
      *
      * @param    array          $config    An optional associative array of configuration settings

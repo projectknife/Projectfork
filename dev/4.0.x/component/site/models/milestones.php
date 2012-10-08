@@ -30,14 +30,14 @@ class ProjectforkModelMilestones extends JModelList
     public function __construct($config = array())
     {
         // Register dependencies
-        JLoader::register('ProjectforkHelperQuery',  JPATH_SITE . '/components/com_projectfork/helpers/query.php');
         JLoader::register('ProjectforkHelper',       JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/projectfork.php');
         JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
+        JLoader::register('ProjectforkHelperQuery',  JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
 
         // Set field filter
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'a.id', 'a.title', 'a.created', 'a.modified',
+                'a.id', 'project_title, a.title', 'a.created', 'a.modified',
                 'a.checked_out', 'a.checked_out_time',
                 'a.state', 'a.start_date', 'a.end_date',
                 'author_name', 'editor', 'access_level',
@@ -56,10 +56,8 @@ class ProjectforkModelMilestones extends JModelList
      */
     public function getListQuery()
     {
-        // Create a new query object.
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
-
         $user  = JFactory::getUser();
 
         // Select the required fields from the table.
@@ -103,7 +101,7 @@ class ProjectforkModelMilestones extends JModelList
         $query->join('LEFT', '#__pf_task_lists AS tl ON tl.milestone_id = a.id');
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_projectfork')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
         }
@@ -122,7 +120,16 @@ class ProjectforkModelMilestones extends JModelList
         $query->group('a.id');
 
         // Add the list ordering clause.
-        $query->order($this->getState('list.ordering', 'a.title') . ' ' . $this->getState('list.direction', 'ASC'));
+        $project = (int) $this->getState('filter.project');
+        $order   = $this->getState('list.ordering', 'a.title');
+
+        if ($project <= 0) {
+            if ($order != 'project_title') {
+                $order = 'project_title ASC, ' . $order;
+            }
+        }
+
+        $query->order($order . ' ' . $this->getState('list.direction', 'ASC'));
 
         return $query;
     }
@@ -172,7 +179,8 @@ class ProjectforkModelMilestones extends JModelList
 
         // Return empty array if no project is select
         $project = (int) $this->getState('filter.project');
-        if ($project < 0) {
+
+        if ($project <= 0) {
             return array();
         }
 
@@ -216,7 +224,7 @@ class ProjectforkModelMilestones extends JModelList
      *
      * @return    void
      */
-    protected function populateState($ordering = 'a.title', $direction = 'ASC')
+    protected function populateState($ordering = 'project_title, a.title', $direction = 'ASC')
     {
         $app    = JFactory::getApplication();
         $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
@@ -247,9 +255,8 @@ class ProjectforkModelMilestones extends JModelList
         $this->setState('filter.search', $search);
 
         // Filter - Project
-        $project = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
-        ProjectforkHelper::setActiveProject($project);
 
         // Filter - Author
         $author = $app->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', '');

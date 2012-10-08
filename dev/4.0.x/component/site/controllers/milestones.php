@@ -26,6 +26,13 @@ class ProjectforkControllerMilestones extends JControllerAdmin
      */
     protected $view_list = 'milestones';
 
+    /**
+	 * The prefix to use with controller messages.
+	 *
+	 * @var    string
+	 */
+	protected $text_prefix = 'COM_PROJECTFORK_MILESTONES';
+
 
     /**
      * Method to get a model object, loading it if required.
@@ -60,7 +67,6 @@ class ProjectforkControllerMilestones extends JControllerAdmin
         $item_id = JRequest::getInt('Itemid');
         $return  = $this->getReturnPage();
         $append  = '';
-
 
         // Setup redirect info.
         if ($tmpl)    $append .= '&tmpl=' . $tmpl;

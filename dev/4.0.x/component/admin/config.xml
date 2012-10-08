@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-    <fieldset name="general_parameters" label="COM_PROJECTFORK_CONFIG_GENERAL_LABEL" description="COM_PROJECTFORK_CONFIG_GENERAL_DESC">
+    <fieldset name="general_parameters" label="COM_PROJECTFORK_CONFIG_GENERAL_LABEL" description="COM_PROJECTFORK_CONFIG_GENERAL_DESC" addfieldpath="/administrator/components/com_projectfork/models/fields">
         <field type="spacer" label="COM_PROJECTFORK_CONFIG_GENERAL_FORMAT_SPACER"/>
         <field type="text" name="date_format" label="COM_PROJECTFORK_CONFIG_DATE_FORMAT_LABEL" description="JGLOBAL_DATE_FORMAT_DESC" default=""/>
         <field type="spacer" hr="true"/>
@@ -12,23 +12,35 @@
 		</field>
         <field type="text" name="decimal_delimiter" label="COM_PROJECTFORK_CONFIG_DECIMAL_DELIMITER_LABEL" description="COM_PROJECTFORK_CONFIG_DECIMAL_DELIMITER_DESC" default="." maxlength="1" size="10"/>
         <field type="text" name="thousands_delimiter" label="COM_PROJECTFORK_CONFIG_THOUSANDS_DELIMITER_LABEL" description="COM_PROJECTFORK_CONFIG_THOUSANDS_DELIMITER_DESC" default="," maxlength="1" size="10"/>
+        <field type="spacer" label="COM_PROJECTFORK_CONFIG_GENERAL_REPO_SPACER"/>
+        <field type="repopath" name="repo_basepath"
+            label="COM_PROJECTFORK_CONFIG_REPO_BASEPATH_LABEL" description="COM_PROJECTFORK_CONFIG_REPO_BASEPATH_DESC"
+            default="" />
     </fieldset>
 
 	<fieldset name="compat_parameters" label="COM_PROJECTFORK_CONFIG_COMPAT_LABEL" description="COM_PROJECTFORK_CONFIG_COMPAT_DESC">
-       <field name="projectfork_css" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_CSS_LABEL" description="COM_PROJECTFORK_CONFIG_CSS_DESC">
+       <field name="projectfork_css" type="list" default="1" label="COM_PROJECTFORK_CONFIG_CSS_LABEL" description="COM_PROJECTFORK_CONFIG_CSS_DESC">
 		    <option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-        <field name="bootstrap_css" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_BOOTSTRAP_CSS_LABEL" description="COM_PROJECTFORK_CONFIG_BOOTSTRAP_CSS_DESC">
+        <field name="bootstrap_css" type="list" default="" label="COM_PROJECTFORK_CONFIG_BOOTSTRAP_CSS_LABEL" description="COM_PROJECTFORK_CONFIG_BOOTSTRAP_CSS_DESC">
+		    <option value="">JAUTO</option>
 		    <option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-        <field name="bootstrap_js" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_BOOTSTRAP_JS_LABEL" description="COM_PROJECTFORK_CONFIG_BOOTSTRAP_JS_DESC">
-		    <option value="0">JNO</option>
+        <field name="bootstrap_js" type="list" default="" label="COM_PROJECTFORK_CONFIG_BOOTSTRAP_JS_LABEL" description="COM_PROJECTFORK_CONFIG_BOOTSTRAP_JS_DESC">
+		    <option value="">JAUTO</option>
+            <option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
-        <field name="jquery" type="radio" default="1" label="COM_PROJECTFORK_CONFIG_JQUERY_LABEL" description="COM_PROJECTFORK_CONFIG_JQUERY_DESC">
-		    <option value="0">JNO</option>
+        <field name="jquery_site" type="list" default="" label="COM_PROJECTFORK_CONFIG_JQUERY_SITE_LABEL" description="COM_PROJECTFORK_CONFIG_JQUERY_DESC">
+		    <option value="">JAUTO</option>
+            <option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+        <field name="jquery_admin" type="list" default="" label="COM_PROJECTFORK_CONFIG_JQUERY_ADMIN_LABEL" description="COM_PROJECTFORK_CONFIG_JQUERY_DESC">
+		    <option value="">JAUTO</option>
+            <option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
 
