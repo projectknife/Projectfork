@@ -215,3 +215,9 @@ body.modal{
 	display: inline-block;
 	margin: 0 4px -6px 4px;
 }
+/* Heading margin in rows and lists */
+.row-striped h1,.row-striped h2,.row-striped h3,.row-striped h4,.row-striped h5,.row-striped h6,
+.list-striped h1,.list-striped h2,.list-striped h3,.list-striped h4,.list-striped h5,.list-striped h6
+.table h1,.table h2,.table h3,.table h4,.table h5,.table h6 {
+	margin: 0;
+}
