@@ -45,20 +45,11 @@
         <field name="attachment" type="repoattachment"
             label="COM_PROJECTFORK_FIELD_ATTACHMENT_LABEL" description="COM_PROJECTFORK_FIELD_ATTACHMENT_DESC"
         />
-        <field name="access_action" type="list"
-            label="COM_PROJECTFORK_FIELD_ACCESS_ACTION_LABEL" description="COM_PROJECTFORK_FIELD_ACCESS_ACTION_DESC"
-            class="inputbox" filter="intval" size="1" default="0"
-            onchange="PFform.accessAction(this); PFform.reload('rules');"
-        >
-            <option value="0">COM_PROJECTFORK_OPTION_ACCESS_ACTION_EXISTING</option>
-            <option value="1">COM_PROJECTFORK_OPTION_ACCESS_ACTION_NEW</option>
-        </field>
-        <field name="access_title" type="text"
-            label="COM_PROJECTFORK_FIELD_ACCESS_NEW_LABEL" description="COM_PROJECTFORK_FIELD_ACCESS_NEW_DESC"
-            class="inputbox" size="30"
-        />
         <field name="rules" type="groupaccess"
             component="com_projectfork" section="project" inheritonly="false" filter="ProjectforkHelperForm::filterRules" validate="groupaccess"
+        />
+        <field name="labels" type="labelmanager"
+            label="COM_PROJECTFORK_FIELD_LABELS" description="COM_PROJECTFORK_FIELD_LABELS_MANAGER_DESC"
         />
         <field name="id" type="hidden" readonly="true"/>
         <field name="asset_id" type="hidden" filter="unset"/>

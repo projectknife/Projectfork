@@ -116,6 +116,13 @@ Joomla.submitbutton = function(task)
 		<?php endif; ?>
     </fieldset>
 
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_LABELS'), 'project-labels') ;?>
+    <fieldset>
+    	<div class="formelm control-group">
+    		<?php echo $this->form->getInput('labels'); ?>
+    	</div>
+    </fieldset>
+
     <?php if ($this->item->id) : ?>
     <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'project-attachments') ;?>
     <fieldset>

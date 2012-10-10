@@ -1,4 +1,5 @@
 DELETE FROM `#__pf_comments`;
+DELETE FROM `#__pf_labels`;
 DELETE FROM `#__pf_milestones`;
 DELETE FROM `#__pf_milestone_map`;
 DELETE FROM `#__pf_projects`;

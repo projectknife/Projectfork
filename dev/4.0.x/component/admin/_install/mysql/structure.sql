@@ -30,6 +30,18 @@ CREATE TABLE IF NOT EXISTS `#__pf_comments` (
   KEY `idx_nested` (`lft`,`rgt`)
 ) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork item comments';
 
+
+CREATE TABLE IF NOT EXISTS `#__pf_labels` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Label ID',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'The parent project id',
+  `title` varchar(32) NOT NULL COMMENT 'Label title',
+  `style` varchar(32) NOT NULL COMMENT 'Label CSS style',
+  `asset_group` varchar(50) NOT NULL COMMENT 'Assigned label asset group',
+  PRIMARY KEY (`id`),
+  KEY `idx_group` (`project_id`,`asset_group`),
+  KEY `idx_project` (`project_id`)
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork labels';
+
 CREATE TABLE IF NOT EXISTS `#__pf_milestones` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Milestone ID',
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table',

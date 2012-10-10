@@ -78,6 +78,10 @@ class ProjectforkModelProject extends JModelAdmin
             // Get the attachments
             $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
             $item->attachment = $attachments->getItems('project', $item->id);
+
+            // Get the labels
+            $labels = $this->getInstance('Labels', 'ProjectforkModel');
+            $item->labels = $labels->getItems($item->id);
         }
 
         return $item;
@@ -350,6 +354,20 @@ class ProjectforkModelProject extends JModelAdmin
 
                 if (!$attachments->save($data['attachment'])) {
                     $this->setError($attachments->getError());
+                    return false;
+                }
+            }
+
+            // Store the labels
+            if (isset($data['labels'])) {
+                $labels = $this->getInstance('Labels', 'ProjectforkModel');
+
+                if ((int) $labels->getState('item.project') == 0) {
+                    $labels->setState('item.project', $id);
+                }
+
+                if (!$labels->save($data['labels'])) {
+                    $this->setError($labels->getError());
                     return false;
                 }
             }

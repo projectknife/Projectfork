@@ -1,4 +1,5 @@
 DROP TABLE `#__pf_comments`;
+DROP TABLE `#__pf_labels`;
 DROP TABLE `#__pf_milestones`;
 DROP TABLE `#__pf_milestone_map`;
 DROP TABLE `#__pf_projects`;

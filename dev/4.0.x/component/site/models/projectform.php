@@ -74,6 +74,10 @@ class ProjectforkModelProjectForm extends ProjectforkModelProject
         $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
         $value->attachment = $attachments->getItems('project', $value->id);
 
+        // Get the labels
+        $labels = $this->getInstance('Labels', 'ProjectforkModel');
+        $value->labels = $labels->getItems($value->id);
+
         // Compute selected asset permissions.
         $uid = JFactory::getUser()->get('id');
 
