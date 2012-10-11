@@ -49,6 +49,14 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                         <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
                     </div>
                     <div class="clearfix"> </div>
+
+                    <?php if ($this->state->get('filter.project')) : ?>
+                        <hr />
+                        <div class="filter-labels">
+                            <?php echo JHtml::_('projectfork.filterLabels', 'repository', $this->state->get('filter.project'), $this->state->get('filter.labels'));?>
+                        </div>
+                        <div class="clearfix"> </div>
+                    <?php endif; ?>
                 </div>
             </div>
 

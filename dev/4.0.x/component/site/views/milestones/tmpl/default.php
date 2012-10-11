@@ -75,10 +75,10 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                     <?php if ($pid) : ?>
                         <hr />
                         <div class="filter-labels">
-                            <?php echo JHtml::_('projectfork.filterLabels', 'com_projectfork.milestone', $pid, $this->state->get('filter.labels'));?>
+                            <?php echo JHtml::_('projectfork.filterLabels', 'milestone', $pid, $this->state->get('filter.labels'));?>
                         </div>
+                        <div class="clearfix"> </div>
                     <?php endif; ?>
-
 
                 </div>
             </div>

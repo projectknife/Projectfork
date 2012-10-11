@@ -85,6 +85,10 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
         $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
         $value->attachment = $attachments->getItems('task', $value->id);
 
+        // Get the labels
+        $labels = $this->getInstance('Labels', 'ProjectforkModel');
+        $value->labels = $labels->getConnections('task', $value->id);
+
         // Check general edit permission first.
         if ($access->get('task.edit')) {
             $value->params->set('access-edit', true);

@@ -305,7 +305,7 @@ abstract class JHtmlProjectfork
         $html[] = '<div class="clearfix clr"></div>';
 
         $html[] = '<div class="btn-group">';
-        $html[] = '<button class="btn" onclick="this.form.submit()">Apply</button>';
+        $html[] = '<button class="btn" onclick="this.form.submit()">' . JText::_('JSEARCH_FILTER_SUBMIT') . '</button>';
         $html[] = '</div>';
 
         return implode('', $html);

@@ -62,7 +62,7 @@ class JFormFieldLabelManager extends JFormField
             $this->items[$item->asset_group][] = $item;
         }
 
-        $assets = array('project', 'milestone', 'task', 'directory', 'note', 'file','topic');
+        $assets = array('project', 'milestone', 'task', 'topic', 'directory', 'note', 'file');
 
         $html = $this->getHTML($assets);
 

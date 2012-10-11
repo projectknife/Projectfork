@@ -74,6 +74,10 @@ class ProjectforkModelTopicForm extends ProjectforkModelTopic
         $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
         $value->attachment = $attachments->getItems('topic', $value->id);
 
+        // Get the labels
+        $labels = $this->getInstance('Labels', 'ProjectforkModel');
+        $value->labels = $labels->getConnections('topic', $value->id);
+
         // Compute selected asset permissions.
         $uid    = JFactory::getUser()->get('id');
         $access = ProjectforkHelperAccess::getActions('topic', $value->id);

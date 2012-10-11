@@ -14,7 +14,7 @@ jimport('joomla.application.component.modeladmin');
 
 
 /**
- * Item Model for a milestone form.
+ * Item Model for a task form.
  *
  */
 class ProjectforkModelTask extends JModelAdmin
@@ -85,6 +85,10 @@ class ProjectforkModelTask extends JModelAdmin
             // Get the attachments
             $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
             $item->attachment = $attachments->getItems('task', $item->id);
+
+            // Get the labels
+            $labels = $this->getInstance('Labels', 'ProjectforkModel');
+            $item->labels = $labels->getConnections('task', $item->id);
         }
 
         return $item;
@@ -216,6 +220,13 @@ class ProjectforkModelTask extends JModelAdmin
                     }
 
                     $tables = array('userref');
+                    $field  = array('item_type' => 'task', 'item_id' => $pk);
+
+                    if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
+                        return false;
+                    }
+
+                    $tables = array('labelref');
                     $field  = array('item_type' => 'task', 'item_id' => $pk);
 
                     if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
@@ -392,6 +403,22 @@ class ProjectforkModelTask extends JModelAdmin
 
                 if (!$attachments->save($data['attachment'])) {
                     $this->setError($attachments->getError());
+                    return false;
+                }
+            }
+
+            // Store the labels
+            if (isset($data['labels'])) {
+                $labels = $this->getInstance('Labels', 'ProjectforkModel');
+
+                if ((int) $labels->getState('item.project') == 0) {
+                    $labels->setState('item.project', $updated->project_id);
+                }
+
+                $labels->setState('item.type', 'task');
+                $labels->setState('item.id', $id);
+
+                if (!$labels->saveRefs($data['labels'])) {
                     return false;
                 }
             }

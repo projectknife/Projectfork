@@ -69,6 +69,14 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                         </div>
                     <?php endif; ?>
                     <div class="clearfix"> </div>
+
+                    <?php if ($this->state->get('filter.project')) : ?>
+                        <hr />
+                        <div class="filter-labels">
+                            <?php echo JHtml::_('projectfork.filterLabels', 'topic', $this->state->get('filter.project'), $this->state->get('filter.labels'));?>
+                        </div>
+                        <div class="clearfix"> </div>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="row-striped row-discussions">

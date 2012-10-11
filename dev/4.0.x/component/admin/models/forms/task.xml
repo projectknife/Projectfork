@@ -4,7 +4,7 @@
         <field name="project_id" type="project"
             label="COM_PROJECTFORK_FIELD_PROJECT_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_DESC"
             class="inputbox" size="30" required="true" view="task"
-            onchange="PFform.reload('milestone_id,list_id,access,rules');"
+            onchange="PFform.reload('milestone_id,list_id,access,rules,labels');"
         />
         <field name="milestone_id" type="milestone"
             label="COM_PROJECTFORK_FIELD_MILESTONE_LABEL" description="COM_PROJECTFORK_FIELD_MILESTONE_DESC"
@@ -52,6 +52,10 @@
         />
         <field name="attachment" type="repoattachment"
             label="COM_PROJECTFORK_FIELD_ATTACHMENT_LABEL" description="COM_PROJECTFORK_FIELD_ATTACHMENT_DESC"
+        />
+        <field name="labels" type="labels"
+            label="COM_PROJECTFORK_FIELD_LABELS" description="COM_PROJECTFORK_FIELD_LABELS_DESC"
+            asset="task"
         />
         <field name="modified" type="calendar"
             label="JGLOBAL_FIELD_MODIFIED_LABEL"

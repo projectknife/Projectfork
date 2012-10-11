@@ -77,6 +77,10 @@ class ProjectforkModelTopic extends JModelAdmin
             // Get the attachments
             $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
             $item->attachment = $attachments->getItems('topic', $item->id);
+
+            // Get the labels
+            $labels = $this->getInstance('Labels', 'ProjectforkModel');
+            $item->labels = $labels->getConnections('topic', $item->id);
         }
 
         return $item;
@@ -241,6 +245,22 @@ class ProjectforkModelTopic extends JModelAdmin
                 }
             }
 
+            // Store the labels
+            if (isset($data['labels'])) {
+                $labels = $this->getInstance('Labels', 'ProjectforkModel');
+
+                if ((int) $labels->getState('item.project') == 0) {
+                    $labels->setState('item.project', $updated->project_id);
+                }
+
+                $labels->setState('item.type', 'topic');
+                $labels->setState('item.id', $id);
+
+                if (!$labels->saveRefs($data['labels'])) {
+                    return false;
+                }
+            }
+
             return true;
         }
 
@@ -293,6 +313,13 @@ class ProjectforkModelTopic extends JModelAdmin
                     }
 
                     $tables = array('attachment');
+                    $field  = array('item_type' => 'topic', 'item_id' => $pk);
+
+                    if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
+                        return false;
+                    }
+
+                    $tables = array('labelref');
                     $field  = array('item_type' => 'topic', 'item_id' => $pk);
 
                     if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
