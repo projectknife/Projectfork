@@ -38,7 +38,7 @@ defined('_JEXEC') or die();
             </div>
             <div class="icon-wrapper span2">
                 <div class="icon">
-                    <a href="index.well?option=com_projectfork&view=tasks" class="thumbnail btn">
+                    <a href="index.php?option=com_projectfork&view=tasks" class="thumbnail btn">
                         <?php echo JHtml::image('com_projectfork/projectfork/header/icon-48-tasks.png', JText::_('COM_PROJECTFORK_SUBMENU_TASKS'), null, true); ?>
                         <span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_TASKS');?></span>
                     </a>
@@ -57,7 +57,6 @@ defined('_JEXEC') or die();
                             <span><?php echo JText::_('COM_PROJECTFORK_DASHBOARD_CONFIG');?></span>
                         </a>
                     <?php endif; ?>
-
                 </div>
             </div>
         </div>
