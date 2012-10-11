@@ -102,7 +102,7 @@ class ProjectforkModelMilestones extends JModelList
 
         // Join over the label refs for label count
         $query->select('COUNT(DISTINCT lbl.id) AS label_count');
-        $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('com_projectfork.milestone') . ')');
+        $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('milestone') . ')');
 
         // Implement View Level Access
         if (!$user->authorise('core.admin', 'com_projectfork')) {
@@ -183,7 +183,7 @@ class ProjectforkModelMilestones extends JModelList
 
             // Get the labels
             if ($items[$i]->label_count > 0) {
-                $items[$i]->labels = $labels->getConnections('com_projectfork.milestone', $items[$i]->id);
+                $items[$i]->labels = $labels->getConnections('milestone', $items[$i]->id);
             }
         }
 

@@ -82,7 +82,7 @@ class ProjectforkModelMilestone extends JModelAdmin
 
             // Get the labels
             $labels = $this->getInstance('Labels', 'ProjectforkModel');
-            $item->labels = $labels->getConnections('com_projectfork.milestone', $item->id, $item->project_id);
+            $item->labels = $labels->getConnections('milestone', $item->id);
         }
 
         return $item;
@@ -183,7 +183,7 @@ class ProjectforkModelMilestone extends JModelAdmin
                     }
 
                     $tables = array('labelref');
-                    $field  = array('item_type' => 'com_projectfork.milestone', 'item_id' => $pk);
+                    $field  = array('item_type' => 'milestone', 'item_id' => $pk);
 
                     if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
                         return false;
@@ -321,7 +321,7 @@ class ProjectforkModelMilestone extends JModelAdmin
                     $labels->setState('item.project', $updated->project_id);
                 }
 
-                $labels->setState('item.type', 'com_projectfork.milestone');
+                $labels->setState('item.type', 'milestone');
                 $labels->setState('item.id', $id);
 
                 if (!$labels->saveRefs($data['labels'])) {

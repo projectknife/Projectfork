@@ -76,7 +76,7 @@ class ProjectforkModelMilestoneForm extends ProjectforkModelMilestone
 
         // Get the labels
         $labels = $this->getInstance('Labels', 'ProjectforkModel');
-        $value->labels = $labels->getConnections('com_projectfork.milestone', $value->id, $value->project_id);
+        $value->labels = $labels->getConnections('milestone', $value->id);
 
         // Compute selected asset permissions.
         $uid    = JFactory::getUser()->get('id');

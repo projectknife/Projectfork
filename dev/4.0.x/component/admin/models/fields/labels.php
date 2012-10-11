@@ -150,7 +150,7 @@ class JFormFieldLabels extends JFormField
      */
     protected function getLabels()
     {
-        $asset   = $this->element['asset'] ? $this->element['asset'] : 'com_projectfork';
+        $asset   = $this->element['asset'] ? $this->element['asset'] : 'project';
         $project = (int) $this->form->getValue('project_id');
 
         $db    = JFactory::getDbo();
@@ -165,10 +165,10 @@ class JFormFieldLabels extends JFormField
               ->where('a.project_id = ' . $db->quote((int) $project));
 
         if ($asset) {
-            $query->where('(a.asset_group = ' . $db->quote($db->escape($asset)) . ' OR a.asset_group = ' . $db->quote('com_projectfork') . ')');
+            $query->where('(a.asset_group = ' . $db->quote($db->escape($asset)) . ' OR a.asset_group = ' . $db->quote('project') . ')');
         }
         else {
-            $query->where('a.asset_group = ' . $db->quote('com_projectfork'));
+            $query->where('a.asset_group = ' . $db->quote('project'));
         }
 
         $query->order('a.asset_group, a.title ASC');

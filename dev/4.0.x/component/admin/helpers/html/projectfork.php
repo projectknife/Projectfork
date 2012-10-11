@@ -274,13 +274,17 @@ abstract class JHtmlProjectfork
         $query->select('a.id, a.title, a.style')
               ->from('#__pf_labels AS a')
               ->where('a.project_id = ' . $db->quote((int) $project))
-              ->where('(a.asset_group = ' . $db->quote($db->escape($asset)) . ' OR a.asset_group = ' . $db->quote('com_projectfork') . ')')
+              ->where('(a.asset_group = ' . $db->quote($db->escape($asset)) . ' OR a.asset_group = ' . $db->quote('project') . ')')
               ->order('a.asset_group, a.title ASC');
 
         $db->setQuery($query);
         $items = (array) $db->loadObjectList();
 
         $html = array();
+
+        if (!count($items)) {
+            return  '';
+        }
 
         $html[] = '<ul class="unstyled">';
 

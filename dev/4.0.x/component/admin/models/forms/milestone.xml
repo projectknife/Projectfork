@@ -47,7 +47,7 @@
         />
         <field name="labels" type="labels"
             label="COM_PROJECTFORK_FIELD_LABELS" description="COM_PROJECTFORK_FIELD_LABELS_DESC"
-            asset="com_projectfork.milestone"
+            asset="milestone"
         />
         <field name="rules" type="groupaccess"
             component="com_projectfork" section="milestone" inheritonly="true" filter="ProjectforkHelperForm::filterRules" validate="groupaccess"
