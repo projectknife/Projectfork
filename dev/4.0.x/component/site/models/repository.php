@@ -124,6 +124,10 @@ class ProjectforkModelRepository extends JModelList
         $search = JRequest::getString('filter_search', '');
         $this->setState('filter.search', $search);
 
+        // Filter - Labels
+        $labels = JRequest::getVar('filter_label', array());
+        $this->setState('filter.labels', $labels);
+
         // Filter - Project
         $project = ProjectforkHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
@@ -182,8 +186,18 @@ class ProjectforkModelRepository extends JModelList
         JRequest::setVar('filter_parent_id', $parent_id);
         JRequest::setVar('filter_project',   $project);
 
+        // Do not allow to filter by author if no project is selected
+        if (!is_numeric($project) || intval($project) == 0) {
+            $this->setState('filter.labels', array());
+            $labels = array();
+        }
+
+        if (!is_array($labels)) {
+            $labels = array();
+        }
+
         // Filter - Is set
-        $this->setState('filter.isset', (!empty($search)));
+        $this->setState('filter.isset', (!empty($search) || count($labels)));
 
         // Call parent method
         parent::populateState($ordering, $direction);

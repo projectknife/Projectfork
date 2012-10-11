@@ -155,7 +155,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                         {
                             $style = ($label->style ? ' ' . $label->style : '');
                             ?>
-                            <span class="label<?php echo $style; ?>"><i class="icon-tag"></i> <?php echo $this->escape($label->title); ?></span>
+                            <span class="label<?php echo $style; ?>"><i class="icon-bookmark"></i> <?php echo $this->escape($label->title); ?></span>
                             <?php
                         }
                     }

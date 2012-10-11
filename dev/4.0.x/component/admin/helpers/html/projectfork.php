@@ -271,11 +271,20 @@ abstract class JHtmlProjectfork
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
+        if ($asset == 'repository') {
+            $asset = $db->quote('directory')
+                   . 'OR a.asset_group = ' . $db->quote('file')
+                   . 'OR a.asset_group = ' . $db->quote('note');
+        }
+        else {
+            $asset = $db->quote($db->escape($asset));
+        }
+
         $query->select('a.id, a.title, a.style')
               ->from('#__pf_labels AS a')
               ->where('a.project_id = ' . $db->quote((int) $project))
-              ->where('(a.asset_group = ' . $db->quote($db->escape($asset)) . ' OR a.asset_group = ' . $db->quote('project') . ')')
-              ->order('a.asset_group, a.title ASC');
+              ->where('(a.asset_group = ' . $db->quote('project') . ' OR a.asset_group = ' . $asset . ')')
+              ->order('a.style, a.title ASC');
 
         $db->setQuery($query);
         $items = (array) $db->loadObjectList();

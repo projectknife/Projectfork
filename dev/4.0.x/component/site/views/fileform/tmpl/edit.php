@@ -73,6 +73,14 @@ Joomla.submitbutton = function(task)
                 <?php echo $this->form->getInput('description'); ?>
             </div>
         </div>
+        <div class="formelm control-group">
+            <div class="control-label">
+                <?php echo $this->form->getLabel('labels'); ?>
+            </div>
+            <div class="controls" id="jform_labels_reload">
+                <?php echo $this->form->getInput('labels'); ?>
+            </div>
+        </div>
         <?php if ($this->item->modified_by) : ?>
             <div class="formelm control-group">
                 <div class="control-label">
