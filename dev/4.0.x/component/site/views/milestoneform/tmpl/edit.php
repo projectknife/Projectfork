@@ -69,6 +69,14 @@ Joomla.submitbutton = function(task)
                 <?php echo $this->form->getInput('description'); ?>
             </div>
         </div>
+        <div class="formelm control-group">
+            <div class="control-label">
+                <?php echo $this->form->getLabel('labels'); ?>
+            </div>
+            <div class="controls">
+                <?php echo $this->form->getInput('labels'); ?>
+            </div>
+        </div>
     </fieldset>
 
     <?php echo JHtml::_('tabs.start', 'milestoneform', array('useCookie' => 'true')) ;?>

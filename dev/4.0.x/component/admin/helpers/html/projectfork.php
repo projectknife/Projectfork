@@ -247,6 +247,68 @@ abstract class JHtmlProjectfork
 
 
     /**
+     * Returns a list of label filters
+     *
+     * @param     string     $asset      The asset filter group
+     * @param     integer    $project    The project filter
+     *
+     * @return    string                 The label html
+     */
+    public static function filterLabels($asset, $project = 0, $selected = array(), $filter_style = '')
+    {
+        if (!$project) {
+            $project = ProjectforkHelper::getActiveProjectId();
+        }
+
+        if (!$project) {
+            return '';
+        }
+
+        if (!is_array($selected)) {
+            $selected = array();
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('a.id, a.title, a.style')
+              ->from('#__pf_labels AS a')
+              ->where('a.project_id = ' . $db->quote((int) $project))
+              ->where('(a.asset_group = ' . $db->quote($db->escape($asset)) . ' OR a.asset_group = ' . $db->quote('com_projectfork') . ')')
+              ->order('a.asset_group, a.title ASC');
+
+        $db->setQuery($query);
+        $items = (array) $db->loadObjectList();
+
+        $html = array();
+
+        $html[] = '<ul class="unstyled">';
+
+        foreach ($items AS $item)
+        {
+            $checked = (in_array($item->id, $selected) ? ' checked="checked"' : '');
+            $class   = ($item->style != '' ? ' ' . $item->style : '');
+
+            $html[] = '<li class="pull-left btn-group">';
+            $html[] = '<label class="checkbox">';
+            $html[] = '<input type="checkbox" class="inputbox" name="filter_label[]" value="' . (int) $item->id . '"' . $checked . '/>';
+            $html[] = '<span class="label' . $class . '">' . htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8') . '</span>';
+            $html[] = '</label>';
+            $html[] = '</li>';
+        }
+
+        $html[] = '</ul>';
+        $html[] = '<div class="clearfix clr"></div>';
+
+        $html[] = '<div class="btn-group">';
+        $html[] = '<button class="btn" onclick="this.form.submit()">Apply</button>';
+        $html[] = '</div>';
+
+        return implode('', $html);
+    }
+
+
+    /**
      * Returns a truncated text. Also strips html tags
      *
      * @param     string    $text     The text to truncate

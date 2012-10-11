@@ -514,7 +514,7 @@ class ProjectforkModelProject extends JModelAdmin
                     }
 
                     // Delete every item related to this project
-                    $tables = array('milestone', 'tasklist', 'task', 'topic', 'reply', 'comment', 'directory', 'note', 'file', 'time', 'attachment');
+                    $tables = array('milestone', 'tasklist', 'task', 'topic', 'reply', 'comment', 'directory', 'note', 'file', 'time', 'attachment' , 'label', 'labelref');
                     $field  = 'project_id.' . $pk;
 
                     if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {

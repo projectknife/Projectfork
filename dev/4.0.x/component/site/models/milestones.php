@@ -100,10 +100,30 @@ class ProjectforkModelMilestones extends JModelList
         $query->select('COUNT(DISTINCT tl.id) AS tasklists');
         $query->join('LEFT', '#__pf_task_lists AS tl ON tl.milestone_id = a.id');
 
+        // Join over the label refs for label count
+        $query->select('COUNT(DISTINCT lbl.id) AS label_count');
+        $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('com_projectfork.milestone') . ')');
+
         // Implement View Level Access
         if (!$user->authorise('core.admin', 'com_projectfork')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
+        }
+
+        // Filter labels
+        if (count($this->getState('filter.labels'))) {
+            $labels = $this->getState('filter.labels');
+
+            JArrayHelper::toInteger($labels);
+
+            if (count($labels) > 1) {
+                $labels = implode(', ', $labels);
+                $query->where('lbl.label_id IN (' . $labels . ')');
+            }
+            else {
+                $labels = implode(', ', $labels);
+                $query->where('lbl.label_id = ' . $db->quote((int) $labels));
+            }
         }
 
         // Filter fields
@@ -143,7 +163,8 @@ class ProjectforkModelMilestones extends JModelList
      */
     public function getItems()
     {
-        $items = parent::getItems();
+        $items  = parent::getItems();
+        $labels = $this->getInstance('Labels', 'ProjectforkModel');
 
         // Get the global params
         $global_params = JComponentHelper::getParams('com_projectfork', true);
@@ -159,6 +180,11 @@ class ProjectforkModelMilestones extends JModelList
             // Create slugs
             $items[$i]->slug         = $items[$i]->alias ? ($items[$i]->id . ':' . $items[$i]->alias) : $items[$i]->id;
             $items[$i]->project_slug = $items[$i]->project_alias ? ($items[$i]->project_id . ':' . $items[$i]->project_alias) : $items[$i]->project_id;
+
+            // Get the labels
+            if ($items[$i]->label_count > 0) {
+                $items[$i]->labels = $labels->getConnections('com_projectfork.milestone', $items[$i]->id);
+            }
         }
 
         return $items;
@@ -262,14 +288,24 @@ class ProjectforkModelMilestones extends JModelList
         $author = $app->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', '');
         $this->setState('filter.author', $author);
 
+        // Filter - Labels
+        $labels = JRequest::getVar('filter_label', array());
+        $this->setState('filter.labels', $labels);
+
         // Do not allow to filter by author if no project is selected
         if (!is_numeric($project) || intval($project) == 0) {
             $this->setState('filter.author', '');
+            $this->setState('filter.labels', array());
             $author = '';
+            $labels = array();
+        }
+
+        if (!is_array($labels)) {
+            $labels = array();
         }
 
         // Filter - Is set
-        $this->setState('filter.isset', (is_numeric($state) || !empty($search) || is_numeric($author)));
+        $this->setState('filter.isset', (is_numeric($state) || !empty($search) || is_numeric($author) || count($labels)));
 
         // Call parent method
         parent::populateState($ordering, $direction);

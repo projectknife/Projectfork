@@ -119,14 +119,17 @@ CREATE TABLE IF NOT EXISTS `#__pf_ref_attachments` (
   KEY `idx_attachment` (`attachment`)
 ) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork attachment references';
 
-CREATE TABLE IF NOT EXISTS `#__pf_ref_tags` (
-  `id` int(10) unsigned NOT NULL COMMENT 'Item ID reference',
-  `context` varchar(32) NOT NULL COMMENT 'Reference context',
-  `tag_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Tag ID reference',
-  PRIMARY KEY (`context`,`id`,`tag_id`),
-  KEY `idx_tagid` (`tag_id`),
-  KEY `idx_contextid` (`context`,`id`)
-) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork tag references';
+CREATE TABLE IF NOT EXISTS `#__pf_ref_labels` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID reference',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Parent project id',
+  `item_id` int(10) unsigned NOT NULL COMMENT 'Reference item ID',
+  `item_type` varchar(32) NOT NULL COMMENT 'Reference item type',
+  `label_id` int(10) unsigned NOT NULL COMMENT 'Reference label ID',
+  PRIMARY KEY (`id`),
+  KEY `idx_project` (`project_id`),
+  KEY `idx_item` (`item_id`,`item_type`),
+  KEY `idx_lbl` (`label_id`)
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork label references';
 
 CREATE TABLE IF NOT EXISTS `#__pf_ref_users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID reference',

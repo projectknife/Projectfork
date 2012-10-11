@@ -67,43 +67,42 @@ class ProjectforkModelLabels extends JModelList
 
 
     /**
-     * Method to get the connections of a repo item
+     * Method to get the item label connections
      *
-     * @param     string    $attachment    The repo item
+     * @param     string     $item_type     The item asset name or type
+     * @param     integer    $item_id       The item id
      *
-     * @return    array     $items         The connected items
+     * @return    array     $items          The connected labels
      */
-    public function getConnections($attachment)
+    public function getConnections($item_type = NULL, $item_id = 0)
     {
+        $item_type  = ($item_type            ? $item_type        : $this->getState('item.type'));
+        $item_id    = ((int) $item_id > 0    ? (int) $item_id    : $this->getState('item.id'));
+        $success    = true;
+
+        // Check if an item is set
+        if (!$item_type || !$item_id) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_LABELS_NO_ITEM_REFERENCE'));
+            return array();
+        }
+
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
 
-        // Load just the ID's
-        $query->select('a.id')
-              ->from('#__pf_ref_attachments AS a')
-              ->where('a.attachment = ' . $db->quote($db->escape($attachment)))
-              ->order('a.item_type ASC');
+        $query->select('a.id, a.label_id, l.title, l.style')
+              ->from('#__pf_ref_labels AS a')
+              ->join('INNER', '#__pf_labels AS l ON l.id = a.label_id')
+              ->where('a.item_id = ' . $db->quote((int) $item_id))
+              ->where('a.item_type = ' . $db->quote($db->escape($item_type)))
+              ->group('a.label_id')
+              ->order('l.title ASC');
 
         $db->setQuery((string) $query);
-        $items = (array) $db->loadColumn();
+        $items = (array) $db->loadObjectList();
 
         if ($db->getError()) {
             $this->setError($db->getErrorMsg());
             return $items;
-        }
-
-        $count      = count($items);
-        $attachment = $this->getInstance('Attachment', 'ProjectforkModel', array('ignore_request' => true));
-
-        // Get the full object of each attachment id
-        for ($i = 0; $i > $count; $i++)
-        {
-            $id = $items[$i];
-            $items[$i] = $attachment->getItem($id);
-
-            if (!$items[$i]) {
-                unset($items[$i]);
-            }
         }
 
         return $items;
@@ -203,6 +202,94 @@ class ProjectforkModelLabels extends JModelList
 
 
     /**
+     * Method to store label references
+     *
+     * @param     array      $data          The label data
+     * @param     string     $item_type     The item asset name or type
+     * @param     integer    $item_id       The item id
+     * @param     integer    $project_id    The project id to which the item belongs
+     *
+     * @return    boolean                   True on success, False on error
+     */
+    public function saveRefs($data = array(), $item_type = NULL, $item_id = 0, $project_id = 0)
+    {
+        $item_type  = ($item_type            ? $item_type        : $this->getState('item.type'));
+        $item_id    = ((int) $item_id > 0    ? (int) $item_id    : $this->getState('item.id'));
+        $project_id = ((int) $project_id > 0 ? (int) $project_id : $this->getState('item.project'));
+        $success    = true;
+
+        // Check if an item is set
+        if (!$item_type || !$item_id || !$project_id) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_LABELS_NO_ITEM_REFERENCE'));
+            return false;
+        }
+
+        if (!is_array($data)) {
+            $data = array();
+        }
+
+        // Load the existing labels
+        $label    = $this->getInstance('Label', 'ProjectforkModel', array('ignore_request' => true));
+        $existing = $this->getConnections($item_type, $item_id);
+        $delete   = array();
+        $ids      = array();
+        $keep     = array();
+
+        // Get the IDs
+        foreach($data AS $id)
+        {
+            $id = (int) $id;
+            if (!in_array($id, $ids) && $id > 0) {
+                $ids[] = (int) $id;
+            }
+        }
+
+        // Filter out items that are no longer there
+        foreach ($existing AS $item)
+        {
+            $id  = (int) $item->id;
+            $lbl = (int) $item->label_id;
+
+            if (!in_array($lbl, $ids)) {
+                $delete[] = $id;
+            }
+            else {
+                $keep[] = $lbl;
+            }
+        }
+
+        // Save labels
+        foreach ($data AS $id)
+        {
+            if (!$id || in_array($id, $keep)) continue;
+
+            $item_data = array(
+                'id'         => 0,
+                'project_id' => $project_id,
+                'item_id'    => $item_id,
+                'item_type'  => $item_type,
+                'label_id'   => $id
+            );
+
+            if (!$label->saveRef($item_data)) {
+                $this->setError($label->getError());
+                $success = false;
+            }
+        }
+
+        // Delete labels
+        if (count($delete)) {
+            if (!$label->deleteRef($delete)) {
+                $this->setError($label->getError());
+                $success = false;
+            }
+        }
+
+        return $success;
+    }
+
+
+    /**
      * Method to auto-populate the model state.
      * Note. Calling getState in this method will result in recursion.
      *
@@ -214,14 +301,34 @@ class ProjectforkModelLabels extends JModelList
         $form = JRequest::getVar('jform', array(), 'post', 'array');
 
         // Project id
-        $value = (int) $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $project = (int) $this->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
 
-        if (!$value) {
+        if (!$project) {
             if (isset($form['project_id'])) {
-                $value = (int) $form['project_id'];
+                $project = (int) $form['project_id'];
             }
         }
 
-        $this->setState('item.project', $value);
+        $this->setState('item.project', $project);
+
+        // Item Id
+        $value = JRequest::getUint('id');
+
+        if (!$value) {
+            if (isset($form['id'])) {
+                $value = (int) $form['id'];
+            }
+        }
+
+        $this->setState('item.id', $value);
+
+        // Item type
+        $value = str_replace('form', '', JRequest::getCmd('view', ''));
+
+        if ($value && $value != 'com_projectfork') {
+            $value = 'com_projectfork' . $value;
+        }
+
+        $this->setState('item.type', $value);
     }
 }

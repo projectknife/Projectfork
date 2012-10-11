@@ -51,6 +51,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                     </div>
 
                     <div class="clearfix"> </div>
+
                     <hr />
 
                     <?php if ($pid) : ?>
@@ -70,6 +71,15 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                         </div>
                     <?php endif; ?>
                     <div class="clearfix"> </div>
+
+                    <?php if ($pid) : ?>
+                        <hr />
+                        <div class="filter-labels">
+                            <?php echo JHtml::_('projectfork.filterLabels', 'com_projectfork.milestone', $pid, $this->state->get('filter.labels'));?>
+                        </div>
+                    <?php endif; ?>
+
+
                 </div>
             </div>
 
@@ -138,6 +148,18 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                     <?php echo JHtml::_('projectfork.authorLabel', $item->author_name, $item->created, $this->params->get('date_format')); ?>
                     <span class="label"><i class="icon-lock icon-white"></i> <?php echo $this->escape($item->access_level); ?></span>
                     <?php echo JHtml::_('projectfork.dateFormat', $item->end_date, $this->params->get('date_format')); ?>
+                    <?php
+                    if ($item->label_count > 0 && isset($item->labels))
+                    {
+                        foreach ($item->labels AS $label)
+                        {
+                            $style = ($label->style ? ' ' . $label->style : '');
+                            ?>
+                            <span class="label<?php echo $style; ?>"><i class="icon-tag"></i> <?php echo $this->escape($label->title); ?></span>
+                            <?php
+                        }
+                    }
+                    ?>
                     <div class="btn-group pull-right">
                         <a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_slug, $item->slug));?>">
                             <i class="icon-list"></i> <?php echo JText::sprintf('JGRID_HEADING_TASKLISTS_AND_TASKS', intval($item->tasklists), intval($item->tasks)); ?>

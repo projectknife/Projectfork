@@ -11,6 +11,7 @@ defined('_JEXEC') or die();
 
 
 jimport('joomla.database.tableasset');
+JLoader::register('ProjectforkHelperQuery', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
 
 
 /**
@@ -70,7 +71,12 @@ class PFTableLabel extends JTable
 		}
 
         // Delete the references
-        // Todo
+        $tables = array('labelref');
+        $field  = 'label_id.' . $pk;
+
+        if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
+            return false;
+        }
 
 		return true;
 	}

@@ -79,6 +79,10 @@ class ProjectforkModelMilestone extends JModelAdmin
             // Get the attachments
             $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
             $item->attachment = $attachments->getItems('milestone', $item->id);
+
+            // Get the labels
+            $labels = $this->getInstance('Labels', 'ProjectforkModel');
+            $item->labels = $labels->getConnections('com_projectfork.milestone', $item->id, $item->project_id);
         }
 
         return $item;
@@ -173,6 +177,13 @@ class ProjectforkModelMilestone extends JModelAdmin
 
                     $tables = array('attachment');
                     $field  = array('item_type' => 'milestone', 'item_id' => $pk);
+
+                    if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
+                        return false;
+                    }
+
+                    $tables = array('labelref');
+                    $field  = array('item_type' => 'com_projectfork.milestone', 'item_id' => $pk);
 
                     if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
                         return false;
@@ -298,6 +309,22 @@ class ProjectforkModelMilestone extends JModelAdmin
 
                 if (!$attachments->save($data['attachment'])) {
                     $this->setError($attachments->getError());
+                    return false;
+                }
+            }
+
+            // Store the labels
+            if (isset($data['labels'])) {
+                $labels = $this->getInstance('Labels', 'ProjectforkModel');
+
+                if ((int) $labels->getState('item.project') == 0) {
+                    $labels->setState('item.project', $updated->project_id);
+                }
+
+                $labels->setState('item.type', 'com_projectfork.milestone');
+                $labels->setState('item.id', $id);
+
+                if (!$labels->saveRefs($data['labels'])) {
                     return false;
                 }
             }
