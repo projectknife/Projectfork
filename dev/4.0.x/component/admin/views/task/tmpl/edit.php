@@ -96,7 +96,16 @@ Joomla.submitbutton = function(task)
 				</fieldset>
 			<?php endforeach; ?>
 
-            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_LABELS'), 'labels'); ?>
+            <?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_DEPENDENCIES'), 'dependencies'); ?>
+            <fieldset class="panelform">
+                <div id="jform_dependency_element">
+                    <div id="jform_dependency_reload">
+				        <?php echo $this->form->getInput('dependency'); ?>
+                    </div>
+                </div>
+            </fieldset>
+
+            <?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_LABELS'), 'labels'); ?>
             <fieldset class="panelform">
                 <div id="jform_labels_element">
                     <div id="jform_labels_reload">
@@ -105,7 +114,7 @@ Joomla.submitbutton = function(task)
                 </div>
             </fieldset>
 
-            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'attachments'); ?>
+            <?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'attachments'); ?>
             <fieldset class="panelform">
 				<ul class="adminformlist unstyled">
                     <li>

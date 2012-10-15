@@ -89,6 +89,10 @@ class ProjectforkModelTask extends JModelAdmin
             // Get the labels
             $labels = $this->getInstance('Labels', 'ProjectforkModel');
             $item->labels = $labels->getConnections('task', $item->id);
+
+            // Get the dependencies
+            $taskrefs = $this->getInstance('TaskRefs', 'ProjectforkModel');
+            $item->dependency = $taskrefs->getItems($item->id, true);
         }
 
         return $item;
@@ -419,6 +423,21 @@ class ProjectforkModelTask extends JModelAdmin
                 $labels->setState('item.id', $id);
 
                 if (!$labels->saveRefs($data['labels'])) {
+                    return false;
+                }
+            }
+
+            // Store the dependencies
+            if (isset($data['dependency'])) {
+                $taskrefs = $this->getInstance('TaskRefs', 'ProjectforkModel');
+
+                if ((int) $taskrefs->getState('item.project') == 0) {
+                    $taskrefs->setState('item.project', $updated->project_id);
+                }
+
+                $taskrefs->setState('item.id', $id);
+
+                if (!$taskrefs->save($data['dependency'])) {
                     return false;
                 }
             }

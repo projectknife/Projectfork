@@ -6,6 +6,7 @@ DROP TABLE `#__pf_projects`;
 DROP TABLE `#__pf_ref_attachments`;
 DROP TABLE `#__pf_ref_labels`;
 DROP TABLE `#__pf_ref_users`;
+DROP TABLE `#__pf_ref_tasks`;
 DROP TABLE `#__pf_tags`;
 DROP TABLE `#__pf_tasks`;
 DROP TABLE `#__pf_task_lists`;

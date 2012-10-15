@@ -131,6 +131,17 @@ CREATE TABLE IF NOT EXISTS `#__pf_ref_labels` (
   KEY `idx_lbl` (`label_id`)
 ) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork label references';
 
+CREATE TABLE IF NOT EXISTS `#__pf_ref_tasks` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID reference',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Task project ID',
+  `task_id` int(10) unsigned NOT NULL COMMENT 'Task ID',
+  `parent_id` int(10) unsigned NOT NULL COMMENT 'Parent task ID',
+  PRIMARY KEY (`id`),
+  KEY `idx_task` (`task_id`),
+  KEY `idx_parent` (`parent_id`),
+  KEY `idx_project` (`project_id`)
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task dependencies';
+
 CREATE TABLE IF NOT EXISTS `#__pf_ref_users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID reference',
   `item_type` varchar(32) NOT NULL COMMENT 'The item type',

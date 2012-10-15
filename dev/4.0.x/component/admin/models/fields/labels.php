@@ -51,7 +51,9 @@ class JFormFieldLabels extends JFormField
 
         foreach ($this->value AS $item)
         {
-            $this->items[] = $item->label_id;
+            if (isset($item->label_id)) {
+                $this->items[] = $item->label_id;
+            }
         }
 
         $html = $this->getHTML();

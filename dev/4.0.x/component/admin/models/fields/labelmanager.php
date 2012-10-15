@@ -133,7 +133,7 @@ class JFormFieldLabelManager extends JFormField
             $html[] = JText::_('JACTION_ADD_LABEL');
             $html[] = '</a>';
             $html[] = '</div></div>';
-            $html[] = '<div class="clr"></li>';
+            $html[] = '<div class="clr"></div></li>';
             $html[] = '</ul>';
             $html[] = '<input type="hidden" name="' . $this->name . '[]" id="' . $this->id . '" value=""/>';
         }

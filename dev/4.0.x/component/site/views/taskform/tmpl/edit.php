@@ -175,6 +175,15 @@ Joomla.submitbutton = function(task)
     	</div>
     </fieldset>
 
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_DEPENDENCIES'), 'task-dependencies') ;?>
+    <fieldset>
+    	<div id="jform_dependency_element" class="formelm control-group">
+            <div id="jform_dependency_reload">
+		        <?php echo $this->form->getInput('dependency'); ?>
+            </div>
+    	</div>
+    </fieldset>
+
     <?php $fieldsets = $this->form->getFieldsets('users'); ?>
 	<?php foreach ($fieldsets as $name => $fieldset) : ?>
 		<?php echo JHtml::_('tabs.panel', JText::_($fieldset->label), $name . '-options'); ?>
