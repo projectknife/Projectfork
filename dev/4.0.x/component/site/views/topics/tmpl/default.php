@@ -91,7 +91,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                 $can_edit_own = ($access->get('topic.edit.own') && $item->created_by == $uid);
 
                 // Prepare the watch button
-                $options = array('div-class' => 'pull-left', 'a-class' => 'btn-mini');
+                $options = array('div-class' => 'pull-right', 'a-class' => 'btn-mini');
                 $watch = JHtml::_('projectfork.watch', 'topics', $i, $item->watching, $options);
             ?>
                 <div class="row-fluid row-<?php echo $k;?>">
@@ -100,15 +100,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                             <?php echo JHtml::_('projectfork.id', $i, $item->id); ?>
                         </label>
                     <?php endif; ?>
-                    <?php if ($item->modified != $this->nulldate) : ?>
-                        <span class="list-edited small pull-right"><i class="icon-edit muted"></i>
-                            <?php echo JHtml::_('date', $item->modified, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
-                        </span>
-                    <?php else: ?>
-                    <span class="list-created small pull-right">
-                        <?php echo JHtml::_('date', $item->last_activity, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>
-                    </span>
-                    <?php endif; ?>
+                    <?php echo $watch; ?>
                     <h3 class="topic-title">
                     	<span class="toolbar-inline pull-left">
                         	<?php
@@ -119,16 +111,27 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
 
 	                        echo $this->menu->render(array('class' => 'btn-mini'));
 		                    ?>
-                            <?php echo $watch; ?>
                         </span>
                         <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTopicRoute($item->slug, $item->project_slug));?>">
                             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                             <?php echo $this->escape($item->title);?>
                         </a>
                         <small>
+                        	<?php if (!$this->state->get('filter.project')) : ?>
                             in <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->project_slug));?>">
                             <?php echo $this->escape($item->project_title);?>
                             </a>
+                            <?php endif; ?>
+                            on 
+                            <?php if ($item->modified != $this->nulldate) : ?>
+		                        <span class="list-edited small"><i class="icon-edit muted"></i>
+		                            <?php echo JHtml::_('date', $item->modified, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
+		                        </span>
+		                    <?php else: ?>
+			                    <span class="list-created small">
+			                        <?php echo JHtml::_('date', $item->last_activity, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>
+			                    </span>
+		                    <?php endif; ?>
                         </small>
                         <span class="label access">
                             <i class="icon-eye icon-white"></i> <?php echo $this->escape($item->access_level);?>
