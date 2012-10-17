@@ -114,30 +114,36 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                     <hr />
                 <?php $current_project = $item->project_title; endif; ?>
                 <div class="well well-small well-<?php echo $k;?>">
-                    <?php echo $watch; ?>
-                    <?php
-                        $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
-                        $this->menu->itemEdit('milestoneform', $item->id, ($can_edit || $can_edit_own));
-                        $this->menu->itemTrash('milestones', $i, $can_change);
-                        $this->menu->end();
-
-                        echo $this->menu->render(array('class' => 'btn-mini'));
-                    ?>
-                    <h3>
-                        <?php if ($can_change) : ?>
+                	<div class="btn-toolbar">
+                    	<?php if ($can_change) : ?>
                             <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
                                 <?php echo JHtml::_('projectfork.id', $i, $item->id); ?>
                             </label>
                         <?php endif; ?>
-                        <?php if ($item->checked_out) : ?>
-                            <i class="icon-lock"></i>
-                        <?php endif; ?>
-                        <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestoneRoute($item->slug, $item->project_slug));?>">
-                            <?php echo $this->escape($item->title);?>
-                        </a>
-                    </h3>
+                        <?php echo $watch; ?>
+	                   	 <h3>
+	                   	 	<span class="toolbar-inline pull-left">
+	                   	 		<div class="btn-group pull-left">
+				                   	<?php
+			                        $this->menu->start(array('class' => 'btn-mini'));
+			                        $this->menu->itemEdit('milestoneform', $item->id, ($can_edit || $can_edit_own));
+			                        $this->menu->itemTrash('milestones', $i, $can_change);
+			                        $this->menu->end();
+			
+			                        echo $this->menu->render(array('class' => 'btn-mini'));
+				                    ?>
+			                   </div>
+	                   	 	</span>
+	                        <?php if ($item->checked_out) : ?>
+	                            <i class="icon-lock"></i>
+	                        <?php endif; ?>
+	                        <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestoneRoute($item->slug, $item->project_slug));?>">
+	                            <?php echo $this->escape($item->title);?>
+	                        </a>
+	                    </h3>
+	                   <div class="clearfix"></div>
+                	</div>
                     <div>
-                        <hr />
                         <p>
                             <?php echo $this->escape($item->description);?>
                         </p>
