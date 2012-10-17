@@ -193,7 +193,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   `ordering` int(10) NOT NULL DEFAULT '0' COMMENT 'Task ordering in a task list',
   `start_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Task start date',
   `end_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Task end date',
-  `rate` decimal(4,2) NOT NULL COMMENT 'Hourly rate',
+  `rate` decimal(5,2) NOT NULL COMMENT 'Hourly rate',
   `estimate` int(10) unsigned NOT NULL COMMENT 'Estimated time required for this task to complete',
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_alias` (`project_id`,`alias`),

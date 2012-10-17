@@ -104,12 +104,17 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                 if ($progress == 100) $progress_class = 'success';
                 if ($progress < 67)   $progress_class = 'warning';
                 if ($progress < 34)   $progress_class = 'danger label-important';
+
+                // Prepare the watch button
+                $options = array('div-class' => 'pull-right', 'a-class' => 'btn-mini');
+                $watch = JHtml::_('projectfork.watch', 'milestones', $i, $item->watching, $options);
             ?>
                 <?php if ($item->project_title != $current_project && $pid <= 0) : ?>
                     <h3><?php echo $this->escape($item->project_title);?></h3>
                     <hr />
                 <?php $current_project = $item->project_title; endif; ?>
                 <div class="well well-small well-<?php echo $k;?>">
+                    <?php echo $watch; ?>
                     <?php
                         $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
                         $this->menu->itemEdit('milestoneform', $item->id, ($can_edit || $can_edit_own));

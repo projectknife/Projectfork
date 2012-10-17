@@ -402,7 +402,6 @@ class ProjectforkModelProject extends JModelAdmin
      */
     public function watch(&$pks, $value = 1, $uid = null)
     {
-        // Initialise variables.
         $user  = JFactory::getUser($uid);
         $table = $this->getTable();
         $pks   = (array) $pks;
