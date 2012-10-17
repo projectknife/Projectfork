@@ -24,6 +24,11 @@ $create_list = $access->get('tasklist.create');
 $create_task = $access->get('task.create');
 ?>
 <script type="text/javascript">
+jQuery(document).ready(function()
+{
+    PFform.radio2btngroup();
+});
+
 Joomla.submitbutton = function(task)
 {
     if (task == 'milestoneform.cancel' || document.formvalidator.isValid(document.id('item-form'))) {

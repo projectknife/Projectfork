@@ -20,6 +20,11 @@ JHtml::_('projectfork.script.form');
 $params = $this->state->get('params');
 ?>
 <script type="text/javascript">
+jQuery(document).ready(function()
+{
+    PFform.radio2btngroup();
+});
+
 Joomla.submitbutton = function(task)
 {
 	if (task == 'taskform.cancel' || document.formvalidator.isValid(document.id('item-form'))) {

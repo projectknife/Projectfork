@@ -24,6 +24,11 @@ $editoroptions = isset($params->show_publishing_options);
 if (!$editoroptions) $params->show_urls_images_frontend = '0';
 ?>
 <script type="text/javascript">
+jQuery(document).ready(function()
+{
+    PFform.radio2btngroup();
+});
+
 Joomla.submitbutton = function(task)
 {
     if (task == 'topicform.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
