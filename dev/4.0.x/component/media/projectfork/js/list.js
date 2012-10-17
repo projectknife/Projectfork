@@ -108,10 +108,15 @@ var PFlist =
             dataType: 'html',
             success: function(resp)
             {
-                resp = jQuery.parseJSON(resp);
+                if (Projectfork.isJsonString(resp) == false) {
+                    PFlist.displayException(resp);
+                }
+                else {
+                    resp = jQuery.parseJSON(resp);
 
-                if (nomsg != true) {
-                    PFlist.displayMsg(resp);
+                    if (nomsg != true) {
+                        PFlist.displayMsg(resp);
+                    }
                 }
             },
             error: function(resp, e, msg)
@@ -205,7 +210,7 @@ var PFlist =
             return false;
         }
 
-        if (typeof resp.success != 'undefined') {
+        if (resp.length != 0 && typeof resp.length != 'undefined' && typeof resp.success != 'undefined') {
             if (resp.success == "true") {
                 var msg_class = 'success';
             }
@@ -232,6 +237,19 @@ var PFlist =
             else {
                 mc.append('<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">×</a>Request failed!</div>');
             }
+        }
+    },
+
+
+    displayException: function(msg)
+    {
+        var mc = jQuery('#system-message-container');
+
+        if (typeof mc == 'undefined') {
+            alert(msg);
+        }
+        else {
+            mc.append(msg);
         }
     }
 }

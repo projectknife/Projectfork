@@ -119,6 +119,15 @@ CREATE TABLE IF NOT EXISTS `#__pf_ref_attachments` (
   KEY `idx_attachment` (`attachment`)
 ) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork attachment references';
 
+CREATE TABLE IF NOT EXISTS `#__pf_ref_observer` (
+  `user_id` int(10) unsigned NOT NULL COMMENT 'The observing user',
+  `item_type` varchar(32) NOT NULL COMMENT 'The observed item type',
+  `item_id` int(10) unsigned NOT NULL COMMENT 'The observed item ID',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Project ID to which the item belongs',
+  UNIQUE KEY `idx_observing` (`item_type`,`item_id`,`user_id`),
+  KEY `idx_project` (`project_id`)
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork notification settings';
+
 CREATE TABLE IF NOT EXISTS `#__pf_ref_labels` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID reference',
   `project_id` int(10) unsigned NOT NULL COMMENT 'Parent project id',

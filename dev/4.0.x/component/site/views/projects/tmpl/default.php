@@ -94,6 +94,10 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                     if ($progress == 100) $progress_class = 'success';
                     if ($progress < 67)   $progress_class = 'warning';
                     if ($progress < 34)   $progress_class = 'danger label-important';
+
+                    // Prepare the watch button
+                    $options = array('div-class' => 'pull-right', 'a-class' => 'btn-mini');
+                    $watch = JHtml::_('projectfork.watch', 'projects', $i, $item->watching, $options);
                 ?>
                 <?php if ($item->category_title != $current_cat && !is_numeric($this->state->get('filter.category'))) : ?>
                     </ul>
@@ -124,6 +128,8 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                                     <?php echo $this->escape($item->title);?>
                                 </a>
 
+                                <?php echo $watch; ?>
+
                                 <?php if ($can_edit || $can_edit_own) : ?>
                                 <div class="btn-group pull-right">
                                     <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_projectfork&task=projectform.edit&id=' . $item->slug);?>">
@@ -132,6 +138,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                                 </div>
                                 <?php endif; ?>
                             </h3>
+
                             <div class="clearfix"></div>
                             <hr />
                             <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-project">
@@ -141,8 +148,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                             </div>
                             <?php echo JHtml::_('projectfork.authorLabel', $item->author_name, $item->created, $this->params->get('date_format')); ?>
                             <?php echo JHtml::_('projectfork.dateFormat', $item->end_date, $this->params->get('date_format')); ?>
-                        </div>
-                  </div>
+                    </div>
                 </li>
                 <?php
                     $k = 1 - $k;

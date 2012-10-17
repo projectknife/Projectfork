@@ -321,6 +321,28 @@ abstract class JHtmlProjectfork
     }
 
 
+    public static function watch($type, $i, $state = 0, $options = array())
+    {
+        $html      = array();
+        $div_class = (isset($options['div-class']) ? ' ' . $options['div-class'] : '');
+        $a_class   = (isset($options['a-class'])   ? ' ' . $options['a-class'] : '');
+        $class     = ($state == 1 ? ' btn-success active' : '');
+        $new_state = ($state == 1 ? 0 : 1);
+        $aid       = 'watch-btn-' . $type . '-' . $i;
+        $title     = addslashes(JText::_('COM_PROJECTFORK_ACTION_WATCH')) . '::' . addslashes(JText::_('COM_PROJECTFORK_ACTION_WATCH_DESC'));
+
+        $html[] = '<div class="btn-group' . $div_class . '">';
+        $html[] = '<a id="' . $aid . '" class="btn hasTip' . $class . $a_class . '" title="' . $title . '" href="javascript:void(0);" ';
+        $html[] = 'onclick="Projectfork.watchItem(' . $i . ', \'' . $type . '\')">';
+        $html[] = '<i class="icon-envelope"></i>';
+        $html[] = '</a>';
+        $html[] = '</div>';
+        $html[] = '<input type="hidden" id="watch-' . $type . '-' . $i . '" value="' . (int) $state . '"/>';
+
+        return implode('', $html);
+    }
+
+
     /**
      * Returns a truncated text. Also strips html tags
      *
