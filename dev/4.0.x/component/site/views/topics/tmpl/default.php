@@ -89,11 +89,17 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                 $can_edit     = $access->get('topic.edit');
                 $can_change   = $access->get('topic.edit.state');
                 $can_edit_own = ($access->get('topic.edit.own') && $item->created_by == $uid);
+
+                // Prepare the watch button
+                $options = array('div-class' => 'pull-left', 'a-class' => 'btn-mini');
+                $watch = JHtml::_('projectfork.watch', 'topics', $i, $item->watching, $options);
             ?>
                 <div class="row-fluid row-<?php echo $k;?>">
-                    <div style="display: none !important;">
-                        <?php echo JHtml::_('grid.id', $i, $item->id); ?>
-                    </div>
+                    <?php if ($can_change) : ?>
+                        <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
+                            <?php echo JHtml::_('projectfork.id', $i, $item->id); ?>
+                        </label>
+                    <?php endif; ?>
                     <?php if ($item->modified != $this->nulldate) : ?>
                         <span class="list-edited small pull-right"><i class="icon-edit muted"></i>
                             <?php echo JHtml::_('date', $item->modified, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
@@ -113,6 +119,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
 
 	                        echo $this->menu->render(array('class' => 'btn-mini'));
 		                    ?>
+                            <?php echo $watch; ?>
                         </span>
                         <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getTopicRoute($item->slug, $item->project_slug));?>">
                             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>

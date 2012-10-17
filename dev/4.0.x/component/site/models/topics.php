@@ -100,6 +100,12 @@ class ProjectforkModelTopics extends JModelList
         $query->select('COUNT(DISTINCT lbl.id) AS label_count');
         $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('topic') . ')');
 
+        // Join over the observer table for email notification status
+        if ($user->get('id') > 0) {
+            $query->select('COUNT(obs.user_id) AS watching');
+            $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = ' . $db->quote('topic') . ' AND obs.item_id = a.id AND obs.user_id = ' . $db->quote($user->get('id')) . ')');
+        }
+
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
