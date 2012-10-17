@@ -337,7 +337,9 @@ abstract class JHtmlProjectfork
         $html[] = '<i class="icon-envelope"></i>';
         $html[] = '</a>';
         $html[] = '</div>';
+        $html[] = '<div class="btn-group' . $div_class . '">';
         $html[] = '<input type="hidden" id="watch-' . $type . '-' . $i . '" value="' . (int) $state . '"/>';
+        $html[] = '</div>';
 
         return implode('', $html);
     }
