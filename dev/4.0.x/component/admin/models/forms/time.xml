@@ -24,7 +24,7 @@
         />
         <field name="billable" type="radio"
             label="COM_PROJECTFORK_FIELD_BILLABLE_LABEL" description="COM_PROJECTFORK_FIELD_BILLABLE_DESC"
-            class="inputbox" filter="intval" size="1" default="1"
+            class="inputbox btn-group" filter="intval" size="1" default="1"
         >
             <option value="0">JNO</option>
             <option value="1">JYES</option>
