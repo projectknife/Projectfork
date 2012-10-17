@@ -189,7 +189,7 @@ var PFform =
           }
       });
 
-      $(".btn-group input[checked=checked]").each(function()
+      jQuery(".btn-group input[checked=checked]").each(function()
       {
           if (jQuery(this).val() == '') {
               jQuery("label[for=" + jQuery(this).attr('id') + "]").addClass('active btn-primary');
