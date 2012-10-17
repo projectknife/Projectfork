@@ -78,7 +78,7 @@
         </field>
         <field name="complete" type="radio"
             label="COM_PROJECTFORK_FIELD_COMPLETE_LABEL" description="COM_PROJECTFORK_FIELD_TASK_COMPLETE_DESC"
-            class="inputbox" filter="intval" default="0"
+            class="inputbox btn-group" filter="intval" default="0"
         >
             <option value="0">JNO</option>
             <option value="1">JYES</option>
