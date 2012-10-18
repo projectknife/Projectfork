@@ -236,45 +236,86 @@ class ProjectforkModelMilestone extends JModelAdmin
      */
     public function save($data)
     {
-        $record = $this->getTable();
-        $key    = $record->getKeyName();
+        $table  = $this->getTable();
+        $key    = $table->getKeyName();
         $pk     = (!empty($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
         $is_new = true;
 
-        if ($pk > 0) {
-            if ($record->load($pk)) {
-                $is_new = false;
-            }
-        }
+        // Include the content plugins for the on save events.
+        JPluginHelper::importPlugin('content');
+        $dispatcher = JDispatcher::getInstance();
 
-        // Make sure the title and alias are always unique
-        $data['alias'] = '';
-        list($title, $alias) = $this->generateNewTitle($data['title'], $data['project_id'], $data['alias'], $pk);
-
-        $data['title'] = $title;
-        $data['alias'] = $alias;
-
-        // Handle permissions and access level
-        if (isset($data['rules'])) {
-            $access = ProjectforkHelperAccess::getViewLevelFromRules($data['rules'], intval($data['access']));
-
-            if ($access) {
-                $data['access'] = $access;
-            }
-        }
-        else {
-            if ($is_new) {
-                $data['access'] = 1;
-            }
-            else {
-                if (isset($data['access'])) {
-                    unset($data['access']);
+        // Allow an exception to be thrown.
+        try {
+            if ($pk > 0) {
+                if ($table->load($pk)) {
+                    $is_new = false;
                 }
             }
-        }
 
-        // Store the record
-        if (parent::save($data)) {
+            // Make sure the title and alias are always unique
+            $data['alias'] = '';
+            list($title, $alias) = $this->generateNewTitle($data['title'], $data['project_id'], $data['alias'], $pk);
+
+            $data['title'] = $title;
+            $data['alias'] = $alias;
+
+            // Handle permissions and access level
+            if (isset($data['rules'])) {
+                $access = ProjectforkHelperAccess::getViewLevelFromRules($data['rules'], intval($data['access']));
+
+                if ($access) {
+                    $data['access'] = $access;
+                }
+            }
+            else {
+                if ($is_new) {
+                    $data['access'] = 1;
+                }
+                else {
+                    if (isset($data['access'])) {
+                        unset($data['access']);
+                    }
+                }
+            }
+
+            // Bind the data.
+            if (!$table->bind($data)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Prepare the row for saving
+            $this->prepareTable($table);
+
+            // Check the data.
+            if (!$table->check()) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Trigger the onContentBeforeSave event.
+            $result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, $is_new));
+
+            if (in_array(false, $result, true)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Store the data.
+            if (!$table->store()) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            $pk_name = $table->getKeyName();
+
+            if (isset($table->$pk_name)) {
+                $this->setState($this->getName() . '.id', $table->$pk_name);
+            }
+
+            $this->setState($this->getName() . '.new', $is_new);
+
             $id = $this->getState($this->getName() . '.id');
 
             // Load the just updated row
@@ -287,7 +328,7 @@ class ProjectforkModelMilestone extends JModelAdmin
             // To keep data integrity, update all child assets
             if (!$is_new) {
                 $props   = array('access', 'state', array('start_date', 'NE-SQLDATE'), array('end_date', 'NE-SQLDATE'));
-                $changes = ProjectforkHelper::getItemChanges($record, $updated, $props);
+                $changes = ProjectforkHelper::getItemChanges($table, $updated, $props);
 
                 if (count($changes)) {
                     $tables = array('tasklist', 'task');
@@ -338,10 +379,18 @@ class ProjectforkModelMilestone extends JModelAdmin
                 }
             }
 
-            return true;
+            // Clean the cache.
+            $this->cleanCache();
+
+            // Trigger the onContentAfterSave event.
+            $dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $is_new));
+        }
+        catch (Exception $e) {
+            $this->setError($e->getMessage());
+            return false;
         }
 
-        return false;
+        return true;
     }
 
 
