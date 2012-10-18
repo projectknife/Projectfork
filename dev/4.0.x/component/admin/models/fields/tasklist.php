@@ -29,6 +29,10 @@ class JFormFieldTasklist extends JFormFieldList
      */
     public $type = 'Tasklist';
 
+    protected $project;
+
+    protected $milestone;
+
 
     /**
      * Method to get the field input markup.
@@ -52,6 +56,9 @@ class JFormFieldTasklist extends JFormFieldList
         $project   = (int) $this->form->getValue('project_id');
         $milestone = (int) $this->form->getValue('milestone_id');
 
+        $this->project   = $project;
+        $this->milestone = $milestone;
+
         if (!$project) {
             // Cant get task list without at least a project id.
             $this->form->setValue($this->element['name'], null, '');
@@ -59,7 +66,7 @@ class JFormFieldTasklist extends JFormFieldList
         }
 
         // Get the field options.
-        $options = $this->getOptions($project, $milestone);
+        $options = $this->getOptions();
 
         // Return if no options are available.
         if (count($options) == 0) {
@@ -74,17 +81,17 @@ class JFormFieldTasklist extends JFormFieldList
     /**
      * Method to get the field list options markup.
      *
-     * @param     integer    $project      The currently selected project
-     * @param     integer    $milestone    The currently selected milestone
-     *
      * @return    array      $options      The list options markup.
      */
-    protected function getOptions($project, $milestone = 0)
+    protected function getOptions()
     {
         $options = array();
         $user  = JFactory::getUser();
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
+
+        $project   = $this->project;
+        $milestone = $this->milestone;
 
         // Get field attributes for the database query
         $state = ($this->element['state']) ? (int) $this->element['state'] : NULL;

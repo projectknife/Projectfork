@@ -555,7 +555,7 @@ class ProjectforkModelTask extends JModelAdmin
      * Custom clean the cache of com_projectfork and projectfork modules
      *
      */
-    protected function cleanCache()
+    protected function cleanCache($group = null, $client_id = 0)
     {
         parent::cleanCache('com_projectfork');
     }

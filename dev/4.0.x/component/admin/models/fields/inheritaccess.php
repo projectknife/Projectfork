@@ -29,6 +29,7 @@ class JFormFieldInheritAccess extends JFormFieldList
      **/
     public $type = 'InheritAccess';
 
+    protected $parents;
 
     protected $hidden;
 
@@ -61,7 +62,8 @@ class JFormFieldInheritAccess extends JFormFieldList
         $this->hidden = ((string) $this->element['hidden'] == 'true');
 
         // Get the field options
-        $options = $this->getOptions($parents);
+        $this->parents = $parents;
+        $options = $this->getOptions();
 
         // Generate the list
         return JHtml::_('select.genericlist', $options, $this->name, trim($attr), 'value', 'text', $this->value, $this->id);
@@ -71,12 +73,11 @@ class JFormFieldInheritAccess extends JFormFieldList
     /**
      * Method to get the field list options markup.
      *
-     * @param     array    $parents    The parent fields to inherit from
-
      * @return    array    $options    The list options markup
      */
-    protected function getOptions($parents)
+    protected function getOptions()
     {
+        $parents   = $this->parents;
         $options   = array();
         $user      = JFactory::getUser();
         $view      = (string) JRequest::getCmd('view');

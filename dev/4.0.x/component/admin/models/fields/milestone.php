@@ -30,6 +30,9 @@ class JFormFieldMilestone extends JFormFieldList
     public $type = 'Milestone';
 
 
+    protected $project;
+
+
     /**
      * Method to get the field input markup.
      *
@@ -51,6 +54,8 @@ class JFormFieldMilestone extends JFormFieldList
         $project = (int) $this->form->getValue('project_id');
         $list    = (int) $this->form->getValue('list_id');
 
+        $this->project = $project;
+
         if (!$project) {
             // Cant get milestone list without a project id.
             $this->form->setValue($this->element['name'], null, '');
@@ -58,7 +63,7 @@ class JFormFieldMilestone extends JFormFieldList
         }
 
         // Get the field options.
-        $options = $this->getOptions($project);
+        $options = $this->getOptions();
 
         // Override the selected value based on the selected list
         if ($list && count($options)) {
@@ -102,16 +107,16 @@ class JFormFieldMilestone extends JFormFieldList
     /**
      * Method to get the field list options markup.
      *
-     * @param     integer    $project    The currently selected project
-     *
      * @return    array      $options    The list options markup.
      */
-    protected function getOptions($project)
+    protected function getOptions()
     {
+
         $options = array();
         $user    = JFactory::getUser();
         $db      = JFactory::getDbo();
         $query   = $db->getQuery(true);
+        $project = $this->project;
 
         // Get field attributes for the database query
         $state = ($this->element['state']) ? (int) $this->element['state'] : NULL;
