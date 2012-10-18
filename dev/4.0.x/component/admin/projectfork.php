@@ -30,5 +30,5 @@ JLoader::registerPrefix('Projectfork',       JPATH_SITE . '/components/com_proje
 JForm::addRulePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/models/rules');
 
 $controller = JControllerLegacy::getInstance('Projectfork');
-$controller->execute(JRequest::getCmd('task'));
+$controller->execute(JFactory::getApplication()->input->get('task'));
 $controller->redirect();

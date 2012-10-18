@@ -34,5 +34,5 @@ JLoader::registerPrefix('Projectfork', JPATH_SITE . '/components/com_projectfork
 
 
 $controller = JControllerLegacy::getInstance('Projectfork');
-$controller->execute(JRequest::getCmd('task'));
+$controller->execute(JFactory::getApplication()->input->get('task'));
 $controller->redirect();
