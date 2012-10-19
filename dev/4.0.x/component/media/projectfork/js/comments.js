@@ -41,44 +41,18 @@ var PFcomments =
             dataType: 'html',
             success: function(resp)
             {
-                /*var mc   = jQuery('#system-message-container');
-                mc.append(resp);
-                return true;*/
-                resp  = jQuery.parseJSON(resp);
+                if (Projectfork.isJsonString(resp) == false) {
+                    Projectfork.displayException(resp);
+                }
+                else {
+                    resp = jQuery.parseJSON(resp);
 
-                if (typeof resp.messages != 'undefined') {
-                    var msgs = resp.messages;
-                    var mc   = jQuery('#system-message-container');
-                    var l    = msgs.length;
-                    var x    = 0;
-
-                    if (resp.success == "true") {
-                        if (l > 0) {
-                           for (x = 0; x < l; x++)
-                           {
-                               mc.append('<div class="alert alert-success"><a class="close" data-dismiss="alert" href="#">×</a>' + msgs[x] + '</div>');
-                           }
-                        }
-                    }
-                    else {
-                        if (l > 0) {
-                           for (x = 0; x < l; x++)
-                           {
-                               mc.append('<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">×</a>' + msgs[x] + '</div>');
-                           }
-                        }
-                    }
+                    Projectfork.displayMsg(resp);
                 }
             },
             error: function(resp, e, msg)
             {
-                var mc = jQuery('#system-message-container');
-                if(msg.length > 0) {
-                    mc.append('<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">×</a>' + msg + '</div>');
-                }
-                else {
-                    mc.append('<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">×</a>Request Failed!</div>');
-                }
+                Projectfork.displayMsg(resp, msg);
             },
             complete: function()
             {
@@ -132,44 +106,18 @@ var PFcomments =
             dataType: 'html',
             success: function(resp)
             {
-                /*var mc   = jQuery('#system-message-container');
-                mc.append(resp);
-                return true;*/
-                resp  = jQuery.parseJSON(resp);
+                if (Projectfork.isJsonString(resp) == false) {
+                    Projectfork.displayException(resp);
+                }
+                else {
+                    resp = jQuery.parseJSON(resp);
 
-                if (typeof resp.messages != 'undefined') {
-                    var msgs = resp.messages;
-                    var mc   = jQuery('#system-message-container');
-                    var l    = msgs.length;
-                    var x    = 0;
-
-                    if (resp.success == "true") {
-                        if (l > 0) {
-                           for (x = 0; x < l; x++)
-                           {
-                               mc.append('<div class="alert alert-success"><a class="close" data-dismiss="alert" href="#">×</a>' + msgs[x] + '</div>');
-                           }
-                        }
-                    }
-                    else {
-                        if (l > 0) {
-                           for (x = 0; x < l; x++)
-                           {
-                               mc.append('<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">×</a>' + msgs[x] + '</div>');
-                           }
-                        }
-                    }
+                    Projectfork.displayMsg(resp);
                 }
             },
             error: function(resp, e, msg)
             {
-                var mc = jQuery('#system-message-container');
-                if(msg.length > 0) {
-                    mc.append('<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">×</a>' + msg + '</div>');
-                }
-                else {
-                    mc.append('<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">×</a>Request Failed!</div>');
-                }
+                Projectfork.displayMsg(resp);
             },
             complete: function()
             {
@@ -233,13 +181,7 @@ var PFcomments =
             },
             error: function(resp, e, msg)
             {
-                var mc = jQuery('#system-message-container');
-                if(msg.length > 0) {
-                    mc.append('<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">×</a>' + msg + '</div>');
-                }
-                else {
-                    mc.append('<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">×</a>Request Failed x!</div>');
-                }
+                Projectfork.displayMsg(resp);
             },
             complete: function()
             {

@@ -38,6 +38,7 @@ class PFnotificationsHelper
         static $ms_titles      = array();
         static $list_titles    = array();
         static $topic_titles   = array();
+        static $task_titles    = array();
         static $user_names     = array();
 
         $db    = JFactory::getDbo();
@@ -161,6 +162,29 @@ class PFnotificationsHelper
 
                     $list_titles[$value] = $title;
                     $data = $list_titles[$value];
+                }
+                break;
+
+            case 'task_id':
+                if (array_key_exists($value, $task_titles)) {
+                    $data = $task_titles[$value];
+                }
+                else {
+                    if ($value > 0) {
+                        $query->clear();
+                        $query->select('title')
+                              ->from('#__pf_tasks')
+                              ->where('id = ' . $db->quote((int) $value));
+
+                        $db->setQuery($query);
+                        $title = $db->loadResult();
+                    }
+                    else {
+                        $title = '-';
+                    }
+
+                    $task_titles[$value] = $title;
+                    $data = $task_titles[$value];
                 }
                 break;
 

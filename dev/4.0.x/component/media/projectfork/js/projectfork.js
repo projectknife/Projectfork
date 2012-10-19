@@ -79,5 +79,63 @@ var Projectfork =
         }
 
         return true;
+    },
+
+
+    /**
+    * Method to display the ajax response messages
+    *
+    * @param    object    resp    The ajax response object
+    * @param    string    err     The error message
+    */
+    displayMsg: function(resp, err)
+    {
+        var mc = jQuery('#system-message-container');
+
+        if (typeof mc == 'undefined') {
+            return false;
+        }
+
+        if (resp.length != 0 && typeof resp.length != 'undefined' && typeof resp.success != 'undefined') {
+            if (resp.success == "true") {
+                var msg_class = 'success';
+            }
+            else {
+                var msg_class = 'error';
+            }
+
+            if (typeof resp.messages != 'undefined') {
+                var l = resp.messages.length;
+                var x = 0;
+
+                if (l > 0) {
+                    for (x = 0; x < l; x++)
+                    {
+                        mc.append('<div class="alert alert-' + msg_class + '"><a class="close" data-dismiss="alert" href="#">×</a>' + resp.messages[x] + '</div>');
+                    }
+                }
+            }
+        }
+        else {
+            if (typeof err != 'undefined') {
+                mc.append('<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">×</a>' + err + '</div>');
+            }
+            else {
+                mc.append('<div class="alert alert-error"><a class="close" data-dismiss="alert" href="#">×</a>Request failed!</div>');
+            }
+        }
+    },
+
+
+    displayException: function(msg)
+    {
+        var mc = jQuery('#system-message-container');
+
+        if (typeof mc == 'undefined') {
+            alert(msg);
+        }
+        else {
+            mc.append(msg);
+        }
     }
 }
