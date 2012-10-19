@@ -137,6 +137,10 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
             return JError::raiseWarning(500, JText::_($this->text_prefix . '_ERROR_NO_ITEMS_SELECTED'));
         }
 
+        // Include the content plugins for the on save events.
+        JPluginHelper::importPlugin('content');
+        $dispatcher = JDispatcher::getInstance();
+
         // update priority values
         foreach ($pks as $i => $pk)
         {
@@ -151,10 +155,16 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
             elseif ($table->priority != $priority[$pk]) {
                 $table->priority = $priority[$pk];
 
+                // Trigger the onContentBeforeSave event.
+                $result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, false));
+
                 if (!$table->store()) {
                     $this->setError($table->getError());
                     return false;
                 }
+
+                // Trigger the onContentBeforeSave event.
+                $result = $dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, false));
             }
         }
 
@@ -225,6 +235,10 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
             return false;
         }
 
+        // Include the content plugins for the on save events.
+        JPluginHelper::importPlugin('content');
+        $dispatcher = JDispatcher::getInstance();
+
         // Update values
         foreach ($pks as $i => $pk)
         {
@@ -249,10 +263,16 @@ class ProjectforkModelTaskForm extends ProjectforkModelTask
                 $table->complete = (int) $state;
             }
 
+            // Trigger the onContentBeforeSave event.
+            $result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, false));
+
             if (!$table->store()) {
                 $this->setError($table->getError());
                 return false;
             }
+
+            // Trigger the onContentBeforeSave event.
+            $result = $dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, false));
         }
 
         // Clear the component's cache
