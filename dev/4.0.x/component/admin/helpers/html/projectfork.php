@@ -81,6 +81,54 @@ abstract class JHtmlProjectfork
     }
 
 
+    public static function updateButton()
+    {
+        // Load translations
+		$basepath = JPATH_ADMINISTRATOR . '/components/com_projectfork/liveupdate';
+		$lang     = JFactory::getLanguage();
+
+		$lang->load('liveupdate', $basepath, 'en-GB', true);
+		$lang->load('liveupdate', $basepath, $lang->getDefault(), true);
+		$lang->load('liveupdate', $basepath, null, true);
+
+        $info = LiveUpdate::getUpdateInformation();
+        $btn  = array();
+        $html = array();
+
+        if(!$info->supported) {
+			// Unsupported
+			$btn['class'] = 'btn-warning';
+			$btn['icon']  = 'icon-warning';
+			$btn['text']  = JText::_('LIVEUPDATE_ICON_UNSUPPORTED');
+		}
+        elseif($info->stuck) {
+			// Stuck
+			$btn['class'] = 'btn-danger';
+			$btn['icon']  = 'icon-warning';
+			$btn['text']  = JText::_('LIVEUPDATE_ICON_CRASHED');
+		}
+        elseif($info->hasUpdates) {
+			// Has updates
+			$btn['class']   = 'btn-primary';
+			$button['icon'] = 'icon-download-alt';
+			$btn['text']    = JText::_('LIVEUPDATE_ICON_UPDATES');
+		}
+        else {
+			// Already in the latest release
+			$btn['class'] = 'btn-success';
+			$btn['icon']  = 'icon-ok';
+			$btn['text']  = JText::_('LIVEUPDATE_ICON_CURRENT');
+		}
+
+        $html[] = '<a class="btn btn-small ' . $btn['class'] . '" href="index.php?option=com_projectfork&view=liveupdate">';
+        $html[] = '<i class="' . $btn['icon'] . '"></i> ';
+        $html[] = $btn['text'];
+        $html[] = '</a>';
+
+        return implode('', $html);
+    }
+
+
     /**
      * Translates a numerical priority value to a string label
      *

@@ -65,10 +65,17 @@ defined('_JEXEC') or die();
         <div class="well well-small">
             <div class="module-title nav-header"><?php echo JText::_('COM_PROJECTFORK');?></div>
             <div class="well well-small">
-            	<h4>Projectfork 4 Alpha</h4>
-            <p>Consider this a preview-only version of Projectfork. We highly recommend against using in a production environment as there may be many bugs. Features and functions will rapidly change in the alpha stage and we don't offer support or migration for these features.</p>
-            <p><a href="https://github.com/projectfork/Projectfork/issues" class="btn btn-small" target="_blank"><span aria-hidden="true" class="icon-warning"></span> Report an issue on Github</a></p>
+           	    <h4>Projectfork 4 Beta</h4>
+                <p>Consider this a preview-only version of Projectfork. We highly recommend against using in a production environment as there may be many bugs. </p>
             </div>
+            <p>
+                <a href="https://github.com/projectfork/Projectfork/issues" class="btn btn-small" target="_blank">
+                    <i aria-hidden="true" class="icon-warning"></i> Report an issue on Github
+                </a>
+            </p>
+            <p>
+                <?php echo JHtml::_('projectfork.updateButton'); ?>
+            </p>
         </div>
     </div>
 </div>

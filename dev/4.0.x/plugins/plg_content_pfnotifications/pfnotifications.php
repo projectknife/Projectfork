@@ -205,11 +205,6 @@ class plgContentPfnotifications extends JPlugin
             $subject = $this->$subject_method($lang, $receiver, $user, $txt_prefix, $is_new);
             $message = $this->$message_method($lang, $receiver, $user, $txt_prefix, $is_new);
 
-            /*echo "$subject_method - $message_method<br/>";
-            echo $subject . "<br/>";
-            echo nl2br($message);
-            die();*/
-
             if ($subject === false || $message === false) {
                 // Abort if the subject or message is False
                 break;
