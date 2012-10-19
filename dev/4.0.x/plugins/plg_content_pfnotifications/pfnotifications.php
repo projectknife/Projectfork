@@ -89,7 +89,8 @@ class plgContentPfnotifications extends JPlugin
             'com_projectfork.task',
             'com_projectfork.topic',
             'com_projectfork.reply',
-            'com_projectfork.comment'
+            'com_projectfork.comment',
+            'com_projectfork.attachment'
         );
 
         // Check if the context is supported. Return true string if its not.
@@ -132,6 +133,11 @@ class plgContentPfnotifications extends JPlugin
             list($c_com, $c_type) = explode('.', $table->context, 2);
 
             $lookup_item = $c_type;
+            $lookup_id   = $table->item_id;
+        }
+
+        if ($item == 'attachment') {
+            $lookup_item = $table->item_type;
             $lookup_id   = $table->item_id;
         }
 
@@ -190,7 +196,7 @@ class plgContentPfnotifications extends JPlugin
 		{
 		    if ($receiver->id == $user->id) {
 		        // Don't mail own actions to self
-                //continue;
+                continue;
 		    }
 
             $lang = JLanguage::getInstance($receiver->getParam('site_language', $def_lang), $debug);
@@ -410,11 +416,11 @@ class plgContentPfnotifications extends JPlugin
             return false;
         }
 
-        list($com, $item) = explode('.', $this->table_after->context);
+        list($com, $type) = explode('.', $this->table_after->context);
 
-        $format  = $lang->_($txt_prefix . '_SUBJECT_' . strtoupper($item));
+        $format  = $lang->_($txt_prefix . '_SUBJECT_' . strtoupper($type));
         $project = PFnotificationsHelper::translateValue('project_id', $this->table_after->project_id);
-        $item    = PFnotificationsHelper::translateValue($item . '_id', $this->table_after->item_id);
+        $item    = PFnotificationsHelper::translateValue($type . '_id', $this->table_after->item_id);
 
         if ($item != 'project') {
             $txt = sprintf($format, $project, $user->name, $item);
@@ -451,6 +457,61 @@ class plgContentPfnotifications extends JPlugin
         $footer  = sprintf($lang->_('COM_PROJECTFORK_EMAIL_FOOTER'), JURI::root());
         $link    = JRoute::_(JURI::root() . $link);
         $txt     = sprintf($format, $receiver->name, $user->name, strip_tags($this->table_after->description), $link);
+        $txt     = str_replace('\n', "\n", $txt . "\n\n" . $footer);
+
+        return $txt;
+    }
+
+
+    protected function getAttachmentSubject($lang, $receiver, $user, $txt_prefix, $is_new)
+    {
+        if (!$is_new) {
+            return false;
+        }
+
+        $format  = $lang->_($txt_prefix . '_SUBJECT_' . strtoupper($this->table_after->item_type));
+        $project = PFnotificationsHelper::translateValue('project_id', $this->table_after->project_id);
+        $item    = PFnotificationsHelper::translateValue($this->table_after->item_type . '_id', $this->table_after->item_id);
+
+        if ($this->table_after->item_type != 'project') {
+            $txt = sprintf($format, $project, $user->name, $item);
+        }
+        else {
+            $txt = sprintf($format, $project, $user->name);
+        }
+
+        return $txt;
+    }
+
+
+    protected function getAttachmentMessage($lang, $receiver, $user, $txt_prefix, $is_new)
+    {
+        if (!$is_new) {
+            return false;
+        }
+
+        $type = $this->table_after->item_type;
+
+        switch ($type)
+        {
+            case 'project':
+                $link = ProjectforkHelperRoute::getDashboardRoute($this->table_after->project_id);
+                break;
+
+            default:
+                $method = 'get' . ucfirst($type) . 'Route';
+                $link = ProjectforkHelperRoute::$method($this->table_after->item_id, $this->table_after->project_id);
+                break;
+        }
+
+        list($type, $id) = explode('.', $this->table_after->attachment);
+
+        $item = PFnotificationsHelper::translateValue($type . '_id', (int) $id);
+
+        $format  = $lang->_($txt_prefix . '_MESSAGE');
+        $footer  = sprintf($lang->_('COM_PROJECTFORK_EMAIL_FOOTER'), JURI::root());
+        $link    = JRoute::_(JURI::root() . $link);
+        $txt     = sprintf($format, $receiver->name, $user->name, $item, $link);
         $txt     = str_replace('\n', "\n", $txt . "\n\n" . $footer);
 
         return $txt;

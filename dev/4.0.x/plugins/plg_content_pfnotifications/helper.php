@@ -39,6 +39,9 @@ class PFnotificationsHelper
         static $list_titles    = array();
         static $topic_titles   = array();
         static $task_titles    = array();
+        static $dir_titles     = array();
+        static $note_titles    = array();
+        static $file_titles    = array();
         static $user_names     = array();
 
         $db    = JFactory::getDbo();
@@ -208,6 +211,75 @@ class PFnotificationsHelper
 
                     $topic_titles[$value] = $title;
                     $data = $topic_titles[$value];
+                }
+                break;
+
+            case 'directory_id':
+                if (array_key_exists($value, $dir_titles)) {
+                    $data = $dir_titles[$value];
+                }
+                else {
+                    if ($value > 0) {
+                        $query->clear();
+                        $query->select('title')
+                              ->from('#__pf_repo_dirs')
+                              ->where('id = ' . $db->quote((int) $value));
+
+                        $db->setQuery($query);
+                        $title = $db->loadResult();
+                    }
+                    else {
+                        $title = '-';
+                    }
+
+                    $dir_titles[$value] = $title;
+                    $data = $dir_titles[$value];
+                }
+                break;
+
+            case 'file_id':
+                if (array_key_exists($value, $file_titles)) {
+                    $data = $file_titles[$value];
+                }
+                else {
+                    if ($value > 0) {
+                        $query->clear();
+                        $query->select('title')
+                              ->from('#__pf_repo_files')
+                              ->where('id = ' . $db->quote((int) $value));
+
+                        $db->setQuery($query);
+                        $title = $db->loadResult();
+                    }
+                    else {
+                        $title = '-';
+                    }
+
+                    $file_titles[$value] = $title;
+                    $data = $file_titles[$value];
+                }
+                break;
+
+            case 'note_id':
+                if (array_key_exists($value, $note_titles)) {
+                    $data = $note_titles[$value];
+                }
+                else {
+                    if ($value > 0) {
+                        $query->clear();
+                        $query->select('title')
+                              ->from('#__pf_repo_notes')
+                              ->where('id = ' . $db->quote((int) $value));
+
+                        $db->setQuery($query);
+                        $title = $db->loadResult();
+                    }
+                    else {
+                        $title = '-';
+                    }
+
+                    $note_titles[$value] = $title;
+                    $data = $note_titles[$value];
                 }
                 break;
 
