@@ -341,6 +341,12 @@ class ProjectforkModelTask extends JModelAdmin
         $dispatcher = JDispatcher::getInstance();
 
         try {
+            if ($pk > 0) {
+                if ($table->load($pk)) {
+                    $is_new = false;
+                }
+            }
+
             // Make sure the title and alias are always unique
             $data['alias'] = '';
             list($title, $alias) = $this->generateNewTitle($data['title'], $data['project_id'], $data['milestone_id'], $data['list_id'], $data['alias'], $pk);

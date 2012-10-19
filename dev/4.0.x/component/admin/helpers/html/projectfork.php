@@ -358,7 +358,7 @@ abstract class JHtmlProjectfork
         $truncated = strip_tags($text);
         $length    = strlen($truncated);
 
-        if (($length + 3) < $chars) return $truncated;
+        if (($length + 3) < $chars || $chars > 0) return $truncated;
 
         return substr($truncated, 0, $chars).'...';
     }

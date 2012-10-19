@@ -16,6 +16,7 @@
         <filename>index.html</filename>
         <filename>LICENSE.txt</filename>
         <filename>script.php</filename>
+        <filename>helper.php</filename>
 	</files>
     <languages>
 	    <language tag="en-GB">language/en-GB/en-GB.plg_content_pfnotifications.ini</language>
