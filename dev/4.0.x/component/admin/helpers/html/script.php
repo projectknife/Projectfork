@@ -185,6 +185,10 @@ abstract class ProjectforkScript
             self::jQuery();
         }
 
+        if (empty(self::$loaded['projectfork'])) {
+            self::projectfork();
+        }
+
         // Load only of doc type is HTML
         if (JFactory::getDocument()->getType() == 'html') {
             $dispatcher	= JDispatcher::getInstance();
@@ -210,6 +214,10 @@ abstract class ProjectforkScript
         // Load dependencies
         if (empty(self::$loaded['jQuery'])) {
             self::jQuery();
+        }
+
+        if (empty(self::$loaded['projectfork'])) {
+            self::projectfork();
         }
 
         // Load only of doc type is HTML
@@ -239,6 +247,10 @@ abstract class ProjectforkScript
             self::jQuery();
         }
 
+        if (empty(self::$loaded['projectfork'])) {
+            self::projectfork();
+        }
+
         // Load only of doc type is HTML
         if (JFactory::getDocument()->getType() == 'html') {
             $dispatcher	= JDispatcher::getInstance();
@@ -264,6 +276,10 @@ abstract class ProjectforkScript
         // Load dependencies
         if (empty(self::$loaded['jQuery'])) {
             self::jQuery();
+        }
+
+        if (empty(self::$loaded['projectfork'])) {
+            self::projectfork();
         }
 
         // Load only of doc type is HTML

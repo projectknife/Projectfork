@@ -201,7 +201,7 @@ abstract class ProjectforkHelperToolbar
     {
         $html  = array();
         $class = (isset($options['class']) ? $options['class'] : 'btn-info');
-        $href  = (isset($options['href'])  ? $options['href']  : 'javascript:void();');
+        $href  = (isset($options['href'])  ? $options['href']  : 'javascript:void(0);');
         $icon  = (isset($options['icon'])  ? $options['icon']  : 'icon-plus icon-white');
         $id    = (isset($options['id'])    ? ' id="' . $options['id'] . '"' : '');
 
@@ -240,7 +240,7 @@ abstract class ProjectforkHelperToolbar
     protected static function renderListItem($text, $task = '', $list = false, $options = array())
     {
         $html  = array();
-        $href  = (isset($options['href']) ? $options['href']  : 'javascript:void();');
+        $href  = (isset($options['href']) ? $options['href']  : 'javascript:void(0);');
         $icon  = (isset($options['icon']) ? $options['icon']  : '');
 
         if (isset($options['access'])) {

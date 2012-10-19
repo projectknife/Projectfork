@@ -38,7 +38,7 @@ defined('_JEXEC') or die();
             </div>
             <div class="icon-wrapper span2">
                 <div class="icon">
-                    <a href="index.well?option=com_projectfork&view=tasks" class="thumbnail btn">
+                    <a href="index.php?option=com_projectfork&view=tasks" class="thumbnail btn">
                         <?php echo JHtml::image('com_projectfork/projectfork/header/icon-48-tasks.png', JText::_('COM_PROJECTFORK_SUBMENU_TASKS'), null, true); ?>
                         <span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_TASKS');?></span>
                     </a>
@@ -57,7 +57,6 @@ defined('_JEXEC') or die();
                             <span><?php echo JText::_('COM_PROJECTFORK_DASHBOARD_CONFIG');?></span>
                         </a>
                     <?php endif; ?>
-
                 </div>
             </div>
         </div>
@@ -66,10 +65,17 @@ defined('_JEXEC') or die();
         <div class="well well-small">
             <div class="module-title nav-header"><?php echo JText::_('COM_PROJECTFORK');?></div>
             <div class="well well-small">
-            	<h4>Projectfork 4 Alpha</h4>
-            <p>Consider this a preview-only version of Projectfork. We highly recommend against using in a production environment as there may be many bugs. Features and functions will rapidly change in the alpha stage and we don't offer support or migration for these features.</p>
-            <p><a href="https://github.com/projectfork/Projectfork/issues" class="btn btn-small" target="_blank"><span aria-hidden="true" class="icon-warning"></span> Report an issue on Github</a></p>
+           	    <h4>Projectfork 4 Beta</h4>
+                <p>Consider this a preview-only version of Projectfork. We highly recommend against using in a production environment as there may be many bugs. </p>
             </div>
+            <p>
+                <a href="https://github.com/projectfork/Projectfork/issues" class="btn btn-small" target="_blank">
+                    <i aria-hidden="true" class="icon-warning"></i> Report an issue on Github
+                </a>
+            </p>
+            <p>
+                <?php echo JHtml::_('projectfork.updateButton'); ?>
+            </p>
         </div>
     </div>
 </div>

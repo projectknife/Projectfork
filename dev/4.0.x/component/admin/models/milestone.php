@@ -79,6 +79,10 @@ class ProjectforkModelMilestone extends JModelAdmin
             // Get the attachments
             $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
             $item->attachment = $attachments->getItems('milestone', $item->id);
+
+            // Get the labels
+            $labels = $this->getInstance('Labels', 'ProjectforkModel');
+            $item->labels = $labels->getConnections('milestone', $item->id);
         }
 
         return $item;
@@ -178,6 +182,13 @@ class ProjectforkModelMilestone extends JModelAdmin
                         return false;
                     }
 
+                    $tables = array('labelref');
+                    $field  = array('item_type' => 'milestone', 'item_id' => $pk);
+
+                    if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
+                        return false;
+                    }
+
                     $tables = array('comment');
                     $field  = array('context' => 'com_projectfork.milestone', 'item_id' => $pk);
 
@@ -225,45 +236,86 @@ class ProjectforkModelMilestone extends JModelAdmin
      */
     public function save($data)
     {
-        $record = $this->getTable();
-        $key    = $record->getKeyName();
+        $table  = $this->getTable();
+        $key    = $table->getKeyName();
         $pk     = (!empty($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
         $is_new = true;
 
-        if ($pk > 0) {
-            if ($record->load($pk)) {
-                $is_new = false;
-            }
-        }
+        // Include the content plugins for the on save events.
+        JPluginHelper::importPlugin('content');
+        $dispatcher = JDispatcher::getInstance();
 
-        // Make sure the title and alias are always unique
-        $data['alias'] = '';
-        list($title, $alias) = $this->generateNewTitle($data['title'], $data['project_id'], $data['alias'], $pk);
-
-        $data['title'] = $title;
-        $data['alias'] = $alias;
-
-        // Handle permissions and access level
-        if (isset($data['rules'])) {
-            $access = ProjectforkHelperAccess::getViewLevelFromRules($data['rules'], intval($data['access']));
-
-            if ($access) {
-                $data['access'] = $access;
-            }
-        }
-        else {
-            if ($is_new) {
-                $data['access'] = 1;
-            }
-            else {
-                if (isset($data['access'])) {
-                    unset($data['access']);
+        // Allow an exception to be thrown.
+        try {
+            if ($pk > 0) {
+                if ($table->load($pk)) {
+                    $is_new = false;
                 }
             }
-        }
 
-        // Store the record
-        if (parent::save($data)) {
+            // Make sure the title and alias are always unique
+            $data['alias'] = '';
+            list($title, $alias) = $this->generateNewTitle($data['title'], $data['project_id'], $data['alias'], $pk);
+
+            $data['title'] = $title;
+            $data['alias'] = $alias;
+
+            // Handle permissions and access level
+            if (isset($data['rules'])) {
+                $access = ProjectforkHelperAccess::getViewLevelFromRules($data['rules'], intval($data['access']));
+
+                if ($access) {
+                    $data['access'] = $access;
+                }
+            }
+            else {
+                if ($is_new) {
+                    $data['access'] = 1;
+                }
+                else {
+                    if (isset($data['access'])) {
+                        unset($data['access']);
+                    }
+                }
+            }
+
+            // Bind the data.
+            if (!$table->bind($data)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Prepare the row for saving
+            $this->prepareTable($table);
+
+            // Check the data.
+            if (!$table->check()) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Trigger the onContentBeforeSave event.
+            $result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, $is_new));
+
+            if (in_array(false, $result, true)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Store the data.
+            if (!$table->store()) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            $pk_name = $table->getKeyName();
+
+            if (isset($table->$pk_name)) {
+                $this->setState($this->getName() . '.id', $table->$pk_name);
+            }
+
+            $this->setState($this->getName() . '.new', $is_new);
+
             $id = $this->getState($this->getName() . '.id');
 
             // Load the just updated row
@@ -276,7 +328,7 @@ class ProjectforkModelMilestone extends JModelAdmin
             // To keep data integrity, update all child assets
             if (!$is_new) {
                 $props   = array('access', 'state', array('start_date', 'NE-SQLDATE'), array('end_date', 'NE-SQLDATE'));
-                $changes = ProjectforkHelper::getItemChanges($record, $updated, $props);
+                $changes = ProjectforkHelper::getItemChanges($table, $updated, $props);
 
                 if (count($changes)) {
                     $tables = array('tasklist', 'task');
@@ -285,6 +337,15 @@ class ProjectforkModelMilestone extends JModelAdmin
                     if (!ProjectforkHelperQuery::updateTablesByField($tables, $field, $changes)) {
                         return false;
                     }
+                }
+            }
+
+            // Add to watch list
+            if ($is_new) {
+                $cid = array($id);
+
+                if (!$this->watch($cid, 1)) {
+                    return false;
                 }
             }
 
@@ -302,10 +363,127 @@ class ProjectforkModelMilestone extends JModelAdmin
                 }
             }
 
-            return true;
+            // Store the labels
+            if (isset($data['labels'])) {
+                $labels = $this->getInstance('Labels', 'ProjectforkModel');
+
+                if ((int) $labels->getState('item.project') == 0) {
+                    $labels->setState('item.project', $updated->project_id);
+                }
+
+                $labels->setState('item.type', 'milestone');
+                $labels->setState('item.id', $id);
+
+                if (!$labels->saveRefs($data['labels'])) {
+                    return false;
+                }
+            }
+
+            // Clean the cache.
+            $this->cleanCache();
+
+            // Trigger the onContentAfterSave event.
+            $dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $is_new));
+        }
+        catch (Exception $e) {
+            $this->setError($e->getMessage());
+            return false;
         }
 
-        return false;
+        return true;
+    }
+
+
+    /**
+     * Method to watch an item
+     *
+     * @param    array      $pks      The items to watch
+     * @param    integer    $value    1 to watch, 0 to unwatch
+     * @param    integer    $uid      The user id to watch the item
+     */
+    public function watch(&$pks, $value = 1, $uid = null)
+    {
+        $user  = JFactory::getUser($uid);
+        $table = $this->getTable();
+        $pks   = (array) $pks;
+
+        $is_admin = $user->authorise('core.admin', $this->option);
+        $my_views = $user->getAuthorisedViewLevels();
+        $projects = array();
+
+        // Access checks.
+        foreach ($pks as $i => $pk) {
+            $table->reset();
+
+            if ($table->load($pk)) {
+                if (!$is_admin && !in_array($table->access, $my_views)) {
+                    unset($pks[$i]);
+                    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+                    $this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
+                    return false;
+                }
+
+                $projects[$pk] = (int) $table->project_id;
+            }
+            else {
+                unset($pks[$i]);
+            }
+        }
+
+        // Attempt to watch/unwatch the selected items
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        foreach ($pks AS $i => $pk)
+        {
+            $query->clear();
+
+            if ($value == 0) {
+                $query->delete('#__pf_ref_observer')
+                      ->where('item_type = ' . $db->quote( str_replace('form', '', $this->getName()) ) )
+                      ->where('item_id = ' . $db->quote((int) $pk))
+                      ->where('user_id = ' . $db->quote((int) $user->get('id')));
+
+                $db->setQuery($query);
+                $db->execute();
+
+                if ($db->getError()) {
+                    $this->setError($db->getError());
+                    return false;
+                }
+            }
+            else {
+                $query->select('COUNT(*)')
+                      ->from('#__pf_ref_observer')
+                      ->where('item_type = ' . $db->quote( str_replace('form', '', $this->getName()) ) )
+                      ->where('item_id = ' . $db->quote((int) $pk))
+                      ->where('user_id = ' . $db->quote((int) $user->get('id')));
+
+                $db->setQuery($query);
+                $count = (int) $db->loadResult();
+
+                if (!$count) {
+                    $data = new stdClass;
+
+                    $data->user_id   = (int) $user->get('id');
+                    $data->item_type = str_replace('form', '', $this->getName());
+                    $data->item_id   = (int) $pk;
+                    $data->project_id= (int) $projects[$pk];
+
+                    $db->insertObject('#__pf_ref_observer', $data);
+
+                    if ($db->getError()) {
+                        $this->setError($db->getError());
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // Clear the component's cache
+        $this->cleanCache();
+
+        return true;
     }
 
 
@@ -343,7 +521,7 @@ class ProjectforkModelMilestone extends JModelAdmin
      * Custom clean the cache of com_projectfork and projectfork modules
      *
      */
-    protected function cleanCache()
+    protected function cleanCache($group = null, $client_id = 0)
     {
         parent::cleanCache('com_projectfork');
     }

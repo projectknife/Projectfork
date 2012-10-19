@@ -15,6 +15,13 @@ if (!JFactory::getUser()->authorise('core.manage', 'com_projectfork')) {
 	return JError::raiseWarning(404, JText::_('JERROR_ALERTNOAUTHOR'));
 }
 
+// Check for updates
+JLoader::register('LiveUpdate', JPATH_ADMINISTRATOR . '/components/com_projectfork/liveupdate/liveupdate.php');
+if(JFactory::getApplication()->input->get('view') == 'liveupdate') {
+    LiveUpdate::handleRequest();
+    return;
+}
+
 // Include dependencies
 jimport('joomla.application.component.controller');
 jimport('joomla.application.component.helper');
@@ -30,5 +37,5 @@ JLoader::registerPrefix('Projectfork',       JPATH_SITE . '/components/com_proje
 JForm::addRulePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/models/rules');
 
 $controller = JControllerLegacy::getInstance('Projectfork');
-$controller->execute(JRequest::getCmd('task'));
+$controller->execute(JFactory::getApplication()->input->get('task'));
 $controller->redirect();

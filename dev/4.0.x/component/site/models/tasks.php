@@ -103,6 +103,16 @@ class ProjectforkModelTasks extends JModelList
         $query->select('m.title AS milestone_title, m.alias AS milestone_alias');
         $query->join('LEFT', '#__pf_milestones AS m ON m.id = a.milestone_id');
 
+        // Join over the label refs for label count
+        $query->select('COUNT(DISTINCT lbl.id) AS label_count');
+        $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('task') . ')');
+
+        // Join over the observer table for email notification status
+        if ($user->get('id') > 0) {
+            $query->select('COUNT(obs.user_id) AS watching');
+            $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = ' . $db->quote('task') . ' AND obs.item_id = a.id AND obs.user_id = ' . $db->quote($user->get('id')) . ')');
+        }
+
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
@@ -114,6 +124,22 @@ class ProjectforkModelTasks extends JModelList
         if (is_numeric($assigned) && intval($assigned) != 0) {
             $query->join('INNER', '#__pf_ref_users AS ru ON (ru.item_type = ' . $db->quote('task') . ' AND ru.item_id = a.id)');
             $query->where('ru.user_id = ' . (int) $assigned);
+        }
+
+        // Filter labels
+        if (count($this->getState('filter.labels'))) {
+            $labels = $this->getState('filter.labels');
+
+            JArrayHelper::toInteger($labels);
+
+            if (count($labels) > 1) {
+                $labels = implode(', ', $labels);
+                $query->where('lbl.label_id IN (' . $labels . ')');
+            }
+            else {
+                $labels = implode(', ', $labels);
+                $query->where('lbl.label_id = ' . $db->quote((int) $labels));
+            }
         }
 
         // Filter fields
@@ -150,6 +176,7 @@ class ProjectforkModelTasks extends JModelList
         }
 
         $query->order($db->escape($order_col . ' ' . $order_dir));
+        $query->group('a.id');
 
         return $query;
     }
@@ -163,8 +190,9 @@ class ProjectforkModelTasks extends JModelList
      */
     public function getItems()
     {
-        $items = parent::getItems();
-        $ref   = JModelLegacy::getInstance('UserRefs', 'ProjectforkModel');
+        $items  = parent::getItems();
+        $ref    = JModelLegacy::getInstance('UserRefs', 'ProjectforkModel');
+        $labels = $this->getInstance('Labels', 'ProjectforkModel');
 
         // Get the global params
         $global_params = JComponentHelper::getParams('com_projectfork', true);
@@ -185,6 +213,11 @@ class ProjectforkModelTasks extends JModelList
             $items[$i]->project_slug   = $items[$i]->project_alias   ? ($items[$i]->project_id . ':' . $items[$i]->project_alias)     : $items[$i]->project_id;
             $items[$i]->milestone_slug = $items[$i]->milestone_alias ? ($items[$i]->milestone_id . ':' . $items[$i]->milestone_alias) : $items[$i]->milestone_id;
             $items[$i]->list_slug      = $items[$i]->list_alias      ? ($items[$i]->list_id . ':' . $items[$i]->list_alias)           : $items[$i]->list_id;
+
+            // Get the labels
+            if ($items[$i]->label_count > 0) {
+                $items[$i]->labels = $labels->getConnections('task', $items[$i]->id);
+            }
         }
 
         return $items;
@@ -464,23 +497,34 @@ class ProjectforkModelTasks extends JModelList
         $priority = $app->getUserStateFromRequest($this->context . '.filter.priority', 'filter_priority', '');
         $this->setState('filter.priority', $priority);
 
+        // Filter - Labels
+        $labels = JRequest::getVar('filter_label', array());
+        $this->setState('filter.labels', $labels);
+
         // Do not allow some filters if no project is selected
         if (!is_numeric($project) || intval($project) == 0) {
             $this->setState('filter.author', '');
             $this->setState('filter.assigned', '');
             $this->setState('filter.tasklist', '');
             $this->setState('filter.milestone', '');
+            $this->setState('filter.labels', array());
 
             $author    = '';
             $assigned  = '';
             $milestone = '';
             $list      = '';
+            $labels    = array();
+        }
+
+        if (!is_array($labels)) {
+            $labels = array();
         }
 
         // Filter - Is set
         $this->setState('filter.isset',
             (is_numeric($state) || !empty($search) || is_numeric($author) ||
-            is_numeric($assigned) || (is_numeric($list) && $list > 0) || (is_numeric($milestone) && $milestone > 0))
+            is_numeric($assigned) || (is_numeric($list) && $list > 0) || (is_numeric($milestone) && $milestone > 0) ||
+            count($labels))
         );
 
         // Call parent method

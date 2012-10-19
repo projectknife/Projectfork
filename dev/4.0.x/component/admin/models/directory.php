@@ -75,6 +75,10 @@ class ProjectforkModelDirectory extends JModelAdmin
             $registry = new JRegistry;
             $registry->loadString($item->attribs);
             $item->attribs = $registry->toArray();
+
+            // Get the labels
+            $labels = $this->getInstance('Labels', 'ProjectforkModel');
+            $item->labels = $labels->getConnections('directory', $item->id);
         }
 
         return $item;
@@ -604,6 +608,25 @@ class ProjectforkModelDirectory extends JModelAdmin
 
         $this->setState($this->getName() . '.id', $table->id);
 
+        $updated = $this->getTable();
+        if ($updated->load($table->id) === false) return false;
+
+        // Store the labels
+        if (isset($data['labels'])) {
+            $labels = $this->getInstance('Labels', 'ProjectforkModel');
+
+            if ((int) $labels->getState('item.project') == 0) {
+                $labels->setState('item.project', $updated->project_id);
+            }
+
+            $labels->setState('item.type', 'directory');
+            $labels->setState('item.id', $table->id);
+
+            if (!$labels->saveRefs($data['labels'])) {
+                return false;
+            }
+        }
+
         // Clear the cache
         $this->cleanCache();
 
@@ -779,7 +802,12 @@ class ProjectforkModelDirectory extends JModelAdmin
                         return false;
                     }
 
+                    $tables = array('labelref');
+                    $field  = array('item_type' => 'directory', 'item_id' => $pk);
 
+                    if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
+                        return false;
+                    }
 
                     if (is_array($dir_list) && count($dir_list) > 0) {
                         $move_notes = array();
@@ -837,6 +865,14 @@ class ProjectforkModelDirectory extends JModelAdmin
                             if ($db->getErrorMsg()) {
                                 $this->setError($db->getErrorMsg());
                             }
+
+                            foreach ($del_notes AS $note)
+                            {
+                                $tables = array('labelref');
+                                $field  = array('item_type' => 'note', 'item_id' => $note);
+
+                                ProjectforkHelperQuery::deleteFromTablesByField($tables, $field);
+                            }
                         }
 
                         // Move notes you cant delete
@@ -862,6 +898,14 @@ class ProjectforkModelDirectory extends JModelAdmin
 
                             if ($db->getErrorMsg()) {
                                 $this->setError($db->getErrorMsg());
+                            }
+
+                            foreach ($del_files AS $file)
+                            {
+                                $tables = array('labelref');
+                                $field  = array('item_type' => 'file', 'item_id' => $file);
+
+                                ProjectforkHelperQuery::deleteFromTablesByField($tables, $field);
                             }
                         }
 

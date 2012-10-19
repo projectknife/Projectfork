@@ -59,6 +59,15 @@ Joomla.submitbutton = function(task)
                 </ul>
             </fieldset>
 
+            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_LABELS'), 'labels'); ?>
+            <fieldset class="panelform">
+                <div id="jform_labels_element">
+                    <div id="jform_labels_reload">
+				        <?php echo $this->form->getInput('labels'); ?>
+                    </div>
+                </div>
+            </fieldset>
+
             <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'attachments'); ?>
             <fieldset class="panelform">
 				<ul class="adminformlist unstyled">

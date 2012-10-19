@@ -106,6 +106,15 @@ jQuery(document).ready(function() {
                         </select>
                     </div>
                     <div class="clearfix"> </div>
+
+                    <?php if ($this->state->get('filter.project')) : ?>
+                        <hr />
+                        <div class="filter-labels">
+                            <?php echo JHtml::_('projectfork.filterLabels', 'task', $this->state->get('filter.project'), $this->state->get('filter.labels'));?>
+                        </div>
+                        <div class="clearfix"> </div>
+                    <?php endif; ?>
+
                 </div>
             </div>
             <div id="list-reorder">
@@ -191,6 +200,10 @@ jQuery(document).ready(function() {
 
                         // list item class
                         $class = ($item->complete ? 'task-complete' : 'task-incomplete');
+
+                        // Prepare the watch button
+                        $options = array('a-class' => 'btn-mini');
+                        $watch = JHtml::_('projectfork.watch', 'tasks', $x, $item->watching, $options);
                     ?>
                     <li id="list-item-<?php echo $x; ?>" class="<?php echo $class;?>">
                         <input type="hidden" name="order[]" value="<?php echo (int) $item->ordering;?>"/>
@@ -224,6 +237,7 @@ jQuery(document).ready(function() {
 
                                 echo $this->menu->render();
                             ?>
+                            <?php echo $watch; ?>
                         </div>
                     </li>
                 <?php

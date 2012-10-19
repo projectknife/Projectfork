@@ -70,6 +70,10 @@ class ProjectforkModelNoteForm extends ProjectforkModelNote
         $value->params = new JRegistry;
         $value->params->loadString($value->attribs);
 
+        // Get the labels
+        $labels = $this->getInstance('Labels', 'ProjectforkModel');
+        $value->labels = $labels->getConnections('note', $value->id);
+
         // Compute selected asset permissions.
         $uid    = JFactory::getUser()->get('id');
         $access = ProjectforkHelperAccess::getActions('note', $value->id);

@@ -20,6 +20,11 @@ JHtml::_('projectfork.script.form');
 $params = $this->state->get('params');
 ?>
 <script type="text/javascript">
+jQuery(document).ready(function()
+{
+    PFform.radio2btngroup();
+});
+
 Joomla.submitbutton = function(task)
 {
 	if (task == 'taskform.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
@@ -74,6 +79,14 @@ Joomla.submitbutton = function(task)
 		    	<?php echo $this->form->getInput('title'); ?>
 		    </div>
 		</div>
+        <div class="formelm control-group">
+            <div class="control-label">
+                <?php echo $this->form->getLabel('labels'); ?>
+            </div>
+            <div class="controls" id="jform_labels_reload">
+                <?php echo $this->form->getInput('labels'); ?>
+            </div>
+        </div>
 		<div class="formelm control-group">
 		    <div class="controls">
 		    	<?php echo $this->form->getInput('description'); ?>
@@ -164,6 +177,15 @@ Joomla.submitbutton = function(task)
     <fieldset>
     	<div class="formelm control-group">
     		<?php echo $this->form->getInput('attachment'); ?>
+    	</div>
+    </fieldset>
+
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_DEPENDENCIES'), 'task-dependencies') ;?>
+    <fieldset>
+    	<div id="jform_dependency_element" class="formelm control-group">
+            <div id="jform_dependency_reload">
+		        <?php echo $this->form->getInput('dependency'); ?>
+            </div>
     	</div>
     </fieldset>
 

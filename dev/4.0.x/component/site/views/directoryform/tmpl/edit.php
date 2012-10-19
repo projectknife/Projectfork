@@ -18,12 +18,13 @@ JHtml::_('projectfork.script.form');
 
 // Create shortcut to parameters.
 $params = $this->state->get('params');
-
-// This checks if the editor config options have ever been saved. If they haven't they will fall back to the original settings.
-$editoroptions = isset($params->show_publishing_options);
-if (!$editoroptions) $params->show_urls_images_frontend = '0';
 ?>
 <script type="text/javascript">
+jQuery(document).ready(function()
+{
+    PFform.radio2btngroup();
+});
+
 Joomla.submitbutton = function(task)
 {
     if (task == 'directoryform.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
@@ -67,6 +68,14 @@ Joomla.submitbutton = function(task)
             </div>
             <div class="controls">
                 <?php echo $this->form->getInput('description'); ?>
+            </div>
+        </div>
+        <div class="formelm control-group">
+            <div class="control-label">
+                <?php echo $this->form->getLabel('labels'); ?>
+            </div>
+            <div class="controls" id="jform_labels_reload">
+                <?php echo $this->form->getInput('labels'); ?>
             </div>
         </div>
     </fieldset>

@@ -69,6 +69,14 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                         </div>
                     <?php endif; ?>
                     <div class="clearfix"> </div>
+
+                    <?php if ($this->state->get('filter.project')) : ?>
+                        <hr />
+                        <div class="filter-labels">
+                            <?php echo JHtml::_('projectfork.filterLabels', 'topic', $this->state->get('filter.project'), $this->state->get('filter.labels'));?>
+                        </div>
+                        <div class="clearfix"> </div>
+                    <?php endif; ?>
                 </div>
             </div>
             <div class="row-striped row-discussions">
@@ -81,20 +89,18 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                 $can_edit     = $access->get('topic.edit');
                 $can_change   = $access->get('topic.edit.state');
                 $can_edit_own = ($access->get('topic.edit.own') && $item->created_by == $uid);
+
+                // Prepare the watch button
+                $options = array('div-class' => 'pull-right', 'a-class' => 'btn-mini');
+                $watch = JHtml::_('projectfork.watch', 'topics', $i, $item->watching, $options);
             ?>
                 <div class="row-fluid row-<?php echo $k;?>">
-                    <div style="display: none !important;">
-                        <?php echo JHtml::_('grid.id', $i, $item->id); ?>
-                    </div>
-                    <?php if ($item->modified != $this->nulldate) : ?>
-                        <span class="list-edited small pull-right"><i class="icon-edit muted"></i>
-                            <?php echo JHtml::_('date', $item->modified, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
-                        </span>
-                    <?php else: ?>
-                    <span class="list-created small pull-right">
-                        <?php echo JHtml::_('date', $item->last_activity, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>
-                    </span>
+                    <?php if ($can_change) : ?>
+                        <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
+                            <?php echo JHtml::_('projectfork.id', $i, $item->id); ?>
+                        </label>
                     <?php endif; ?>
+                    <?php echo $watch; ?>
                     <h3 class="topic-title">
                     	<span class="toolbar-inline pull-left">
                         	<?php
@@ -111,9 +117,21 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                             <?php echo $this->escape($item->title);?>
                         </a>
                         <small>
+                        	<?php if (!$this->state->get('filter.project')) : ?>
                             in <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->project_slug));?>">
                             <?php echo $this->escape($item->project_title);?>
                             </a>
+                            <?php endif; ?>
+                            on 
+                            <?php if ($item->modified != $this->nulldate) : ?>
+		                        <span class="list-edited small"><i class="icon-edit muted"></i>
+		                            <?php echo JHtml::_('date', $item->modified, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
+		                        </span>
+		                    <?php else: ?>
+			                    <span class="list-created small">
+			                        <?php echo JHtml::_('date', $item->last_activity, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>
+			                    </span>
+		                    <?php endif; ?>
                         </small>
                         <span class="label access">
                             <i class="icon-eye icon-white"></i> <?php echo $this->escape($item->access_level);?>

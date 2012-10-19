@@ -4,7 +4,7 @@
         <field name="project_id" type="project"
             label="COM_PROJECTFORK_FIELD_PROJECT_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_DESC"
             class="inputbox" size="30" required="true" view="task"
-            onchange="PFform.reload('milestone_id,list_id,access,rules');"
+            onchange="PFform.reload('milestone_id,list_id,access,rules,labels,dependency');"
         />
         <field name="milestone_id" type="milestone"
             label="COM_PROJECTFORK_FIELD_MILESTONE_LABEL" description="COM_PROJECTFORK_FIELD_MILESTONE_DESC"
@@ -53,6 +53,11 @@
         <field name="attachment" type="repoattachment"
             label="COM_PROJECTFORK_FIELD_ATTACHMENT_LABEL" description="COM_PROJECTFORK_FIELD_ATTACHMENT_DESC"
         />
+        <field name="labels" type="labels"
+            label="COM_PROJECTFORK_FIELD_LABELS" description="COM_PROJECTFORK_FIELD_LABELS_DESC"
+            asset="task"
+        />
+        <field name="dependency" type="taskdependency" />
         <field name="modified" type="calendar"
             label="JGLOBAL_FIELD_MODIFIED_LABEL"
             class="readonly" size="22" readonly="true" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
@@ -73,7 +78,7 @@
         </field>
         <field name="complete" type="radio"
             label="COM_PROJECTFORK_FIELD_COMPLETE_LABEL" description="COM_PROJECTFORK_FIELD_TASK_COMPLETE_DESC"
-            class="inputbox" filter="intval" default="0"
+            class="inputbox btn-group" filter="intval" default="0"
         >
             <option value="0">JNO</option>
             <option value="1">JYES</option>

@@ -94,6 +94,10 @@ class ProjectforkModelFiles extends JModelList
         $query->select('d.title AS dir_title, d.alias AS dir_alias, d.path');
         $query->join('LEFT', '#__pf_repo_dirs AS d ON d.id = a.dir_id');
 
+        // Join over the label refs for label count
+        $query->select('COUNT(DISTINCT lbl.id) AS label_count');
+        $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('file') . ')');
+
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
@@ -111,6 +115,22 @@ class ProjectforkModelFiles extends JModelList
 
         if (is_numeric($dir_id)) {
             $query->where('a.dir_id = ' . $db->quote($dir_id));
+        }
+
+        // Filter labels
+        if (count($this->getState('filter.labels'))) {
+            $labels = $this->getState('filter.labels');
+
+            JArrayHelper::toInteger($labels);
+
+            if (count($labels) > 1) {
+                $labels = implode(', ', $labels);
+                $query->where('lbl.label_id IN (' . $labels . ')');
+            }
+            else {
+                $labels = implode(', ', $labels);
+                $query->where('lbl.label_id = ' . $db->quote((int) $labels));
+            }
         }
 
         // Filter fields
@@ -141,7 +161,8 @@ class ProjectforkModelFiles extends JModelList
      */
     public function getItems()
     {
-        $items = parent::getItems();
+        $items  = parent::getItems();
+        $labels = $this->getInstance('Labels', 'ProjectforkModel');
 
         // Get the global params
         $global_params = JComponentHelper::getParams('com_projectfork', true);
@@ -158,6 +179,11 @@ class ProjectforkModelFiles extends JModelList
             $items[$i]->slug         = $items[$i]->alias ? ($items[$i]->id . ':' . $items[$i]->alias) : $items[$i]->id;
             $items[$i]->project_slug = $items[$i]->project_alias ? ($items[$i]->project_id . ':' . $items[$i]->project_alias) : $items[$i]->project_id;
             $items[$i]->dir_slug     = $items[$i]->dir_alias ? ($items[$i]->dir_id . ':' . $items[$i]->dir_alias) : $items[$i]->dir_id;
+
+            // Get the labels
+            if ($items[$i]->label_count > 0) {
+                $items[$i]->labels = $labels->getConnections('file', $items[$i]->id);
+            }
         }
 
         return $items;
@@ -202,14 +228,24 @@ class ProjectforkModelFiles extends JModelList
         $dir_id = JRequest::getCmd('filter_parent_id', JRequest::getCmd('filter_dir_id', ''));
         $this->setState('filter.dir_id', $dir_id);
 
+        // Filter - Labels
+        $labels = JRequest::getVar('filter_label', array());
+        $this->setState('filter.labels', $labels);
+
         // Do not allow to filter by author if no project is selected
         if (!is_numeric($project) || intval($project) == 0) {
             $this->setState('filter.author', '');
+            $this->setState('filter.labels', array());
             $author = '';
+            $labels = array();
+        }
+
+        if (!is_array($labels)) {
+            $labels = array();
         }
 
         // Filter - Is set
-        $this->setState('filter.isset', (!empty($search) || is_numeric($author)));
+        $this->setState('filter.isset', (!empty($search) || is_numeric($author) || count($labels)));
 
         // Call parent method
         parent::populateState($ordering, $direction);

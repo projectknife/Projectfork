@@ -202,7 +202,7 @@ class ProjectforkModelAttachments extends JModelList
      *
      * @return    void
      */
-    protected function populateState()
+    protected function populateState($ordering = null, $direction = null)
     {
         // Get potential form data
         $form = JRequest::getVar('jform', array(), 'post', 'array');

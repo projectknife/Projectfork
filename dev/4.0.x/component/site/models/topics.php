@@ -96,10 +96,36 @@ class ProjectforkModelTopics extends JModelList
         $query->select('CASE WHEN MAX(c.created) IS NULL THEN a.created ELSE MAX(c.created) END AS last_activity');
         $query->join('LEFT', '#__pf_replies AS c ON c.topic_id = a.id');
 
+        // Join over the label refs for label count
+        $query->select('COUNT(DISTINCT lbl.id) AS label_count');
+        $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('topic') . ')');
+
+        // Join over the observer table for email notification status
+        if ($user->get('id') > 0) {
+            $query->select('COUNT(obs.user_id) AS watching');
+            $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = ' . $db->quote('topic') . ' AND obs.item_id = a.id AND obs.user_id = ' . $db->quote($user->get('id')) . ')');
+        }
+
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
+        }
+
+        // Filter labels
+        if (count($this->getState('filter.labels'))) {
+            $labels = $this->getState('filter.labels');
+
+            JArrayHelper::toInteger($labels);
+
+            if (count($labels) > 1) {
+                $labels = implode(', ', $labels);
+                $query->where('lbl.label_id IN (' . $labels . ')');
+            }
+            else {
+                $labels = implode(', ', $labels);
+                $query->where('lbl.label_id = ' . $db->quote((int) $labels));
+            }
         }
 
         // Filter fields
@@ -130,7 +156,8 @@ class ProjectforkModelTopics extends JModelList
      */
     public function getItems()
     {
-        $items = parent::getItems();
+        $items  = parent::getItems();
+        $labels = $this->getInstance('Labels', 'ProjectforkModel');
 
         // Get the global params
         $global_params = JComponentHelper::getParams('com_projectfork', true);
@@ -147,6 +174,11 @@ class ProjectforkModelTopics extends JModelList
             // Create slugs
             $items[$i]->slug         = $items[$i]->alias ? ($items[$i]->id . ':' . $items[$i]->alias) : $items[$i]->id;
             $items[$i]->project_slug = $items[$i]->project_alias ? ($items[$i]->project_id . ':' . $items[$i]->project_alias) : $items[$i]->project_id;
+
+            // Get the labels
+            if ($items[$i]->label_count > 0) {
+                $items[$i]->labels = $labels->getConnections('topic', $items[$i]->id);
+            }
         }
 
         return $items;
@@ -250,14 +282,24 @@ class ProjectforkModelTopics extends JModelList
         $author = $app->getUserStateFromRequest($this->context . '.filter.author', 'filter_author', '');
         $this->setState('filter.author', $author);
 
+        // Filter - Labels
+        $labels = JRequest::getVar('filter_label', array());
+        $this->setState('filter.labels', $labels);
+
         // Do not allow to filter by author if no project is selected
         if (intval($project) == 0) {
             $this->setState('filter.author', '');
+            $this->setState('filter.labels', array());
             $author = '';
+            $labels = array();
+        }
+
+        if (!is_array($labels)) {
+            $labels = array();
         }
 
         // Filter - Is set
-        $this->setState('filter.isset', (is_numeric($state) || !empty($search) || is_numeric($author)));
+        $this->setState('filter.isset', (is_numeric($state) || !empty($search) || is_numeric($author) || count($labels)));
 
         // Call parent method
         parent::populateState($ordering, $direction);

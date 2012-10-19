@@ -166,6 +166,13 @@ class ProjectforkModelFile extends JModelAdmin
                         return false;
                     }
 
+                    $tables = array('labelref');
+                    $field  = array('item_type' => 'file', 'item_id' => $pk);
+
+                    if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
+                        return false;
+                    }
+
                     // Trigger the onContentAfterDelete event.
                     $dispatcher->trigger($this->event_after_delete, array($context, $table));
 
@@ -401,6 +408,10 @@ class ProjectforkModelFile extends JModelAdmin
             $registry = new JRegistry;
             $registry->loadString($item->attribs);
             $item->attribs = $registry->toArray();
+
+            // Get the labels
+            $labels = $this->getInstance('Labels', 'ProjectforkModel');
+            $item->labels = $labels->getConnections('file', $item->id);
         }
 
         return $item;
@@ -500,6 +511,25 @@ class ProjectforkModelFile extends JModelAdmin
         }
 
         $this->setState($this->getName() . '.id', $table->id);
+
+        $updated = $this->getTable();
+        if ($updated->load($table->id) === false) return false;
+
+        // Store the labels
+        if (isset($data['labels'])) {
+            $labels = $this->getInstance('Labels', 'ProjectforkModel');
+
+            if ((int) $labels->getState('item.project') == 0) {
+                $labels->setState('item.project', $updated->project_id);
+            }
+
+            $labels->setState('item.type', 'file');
+            $labels->setState('item.id', $table->id);
+
+            if (!$labels->saveRefs($data['labels'])) {
+                return false;
+            }
+        }
 
         // Clear the cache
         $this->cleanCache();

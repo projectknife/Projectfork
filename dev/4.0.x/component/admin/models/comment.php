@@ -124,6 +124,10 @@ class ProjectforkModelComment extends JModelAdmin
         $date  = JFactory::getDate();
         $isNew = true;
 
+        // Include the content plugins for the on save events.
+        JPluginHelper::importPlugin('content');
+        $dispatcher = JDispatcher::getInstance();
+
         // Load the row if saving an existing comment.
         if ($pk > 0) {
             $table->load($pk);
@@ -163,6 +167,9 @@ class ProjectforkModelComment extends JModelAdmin
             return false;
         }
 
+        // Trigger the onContentBeforeSave event.
+        $result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, $isNew));
+
         // Store the data.
         if (!$table->store()) {
             $this->setError($table->getError());
@@ -185,6 +192,9 @@ class ProjectforkModelComment extends JModelAdmin
 
         // Clear the cache
         $this->cleanCache();
+
+        // Trigger the onContentAfterSave event.
+        $dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $isNew));
 
         return true;
     }

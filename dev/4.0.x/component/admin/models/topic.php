@@ -77,6 +77,10 @@ class ProjectforkModelTopic extends JModelAdmin
             // Get the attachments
             $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
             $item->attachment = $attachments->getItems('topic', $item->id);
+
+            // Get the labels
+            $labels = $this->getInstance('Labels', 'ProjectforkModel');
+            $item->labels = $labels->getConnections('topic', $item->id);
         }
 
         return $item;
@@ -227,6 +231,15 @@ class ProjectforkModelTopic extends JModelAdmin
                 }
             }
 
+            // Add to watch list
+            if ($is_new) {
+                $cid = array($id);
+
+                if (!$this->watch($cid, 1)) {
+                    return false;
+                }
+            }
+
             // Store the attachments
             if (isset($data['attachment']) && !$is_new) {
                 $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
@@ -241,10 +254,119 @@ class ProjectforkModelTopic extends JModelAdmin
                 }
             }
 
+            // Store the labels
+            if (isset($data['labels'])) {
+                $labels = $this->getInstance('Labels', 'ProjectforkModel');
+
+                if ((int) $labels->getState('item.project') == 0) {
+                    $labels->setState('item.project', $updated->project_id);
+                }
+
+                $labels->setState('item.type', 'topic');
+                $labels->setState('item.id', $id);
+
+                if (!$labels->saveRefs($data['labels'])) {
+                    return false;
+                }
+            }
+
             return true;
         }
 
         return false;
+    }
+
+
+    /**
+     * Method to watch an item
+     *
+     * @param    array      $pks      The items to watch
+     * @param    integer    $value    1 to watch, 0 to unwatch
+     * @param    integer    $uid      The user id to watch the item
+     */
+    public function watch(&$pks, $value = 1, $uid = null)
+    {
+        $user  = JFactory::getUser($uid);
+        $table = $this->getTable();
+        $pks   = (array) $pks;
+
+        $is_admin = $user->authorise('core.admin', $this->option);
+        $my_views = $user->getAuthorisedViewLevels();
+        $projects = array();
+
+        // Access checks.
+        foreach ($pks as $i => $pk) {
+            $table->reset();
+
+            if ($table->load($pk)) {
+                if (!$is_admin && !in_array($table->access, $my_views)) {
+                    unset($pks[$i]);
+                    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+                    $this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
+                    return false;
+                }
+
+                $projects[$pk] = (int) $table->project_id;
+            }
+            else {
+                unset($pks[$i]);
+            }
+        }
+
+        // Attempt to watch/unwatch the selected items
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        foreach ($pks AS $i => $pk)
+        {
+            $query->clear();
+
+            if ($value == 0) {
+                $query->delete('#__pf_ref_observer')
+                      ->where('item_type = ' . $db->quote( str_replace('form', '', $this->getName()) ) )
+                      ->where('item_id = ' . $db->quote((int) $pk))
+                      ->where('user_id = ' . $db->quote((int) $user->get('id')));
+
+                $db->setQuery($query);
+                $db->execute();
+
+                if ($db->getError()) {
+                    $this->setError($db->getError());
+                    return false;
+                }
+            }
+            else {
+                $query->select('COUNT(*)')
+                      ->from('#__pf_ref_observer')
+                      ->where('item_type = ' . $db->quote( str_replace('form', '', $this->getName()) ) )
+                      ->where('item_id = ' . $db->quote((int) $pk))
+                      ->where('user_id = ' . $db->quote((int) $user->get('id')));
+
+                $db->setQuery($query);
+                $count = (int) $db->loadResult();
+
+                if (!$count) {
+                    $data = new stdClass;
+
+                    $data->user_id   = (int) $user->get('id');
+                    $data->item_type = str_replace('form', '', $this->getName());
+                    $data->item_id   = (int) $pk;
+                    $data->project_id= (int) $projects[$pk];
+
+                    $db->insertObject('#__pf_ref_observer', $data);
+
+                    if ($db->getError()) {
+                        $this->setError($db->getError());
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // Clear the component's cache
+        $this->cleanCache();
+
+        return true;
     }
 
 
@@ -293,6 +415,13 @@ class ProjectforkModelTopic extends JModelAdmin
                     }
 
                     $tables = array('attachment');
+                    $field  = array('item_type' => 'topic', 'item_id' => $pk);
+
+                    if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
+                        return false;
+                    }
+
+                    $tables = array('labelref');
                     $field  = array('item_type' => 'topic', 'item_id' => $pk);
 
                     if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {

@@ -7,7 +7,7 @@
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>support@projectfork.net</authorEmail>
     <authorUrl>www.projectfork.net</authorUrl>
-    <version>4.0.0 CEA4</version>
+    <version>4.0.0 CEB1</version>
     <description>COM_PROJECTFORK_XML_DESCRIPTION</description>
     <scriptfile>com_projectfork.script.php</scriptfile>
     <install folder="admin">
@@ -54,6 +54,7 @@
             <folder>models</folder>
             <folder>tables</folder>
             <folder>views</folder>
+            <folder>liveupdate</folder>
             <filename>access.xml</filename>
             <filename>config.xml</filename>
             <filename>projectfork.php</filename>

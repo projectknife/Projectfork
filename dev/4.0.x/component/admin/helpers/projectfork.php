@@ -123,7 +123,7 @@ class ProjectforkHelper
      *
      * @return    object     $params    The config settings
      */
-    public function getProjectParams($id = 0)
+    public static function getProjectParams($id = 0)
     {
         static $cache = array();
 
@@ -286,7 +286,7 @@ class ProjectforkHelper
      *
      * @return    int                   The project id
      **/
-    public function getActiveProjectId($request = NULL)
+    public static function getActiveProjectId($request = NULL)
     {
         $app = JFactory::getApplication();
 
@@ -318,7 +318,7 @@ class ProjectforkHelper
      *
      * @return    string            The project title
      **/
-    public function getActiveProjectTitle($alt = '')
+    public static function getActiveProjectTitle($alt = '')
     {
         if ($alt) $alt = JText::_($alt);
 

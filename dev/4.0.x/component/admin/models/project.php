@@ -28,12 +28,12 @@ class ProjectforkModelProject extends JModelAdmin
 
 
     /**
-	 * Constructor.
-	 *
-	 * @param   array  $config  An optional associative array of configuration settings.
-	 *
-	 * @see     JController
-	 */
+     * Constructor.
+     *
+     * @param    array          $config    An optional associative array of configuration settings.
+     *
+     * @see      jcontroller
+     */
     public function __construct($config = array())
     {
         // Register dependencies
@@ -78,6 +78,10 @@ class ProjectforkModelProject extends JModelAdmin
             // Get the attachments
             $attachments = $this->getInstance('Attachments', 'ProjectforkModel');
             $item->attachment = $attachments->getItems('project', $item->id);
+
+            // Get the labels
+            $labels = $this->getInstance('Labels', 'ProjectforkModel');
+            $item->labels = $labels->getItems($item->id);
         }
 
         return $item;
@@ -118,7 +122,7 @@ class ProjectforkModelProject extends JModelAdmin
      *
      * @param     integer    The project id
      *
-     * @return    boolean     True on success, False on error
+     * @return    boolean    True on success, False on error
      **/
     public function deleteLogo($pk = NULL)
     {
@@ -263,54 +267,97 @@ class ProjectforkModelProject extends JModelAdmin
      */
     public function save($data)
     {
-        $record = $this->getTable();
-		$key    = $record->getKeyName();
+        $table  = $this->getTable();
+        $key    = $table->getKeyName();
         $pk     = (!empty($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
-		$is_new = true;
+        $is_new = true;
 
-        if ($pk > 0) {
-			if ($record->load($pk)) {
-			    $is_new = false;
-			}
-		}
+        // Include the content plugins for the on save events.
+        JPluginHelper::importPlugin('content');
+        $dispatcher = JDispatcher::getInstance();
 
-        // Make sure the title and alias are always unique
-        $data['alias'] = '';
-        list($title, $alias) = $this->generateNewTitle($data['title'], $data['alias'], $pk);
-
-        $data['title'] = $title;
-        $data['alias'] = $alias;
-
-        // Handle permissions and access level
-        if (isset($data['rules'])) {
-            $prev_access = ($is_new ? 0 : $record->access);
-            $access = ProjectforkHelperAccess::getViewLevelFromRules($data['rules'], $prev_access);
-
-            if ($access) {
-                $data['access'] = $access;
-            }
-        }
-        else {
-            if ($is_new) {
-                $data['access'] = 1;
-            }
-            else {
-                if (isset($data['access'])) {
-                    unset($data['access']);
+        // Allow an exception to be thrown.
+        try {
+            // Load the row if saving an existing record.
+            if ($pk > 0) {
+                if ($table->load($pk)) {
+                    $is_new = false;
                 }
             }
-        }
 
-        // Delete logo?
-        if (isset($data['attribs']['logo']['delete']) && $pk && !$is_new) {
-            $this->deleteLogo($pk);
-        }
+            // Make sure the title and alias are always unique
+            $data['alias'] = '';
+            list($title, $alias) = $this->generateNewTitle($data['title'], $data['alias'], $pk);
 
-        // Store the record
-        if (parent::save($data)) {
+            $data['title'] = $title;
+            $data['alias'] = $alias;
+
+            // Handle permissions and access level
+            if (isset($data['rules'])) {
+                $prev_access = ($is_new ? 0 : $table->access);
+                $access = ProjectforkHelperAccess::getViewLevelFromRules($data['rules'], $prev_access);
+
+                if ($access) {
+                    $data['access'] = $access;
+                }
+            }
+            else {
+                if ($is_new) {
+                    $data['access'] = 1;
+                }
+                else {
+                    if (isset($data['access'])) {
+                        unset($data['access']);
+                    }
+                }
+            }
+
+            // Delete logo?
+            if (isset($data['attribs']['logo']['delete']) && $pk && !$is_new) {
+                $this->deleteLogo($pk);
+            }
+
+            // Bind the data.
+            if (!$table->bind($data)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Prepare the row for saving
+            $this->prepareTable($table);
+
+            // Check the data.
+            if (!$table->check()) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Trigger the onContentBeforeSave event.
+            $result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, $is_new));
+
+            if (in_array(false, $result, true)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Store the data.
+            if (!$table->store()) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            $pk_name = $table->getKeyName();
+
+            if (isset($table->$pk_name)) {
+                $this->setState($this->getName() . '.id', $table->$pk_name);
+            }
+
+            $this->setState($this->getName() . '.new', $is_new);
+
+
             $id = $this->getState($this->getName() . '.id');
 
-            $this->setActive(array('id' => $this->getState($this->getName() . '.id')));
+            $this->setActive(array('id' => $id));
 
             // Load the just updated row
             $updated = $this->getTable();
@@ -319,7 +366,7 @@ class ProjectforkModelProject extends JModelAdmin
             // To keep data integrity, update all child assets
             if (!$is_new) {
                 $props   = array('access', 'state', array('start_date', 'NE-SQLDATE'), array('end_date', 'NE-SQLDATE'));
-                $changes = ProjectforkHelper::getItemChanges($record, $updated, $props);
+                $changes = ProjectforkHelper::getItemChanges($table, $updated, $props);
 
                 if (count($changes)) {
                     $tables = array('milestone', 'tasklist', 'task', 'topic', 'reply', 'comment', 'directory', 'note', 'file', 'time');
@@ -328,6 +375,15 @@ class ProjectforkModelProject extends JModelAdmin
                     if (!ProjectforkHelperQuery::updateTablesByField($tables, $field, $changes)) {
                         return false;
                     }
+                }
+            }
+
+            // Add to watch list
+            if ($is_new) {
+                $cid = array($id);
+
+                if (!$this->watch($cid, 1)) {
+                    return false;
                 }
             }
 
@@ -354,15 +410,130 @@ class ProjectforkModelProject extends JModelAdmin
                 }
             }
 
+            // Store the labels
+            if (isset($data['labels'])) {
+                $labels = $this->getInstance('Labels', 'ProjectforkModel');
+
+                if ((int) $labels->getState('item.project') == 0) {
+                    $labels->setState('item.project', $id);
+                }
+
+                if (!$labels->save($data['labels'])) {
+                    $this->setError($labels->getError());
+                    return false;
+                }
+            }
+
             // Handle project logo
             if (!$this->saveLogo()) {
                 return false;
             }
 
-            return true;
+            // Clean the cache.
+            $this->cleanCache();
+
+            // Trigger the onContentAfterSave event.
+            $dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $is_new));
+        }
+        catch (Exception $e) {
+            $this->setError($e->getMessage());
+            return false;
         }
 
-        return false;
+        return true;
+    }
+
+
+    /**
+     * Method to watch an item
+     *
+     * @param    array      $pks      The items to watch
+     * @param    integer    $value    1 to watch, 0 to unwatch
+     * @param    integer    $uid      The user id to watch the item
+     */
+    public function watch(&$pks, $value = 1, $uid = null)
+    {
+        $user  = JFactory::getUser($uid);
+        $table = $this->getTable();
+        $pks   = (array) $pks;
+
+        $is_admin = $user->authorise('core.admin', $this->option);
+        $my_views = $user->getAuthorisedViewLevels();
+        $projects = array();
+
+        // Access checks.
+        foreach ($pks as $i => $pk) {
+            $table->reset();
+
+            if ($table->load($pk)) {
+                if (!$is_admin && !in_array($table->access, $my_views)) {
+                    unset($pks[$i]);
+                    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+                    $this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
+                    return false;
+                }
+
+                $projects[$pk] = (int) $table->id;
+            }
+            else {
+                unset($pks[$i]);
+            }
+        }
+
+        // Attempt to watch/unwatch the selected items
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        foreach ($pks AS $i => $pk)
+        {
+            $query->clear();
+
+            if ($value == 0) {
+                $query->delete('#__pf_ref_observer')
+                      ->where('item_type = ' . $db->quote( str_replace('form', '', $this->getName()) ) )
+                      ->where('item_id = ' . $db->quote((int) $pk))
+                      ->where('user_id = ' . $db->quote((int) $user->get('id')));
+
+                $db->setQuery($query);
+                $db->execute();
+
+                if ($db->getError()) {
+                    $this->setError($db->getError());
+                    return false;
+                }
+            }
+            else {
+                $query->select('COUNT(*)')
+                      ->from('#__pf_ref_observer')
+                      ->where('item_type = ' . $db->quote( str_replace('form', '', $this->getName()) ) )
+                      ->where('item_id = ' . $db->quote((int) $pk))
+                      ->where('user_id = ' . $db->quote((int) $user->get('id')));
+
+                $db->setQuery($query);
+                $count = (int) $db->loadResult();
+
+                if (!$count) {
+                    $data = new stdClass;
+
+                    $data->user_id   = (int) $user->get('id');
+                    $data->item_type = str_replace('form', '', $this->getName());
+                    $data->item_id   = (int) $pk;
+                    $data->project_id= (int) $projects[$pk];
+
+                    $db->insertObject('#__pf_ref_observer', $data);
+
+                    if ($db->getError()) {
+                        $this->setError($db->getError());
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // Clear the component's cache
+        $this->cleanCache();
+
+        return true;
     }
 
 
@@ -451,33 +622,33 @@ class ProjectforkModelProject extends JModelAdmin
     public function delete(&$pks)
     {
         // Initialise variables.
-		$dispatcher = JDispatcher::getInstance();
-		$pks   = (array) $pks;
-		$table = $this->getTable();
+        $dispatcher = JDispatcher::getInstance();
+        $pks   = (array) $pks;
+        $table = $this->getTable();
 
         $active_id = ProjectforkHelper::getActiveProjectId();
 
-		// Include the content plugins for the on delete events.
-		JPluginHelper::importPlugin('content');
+        // Include the content plugins for the on delete events.
+        JPluginHelper::importPlugin('content');
 
-		// Iterate the items to delete each one.
-		foreach ($pks as $i => $pk)
-		{
-			if ($table->load($pk)) {
-				if ($this->canDelete($table)) {
-					$context = $this->option . '.' . $this->name;
-					// Trigger the onContentBeforeDelete event.
-					$result = $dispatcher->trigger($this->event_before_delete, array($context, $table));
+        // Iterate the items to delete each one.
+        foreach ($pks as $i => $pk)
+        {
+            if ($table->load($pk)) {
+                if ($this->canDelete($table)) {
+                    $context = $this->option . '.' . $this->name;
+                    // Trigger the onContentBeforeDelete event.
+                    $result = $dispatcher->trigger($this->event_before_delete, array($context, $table));
 
-					if (in_array(false, $result, true)) {
-						$this->setError($table->getError());
-						return false;
-					}
+                    if (in_array(false, $result, true)) {
+                        $this->setError($table->getError());
+                        return false;
+                    }
 
-					if (!$table->delete($pk)) {
-						$this->setError($table->getError());
-						return false;
-					}
+                    if (!$table->delete($pk)) {
+                        $this->setError($table->getError());
+                        return false;
+                    }
 
                     // Try to delete the repo
                     $repo = ProjectforkHelperRepository::getBasePath($pk);
@@ -496,42 +667,42 @@ class ProjectforkModelProject extends JModelAdmin
                     }
 
                     // Delete every item related to this project
-                    $tables = array('milestone', 'tasklist', 'task', 'topic', 'reply', 'comment', 'directory', 'note', 'file', 'time', 'attachment');
+                    $tables = array('milestone', 'tasklist', 'task', 'topic', 'reply', 'comment', 'directory', 'note', 'file', 'time', 'attachment' , 'label', 'labelref');
                     $field  = 'project_id.' . $pk;
 
                     if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
                         return false;
                     }
 
-					// Trigger the onContentAfterDelete event.
-					$dispatcher->trigger($this->event_after_delete, array($context, $table));
-				}
-				else {
-					// Prune items that you can't change.
-					unset($pks[$i]);
+                    // Trigger the onContentAfterDelete event.
+                    $dispatcher->trigger($this->event_after_delete, array($context, $table));
+                }
+                else {
+                    // Prune items that you can't change.
+                    unset($pks[$i]);
 
-					$error = $this->getError();
+                    $error = $this->getError();
 
-					if ($error) {
-						JError::raiseWarning(500, $error);
-						return false;
-					}
-					else {
-						JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'));
-						return false;
-					}
-				}
-			}
-			else {
-				$this->setError($table->getError());
-				return false;
-			}
-		}
+                    if ($error) {
+                        JError::raiseWarning(500, $error);
+                        return false;
+                    }
+                    else {
+                        JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'));
+                        return false;
+                    }
+                }
+            }
+            else {
+                $this->setError($table->getError());
+                return false;
+            }
+        }
 
-		// Clear the component's cache
-		$this->cleanCache();
+        // Clear the component's cache
+        $this->cleanCache();
 
-		return true;
+        return true;
     }
 
 
@@ -539,7 +710,7 @@ class ProjectforkModelProject extends JModelAdmin
      * Custom clean the cache of com_projectfork and projectfork modules
      *
      */
-    protected function cleanCache()
+    protected function cleanCache($group = null, $client_id = 0)
     {
         parent::cleanCache('com_projectfork');
     }
@@ -548,9 +719,9 @@ class ProjectforkModelProject extends JModelAdmin
     /**
      * Method to create a project repository structure
      *
-     * @param     object    $item    The project JTable object
+     * @param     object     $item    The project JTable object
      *
-     * @return    boolean     True on success, otherwise False
+     * @return    boolean             True on success, otherwise False
      */
     protected function createRepository($item)
     {
@@ -677,11 +848,11 @@ class ProjectforkModelProject extends JModelAdmin
      * Method to change the title & alias.
      * Overloaded from JModelAdmin class
      *
-     * @param     string    The title
-     * @param     string    The alias
+     * @param     string     The title
+     * @param     string     The alias
      * @param     integer    The item id
      *
-     * @return    array     Contains the modified title and alias
+     * @return    array      Contains the modified title and alias
      */
     protected function generateNewTitle($title, $alias = '', $id = 0)
     {

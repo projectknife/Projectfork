@@ -30,6 +30,18 @@ CREATE TABLE IF NOT EXISTS `#__pf_comments` (
   KEY `idx_nested` (`lft`,`rgt`)
 ) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork item comments';
 
+
+CREATE TABLE IF NOT EXISTS `#__pf_labels` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Label ID',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'The parent project id',
+  `title` varchar(32) NOT NULL COMMENT 'Label title',
+  `style` varchar(24) NOT NULL COMMENT 'Label CSS style',
+  `asset_group` varchar(16) NOT NULL COMMENT 'Assigned label asset group',
+  PRIMARY KEY (`id`),
+  KEY `idx_group` (`project_id`,`asset_group`),
+  KEY `idx_project` (`project_id`)
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork labels';
+
 CREATE TABLE IF NOT EXISTS `#__pf_milestones` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Milestone ID',
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table',
@@ -107,14 +119,37 @@ CREATE TABLE IF NOT EXISTS `#__pf_ref_attachments` (
   KEY `idx_attachment` (`attachment`)
 ) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork attachment references';
 
-CREATE TABLE IF NOT EXISTS `#__pf_ref_tags` (
-  `id` int(10) unsigned NOT NULL COMMENT 'Item ID reference',
-  `context` varchar(32) NOT NULL COMMENT 'Reference context',
-  `tag_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Tag ID reference',
-  PRIMARY KEY (`context`,`id`,`tag_id`),
-  KEY `idx_tagid` (`tag_id`),
-  KEY `idx_contextid` (`context`,`id`)
-) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork tag references';
+CREATE TABLE IF NOT EXISTS `#__pf_ref_observer` (
+  `user_id` int(10) unsigned NOT NULL COMMENT 'The observing user',
+  `item_type` varchar(32) NOT NULL COMMENT 'The observed item type',
+  `item_id` int(10) unsigned NOT NULL COMMENT 'The observed item ID',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Project ID to which the item belongs',
+  UNIQUE KEY `idx_observing` (`item_type`,`item_id`,`user_id`),
+  KEY `idx_project` (`project_id`)
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork notification settings';
+
+CREATE TABLE IF NOT EXISTS `#__pf_ref_labels` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID reference',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Parent project id',
+  `item_id` int(10) unsigned NOT NULL COMMENT 'Reference item ID',
+  `item_type` varchar(16) NOT NULL COMMENT 'Reference item type',
+  `label_id` int(10) unsigned NOT NULL COMMENT 'Reference label ID',
+  PRIMARY KEY (`id`),
+  KEY `idx_project` (`project_id`),
+  KEY `idx_item` (`item_id`,`item_type`),
+  KEY `idx_lbl` (`label_id`)
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork label references';
+
+CREATE TABLE IF NOT EXISTS `#__pf_ref_tasks` (
+  `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID reference',
+  `project_id` int(10) unsigned NOT NULL COMMENT 'Task project ID',
+  `task_id` int(10) unsigned NOT NULL COMMENT 'Task ID',
+  `parent_id` int(10) unsigned NOT NULL COMMENT 'Parent task ID',
+  PRIMARY KEY (`id`),
+  KEY `idx_task` (`task_id`),
+  KEY `idx_parent` (`parent_id`),
+  KEY `idx_project` (`project_id`)
+) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task dependencies';
 
 CREATE TABLE IF NOT EXISTS `#__pf_ref_users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID reference',
@@ -158,7 +193,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   `ordering` int(10) NOT NULL DEFAULT '0' COMMENT 'Task ordering in a task list',
   `start_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Task start date',
   `end_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Task end date',
-  `rate` decimal(4,2) NOT NULL COMMENT 'Hourly rate',
+  `rate` decimal(5,2) NOT NULL COMMENT 'Hourly rate',
   `estimate` int(10) unsigned NOT NULL COMMENT 'Estimated time required for this task to complete',
   PRIMARY KEY (`id`),
   UNIQUE KEY `idx_alias` (`project_id`,`alias`),
@@ -274,7 +309,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_timesheet` (
   `checked_out_time` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Check-out date and time',
   `attribs` text NOT NULL COMMENT 'Record attributes in JSON format',
   `billable` tinyint(1) NOT NULL COMMENT '1 = Billable, 0 = Unbillable',
-  `rate` decimal(4,2) NOT NULL COMMENT 'Hourly rate',
+  `rate` decimal(5,2) NOT NULL COMMENT 'Hourly rate',
   `access` int(10) unsigned NOT NULL COMMENT 'Record ACL access level ID',
   `state` tinyint(3) NOT NULL COMMENT 'Record state: 1 = Active, 0 = Inactive, 2 = Archived, -2 = Trashed ',
   `log_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Time log date',

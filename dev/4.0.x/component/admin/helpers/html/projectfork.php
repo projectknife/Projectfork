@@ -81,6 +81,54 @@ abstract class JHtmlProjectfork
     }
 
 
+    public static function updateButton()
+    {
+        // Load translations
+		$basepath = JPATH_ADMINISTRATOR . '/components/com_projectfork/liveupdate';
+		$lang     = JFactory::getLanguage();
+
+		$lang->load('liveupdate', $basepath, 'en-GB', true);
+		$lang->load('liveupdate', $basepath, $lang->getDefault(), true);
+		$lang->load('liveupdate', $basepath, null, true);
+
+        $info = LiveUpdate::getUpdateInformation();
+        $btn  = array();
+        $html = array();
+
+        if(!$info->supported) {
+			// Unsupported
+			$btn['class'] = 'btn-warning';
+			$btn['icon']  = 'icon-warning';
+			$btn['text']  = JText::_('LIVEUPDATE_ICON_UNSUPPORTED');
+		}
+        elseif($info->stuck) {
+			// Stuck
+			$btn['class'] = 'btn-danger';
+			$btn['icon']  = 'icon-warning';
+			$btn['text']  = JText::_('LIVEUPDATE_ICON_CRASHED');
+		}
+        elseif($info->hasUpdates) {
+			// Has updates
+			$btn['class']   = 'btn-primary';
+			$button['icon'] = 'icon-download-alt';
+			$btn['text']    = JText::_('LIVEUPDATE_ICON_UPDATES');
+		}
+        else {
+			// Already in the latest release
+			$btn['class'] = 'btn-success';
+			$btn['icon']  = 'icon-ok';
+			$btn['text']  = JText::_('LIVEUPDATE_ICON_CURRENT');
+		}
+
+        $html[] = '<a class="btn btn-small ' . $btn['class'] . '" href="index.php?option=com_projectfork&view=liveupdate">';
+        $html[] = '<i class="' . $btn['icon'] . '"></i> ';
+        $html[] = $btn['text'];
+        $html[] = '</a>';
+
+        return implode('', $html);
+    }
+
+
     /**
      * Translates a numerical priority value to a string label
      *
@@ -247,6 +295,105 @@ abstract class JHtmlProjectfork
 
 
     /**
+     * Returns a list of label filters
+     *
+     * @param     string     $asset      The asset filter group
+     * @param     integer    $project    The project filter
+     *
+     * @return    string                 The label html
+     */
+    public static function filterLabels($asset, $project = 0, $selected = array(), $filter_style = '')
+    {
+        if (!$project) {
+            $project = ProjectforkHelper::getActiveProjectId();
+        }
+
+        if (!$project) {
+            return '';
+        }
+
+        if (!is_array($selected)) {
+            $selected = array();
+        }
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        if ($asset == 'repository') {
+            $asset = $db->quote('directory')
+                   . 'OR a.asset_group = ' . $db->quote('file')
+                   . 'OR a.asset_group = ' . $db->quote('note');
+        }
+        else {
+            $asset = $db->quote($db->escape($asset));
+        }
+
+        $query->select('a.id, a.title, a.style')
+              ->from('#__pf_labels AS a')
+              ->where('a.project_id = ' . $db->quote((int) $project))
+              ->where('(a.asset_group = ' . $db->quote('project') . ' OR a.asset_group = ' . $asset . ')')
+              ->order('a.style, a.title ASC');
+
+        $db->setQuery($query);
+        $items = (array) $db->loadObjectList();
+
+        $html = array();
+
+        if (!count($items)) {
+            return  '';
+        }
+
+        $html[] = '<ul class="unstyled">';
+
+        foreach ($items AS $item)
+        {
+            $checked = (in_array($item->id, $selected) ? ' checked="checked"' : '');
+            $class   = ($item->style != '' ? ' ' . $item->style : '');
+
+            $html[] = '<li class="pull-left btn-group">';
+            $html[] = '<label class="checkbox">';
+            $html[] = '<input type="checkbox" class="inputbox" name="filter_label[]" value="' . (int) $item->id . '"' . $checked . '/>';
+            $html[] = '<span class="label' . $class . '">' . htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8') . '</span>';
+            $html[] = '</label>';
+            $html[] = '</li>';
+        }
+
+        $html[] = '</ul>';
+        $html[] = '<div class="clearfix clr"></div>';
+
+        $html[] = '<div class="btn-group">';
+        $html[] = '<button class="btn" onclick="this.form.submit()">' . JText::_('JSEARCH_FILTER_SUBMIT') . '</button>';
+        $html[] = '</div>';
+
+        return implode('', $html);
+    }
+
+
+    public static function watch($type, $i, $state = 0, $options = array())
+    {
+        $html      = array();
+        $div_class = (isset($options['div-class']) ? ' ' . $options['div-class'] : '');
+        $a_class   = (isset($options['a-class'])   ? ' ' . $options['a-class'] : '');
+        $class     = ($state == 1 ? ' btn-success active' : '');
+        $new_state = ($state == 1 ? 0 : 1);
+        $aid       = 'watch-btn-' . $type . '-' . $i;
+        $title     = addslashes(JText::_('COM_PROJECTFORK_ACTION_WATCH')) . '::' . addslashes(JText::_('COM_PROJECTFORK_ACTION_WATCH_DESC'));
+
+        $html[] = '<div class="btn-group' . $div_class . '">';
+        $html[] = '<a id="' . $aid . '" class="btn hasTip' . $class . $a_class . '" title="' . $title . '" href="javascript:void(0);" ';
+        $html[] = 'onclick="Projectfork.watchItem(' . $i . ', \'' . $type . '\')">';
+        $html[] = '<i class="icon-envelope"></i>';
+        $html[] = '</a>';
+        $html[] = '</div>';
+        $html[] = '<div class="btn-group' . $div_class . '">';
+        $html[] = '<input type="hidden" id="watch-' . $type . '-' . $i . '" value="' . (int) $state . '"/>';
+        $html[] = '</div>';
+
+        return implode('', $html);
+    }
+
+
+    /**
      * Returns a truncated text. Also strips html tags
      *
      * @param     string    $text     The text to truncate
@@ -259,7 +406,7 @@ abstract class JHtmlProjectfork
         $truncated = strip_tags($text);
         $length    = strlen($truncated);
 
-        if (($length + 3) < $chars) return $truncated;
+        if (($length + 3) < $chars || $chars > 0) return $truncated;
 
         return substr($truncated, 0, $chars).'...';
     }

@@ -23,6 +23,11 @@ $create_list = $access->get('tasklist.create');
 $create_task = $access->get('task.create');
 ?>
 <script type="text/javascript">
+jQuery(document).ready(function()
+{
+    PFform.radio2btngroup();
+});
+
 Joomla.submitbutton = function(task)
 {
 	if (task == 'projectform.cancel' || document.getElementById('jform_title').value != '') {
@@ -114,6 +119,13 @@ Joomla.submitbutton = function(task)
                 </div>
             </div>
 		<?php endif; ?>
+    </fieldset>
+
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_LABELS'), 'project-labels') ;?>
+    <fieldset>
+    	<div class="formelm control-group">
+    		<?php echo $this->form->getInput('labels'); ?>
+    	</div>
     </fieldset>
 
     <?php if ($this->item->id) : ?>

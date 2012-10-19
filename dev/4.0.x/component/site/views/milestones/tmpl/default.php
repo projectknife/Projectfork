@@ -51,6 +51,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                     </div>
 
                     <div class="clearfix"> </div>
+
                     <hr />
 
                     <?php if ($pid) : ?>
@@ -70,6 +71,15 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                         </div>
                     <?php endif; ?>
                     <div class="clearfix"> </div>
+
+                    <?php if ($pid) : ?>
+                        <hr />
+                        <div class="filter-labels">
+                            <?php echo JHtml::_('projectfork.filterLabels', 'milestone', $pid, $this->state->get('filter.labels'));?>
+                        </div>
+                        <div class="clearfix"> </div>
+                    <?php endif; ?>
+
                 </div>
             </div>
 
@@ -94,35 +104,46 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                 if ($progress == 100) $progress_class = 'success';
                 if ($progress < 67)   $progress_class = 'warning';
                 if ($progress < 34)   $progress_class = 'danger label-important';
+
+                // Prepare the watch button
+                $options = array('div-class' => 'pull-right', 'a-class' => 'btn-mini');
+                $watch = JHtml::_('projectfork.watch', 'milestones', $i, $item->watching, $options);
             ?>
                 <?php if ($item->project_title != $current_project && $pid <= 0) : ?>
                     <h3><?php echo $this->escape($item->project_title);?></h3>
                     <hr />
                 <?php $current_project = $item->project_title; endif; ?>
                 <div class="well well-small well-<?php echo $k;?>">
-                    <?php
-                        $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
-                        $this->menu->itemEdit('milestoneform', $item->id, ($can_edit || $can_edit_own));
-                        $this->menu->itemTrash('milestones', $i, $can_change);
-                        $this->menu->end();
-
-                        echo $this->menu->render(array('class' => 'btn-mini'));
-                    ?>
-                    <h3>
-                        <?php if ($can_change) : ?>
+                	<div class="btn-toolbar">
+                    	<?php if ($can_change) : ?>
                             <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
                                 <?php echo JHtml::_('projectfork.id', $i, $item->id); ?>
                             </label>
                         <?php endif; ?>
-                        <?php if ($item->checked_out) : ?>
-                            <i class="icon-lock"></i>
-                        <?php endif; ?>
-                        <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestoneRoute($item->slug, $item->project_slug));?>">
-                            <?php echo $this->escape($item->title);?>
-                        </a>
-                    </h3>
+                        <?php echo $watch; ?>
+	                   	 <h3>
+	                   	 	<span class="toolbar-inline pull-left">
+	                   	 		<div class="btn-group pull-left">
+				                   	<?php
+			                        $this->menu->start(array('class' => 'btn-mini'));
+			                        $this->menu->itemEdit('milestoneform', $item->id, ($can_edit || $can_edit_own));
+			                        $this->menu->itemTrash('milestones', $i, $can_change);
+			                        $this->menu->end();
+			
+			                        echo $this->menu->render(array('class' => 'btn-mini'));
+				                    ?>
+			                   </div>
+	                   	 	</span>
+	                        <?php if ($item->checked_out) : ?>
+	                            <i class="icon-lock"></i>
+	                        <?php endif; ?>
+	                        <a href="<?php echo JRoute::_(ProjectforkHelperRoute::getMilestoneRoute($item->slug, $item->project_slug));?>">
+	                            <?php echo $this->escape($item->title);?>
+	                        </a>
+	                    </h3>
+	                   <div class="clearfix"></div>
+                	</div>
                     <div>
-                        <hr />
                         <p>
                             <?php echo $this->escape($item->description);?>
                         </p>
@@ -138,6 +159,18 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                     <?php echo JHtml::_('projectfork.authorLabel', $item->author_name, $item->created, $this->params->get('date_format')); ?>
                     <span class="label"><i class="icon-lock icon-white"></i> <?php echo $this->escape($item->access_level); ?></span>
                     <?php echo JHtml::_('projectfork.dateFormat', $item->end_date, $this->params->get('date_format')); ?>
+                    <?php
+                    if ($item->label_count > 0 && isset($item->labels))
+                    {
+                        foreach ($item->labels AS $label)
+                        {
+                            $style = ($label->style ? ' ' . $label->style : '');
+                            ?>
+                            <span class="label<?php echo $style; ?>"><i class="icon-bookmark"></i> <?php echo $this->escape($label->title); ?></span>
+                            <?php
+                        }
+                    }
+                    ?>
                     <div class="btn-group pull-right">
                         <a class="btn btn-mini" href="<?php echo JRoute::_(ProjectforkHelperRoute::getTasksRoute($item->project_slug, $item->slug));?>">
                             <i class="icon-list"></i> <?php echo JText::sprintf('JGRID_HEADING_TASKLISTS_AND_TASKS', intval($item->tasklists), intval($item->tasks)); ?>
