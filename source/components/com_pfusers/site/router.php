@@ -1,0 +1,216 @@
+<?php
+/**
+ * @package      Projectfork
+ * @subpackage   Users
+ *
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ */
+
+defined('_JEXEC') or die();
+
+
+/**
+ * Build the route for the com_pfusers component
+ *
+ * @param     array    $query    An array of URL arguments
+ *
+ * @return    array              The URL arguments to use to assemble the subsequent URL.
+ */
+function PFusersBuildRoute(&$query)
+{
+    // We need to have a view in the query or it is an invalid URL
+    if (!isset($query['view'])) {
+        return array();
+    }
+
+    // Setup vars
+    $segments = array();
+    $view     = $query['view'];
+
+    // We need a menu item.  Either the one specified in the query, or the current active one if none specified
+    if (empty($query['Itemid'])) {
+        $menu_item_given = false;
+    }
+    else {
+        $menu_item_given = true;
+    }
+
+    // Handle users query
+    if($view == 'users') {
+        if (!$menu_item_given) $segments[] = $view;
+        unset($query['view']);
+
+        // Get project filter
+        if (isset($query['filter_project'])) {
+            if (strpos($query['filter_project'], ':') === false) {
+                $query['filter_project'] = PFusersMakeSlug($query['filter_project'], '#__pf_projects');
+            }
+        }
+        else {
+            $query['filter_project'] = PFusersMakeSlug('0', '#__pf_projects');
+        }
+
+        $segments[] = $query['filter_project'];
+        unset($query['filter_project']);
+
+        return $segments;
+    }
+
+
+    // Handle users query
+    if($view == 'user') {
+        if (!$menu_item_given) $segments[] = $view;
+        unset($query['view']);
+
+        // Get user id
+        if (isset($query['id'])) {
+            if (strpos($query['id'], ':') === false) {
+                $query['id'] = PFusersMakeSlug($query['id'], '#__users', 'username', 'username');
+            }
+        }
+        else {
+            $query['id'] = PFusersMakeSlug('0', '#__users', 'username', 'username');
+        }
+
+        $segments[] = 'profile';
+        $segments[] = $query['id'];
+        unset($query['id']);
+
+
+        return $segments;
+    }
+
+    // Handle the layout
+    if (isset($query['layout'])) {
+        if ($menu_item_given && isset($menuItem->query['layout'])) {
+            if ($query['layout'] == $menuItem->query['layout']) {
+                unset($query['layout']);
+            }
+        }
+        else {
+            if ($query['layout'] == 'default') {
+                unset($query['layout']);
+            }
+        }
+    }
+
+    return $segments;
+}
+
+
+
+/**
+ * Parse the segments of a URL.
+ *
+ * @param     array    The segments of the URL to parse.
+ *
+ * @return    array    The URL attributes to be used by the application.
+ */
+function PFusersParseRoute($segments)
+{
+    // Setup vars
+    $vars  = array();
+    $count = count($segments);
+    $menu  = JFactory::getApplication()->getMenu();
+    $item  = $menu->getActive();
+
+    // Standard routing.  If we don't pick up an Itemid then we get the view from the segments
+    // the first segment is the view and the last segment is the id of the item.
+    if (!isset($item)) {
+        $vars['view'] = $segments[0];
+        $vars['id']   = $segments[$count - 1];
+
+        return $vars;
+    }
+
+    // Set the view var
+    $vars['view'] = $item->query['view'];
+
+    // Handle Users
+    if ($vars['view'] == 'users') {
+        if ($count == 1) {
+            $vars['filter_project'] = PFusersParseSlug($segments[0]);
+        }
+        if ($count > 1) {
+            $vars['view'] = 'user';
+            $vars['id']   = PFusersParseSlug($segments[1]);
+        }
+
+        return $vars;
+    }
+
+
+    // Handle User
+    if ($vars['view'] == 'user') {
+        if ($count == 1) {
+            $vars['id'] = PFusersParseSlug($segments[0]);
+        }
+
+        return $vars;
+    }
+
+    return $vars;
+}
+
+
+/**
+ * Parses a slug segment and extracts the ID of the item
+ *
+ * @param     string    $segment    The slug segment
+ *
+ * @return    int                   The item id
+ */
+function PFusersParseSlug($segment)
+{
+    if (strpos($segment, ':') === false) {
+        return (int) $segment;
+    }
+    else {
+        list($id, $alias) = explode(':', $segment, 2);
+        return (int) $id;
+    }
+}
+
+
+/**
+ * Creates a slug segment
+ *
+ * @param     int       $id       The item id
+ * @param     string    $table    The item table
+ * @param     string    $alt      Alternative alias if the id is 0
+ * @param     string    $field    The field to query
+ *
+ * @return    string              The slug
+ */
+function PFusersMakeSlug($id, $table, $alt = 'all', $field = 'alias')
+{
+    if ($id == '' || $id == '0') {
+        if ($table == '#__pf_projects') {
+            $app   = JFactory::getApplication();
+            $id    = (int) $app->getUserState('com_projectfork.project.active.id', 0);
+            $alias = $app->getUserState('com_projectfork.project.active.title', 'all-projects');
+            $alias = JApplication::stringURLSafe($alias);
+
+            return $id . ':' . $alias;
+        }
+        else {
+            return '0:' . $alt;
+        }
+    }
+
+    $db    = JFactory::getDbo();
+    $query = $db->getQuery(true);
+
+    $query->select($db->quoteName($field))
+          ->from($db->quoteName($table))
+          ->where('id = ' . (int) $id);
+
+    $db->setQuery($query->__toString());
+
+    $alias = $db->loadResult();
+    $slug  = $id . ':' . $alias;
+
+    return $slug;
+}

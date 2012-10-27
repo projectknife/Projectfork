@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE install PUBLIC "-//Joomla! 2.5//DTD template 1.0//EN" "http://www.joomla.org/xml/dtd/2.5/template-install.dtd">
+<extension version="2.5" type="template" client="site">
+  <name>goggles</name>
+  <version>4.0</version>
+  <creationDate>10/08/2012</creationDate>
+  <author>Kyle Ledbetter</author>
+  <authorEmail>support@projectfork.net</authorEmail>
+  <description>Default Projectfork UI Template based off Bootstrap from Twitter</description>
+  <files>
+  	<filename>component.php</filename>
+  	<filename>favicon.ico</filename>
+  	<filename>helper.php</filename>
+    <filename>index.php</filename>
+    <filename>template_preview.png</filename>
+    <filename>template_thumbnail.png</filename>
+    <filename>templateDetails.xml</filename>
+    <folder>css</folder>
+    <folder>fonts</folder>
+    <folder>helpers</folder>
+    <folder>html</folder>
+    <folder>images</folder>
+    <folder>img</folder>
+    <folder>js</folder>
+    <folder>language</folder>
+    <folder>less</folder>
+  </files>
+  <positions>
+    <position>debug</position>
+    <position>top</position>
+    <position>bottom</position>
+    <position>position-0</position>
+    <position>position-1</position>
+    <position>position-2</position>
+    <position>position-3</position>
+    <position>position-4</position>
+    <position>position-5</position>
+    <position>position-6</position>
+    <position>position-7</position>
+    <position>position-8</position>
+    <position>position-9</position>
+    <position>position-10</position>
+    <position>position-11</position>
+    <position>position-12</position>
+    <position>position-13</position>
+    <position>position-14</position>
+  </positions>
+  <languages folder="language">
+      <language tag="en-GB">en-GB/en-GB.tpl_goggles.ini</language>
+      <language tag="en-GB">en-GB/en-GB.tpl_goggles.sys.ini</language>
+  </languages>
+  <config>
+	  <fields name="params">
+	  	<fieldset name="layout" label="Layout">
+  			<field name="color"  class="" type="color" default="#4B761D"
+  				label="TPL_GOGGLES_COLOR_LABEL"
+  				description="TPL_GOGGLES_COLOR_DESC" />
+  			<field name="bootstrap_javascript" type="radio" default="1" label="TPL_GOGGLES_BOOTSTRAP_JS_LABEL" description="TPL_GOGGLES_BOOTSTRAP_JS_DESC">
+  			  <option value="0">JNO</option>
+  			  <option value="1">JYES</option>
+  			</field>
+  			<field name="bootstrap_css" type="radio" default="1" label="TPL_GOGGLES_BOOTSTRAP_CSS_LABEL" description="TPL_GOGGLES_BOOTSTRAP_CSS_DESC">
+  			  <option value="0">JNO</option>
+  			  <option value="1">JYES</option>
+  			</field>
+		</fieldset>
+	  </fields>
+  </config>
+</extension>

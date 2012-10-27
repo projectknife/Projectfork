@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<config>
+    <fieldset name="general_parameters" label="COM_PROJECTFORK_CONFIG_GENERAL_LABEL" description="COM_PROJECTFORK_CONFIG_GENERAL_DESC">
+        <field type="text" name="date_format" label="COM_PROJECTFORK_CONFIG_DATE_FORMAT_LABEL" description="JGLOBAL_DATE_FORMAT_DESC" default=""/>
+    </fieldset>
+    <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
+		<field name="rules" type="rules"
+			label="JCONFIG_PERMISSIONS_LABEL"
+			class="inputbox" validate="rules" filter="rules"
+			component="com_pfmilestones" section="component"
+        />
+	</fieldset>
+</config>

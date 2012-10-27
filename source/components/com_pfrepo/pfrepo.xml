@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="component" version="2.5" method="upgrade">
+    <name>com_pfrepo</name>
+    <author>Tobias Kuhn</author>
+    <creationDate>October 2012</creationDate>
+    <copyright>(C) 2006 - 2012 Tobias Kuhn. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>support@projectfork.net</authorEmail>
+    <authorUrl>www.projectfork.net</authorUrl>
+    <version>4.0.0b1</version>
+    <description>COM_PFREPO_XML_DESCRIPTION</description>
+    <scriptfile>script.php</scriptfile>
+    <files folder="site">
+        <folder>controllers</folder>
+        <folder>helpers</folder>
+        <folder>models</folder>
+        <folder>views</folder>
+        <filename>pfrepo.php</filename>
+        <filename>controller.php</filename>
+        <filename>router.php</filename>
+        <filename>LICENSE.txt</filename>
+        <filename>index.html</filename>
+    </files>
+    <administration>
+        <files folder="admin">
+            <folder>controllers</folder>
+            <folder>helpers</folder>
+            <folder>models</folder>
+            <folder>tables</folder>
+            <folder>views</folder>
+            <filename>access.xml</filename>
+            <filename>config.xml</filename>
+            <filename>pfrepo.php</filename>
+            <filename>controller.php</filename>
+            <filename>script.php</filename>
+            <filename>LICENSE.txt</filename>
+            <filename>index.html</filename>
+        </files>
+        <languages folder="admin">
+            <language tag="en-GB">language/en-GB/en-GB.com_pfrepo.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.com_pfrepo.sys.ini</language>
+        </languages>
+    </administration>
+</extension>
