@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="library" method="upgrade" version="2.5">
+    <name>Projectfork</name>
+    <libraryname>projectfork</libraryname>
+    <author>Tobias Kuhn</author>
+    <creationDate>October 2012</creationDate>
+    <copyright>Copyright (C) 2006 - 2012 Tobias Kuhn. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later.</license>
+    <authorEmail>support@projectfork.net</authorEmail>
+    <authorUrl>www.projectfork.net</authorUrl>
+    <version>4.0.0b1</version>
+    <description>Shared classes and tools for Projectfork related components. Do not remove!</description>
+    <files>
+        <folder>access</folder>
+        <folder>application</folder>
+        <folder>controller</folder>
+        <folder>database</folder>
+        <folder>date</folder>
+        <folder>form</folder>
+        <folder>html</folder>
+        <folder>menu</folder>
+        <folder>model</folder>
+        <folder>object</folder>
+        <folder>proc</folder>
+        <folder>table</folder>
+        <folder>toolbar</folder>
+        <file>framework.php</file>
+        <file>index.html</file>
+    </files>
+</extension>
