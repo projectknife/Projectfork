@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 <div class="adminform row-fluid">
     <div class="cpanel-left span9 hidden-phone">
         <div class="cpanel row-fluid">
-            <?php if (array_key_exists('com_pfprojects', $this->components)) : ?>
+            <?php if (PFApplicationHelper::enabled('com_pfprojects')) : ?>
             <div class="icon-wrapper span2">
                 <div class="icon">
                     <a href="index.php?option=com_pfprojects" class="thumbnail btn">
@@ -23,7 +23,7 @@ defined('_JEXEC') or die();
                 </div>
             </div>
             <?php endif; ?>
-            <?php if (array_key_exists('com_pfmilestones', $this->components)) : ?>
+            <?php if (PFApplicationHelper::enabled('com_pfmilestones')) : ?>
             <div class="icon-wrapper span2">
                 <div class="icon">
                     <a href="index.php?option=com_pfmilestones" class="thumbnail btn">
@@ -33,7 +33,7 @@ defined('_JEXEC') or die();
                 </div>
             </div>
             <?php endif; ?>
-            <?php if (array_key_exists('com_pftasks', $this->components)) : ?>
+            <?php if (PFApplicationHelper::enabled('com_pftasks')) : ?>
             <div class="icon-wrapper span2">
                 <div class="icon">
                     <a href="index.php?option=com_projectfork&view=tasklists" class="thumbnail btn">
