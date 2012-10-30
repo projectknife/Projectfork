@@ -20,7 +20,7 @@ abstract class PFApplicationHelper
     /**
      * Holds the Projectfork related components
      *
-     * @var    array
+     * @var    array    
      */
     protected static $components;
 
@@ -28,7 +28,7 @@ abstract class PFApplicationHelper
     /**
      * URL routing cache
      *
-     * @var    array
+     * @var    array    
      */
     protected static $routes;
 
@@ -37,7 +37,7 @@ abstract class PFApplicationHelper
      * Method to get all projectfork related components
      * (starting with com_pf)
      *
-     * @return    array
+     * @return    array    
      */
     public static function getComponents()
     {
@@ -51,7 +51,7 @@ abstract class PFApplicationHelper
         $query->select('extension_id, element, client_id, enabled, access, protected')
               ->from('#__extensions')
               ->where($db->qn('type') . ' = ' . $db->quote('component'))
-              ->where('(' . $db->qn('element') . ' = ' .$db->quote('com_projectfork')
+              ->where('(' . $db->qn('element') . ' = '  . $db->quote('com_projectfork')
                 . ' OR ' . $db->qn('element') . ' LIKE ' . $db->quote('com_pf%')
                 . ')'
               )
@@ -71,6 +71,48 @@ abstract class PFApplicationHelper
         self::$components = $com;
 
         return self::$components;
+    }
+
+
+    /**
+     * Method to check if a component exists or not
+     *
+     * @param     string     $name    The name of the component
+     *
+     * @return    boolean             
+     */
+    public static function exists($name)
+    {
+        $components = self::getComponents();
+
+        if (!array_key_exists($name, $components)) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Method to check if a component is enabled or not
+     *
+     * @param     string    $name    The name of the component
+     *
+     * @return    mixed              Returns True if enabled, False if not, and NULL if not found.
+     */
+    public static function enabled($name)
+    {
+        $components = self::getComponents();
+
+        if (!array_key_exists($name, $components)) {
+            return null;
+        }
+
+        if ($components[$name]->enabled == '0') {
+            return false;
+        }
+
+        return true;
     }
 
 
