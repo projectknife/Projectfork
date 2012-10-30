@@ -23,6 +23,7 @@ jimport('projectfork.framework');
 
 // Register classes to autoload
 JLoader::register('PFtimeHelper', JPATH_ADMINISTRATOR . '/components/com_pftime/helpers/pftime.php');
+JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_pftime/helpers/html');
 
 $controller = JControllerLegacy::getInstance('PFtime');
 $controller->execute(JFactory::getApplication()->input->get('task'));
