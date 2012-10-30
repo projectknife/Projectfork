@@ -11,6 +11,9 @@
 defined('_JEXEC') or die();
 
 
+jimport('projectfork.framework');
+
+
 class PFprojectsHelper
 {
     /**
