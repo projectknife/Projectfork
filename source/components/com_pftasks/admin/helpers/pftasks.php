@@ -39,10 +39,17 @@ class PFtasksHelper
                 continue;
             }
 
+            $title = JText::_($component->element);
+            $parts = explode('-', $title, 2);
+
+            if (count($parts) == 2) {
+                $title = trim($parts[1]);
+            }
+
             JSubMenuHelper::addEntry(
-                JText::_($component->element),
+                $title,
                 'index.php?option=' . $component->element,
-                ($option == $component->element && $view == 'tasks')
+                ($option == $component->element)
             );
 
             if ($option == $component->element) {
