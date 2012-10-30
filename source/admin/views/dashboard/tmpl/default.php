@@ -33,7 +33,7 @@ defined('_JEXEC') or die();
                 </div>
             </div>
             <?php endif; ?>
-            <?php if (array_key_exists('com_pftasklists', $this->components)) : ?>
+            <?php if (array_key_exists('com_pftasks', $this->components)) : ?>
             <div class="icon-wrapper span2">
                 <div class="icon">
                     <a href="index.php?option=com_projectfork&view=tasklists" class="thumbnail btn">
@@ -42,8 +42,6 @@ defined('_JEXEC') or die();
                     </a>
                 </div>
             </div>
-            <?php endif; ?>
-            <?php if (array_key_exists('com_pftasks', $this->components)) : ?>
             <div class="icon-wrapper span2">
                 <div class="icon">
                     <a href="index.php?option=com_pftasks" class="thumbnail btn">
