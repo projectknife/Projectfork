@@ -47,7 +47,7 @@ class PFtasksHelper
 
             if ($option == $component->element) {
                 JSubMenuHelper::addEntry(
-                    JText::_('COM_PROJECTFORK_TASKLISTS'),
+                    JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS'),
                     'index.php?option=' . $component->element . '&view=tasklists',
                     ($option == $component->element && $view == 'tasklists')
                 );
