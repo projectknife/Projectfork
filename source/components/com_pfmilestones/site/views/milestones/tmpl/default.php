@@ -19,8 +19,8 @@ $user       = JFactory::getUser();
 $uid        = $user->get('id');
 $pid        = (int) $this->state->get('filter.project');
 
-$action_count = count($this->actions);
-$filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
+$filter_in     = ($this->state->get('filter.isset') ? 'in ' : '');
+$tasks_enabled = PFApplicationHelper::enabled('com_pftasks');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-milestones">
 
@@ -76,7 +76,7 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                     <?php if ($pid) : ?>
                         <hr />
                         <div class="filter-labels">
-                            <?php echo JHtml::_('pfhtml.label.filter', 'milestone', $pid, $this->state->get('filter.labels'));?>
+                            <?php echo JHtml::_('pfhtml.label.filter', 'com_pfmilestones.milestone', $pid, $this->state->get('filter.labels'));?>
                         </div>
                         <div class="clearfix"> </div>
                     <?php endif; ?>
@@ -149,13 +149,15 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                             <?php echo $this->escape($item->description);?>
                         </p>
                     </div>
-                    <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-milestone">
-                        <div class="bar" style="width: <?php echo ($progress > 0) ? $progress . "%": "24px";?>">
-                            <span class="label label-<?php echo $progress_class;?> pull-right">
-                                <?php echo $progress;?>%
-                            </span>
+                    <?php if ($tasks_enabled) : ?>
+                        <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-milestone">
+                            <div class="bar" style="width: <?php echo ($progress > 0) ? $progress . "%": "24px";?>">
+                                <span class="label label-<?php echo $progress_class;?> pull-right">
+                                    <?php echo $progress;?>%
+                                </span>
+                            </div>
                         </div>
-                    </div>
+                    <?php endif; ?>
                     <hr />
                     <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created, $this->params->get('date_format')); ?>
                     <span class="label"><i class="icon-lock icon-white"></i> <?php echo $this->escape($item->access_level); ?></span>
@@ -172,11 +174,13 @@ $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
                         }
                     }
                     ?>
-                    <div class="btn-group pull-right">
-                        <a class="btn btn-mini" href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->project_slug, $item->slug));?>">
-                            <i class="icon-list"></i> <?php echo JText::sprintf('JGRID_HEADING_TASKLISTS_AND_TASKS', intval($item->tasklists), intval($item->tasks)); ?>
-                        </a>
-                    </div>
+                    <?php if ($tasks_enabled) : ?>
+                        <div class="btn-group pull-right">
+                            <a class="btn btn-mini" href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->project_slug, $item->slug));?>">
+                                <i class="icon-list"></i> <?php echo JText::sprintf('JGRID_HEADING_TASKLISTS_AND_TASKS', intval($item->tasklists), intval($item->tasks)); ?>
+                            </a>
+                        </div>
+                    <?php endif; ?>
                     <div class="clearfix"></div>
                 </div>
             <?php

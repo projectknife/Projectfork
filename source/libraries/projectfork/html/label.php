@@ -38,10 +38,10 @@ abstract class PFhtmlLabel
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        if ($asset == 'repository') {
-            $asset = $db->quote('directory')
-                   . 'OR a.asset_group = ' . $db->quote('file')
-                   . 'OR a.asset_group = ' . $db->quote('note');
+        if ($asset == 'com_pfrepo') {
+            $asset = $db->quote('com_pfrepo.directory')
+                   . 'OR a.asset_group = ' . $db->quote('com_pfrepo.file')
+                   . 'OR a.asset_group = ' . $db->quote('com_pfrepo.note');
         }
         else {
             $asset = $db->quote($db->escape($asset));

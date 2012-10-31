@@ -70,15 +70,6 @@ CREATE TABLE IF NOT EXISTS `#__pf_milestones` (
   KEY `idx_checkedout` (`checked_out`)
 ) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork milestone data';
 
-CREATE TABLE IF NOT EXISTS `#__pf_milestone_map` (
-  `id` int(10) unsigned NOT NULL COMMENT 'Dependency Map',
-  `milestone_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Milestone ID reference',
-  `dependency` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent Milestone dependency ID reference',
-  PRIMARY KEY (`id`),
-  KEY `idx_milestoneid` (`milestone_id`),
-  KEY `idx_dependency` (`dependency`)
-) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork milestone dependency';
-
 CREATE TABLE IF NOT EXISTS `#__pf_projects` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Project ID',
   `asset_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'FK to the #__assets table',
@@ -121,7 +112,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_ref_attachments` (
 
 CREATE TABLE IF NOT EXISTS `#__pf_ref_observer` (
   `user_id` int(10) unsigned NOT NULL COMMENT 'The observing user',
-  `item_type` varchar(32) NOT NULL COMMENT 'The observed item type',
+  `item_type` varchar(50) NOT NULL COMMENT 'The observed item type',
   `item_id` int(10) unsigned NOT NULL COMMENT 'The observed item ID',
   `project_id` int(10) unsigned NOT NULL COMMENT 'Project ID to which the item belongs',
   UNIQUE KEY `idx_observing` (`item_type`,`item_id`,`user_id`),
@@ -132,7 +123,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_ref_labels` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID reference',
   `project_id` int(10) unsigned NOT NULL COMMENT 'Parent project id',
   `item_id` int(10) unsigned NOT NULL COMMENT 'Reference item ID',
-  `item_type` varchar(16) NOT NULL COMMENT 'Reference item type',
+  `item_type` varchar(50) NOT NULL COMMENT 'Reference item type',
   `label_id` int(10) unsigned NOT NULL COMMENT 'Reference label ID',
   PRIMARY KEY (`id`),
   KEY `idx_project` (`project_id`),

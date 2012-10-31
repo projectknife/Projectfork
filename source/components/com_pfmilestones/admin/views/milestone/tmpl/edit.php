@@ -67,14 +67,16 @@ Joomla.submitbutton = function(task)
                 </div>
             </fieldset>
 
-            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'attachments'); ?>
-            <fieldset class="panelform">
-				<ul class="adminformlist unstyled">
-                    <li>
-                        <?php echo $this->form->getInput('attachment'); ?>
-                    </li>
-                </ul>
-            </fieldset>
+            <?php if (PFApplicationHelper::enabled('com_pfrepo')) : ?>
+                <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'attachments'); ?>
+                <fieldset class="panelform">
+    				<ul class="adminformlist unstyled">
+                        <li>
+                            <?php echo $this->form->getInput('attachment'); ?>
+                        </li>
+                    </ul>
+                </fieldset>
+            <?php endif; ?>
 
             <?php $fieldsets = $this->form->getFieldsets('attribs'); ?>
 			<?php foreach ($fieldsets as $name => $fieldset) : ?>

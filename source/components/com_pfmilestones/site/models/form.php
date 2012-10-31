@@ -67,12 +67,17 @@ class PFmilestonesModelForm extends PFmilestonesModelMilestone
         $value->params->loadString($value->attribs);
 
         // Get the attachments
-        $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-        $value->attachment = $attachments->getItems('milestone', $value->id);
+        if (PFApplicationHelper::exists('com_pfrepo')) {
+            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+            $value->attachment = $attachments->getItems('com_pfmilestones.milestone', $value->id);
+        }
+        else {
+            $value->attachment = array();
+        }
 
         // Get the labels
         $labels = $this->getInstance('Labels', 'PFModel');
-        $value->labels = $labels->getConnections('milestone', $value->id);
+        $value->labels = $labels->getConnections('com_pfmilestones.milestone', $value->id);
 
         // Compute selected asset permissions.
         $uid    = JFactory::getUser()->get('id');

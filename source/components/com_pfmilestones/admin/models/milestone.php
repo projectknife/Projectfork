@@ -74,12 +74,17 @@ class PFmilestonesModelMilestone extends JModelAdmin
             $item->attribs = $registry->toArray();
 
             // Get the attachments
-            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-            $item->attachment = $attachments->getItems('milestone', $item->id);
+            if (PFApplicationHelper::exists('com_pfrepo')) {
+                $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+                $item->attachment = $attachments->getItems('com_pfmilestones.milestone', $item->id);
+            }
+            else {
+                $item->attachment = array();
+            }
 
             // Get the labels
             $labels = $this->getInstance('Labels', 'PFModel');
-            $item->labels = $labels->getConnections('milestone', $item->id);
+            $item->labels = $labels->getConnections('com_pfmilestones.milestone', $item->id);
         }
 
         return $item;
@@ -102,6 +107,7 @@ class PFmilestonesModelMilestone extends JModelAdmin
 
         // Check if a project id is already selected. If not, set the currently active project as value
         $project_id = (int) $form->getValue('project_id');
+
         if (!$this->getState($this->getName() . '.id') && $project_id == 0) {
             $active_id = PFApplicationHelper::getActiveProjectId();
 
@@ -245,7 +251,7 @@ class PFmilestonesModelMilestone extends JModelAdmin
             }
 
             // Store the attachments
-            if (isset($data['attachment']) && !$is_new) {
+            if (isset($data['attachment']) && !$is_new && PFApplicationHelper::exists('com_pfrepo')) {
                 $attachments = $this->getInstance('Attachments', 'PFrepoModel');
 
                 if ($attachments->getState('item.id') == 0) {
@@ -266,7 +272,7 @@ class PFmilestonesModelMilestone extends JModelAdmin
                     $labels->setState('item.project', $updated->project_id);
                 }
 
-                $labels->setState('item.type', 'milestone');
+                $labels->setState('item.type', 'com_pfmilestones.milestone');
                 $labels->setState('item.id', $id);
 
                 if (!$labels->saveRefs($data['labels'])) {
@@ -306,6 +312,9 @@ class PFmilestonesModelMilestone extends JModelAdmin
         $my_views = $user->getAuthorisedViewLevels();
         $projects = array();
 
+        $item_type = $this->option . '.milestone';
+
+
         // Access checks.
         foreach ($pks as $i => $pk) {
             $table->reset();
@@ -335,7 +344,7 @@ class PFmilestonesModelMilestone extends JModelAdmin
 
             if ($value == 0) {
                 $query->delete('#__pf_ref_observer')
-                      ->where('item_type = ' . $db->quote( str_replace('form', '', $this->getName()) ) )
+                      ->where('item_type = ' . $db->quote( $item_type ) )
                       ->where('item_id = ' . $db->quote((int) $pk))
                       ->where('user_id = ' . $db->quote((int) $user->get('id')));
 
@@ -350,7 +359,7 @@ class PFmilestonesModelMilestone extends JModelAdmin
             else {
                 $query->select('COUNT(*)')
                       ->from('#__pf_ref_observer')
-                      ->where('item_type = ' . $db->quote( str_replace('form', '', $this->getName()) ) )
+                      ->where('item_type = ' . $db->quote( $item_type ) )
                       ->where('item_id = ' . $db->quote((int) $pk))
                       ->where('user_id = ' . $db->quote((int) $user->get('id')));
 
@@ -361,7 +370,7 @@ class PFmilestonesModelMilestone extends JModelAdmin
                     $data = new stdClass;
 
                     $data->user_id   = (int) $user->get('id');
-                    $data->item_type = str_replace('form', '', $this->getName());
+                    $data->item_type = $item_type;
                     $data->item_id   = (int) $pk;
                     $data->project_id= (int) $projects[$pk];
 
@@ -531,7 +540,7 @@ class PFmilestonesModelMilestone extends JModelAdmin
 			return $user->authorise('core.edit.state', 'com_pfprojects.project.' . (int) $record->project_id);
 		}
 		else {
-		    // Default to component settings if neither article nor category known.
+		    // Default to component settings.
 			return parent::canEditState('com_pfmilestones');
 		}
     }
