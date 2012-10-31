@@ -168,7 +168,7 @@ class JFormFieldUserRef extends JFormFieldUser
         $groups   = $this->getGroups();
         $excluded = $this->getExcluded();
 
-        $link = ProjectforkHelperRoute::getUsersRoute() . '&amp;layout=modal&amp;tmpl=component&amp;field=' . $this->id
+        $link = PFusersHelperRoute::getUsersRoute() . '&amp;layout=modal&amp;tmpl=component&amp;field=' . $this->id
               . (isset($groups) ? ('&amp;groups=' . base64_encode(json_encode($groups)))       : '')
               . (isset($excluded) ? ('&amp;excluded=' . base64_encode(json_encode($excluded))) : '');
 

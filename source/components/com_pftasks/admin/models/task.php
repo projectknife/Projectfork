@@ -77,13 +77,15 @@ class PFtasksModelTask extends JModelAdmin
                 $item->estimate = round($item->estimate / 60);
             }
 
-            // Get the attachments
-            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-            $item->attachment = $attachments->getItems('task', $item->id);
+            if (PFApplicationHelper::exists('PFrepo')) {
+                // Get the attachments
+                $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+                $item->attachment = $attachments->getItems('com_pftasks.task', $item->id);
+            }
 
             // Get the labels
             $labels = $this->getInstance('Labels', 'PFModel');
-            $item->labels = $labels->getConnections('task', $item->id);
+            $item->labels = $labels->getConnections('com_pftasks.task', $item->id);
 
             // Get the dependencies
             $taskrefs = $this->getInstance('TaskRefs', 'PFtasksModel');
@@ -345,7 +347,7 @@ class PFtasksModelTask extends JModelAdmin
             }
 
             // Store the attachments
-            if (isset($data['attachment'])) {
+            if (isset($data['attachment']) && PFApplicationHelper::exists('com_pfrepo')) {
                 $attachments = $this->getInstance('Attachments', 'PFrepoModel');
 
                 if ($attachments->getState('item.id') == 0) {
@@ -366,7 +368,7 @@ class PFtasksModelTask extends JModelAdmin
                     $labels->setState('item.project', $updated->project_id);
                 }
 
-                $labels->setState('item.type', 'task');
+                $labels->setState('item.type', 'com_pftasks.task');
                 $labels->setState('item.id', $id);
 
                 if (!$labels->saveRefs($data['labels'])) {
@@ -421,6 +423,8 @@ class PFtasksModelTask extends JModelAdmin
         $my_views = $user->getAuthorisedViewLevels();
         $projects = array();
 
+        $item_type = 'com_pftasks.task';
+
         // Access checks.
         foreach ($pks as $i => $pk) {
             $table->reset();
@@ -450,7 +454,7 @@ class PFtasksModelTask extends JModelAdmin
 
             if ($value == 0) {
                 $query->delete('#__pf_ref_observer')
-                      ->where('item_type = ' . $db->quote( str_replace('form', '', $this->getName()) ) )
+                      ->where('item_type = ' . $db->quote( $item_type ) )
                       ->where('item_id = ' . $db->quote((int) $pk))
                       ->where('user_id = ' . $db->quote((int) $user->get('id')));
 
@@ -465,7 +469,7 @@ class PFtasksModelTask extends JModelAdmin
             else {
                 $query->select('COUNT(*)')
                       ->from('#__pf_ref_observer')
-                      ->where('item_type = ' . $db->quote( str_replace('form', '', $this->getName()) ) )
+                      ->where('item_type = ' . $db->quote( $item_type ) )
                       ->where('item_id = ' . $db->quote((int) $pk))
                       ->where('user_id = ' . $db->quote((int) $user->get('id')));
 
@@ -476,7 +480,7 @@ class PFtasksModelTask extends JModelAdmin
                     $data = new stdClass;
 
                     $data->user_id   = (int) $user->get('id');
-                    $data->item_type = str_replace('form', '', $this->getName());
+                    $data->item_type = $item_type;
                     $data->item_id   = (int) $pk;
                     $data->project_id= (int) $projects[$pk];
 
@@ -632,7 +636,7 @@ class PFtasksModelTask extends JModelAdmin
 			return $user->authorise('core.edit.state', 'com_pfprojects.project.' . (int) $record->project_id);
 		}
 		else {
-		    // Default to component settings if neither article nor category known.
+		    // Default to component settings.
 			return parent::canEditState('com_pftasks');
 		}
     }

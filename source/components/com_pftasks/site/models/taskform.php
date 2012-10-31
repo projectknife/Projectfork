@@ -63,13 +63,15 @@ class PFtasksModelTaskForm extends PFtasksModelTask
             $value->estimate = round($value->estimate / 60);
         }
 
-        // Get the attachments
-        $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-        $value->attachment = $attachments->getItems('task', $value->id);
+        if (PFApplicationHelper::exists('com_pfrepo')) {
+            // Get the attachments
+            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+            $value->attachment = $attachments->getItems('com_pftasks.task', $value->id);
+        }
 
         // Get the labels
         $labels = $this->getInstance('Labels', 'PFModel');
-        $value->labels = $labels->getConnections('task', $value->id);
+        $value->labels = $labels->getConnections('com_pftasks.task', $value->id);
 
         // Get the Dependencies
         $taskrefs = $this->getInstance('TaskRefs', 'PFtasksModel');

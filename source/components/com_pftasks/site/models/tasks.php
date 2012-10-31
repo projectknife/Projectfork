@@ -110,7 +110,7 @@ class PFtasksModelTasks extends JModelList
         }
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_pftasks')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
         }
@@ -212,7 +212,7 @@ class PFtasksModelTasks extends JModelList
 
             // Get the labels
             if ($items[$i]->label_count > 0) {
-                $items[$i]->labels = $labels->getConnections('task', $items[$i]->id);
+                $items[$i]->labels = $labels->getConnections('com_pftasks.task', $items[$i]->id);
             }
         }
 
@@ -244,7 +244,7 @@ class PFtasksModelTasks extends JModelList
         $query->join('INNER', '#__pf_tasks AS a ON a.created_by = u.id');
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_pftasks')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
         }
@@ -297,7 +297,7 @@ class PFtasksModelTasks extends JModelList
         // $query->join('LEFT', '#__pf_tasks AS a ON a.milestone_id = m.id');
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_pftasks')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
         }
@@ -350,7 +350,7 @@ class PFtasksModelTasks extends JModelList
         // $query->join('LEFT', '#__pf_tasks AS a ON a.list_id = t.id');
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_pftasks')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
         }
@@ -405,7 +405,7 @@ class PFtasksModelTasks extends JModelList
         $query->where('a.item_type = ' . $db->quote('task'));
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_pftasks')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('t.access IN (' . $groups . ')');
         }
