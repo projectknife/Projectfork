@@ -14,6 +14,8 @@ defined('_JEXEC') or die();
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.keepalive');
 JHtml::_('pfhtml.script.form');
+
+$repo_enabled = PFApplicationHelper::enabled('com_pfrepo');
 ?>
 <script type="text/javascript">
 PFform.accessAction();
@@ -66,7 +68,7 @@ Joomla.submitbutton = function(task)
     				<?php echo $this->form->getInput('labels'); ?>
                 </fieldset>
 
-	            <?php if ($this->item->id > 0) : ?>
+	            <?php if ($this->item->id > 0 && $repo_enabled) : ?>
 	                <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'attachment-details'); ?>
 	                <fieldset class="panelform">
 	    				<?php echo $this->form->getInput('attachment'); ?>

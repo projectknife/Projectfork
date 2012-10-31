@@ -168,7 +168,7 @@ class PFprojectsModelProjects extends JModelList
         $base_url  = JURI::root(true) . '/media/com_projectfork/repo/0/logo';
 
         // Get the global params
-        $global_params = JComponentHelper::getParams('com_projectfork', true);
+        $global_params = JComponentHelper::getParams('com_pfprojects', true);
 
         foreach ($items as $i => &$item)
         {

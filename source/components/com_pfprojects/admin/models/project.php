@@ -14,7 +14,10 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.modeladmin');
 jimport('projectfork.application.helper');
 jimport('projectfork.access.helper');
-JLoader::register('PFrepoHelper', JPATH_ADMINISTRATOR . '/components/com_pfrepo/helpers/pfrepo.php');
+
+if (PFApplicationHelper::exists('com_pfrepo')) {
+    JLoader::register('PFrepoHelper', JPATH_ADMINISTRATOR . '/components/com_pfrepo/helpers/pfrepo.php');
+}
 
 /**
  * Item Model for a Project form.
@@ -61,8 +64,13 @@ class PFprojectsModelProject extends JModelAdmin
             $item->attribs = $registry->toArray();
 
             // Get the attachments
-            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-            $item->attachment = $attachments->getItems('project', $item->id);
+            if (PFApplicationHelper::exists('com_pfrepo')) {
+                $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+                $item->attachment = $attachments->getItems('com_pfprojects.project', $item->id);
+            }
+            else {
+                $item->attachments = array();
+            }
 
             // Get the labels
             $labels = $this->getInstance('Labels', 'PFmodel');
@@ -164,8 +172,11 @@ class PFprojectsModelProject extends JModelAdmin
                     $file['size']     = $file_form['size']['attribs']['logo'];
 
                     if ($file['error']) {
-                        $error = ProjectforkHelperRepository::getFileErrorMsg($file['error'], $file['name']);
-                        $this->setError($error);
+                        if (PFApplicationHelper::exists('com_pfrepo')) {
+                            $error = ProjectforkHelperRepository::getFileErrorMsg($file['error'], $file['name']);
+                            $this->setError($error);
+                        }
+
                         return false;
                     }
                 }
@@ -226,7 +237,7 @@ class PFprojectsModelProject extends JModelAdmin
 
         // Check for existing item.
         // Modify the form based on Edit State access controls.
-        if ($id != 0 && (!$user->authorise('core.edit.state', 'com_projectfork.project.' . $id))
+        if ($id != 0 && (!$user->authorise('core.edit.state', 'com_pfprojects.project.' . $id))
 		      || ($id == 0 && !$user->authorise('core.edit.state', 'com_pfprojects'))
 		   )
         {
@@ -368,27 +379,30 @@ class PFprojectsModelProject extends JModelAdmin
             }
 
             // Create repo base and attachments folder
-            if (!$this->createRepository($updated)) {
-                return false;
-            }
-
-            // Store the attachments
-            if (isset($data['attachment']) && !$is_new) {
-                $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-
-                if ((int) $attachments->getState('item.id') == 0) {
-                    $attachments->setState('item.id', $id);
-                }
-
-                if ((int) $attachments->getState('item.project') == 0) {
-                    $attachments->setState('item.project', $id);
-                }
-
-                if (!$attachments->save($data['attachment'])) {
-                    $this->setError($attachments->getError());
+            if (PFApplicationHelper::exists('com_pfrepo')) {
+                if (!$this->createRepository($updated)) {
                     return false;
                 }
+
+                // Store the attachments
+                if (isset($data['attachment']) && !$is_new) {
+                    $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+
+                    if ((int) $attachments->getState('item.id') == 0) {
+                        $attachments->setState('item.id', $id);
+                    }
+
+                    if ((int) $attachments->getState('item.project') == 0) {
+                        $attachments->setState('item.project', $id);
+                    }
+
+                    if (!$attachments->save($data['attachment'])) {
+                        $this->setError($attachments->getError());
+                        return false;
+                    }
+                }
             }
+
 
             // Store the labels
             if (isset($data['labels'])) {
@@ -568,7 +582,7 @@ class PFprojectsModelProject extends JModelAdmin
                 return false;
             }
 
-            if (!$user->authorise('core.admin')) {
+            if (!$user->authorise('core.admin', 'com_pfprojects')) {
                 if (!in_array($table->access, $user->getAuthorisedViewLevels())) {
                     $this->setError(JText::_('COM_PROJECTFORK_ERROR_PROJECT_ACCESS_DENIED'));
                     return false;
@@ -602,7 +616,8 @@ class PFprojectsModelProject extends JModelAdmin
         $pks   = (array) $pks;
         $table = $this->getTable();
 
-        $active_id = PFApplicationHelper::getActiveProjectId();
+        $active_id   = PFApplicationHelper::getActiveProjectId();
+        $repo_exists = PFApplicationHelper::exists('com_pfrepo');
 
         // Include the content plugins for the on delete events.
         JPluginHelper::importPlugin('content');
@@ -627,10 +642,12 @@ class PFprojectsModelProject extends JModelAdmin
                     }
 
                     // Try to delete the repo
-                    $repo = PFrepoHelper::getBasePath($pk);
+                    if ($repo_exists) {
+                        $repo = PFrepoHelper::getBasePath($pk);
 
-                    if (JFolder::exists($repo)) {
-                        JFolder::delete($repo);
+                        if (JFolder::exists($repo)) {
+                            JFolder::delete($repo);
+                        }
                     }
 
                     // Try to delete the logo

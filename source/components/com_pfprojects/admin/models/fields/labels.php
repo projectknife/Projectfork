@@ -153,7 +153,7 @@ class JFormFieldLabels extends JFormField
      */
     protected function getLabels()
     {
-        $asset   = $this->element['asset'] ? $this->element['asset'] : 'project';
+        $asset   = $this->element['asset'] ? $this->element['asset'] : 'com_pfprojects.project';
         $project = (int) $this->form->getValue('project_id');
 
         $db    = JFactory::getDbo();

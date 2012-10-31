@@ -62,7 +62,15 @@ class JFormFieldLabelManager extends JFormField
             $this->items[$item->asset_group][] = $item;
         }
 
-        $assets = array('project', 'milestone', 'task', 'topic', 'directory', 'note', 'file');
+        $assets = array(
+            'com_pfprojects.project',
+            'com_pfmilestones.milestone',
+            'com_pftasks.task',
+            'com_pfforum.topic',
+            'com_pfrepo.directory',
+            'com_pfrepo.note',
+            'com_pfrepo.file'
+        );
 
         $html = $this->getHTML($assets);
 
@@ -96,11 +104,17 @@ class JFormFieldLabelManager extends JFormField
 
         foreach ($assets AS $asset)
         {
+            list($component, $asset_name) = explode('.', $asset, 2);
+
+            if (!PFApplicationHelper::enabled($component)) {
+                continue;
+            }
+
             $asset_id = str_replace('.', '_', $asset);
 
             $html[] = '<ul class="unstyled">';
             $html[] = '<li class="well well-small">';
-            $html[] = '<h3>' . JText::_('COM_PROJECTFORK_LABEL_ASSET_' . strtoupper($asset_id)) . '</h3>';
+            $html[] = '<h3>' . JText::_(strtoupper($asset_id) . '_LABEL_TITLE') . '</h3>';
             $html[] = '';
             $html[] = '<ul id="' . $this->id . '_' . $asset_id . '" class="unstyled">';
 
@@ -154,11 +168,17 @@ class JFormFieldLabelManager extends JFormField
 
         foreach ($assets AS $asset)
         {
+            list($component, $asset_name) = explode('.', $asset, 2);
+
+            if (!PFApplicationHelper::enabled($component)) {
+                continue;
+            }
+
             $asset_id = str_replace('.', '_', $asset);
 
             $html[] = '<ul class="unstyled">';
             $html[] = '<li class="well well-small">';
-            $html[] = '<strong>' . JText::_('COM_PROJECTFORK_LABEL_ASSET_' . strtoupper($asset_id)) . '</strong>';
+            $html[] = '<strong>' . JText::_(strtoupper($asset_id) . '_LABEL_TITLE') . '</strong>';
             $html[] = '<hr/>';
             $html[] = '<ul id="' . $this->id . '_' . $asset_id . '" class="unstyled">';
 

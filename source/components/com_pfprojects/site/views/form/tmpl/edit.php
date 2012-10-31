@@ -17,6 +17,7 @@ JHtml::_('behavior.calendar');
 JHtml::_('pfhtml.script.form');
 
 $params = $this->state->get('params');
+$user   = JFactory::getUser();
 ?>
 <script type="text/javascript">
 jQuery(document).ready(function()
@@ -124,7 +125,7 @@ Joomla.submitbutton = function(task)
     	</div>
     </fieldset>
 
-    <?php if ($this->item->id) : ?>
+    <?php if ($this->item->id && PFApplicationHelper::enabled('com_pfrepo')) : ?>
     <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'project-attachments') ;?>
     <fieldset>
     	<div class="formelm control-group">
@@ -150,16 +151,18 @@ Joomla.submitbutton = function(task)
         <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'project-permissions') ;?>
-    <fieldset>
-        <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
-        <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
-        <div class="formlm" id="jform_rules_element">
-            <div id="jform_rules_reload" class="controls">
-                <?php echo $this->form->getInput('rules'); ?>
+    <?php if ($user->authorise('core.admin', 'com_pfprojects')) : ?>
+        <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'project-permissions') ;?>
+        <fieldset>
+            <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+            <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+            <div class="formlm" id="jform_rules_element">
+                <div id="jform_rules_reload" class="controls">
+                    <?php echo $this->form->getInput('rules'); ?>
+                </div>
             </div>
-        </div>
-    </fieldset>
+        </fieldset>
+    <?php endif; ?>
 
     <?php echo JHtml::_('tabs.end') ;?>
 

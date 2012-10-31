@@ -36,7 +36,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_labels` (
   `project_id` int(10) unsigned NOT NULL COMMENT 'The parent project id',
   `title` varchar(32) NOT NULL COMMENT 'Label title',
   `style` varchar(24) NOT NULL COMMENT 'Label CSS style',
-  `asset_group` varchar(16) NOT NULL COMMENT 'Assigned label asset group',
+  `asset_group` varchar(50) NOT NULL COMMENT 'Assigned label asset group',
   PRIMARY KEY (`id`),
   KEY `idx_group` (`project_id`,`asset_group`),
   KEY `idx_project` (`project_id`)
