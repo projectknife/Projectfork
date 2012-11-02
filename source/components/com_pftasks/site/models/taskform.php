@@ -188,9 +188,9 @@ class PFtasksModelTaskForm extends PFtasksModelTask
                 JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'));
             }
 
-            $refs = $this->getInstance('UserRefs', 'ProjectforkModel', array('ignore_request' => true));
+            $refs = $this->getInstance('UserRefs', 'PFusersModel', array('ignore_request' => true));
 
-            if (!$refs->store($uids, 'task', $pk)) {
+            if (!$refs->store($uids, 'com_pftasks.task', $pk)) {
                 return false;
             }
         }

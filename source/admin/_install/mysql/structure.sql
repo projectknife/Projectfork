@@ -144,7 +144,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_ref_tasks` (
 
 CREATE TABLE IF NOT EXISTS `#__pf_ref_users` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Item ID reference',
-  `item_type` varchar(32) NOT NULL COMMENT 'The item type',
+  `item_type` varchar(50) NOT NULL COMMENT 'The item type',
   `item_id` int(10) unsigned NOT NULL COMMENT 'The item id',
   `user_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'User ID reference',
   PRIMARY KEY (`id`),

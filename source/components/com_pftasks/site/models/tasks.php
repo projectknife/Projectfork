@@ -106,7 +106,10 @@ class PFtasksModelTasks extends JModelList
         // Join over the observer table for email notification status
         if ($user->get('id') > 0) {
             $query->select('COUNT(obs.user_id) AS watching');
-            $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = ' . $db->quote('task') . ' AND obs.item_id = a.id AND obs.user_id = ' . $db->quote($user->get('id')) . ')');
+            $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = '
+                               . $db->quote('com_pftasks.task') . ' AND obs.item_id = a.id AND obs.user_id = '
+                               . $db->quote($user->get('id')) . ')'
+                        );
         }
 
         // Implement View Level Access
@@ -118,7 +121,7 @@ class PFtasksModelTasks extends JModelList
         // Filter by assigned user
         $assigned = $this->getState('filter.assigned');
         if (is_numeric($assigned) && intval($assigned) != 0) {
-            $query->join('INNER', '#__pf_ref_users AS ru ON (ru.item_type = ' . $db->quote('task') . ' AND ru.item_id = a.id)');
+            $query->join('INNER', '#__pf_ref_users AS ru ON (ru.item_type = ' . $db->quote('com_pftasks.task') . ' AND ru.item_id = a.id)');
             $query->where('ru.user_id = ' . (int) $assigned);
         }
 
@@ -202,7 +205,7 @@ class PFtasksModelTasks extends JModelList
             $items[$i]->params = clone $this->getState('params');
 
             // Get assigned users
-            $items[$i]->users = $ref->getItems('task', $items[$i]->id);
+            $items[$i]->users = $ref->getItems('com_pftasks.task', $items[$i]->id);
 
             // Create item slugs
             $items[$i]->slug           = $items[$i]->alias           ? ($items[$i]->id . ':' . $items[$i]->alias)                     : $items[$i]->id;
@@ -287,6 +290,7 @@ class PFtasksModelTasks extends JModelList
 
         // Return empty array if no project is select
         $project = (int) $this->getState('filter.project');
+
         if ($project < 0) {
             return array();
         }
