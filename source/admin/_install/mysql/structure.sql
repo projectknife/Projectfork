@@ -187,7 +187,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   `rate` decimal(5,2) NOT NULL COMMENT 'Hourly rate',
   `estimate` int(10) unsigned NOT NULL COMMENT 'Estimated time required for this task to complete',
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_alias` (`project_id`,`alias`),
+  UNIQUE KEY `idx_alias` (`project_id`,`milestone_id`,`list_id`,`alias`),
   KEY `idx_projectid` (`project_id`),
   KEY `idx_listid` (`list_id`),
   KEY `idx_milestone` (`milestone_id`),
