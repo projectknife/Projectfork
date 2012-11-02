@@ -625,7 +625,7 @@ class PFtasksModelTask extends JModelAdmin
 		}
         elseif (!empty($record->list_id)) {
 		    // New item, so check against the list.
-			return $user->authorise('core.edit.state', 'com_pftasklists.tasklist.' . (int) $record->list_id);
+			return $user->authorise('core.edit.state', 'com_pftasks.tasklist.' . (int) $record->list_id);
 		}
         elseif (!empty($record->milestone_id)) {
 		    // New item, so check against the milestone.
