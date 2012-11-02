@@ -1,6 +1,7 @@
 <?php
 /**
  * @package      Projectfork
+ * @subpackage   Tasks
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
@@ -14,10 +15,11 @@ JHtml::_('behavior.keepalive');
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.calendar');
 JHtml::_('behavior.formvalidation');
-JHtml::_('projectfork.script.form');
+JHtml::_('pfhtml.script.form');
 
 // Create shortcut to parameters.
 $params = $this->state->get('params');
+$user   = JFactory::getUser();
 ?>
 <script type="text/javascript">
 jQuery(document).ready(function()
@@ -54,14 +56,16 @@ Joomla.submitbutton = function(task)
                 <?php echo $this->form->getInput('project_id'); ?>
             </div>
         </div>
-        <div class="formelm control-group">
-            <div class="control-label">
-                <?php echo $this->form->getLabel('milestone_id'); ?>
+        <?php if (PFApplicationHelper::enabled('com_pfmilestones')) : ?>
+            <div class="formelm control-group">
+                <div class="control-label">
+                    <?php echo $this->form->getLabel('milestone_id'); ?>
+                </div>
+                <div class="controls" id="jform_milestone_id_reload">
+                    <?php echo $this->form->getInput('milestone_id'); ?>
+                </div>
             </div>
-            <div class="controls" id="jform_milestone_id_reload">
-                <?php echo $this->form->getInput('milestone_id'); ?>
-            </div>
-        </div>
+        <?php endif; ?>
         <div class="formelm control-group">
             <div class="control-label">
                 <?php echo $this->form->getLabel('title'); ?>
@@ -130,7 +134,7 @@ Joomla.submitbutton = function(task)
     <?php
     $fieldsets = $this->form->getFieldsets('attribs');
     if (count($fieldsets)) :
-        echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_DETAILS_FIELDSET'), 'milestone-options');
+        echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_DETAILS_FIELDSET'), 'tasklist-options');
 		foreach ($fieldsets as $name => $fieldset) :
             ?>
 			<fieldset>
@@ -144,16 +148,18 @@ Joomla.submitbutton = function(task)
         <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'milestone-permissions') ;?>
-    <fieldset>
-        <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
-        <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
-        <div class="formlm" id="jform_rules_element">
-            <div id="jform_rules_reload" class="controls">
-                <?php echo $this->form->getInput('rules'); ?>
+    <?php if ($user->authorise('core.admin', 'com_pftasks')) : ?>
+        <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'tasklist-permissions') ;?>
+        <fieldset>
+            <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+            <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+            <div class="formlm" id="jform_rules_element">
+                <div id="jform_rules_reload" class="controls">
+                    <?php echo $this->form->getInput('rules'); ?>
+                </div>
             </div>
-        </div>
-    </fieldset>
+        </fieldset>
+    <?php endif; ?>
     <?php echo JHtml::_('tabs.end') ;?>
 
     <div id="jform_access_element">

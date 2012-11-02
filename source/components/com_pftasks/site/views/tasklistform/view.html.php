@@ -1,6 +1,7 @@
 <?php
 /**
  * @package      Projectfork
+ * @subpackage   Tasks
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
@@ -14,10 +15,10 @@ jimport('joomla.application.component.view');
 
 
 /**
- * Task List Form View Class for Projectfork component
+ * Task List Form View Class
  *
  */
-class ProjectforkViewTasklistForm extends JViewLegacy
+class PFtasksViewTasklistForm extends JViewLegacy
 {
     protected $form;
     protected $item;
@@ -41,8 +42,8 @@ class ProjectforkViewTasklistForm extends JViewLegacy
 
         // Permission check.
         if ($this->item->id <= 0) {
-            $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
-            $authorised = $access->get('tasklist.create');
+            $access = PFtasksHelper::getListActions();
+            $authorised = $access->get('core.create');
         }
         else {
             $authorised = $this->item->params->get('access-edit');
@@ -136,10 +137,11 @@ class ProjectforkViewTasklistForm extends JViewLegacy
     protected function getToolbar()
     {
         $options = array();
-        $access  = ProjectforkHelperAccess::getActions(null, 0, true);
+        $user    = JFactory::getUser();
+        $access  = PFtasksHelper::getListActions();
 
-        $create_task = $access->get('task.create');
-        $create_ms   = $access->get('milestone.create');
+        $create_task = true;
+        $create_ms   = $user->authorise('core.create', 'com_pfmilestones');
 
         $options[] = array(
             'text' => 'JSAVE',
@@ -168,15 +170,15 @@ class ProjectforkViewTasklistForm extends JViewLegacy
             'task' => $this->getName() . '.save2task',
             'options' => array('access' => $create_task));
 
-        ProjectforkHelperToolbar::dropdownButton($options, array('icon' => 'icon-white icon-ok'));
+        PFToolbar::dropdownButton($options, array('icon' => 'icon-white icon-ok'));
 
-        ProjectforkHelperToolbar::button(
+        PFToolbar::button(
             'JCANCEL',
             $this->getName() . '.cancel',
             false,
             array('class' => '', 'icon' => '')
         );
 
-        return ProjectforkHelperToolbar::render();
+        return PFToolbar::render();
     }
 }

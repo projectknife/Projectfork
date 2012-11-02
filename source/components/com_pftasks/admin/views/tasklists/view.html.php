@@ -52,7 +52,7 @@ class PFtasksViewTasklists extends JViewLegacy
     protected function addToolbar()
     {
         $project = $this->state->get('filter.project');
-        $access  = PFtasksHelper::getListActions(null, $project);
+        $access  = PFtasksHelper::getListActions();
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_TASKLISTS_TITLE'), 'article.png');
 
