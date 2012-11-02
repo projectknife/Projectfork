@@ -1,13 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
-	<layout title="com_projectfork_milestones_view_default_title" option="com_projectfork_milestones_view_default_option">
-		<help key = "JHELP_MENUS_MENU_ITEM_MILESTONES_DEFAULT" />
-		<message><![CDATA[com_projectfork_milestones_view_default_desc]]></message>
+	<layout title="COM_PFMILESTONES_MILESTONES_VIEW_DEFAULT_TITLE" option="COM_PFMILESTONES_MILESTONES_VIEW_DEFAULT_OPTION">
+		<message><![CDATA[COM_PFMILESTONES_MILESTONES_VIEW_DEFAULT_DESC]]></message>
 	</layout>
-	
-	<fields name="params">
-	    <fieldset name="advanced" label="JGLOBAL_LIST_LAYOUT_OPTIONS">
-			<field name="date_format" type="text" size="15" label="COM_PROJECTFORK_CONFIG_DATE_FORMAT_LABEL" description="JGLOBAL_DATE_FORMAT_DESC" />
-	    </fieldset>
-	</fields>
 </metadata>
