@@ -1,7 +1,7 @@
 <?php
 /**
  * @package      Projectfork
- * @subpackage   Tasklists
+ * @subpackage   Tasks
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
@@ -18,7 +18,7 @@ jimport('joomla.application.component.controlleradmin');
  * Tasklists list controller class.
  *
  */
-class PFtasklistsControllerTasklists extends JControllerAdmin
+class PFtasksControllerTasklists extends JControllerAdmin
 {
     /**
      * The prefix to use with controller messages.
@@ -47,7 +47,7 @@ class PFtasklistsControllerTasklists extends JControllerAdmin
      * @param     string    $prefix    The prefix for the PHP class name.
      * @return    jmodel
      */
-    public function getModel($name = 'Tasklist', $prefix = 'PFtasklistsModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Tasklist', $prefix = 'PFtasksModel', $config = array('ignore_request' => true))
     {
         $model = parent::getModel($name, $prefix, $config);
 
