@@ -173,7 +173,7 @@ class PFprojectsModelProject extends JModelAdmin
 
                     if ($file['error']) {
                         if (PFApplicationHelper::exists('com_pfrepo')) {
-                            $error = ProjectforkHelperRepository::getFileErrorMsg($file['error'], $file['name']);
+                            $error = PFrepoHelper::getFileErrorMsg($file['error'], $file['name']);
                             $this->setError($error);
                         }
 
@@ -196,7 +196,7 @@ class PFprojectsModelProject extends JModelAdmin
             return false;
         }
 
-        if (!ProjectforkProcImage::isImage($file['name'], $file['tmp_name'])) {
+        if (!PFImage::isValid($file['name'], $file['tmp_name'])) {
             $this->setError(JText::_('COM_PROJECTFORK_WARNING_NOT_AN_IMAGE'));
             return false;
         }
@@ -593,7 +593,6 @@ class PFprojectsModelProject extends JModelAdmin
             $app->setUserState('com_projectfork.project.active.title', $table->title);
         }
         else {
-
             $app->setUserState('com_projectfork.project.active.id', 0);
             $app->setUserState('com_projectfork.project.active.title', '');
         }

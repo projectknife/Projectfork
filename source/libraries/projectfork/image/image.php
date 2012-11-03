@@ -1,6 +1,7 @@
 <?php
 /**
-* @package      Projectfork
+* @package      Projectfork.Library
+* @subpackage   Image
 *
 * @author       Tobias Kuhn (eaxs)
 * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
@@ -16,14 +17,14 @@ jimport('joomla.filesystem.file');
 
 
 /**
- * Projectfork Image Processor class
+ * Projectfork Image class
  *
  */
-class ProjectforkProcImage
+abstract class PFImage
 {
     public static $valid_extension = array('jpg', 'jpeg', 'png', 'gif');
 
-    public static function isImage($name, $path = NULL)
+    public static function isValid($name, $path = NULL)
     {
         $ext = strtolower(JFile::getExt($name));
 
@@ -49,6 +50,4 @@ class ProjectforkProcImage
 
         return true;
     }
-
-
 }
