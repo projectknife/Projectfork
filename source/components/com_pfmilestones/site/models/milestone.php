@@ -135,9 +135,9 @@ class PFmilestonesModelMilestone extends JModelItem
                 }
                 else {
                     // If no access filter is set, the layout takes some responsibility for display of limited information.
-                    $groups = JFactory::getUser()->getAuthorisedViewLevels();
+                    $levels = JFactory::getUser()->getAuthorisedViewLevels();
 
-                    $data->params->set('access-view', in_array($data->access, $groups));
+                    $data->params->set('access-view', in_array($data->access, $levels));
                 }
 
                 $this->_item[$pk] = $data;

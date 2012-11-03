@@ -34,7 +34,7 @@ class PFmilestonesViewMilestone extends JViewLegacy
         $dispatcher	= JDispatcher::getInstance();
 		$user		= JFactory::getUser();
 
-		$uid  = $user->get('id');
+		$uid   = $user->get('id');
 		$item  = $this->get('Item');
 		$state = $this->get('State');
         $print = JRequest::getBool('print');

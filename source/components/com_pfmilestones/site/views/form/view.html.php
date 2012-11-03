@@ -132,10 +132,6 @@ class PFmilestonesViewForm extends JViewLegacy
     protected function getToolbar()
     {
         $options = array();
-        $access  = PFmilestonesHelper::getActions($this->item->id, $this->state->get('filter.project'));
-
-        $create_list = $access->get('core.create');
-        $create_task = $access->get('core.create');
 
         $options[] = array(
             'text' => 'JSAVE',
@@ -150,19 +146,17 @@ class PFmilestonesViewForm extends JViewLegacy
             'task' => $this->getName() . '.save2copy',
             'options' => array('access' => ($this->item->id > 0)));
 
-        if ($create_list || $create_task) {
+        if (PFApplicationHelper::enabled('com_pftasks') && JFactory::getUser()->authorise('core.create', 'com_pftasks')) {
             $options[] = array('text' => 'divider');
+
+            $options[] = array(
+                'text' => 'COM_PROJECTFORK_ACTION_2TASKLIST',
+                'task' => $this->getName() . '.save2tasklist');
+
+            $options[] = array(
+                'text' => 'COM_PROJECTFORK_ACTION_2TASK',
+                'task' => $this->getName() . '.save2task');
         }
-
-        $options[] = array(
-            'text' => 'COM_PROJECTFORK_ACTION_2TASKLIST',
-            'task' => $this->getName() . '.save2tasklist',
-            'options' => array('access' => $create_list));
-
-        $options[] = array(
-            'text' => 'COM_PROJECTFORK_ACTION_2TASK',
-            'task' => $this->getName() . '.save2task',
-            'options' => array('access' => $create_task));
 
         PFToolbar::dropdownButton($options, array('icon' => 'icon-white icon-ok'));
 

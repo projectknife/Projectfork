@@ -148,6 +148,7 @@ class PFmilestonesModelMilestones extends JModelList
         if (!$user->authorise('core.admin')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
+            $query->where('p.access IN (' . $groups . ')');
         }
 
         // Filter by project
@@ -184,11 +185,11 @@ class PFmilestonesModelMilestones extends JModelList
                 $query->where('a.id = ' . (int) substr($search, 3));
             }
             elseif (stripos($search, 'author:') === 0) {
-                $search = $db->Quote('%' . $db->escape(substr($search, 7), true) . '%');
+                $search = $db->quote('%' . $db->escape(substr($search, 7), true) . '%');
                 $query->where('(ua.name LIKE ' . $search.' OR ua.username LIKE ' . $search . ')');
             }
             else {
-                $search = $db->Quote('%' . $db->escape($search, true) . '%');
+                $search = $db->quote('%' . $db->escape($search, true) . '%');
                 $query->where('(a.title LIKE ' . $search.' OR a.alias LIKE ' . $search . ')');
             }
         }

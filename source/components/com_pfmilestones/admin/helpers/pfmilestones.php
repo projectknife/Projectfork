@@ -16,7 +16,7 @@ class PFmilestonesHelper
     /**
      * The component name
      *
-     * @var    string
+     * @var    string    
      */
     public static $extension = 'com_pfmilestones';
 
@@ -26,7 +26,7 @@ class PFmilestonesHelper
      *
      * @param     string    $view    The name of the active view.
      *
-     * @return    void
+     * @return    void               
      */
     public static function addSubmenu($view)
     {
@@ -58,21 +58,17 @@ class PFmilestonesHelper
     /**
      * Gets a list of actions that can be performed.
      *
-     * @param     integer    $id         The item id
-     * @param     integer    $project    The project id
+     * @param     integer    $id    The item id
      *
-     * @return    jobject
+     * @return    jobject           
      */
-    public static function getActions($id = 0, $project = 0)
+    public static function getActions($id = 0)
     {
         $user   = JFactory::getUser();
         $result = new JObject;
 
-        if ((empty($id) || $id == 0) && (empty($project) || $project == 0)) {
+        if ((int) $id <= 0) {
             $asset = self::$extension;
-        }
-        elseif (empty($id) || $id == 0) {
-            $asset = 'com_pfprojects.project.' . (int) $project;
         }
         else {
             $asset = 'com_pfmilestones.milestone.' . (int) $id;

@@ -510,7 +510,7 @@ class PFmilestonesModelMilestone extends JModelAdmin
             if ($record->state != -2) return false;
 
             $user  = JFactory::getUser();
-            $asset = 'com_pfmilestones.milestone.' . (int) $record->id;
+            $asset = $this->option . '.milestone.' . (int) $record->id;
 
             return $user->authorise('core.delete', $asset);
         }
@@ -533,16 +533,11 @@ class PFmilestonesModelMilestone extends JModelAdmin
 
 		// Check for existing item.
 		if (!empty($record->id)) {
-			return $user->authorise('core.edit.state', 'com_pfmilestones.milestone.' . (int) $record->id);
+			return $user->authorise('core.edit.state', $this->option . '.milestone.' . (int) $record->id);
 		}
-		elseif (!empty($record->project_id)) {
-		    // New item, so check against the project.
-			return $user->authorise('core.edit.state', 'com_pfprojects.project.' . (int) $record->project_id);
-		}
-		else {
-		    // Default to component settings.
-			return parent::canEditState('com_pfmilestones');
-		}
+
+        // Default to component settings.
+		return parent::canEditState($record);
     }
 
 
@@ -560,11 +555,11 @@ class PFmilestonesModelMilestone extends JModelAdmin
 
         // Check for existing item.
         if (!empty($record->id)) {
-            $asset = 'com_pfmilestones.milestone.' . (int) $record->id;
+            $asset = $this->option . '.milestone.' . (int) $record->id;
 
             return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
         }
 
-        return $user->authorise('core.edit', 'com_pfmilestones');
+        return $user->authorise('core.edit', $this->option);
     }
 }

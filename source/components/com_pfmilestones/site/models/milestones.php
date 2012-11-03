@@ -113,6 +113,7 @@ class PFmilestonesModelMilestones extends JModelList
         if (!$user->authorise('core.admin', 'com_pfmilestones')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
+            $query->where('p.access IN (' . $groups . ')');
         }
 
         // Filter labels
