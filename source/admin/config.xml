@@ -1,6 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-	<fieldset name="compat_parameters" label="COM_PROJECTFORK_CONFIG_COMPAT_LABEL" description="COM_PROJECTFORK_CONFIG_COMPAT_DESC">
+	<fieldset name="general" label="COM_PROJECTFORK_CONFIG_GENERAL_LABEL" description="COM_PROJECTFORK_CONFIG_GENERAL_DESC">
+        <field type="text" name="date_format" label="COM_PROJECTFORK_CONFIG_DATE_FORMAT_LABEL" description="JGLOBAL_DATE_FORMAT_DESC" default=""/>
+        <field type="spacer" hr="true"/>
+        <field type="text" name="currency_code" label="COM_PROJECTFORK_CONFIG_CURRENCY_CODE_LABEL" description="COM_PROJECTFORK_CONFIG_CURRENCY_CODE_DESC" default="USD" maxlength="3" size="10"/>
+        <field type="text" name="currency_sign" label="COM_PROJECTFORK_CONFIG_CURRENCY_SIGN_LABEL" description="COM_PROJECTFORK_CONFIG_CURRENCY_SIGN_DESC" default="$" maxlength="1" size="10"/>
+        <field name="currency_position" type="radio" default="0" label="COM_PROJECTFORK_CONFIG_CURRENCY_POS_LABEL" description="COM_PROJECTFORK_CONFIG_CURRENCY_POS_DESC">
+		    <option value="0">COM_PROJECTFORK_CONFIG_CURRENCY_POS_BEFORE_OPTION</option>
+			<option value="1">COM_PROJECTFORK_CONFIG_CURRENCY_POS_AFTER_OPTION</option>
+		</field>
+        <field type="text" name="decimal_delimiter" label="COM_PROJECTFORK_CONFIG_DECIMAL_DELIMITER_LABEL" description="COM_PROJECTFORK_CONFIG_DECIMAL_DELIMITER_DESC" default="." maxlength="1" size="10"/>
+        <field type="text" name="thousands_delimiter" label="COM_PROJECTFORK_CONFIG_THOUSANDS_DELIMITER_LABEL" description="COM_PROJECTFORK_CONFIG_THOUSANDS_DELIMITER_DESC" default="," maxlength="1" size="10"/>
+    </fieldset>
+    <fieldset name="compat" label="COM_PROJECTFORK_CONFIG_COMPAT_LABEL" description="COM_PROJECTFORK_CONFIG_COMPAT_DESC">
        <field name="projectfork_css" type="list" default="1" label="COM_PROJECTFORK_CONFIG_CSS_LABEL" description="COM_PROJECTFORK_CONFIG_CSS_DESC">
 		    <option value="0">JNO</option>
 			<option value="1">JYES</option>

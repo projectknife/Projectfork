@@ -86,5 +86,9 @@ class PFmilestonesViewMilestones extends JViewLegacy
             JToolBarHelper::trash('milestones.trash');
             JToolBarHelper::divider();
         }
+
+        if (JFactory::getUser()->authorise('core.admin')) {
+            JToolBarHelper::preferences('com_pfmilestones');
+        }
     }
 }

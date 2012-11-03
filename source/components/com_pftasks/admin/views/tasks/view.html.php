@@ -90,5 +90,9 @@ class PFtasksViewTasks extends JViewLegacy
             JToolBarHelper::trash('tasks.trash');
             JToolBarHelper::divider();
         }
+
+        if (JFactory::getUser()->authorise('core.admin')) {
+            JToolBarHelper::preferences('com_pftasks');
+        }
     }
 }

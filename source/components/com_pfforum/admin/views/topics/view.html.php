@@ -88,7 +88,6 @@ class PFforumViewTopics extends JViewLegacy
     protected function addToolbar()
     {
         $access = PFforumHelper::getActions(null, $this->state->get('filter.project'));
-        $user   = JFactory::getUser();
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_DISCUSSIONS_TITLE'), 'article.png');
 
@@ -117,6 +116,10 @@ class PFforumViewTopics extends JViewLegacy
         elseif ($access->get('core.edit.state')) {
             JToolBarHelper::trash('topics.trash');
             JToolBarHelper::divider();
+        }
+
+        if (JFactory::getUser()->authorise('core.admin')) {
+            JToolBarHelper::preferences('com_pfforum');
         }
     }
 }

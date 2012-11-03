@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
-    <fieldset name="general_parameters" label="COM_PROJECTFORK_CONFIG_GENERAL_LABEL" description="COM_PROJECTFORK_CONFIG_GENERAL_DESC">
-        <field type="text" name="date_format" label="COM_PROJECTFORK_CONFIG_DATE_FORMAT_LABEL" description="JGLOBAL_DATE_FORMAT_DESC" default=""/>
+    <fieldset name="general" label="COM_PFREPO_CONFIG_GENERAL_LABEL" description="COM_PFREPO_CONFIG_GENERAL_DESC"
+        addfieldpath="administrator/components/com_pfrepo/models/fields"
+    >
         <field type="repopath" name="repo_basepath" default=""
-            label="COM_PROJECTFORK_CONFIG_REPO_BASEPATH_LABEL" description="COM_PROJECTFORK_CONFIG_REPO_BASEPATH_DESC"
+            label="COM_PFREPO_CONFIG_REPO_BASEPATH_LABEL" description="COM_PFREPO_CONFIG_REPO_BASEPATH_DESC"
         />
     </fieldset>
     <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">

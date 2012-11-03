@@ -117,5 +117,9 @@ class PFtimeViewTimesheet extends JViewLegacy
             JToolBarHelper::trash('timesheet.trash');
             JToolBarHelper::divider();
         }
+
+        if ($user->authorise('core.admin')) {
+            JToolBarHelper::preferences('com_pftime');
+        }
     }
 }

@@ -52,11 +52,9 @@ class ProjectforkViewDashboard extends JViewLegacy
      */
     protected function addToolbar()
     {
-        $user = JFactory::getUser();
-
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_DASHBOARD_TITLE'), 'article.png');
 
-        if ($user->authorise('core.admin')) {
+        if (JFactory::getUser()->authorise('core.admin')) {
             JToolBarHelper::preferences('com_projectfork');
         }
     }
