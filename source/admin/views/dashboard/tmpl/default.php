@@ -36,7 +36,7 @@ defined('_JEXEC') or die();
             <?php if (PFApplicationHelper::enabled('com_pftasks')) : ?>
             <div class="icon-wrapper span2">
                 <div class="icon">
-                    <a href="index.php?option=com_projectfork&view=tasklists" class="thumbnail btn">
+                    <a href="index.php?option=com_pftasks&view=tasklists" class="thumbnail btn">
                         <?php echo JHtml::image('com_projectfork/projectfork/header/icon-48-tasklists.png', JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS'), null, true); ?>
                         <span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS');?></span>
                     </a>
