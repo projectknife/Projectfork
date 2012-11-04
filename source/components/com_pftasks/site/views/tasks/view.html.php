@@ -165,22 +165,21 @@ class PFtasksViewTasks extends JViewLegacy
     {
         $access = PFtasksHelper::getActions();
         $state  = $this->get('State');
+        $create = $access->get('core.create');
 
-        $create_list = $access->get('core.create');
-        $create_task = $access->get('core.create');
+        if ($create) {
+            $items = array();
+            $items[] = array('text' => 'COM_PROJECTFORK_ACTION_NEW_TASK',
+                             'task' => 'taskform.add');
 
-        $items = array();
-        $items[] = array('text'    => 'COM_PROJECTFORK_ACTION_NEW_TASK',
-                         'task'    => 'taskform.add',
-                         'options' => array('access' => $create_task));
+            $items[] = array('text' => 'COM_PROJECTFORK_ACTION_NEW_TASKLIST',
+                             'task' => 'tasklistform.add');
 
-        $items[] = array('text'    => 'COM_PROJECTFORK_ACTION_NEW_TASKLIST',
-                         'task'    => 'tasklistform.add',
-                         'options' => array('access' => $create_list));
-
-        PFToolbar::dropdownButton($items);
+            PFToolbar::dropdownButton($items);
+        }
 
         $items = array();
+
         if ($access->get('core.edit.state')) {
             $items[] = array('text' => 'COM_PROJECTFORK_ACTION_PUBLISH',   'task' => $this->getName() . '.publish');
             $items[] = array('text' => 'COM_PROJECTFORK_ACTION_UNPUBLISH', 'task' => $this->getName() . '.unpublish');

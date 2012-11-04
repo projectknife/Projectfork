@@ -129,17 +129,35 @@ class PFtasksControllerTasklistForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
+        $user  = JFactory::getUser();
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
         if (isset($data['milestone_id'])) {
-            $access = PFmilestonesHelper::getActions($data['milestone_id']);
+            // Check if the user has access to the milestone
+            $query->select('access')
+                  ->from('#__pf_milestones')
+                  ->where('id = ' . $db->quote((int) $data['milestone_id']));
+
+            $db->setQuery($query);
+            $level  = (int) $db->loadResult();
+            $access = in_array($id, $user->getAuthorisedViewLevels());
         }
         elseif (isset($data['project_id'])) {
-            $access = PFprojectsHelper::getActions($data['project_id']);
+            // Check if the user has access to the project
+            $query->select('access')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . $db->quote((int) $data['project_id']));
+
+            $db->setQuery($query);
+            $level  = (int) $db->loadResult();
+            $access = in_array($id, $user->getAuthorisedViewLevels());
         }
         else {
-            $access = PFtasksHelper::getListActions();
+            $access = true;
         }
 
-        return $access->get('core.create');
+        return ($user->authorise('core.create', 'com_pftasks') && $access);
     }
 
 

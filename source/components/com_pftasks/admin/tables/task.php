@@ -79,30 +79,7 @@ class PFtableTask extends PFTable
 
             if ($result) $asset_id = (int) $result;
         }
-        elseif ($this->milestone_id)  {
-            // This is a task under a milestone.
-            $query->select('asset_id')
-                  ->from('#__pf_milestones')
-                  ->where('id = ' . (int) $this->milestone_id);
-
-            $this->_db->setQuery($query);
-            $result = $this->_db->loadResult();
-
-            if ($result) $asset_id = (int) $result;
-        }
-        elseif ($this->project_id) {
-            // This is a task under a project.
-            $query->select('asset_id')
-                  ->from('#__pf_projects')
-                  ->where('id = ' . (int) $this->project_id);
-
-            $this->_db->setQuery($query);
-            $result = $this->_db->loadResult();
-
-            if ($result) $asset_id = (int) $result;
-        }
-
-        if (!$asset_id) {
+        else {
             // No asset found, fall back to the component
             $query->clear();
             $query->select($this->_db->quoteName('id'))

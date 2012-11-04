@@ -82,7 +82,7 @@ class PFtasksModelTaskForm extends PFtasksModelTask
             $value->params->set('access-edit', true);
         }
         // Now check if edit.own is available.
-        elseif (!empty($uid) && $access->authorise('core.edit.own')) {
+        elseif (!empty($uid) && $access->get('core.edit.own')) {
             // Check for a valid user and that they are the owner.
             if ($uid == $value->created_by) {
                 $value->params->set('access-edit', true);

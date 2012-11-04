@@ -150,11 +150,10 @@ class PFmilestonesControllerForm extends JControllerForm
             $access = in_array($id, $user->getAuthorisedViewLevels());
         }
         else {
-            // Fall back to the component
-            $access = $user->authorise('core.create', $this->option);
+            $access = true;
         }
 
-        return $access;
+        return ($user->authorise('core.create', 'com_pfmilestones') && $access);
     }
 
 

@@ -16,7 +16,7 @@ class PFtasksHelper
     /**
      * The component name
      *
-     * @var    string
+     * @var    string    
      */
     public static $extension = 'com_pftasks';
 
@@ -26,7 +26,7 @@ class PFtasksHelper
      *
      * @param     string    $view    The name of the active view.
      *
-     * @return    void
+     * @return    void               
      */
     public static function addSubmenu($view)
     {
@@ -66,14 +66,12 @@ class PFtasksHelper
     /**
      * Gets a list of actions that can be performed.
      *
-     * @param     integer    $id           The item id
-     * @param     integer    $project      The project id
-     * @param     integer    $milestone    The milestone id
-     * @param     integer    $list         The list id
+     * @param     integer    $id      The item id
+     * @param     integer    $list    The list id
      *
-     * @return    jobject
+     * @return    jobject             
      */
-    public static function getActions($id = 0, $project = 0, $milestone = 0, $list = 0)
+    public static function getActions($id = 0, $list = 0)
     {
         $user   = JFactory::getUser();
         $result = new JObject;
@@ -83,12 +81,6 @@ class PFtasksHelper
         }
         elseif ((int) $list > 0) {
             $asset = 'com_pftasks.tasklist.' . (int) $list;
-        }
-        elseif ((int) $milestone > 0) {
-            $asset = 'com_pfmilestones.milestone.' . (int) $milestone;
-        }
-        elseif ((int) $project > 0) {
-            $asset = 'com_pfprojects.project.' . (int) $project;
         }
         else {
             $asset = self::$extension;
@@ -113,25 +105,17 @@ class PFtasksHelper
     /**
      * Gets a list of actions that can be performed on a task list.
      *
-     * @param     integer    $id           The item id
-     * @param     integer    $project      The project id
-     * @param     integer    $milestone    The milestone id
+     * @param     integer    $id    The item id
      *
-     * @return    jobject
+     * @return    jobject           
      */
-    public static function getListActions($id = 0, $project = 0, $milestone = 0)
+    public static function getListActions($id = 0)
     {
         $user   = JFactory::getUser();
         $result = new JObject;
 
         if ((int) $id > 0) {
             $asset = 'com_pftasks.tasklist.' . (int) $id;
-        }
-        elseif ((int) $milestone > 0) {
-            $asset = 'com_pfmilestones.milestone.' . (int) $milestone;
-        }
-        elseif ((int) $project > 0) {
-            $asset = 'com_pfprojects.project.' . (int) $project;
         }
         else {
             $asset = self::$extension;

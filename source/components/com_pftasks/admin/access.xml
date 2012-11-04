@@ -10,13 +10,15 @@
 		<action name="core.edit.own" title="JACTION_EDITOWN" description="JACTION_EDITOWN_COMPONENT_DESC" />
 	</section>
 	<section name="tasklist">
-		<action name="core.delete" title="COM_PROJECTFORK_THIS_TASKLIST_ACTION_DELETE" description="COM_PROJECTFORK_THIS_TASKLIST_ACTION_DELETE_DESC" />
-		<action name="core.edit" title="COM_PROJECTFORK_THIS_TASKLIST_ACTION_EDIT" description="COM_PROJECTFORK_THIS_TASKLIST_ACTION_EDIT_DESC" />
+		<action name="core.create" title="JACTION_CREATE" description="JACTION_CREATE_COMPONENT_DESC" />
+		<action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE_COMPONENT_DESC" />
+        <action name="core.edit" title="COM_PROJECTFORK_THIS_TASKLIST_ACTION_EDIT" description="COM_PROJECTFORK_THIS_TASKLIST_ACTION_EDIT_DESC" />
 		<action name="core.edit.state" title="COM_PROJECTFORK_THIS_TASKLIST_ACTION_EDITSTATE" description="COM_PROJECTFORK_THIS_TASKLIST_ACTION_EDITSTATE_DESC" />
+        <action name="core.delete" title="COM_PROJECTFORK_THIS_TASKLIST_ACTION_DELETE" description="COM_PROJECTFORK_THIS_TASKLIST_ACTION_DELETE_DESC" />
 	</section>
     <section name="task">
-		<action name="core.delete" title="COM_PROJECTFORK_THIS_TASK_ACTION_DELETE" description="COM_PROJECTFORK_THIS_TASK_ACTION_DELETE_DESC" />
 		<action name="core.edit" title="COM_PROJECTFORK_THIS_TASK_ACTION_EDIT" description="COM_PROJECTFORK_THIS_TASK_ACTION_EDIT_DESC" />
 		<action name="core.edit.state" title="COM_PROJECTFORK_THIS_TASK_ACTION_EDITSTATE" description="COM_PROJECTFORK_THIS_TASK_ACTION_EDITSTATE_DESC" />
+        <action name="core.delete" title="COM_PROJECTFORK_THIS_TASK_ACTION_DELETE" description="COM_PROJECTFORK_THIS_TASK_ACTION_DELETE_DESC" />
 	</section>
 </access>

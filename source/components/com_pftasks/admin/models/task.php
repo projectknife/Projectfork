@@ -627,14 +627,6 @@ class PFtasksModelTask extends JModelAdmin
 		    // New item, so check against the list.
 			return $user->authorise('core.edit.state', 'com_pftasks.tasklist.' . (int) $record->list_id);
 		}
-        elseif (!empty($record->milestone_id)) {
-		    // New item, so check against the milestone.
-			return $user->authorise('core.edit.state', 'com_pfmilestones.milestone.' . (int) $record->milestone_id);
-		}
-		elseif (!empty($record->project_id)) {
-		    // New item, so check against the project.
-			return $user->authorise('core.edit.state', 'com_pfprojects.project.' . (int) $record->project_id);
-		}
 		else {
 		    // Default to component settings.
 			return parent::canEditState('com_pftasks');
