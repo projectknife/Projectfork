@@ -127,6 +127,8 @@ class PFtasksControllerTaskForm extends JControllerForm
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
+        $access = true;
+
         if (isset($data['list_id'])) {
             // Check if the user has access to the task list
             $query->select('access')
@@ -137,28 +139,29 @@ class PFtasksControllerTaskForm extends JControllerForm
             $level  = (int) $db->loadResult();
             $access = (in_array($id, $user->getAuthorisedViewLevels()) && $user->authorise('core.create', 'com_pftasks.tasklist.' . (int) $data['list_id']));
         }
-        elseif (isset($data['milestone_id'])) {
+
+        if (isset($data['milestone_id']) && $access) {
             // Check if the user has access to the milestone
+            $query->clear();
             $query->select('access')
                   ->from('#__pf_milestones')
                   ->where('id = ' . $db->quote((int) $data['milestone_id']));
 
             $db->setQuery($query);
             $level  = (int) $db->loadResult();
-            $access = in_array($id, $user->getAuthorisedViewLevels());
+            $access = in_array($level, $user->getAuthorisedViewLevels());
         }
-        elseif (isset($data['project_id'])) {
+
+        if (isset($data['project_id']) && $access) {
             // Check if the user has access to the project
+            $query->clear();
             $query->select('access')
                   ->from('#__pf_projects')
                   ->where('id = ' . $db->quote((int) $data['project_id']));
 
             $db->setQuery($query);
             $level  = (int) $db->loadResult();
-            $access = in_array($id, $user->getAuthorisedViewLevels());
-        }
-        else {
-            $access = true;
+            $access = in_array($level, $user->getAuthorisedViewLevels());
         }
 
         return ($user->authorise('core.create', 'com_pftasks') && $access);
