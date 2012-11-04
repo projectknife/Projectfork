@@ -147,7 +147,7 @@ class PFmilestonesControllerForm extends JControllerForm
             $db->setQuery($query);
             $level = (int) $db->loadResult();
 
-            $access = in_array($id, $user->getAuthorisedViewLevels());
+            $access = in_array($level, $user->getAuthorisedViewLevels());
         }
         else {
             $access = true;
