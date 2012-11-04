@@ -429,7 +429,6 @@ class PFprojectsModelProject extends JModelAdmin
                 }
             }
 
-
             // Store the labels
             if (isset($data['labels'])) {
                 $labels = $this->getInstance('Labels', 'PFModel');
