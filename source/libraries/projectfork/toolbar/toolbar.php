@@ -72,9 +72,11 @@ abstract class PFToolbar
 
         foreach ($items AS $item)
         {
-            if (isset($item['options']['access'])) {
-                if ($item['options']['access'] == false) {
-                    continue;
+            if (isset($item['options'])) {
+                if (array_key_exists('access', $item['options'])) {
+                    if ($item['options']['access'] == false) {
+                        continue;
+                    }
                 }
             }
 
@@ -120,9 +122,11 @@ abstract class PFToolbar
 
         foreach ($items AS $item)
         {
-            if (isset($item['options']['access'])) {
-                if ($item['options']['access'] == false) {
-                    continue;
+            if (isset($item['options'])) {
+                if (array_key_exists('access', $item['options'])) {
+                    if ($item['options']['access'] == false) {
+                        continue;
+                    }
                 }
             }
 
@@ -206,8 +210,8 @@ abstract class PFToolbar
         $icon  = (isset($options['icon'])  ? $options['icon']  : 'icon-plus icon-white');
         $id    = (isset($options['id'])    ? ' id="' . $options['id'] . '"' : '');
 
-        if (isset($options['access'])) {
-            if ($options['access'] == false) {
+        if (array_key_exists('access', $options)) {
+            if ($options['access'] !== true) {
                 return '';
             }
         }
