@@ -1,6 +1,7 @@
 <?php
 /**
- * @package      Projectfork
+ * @package      Projectfork.Library
+ * @subpackage   Fields
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
@@ -199,7 +200,7 @@ class JFormFieldLabelManager extends JFormField
                     $html[] = '<option value="label-inverse"' . ($item->style == 'label-inverse' ? ' selected="selected"' : '') . '>' . JText::_('COM_PROJECTFORK_LABEL_OPTION_LABEL_STYLE_INVERSE') . '</option>';
                     $html[] = '</select>';
                     $html[] = JText::_('COM_PROJECTFORK_LABEL_PREVIEW') . ': ';
-                    $html[] = '<span class="label ' . $item->style . '"><i class="icon-tag"></i> ' . htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8') . '</span>';
+                    $html[] = '<span class="label ' . $item->style . '"><i class="icon-bookmark"></i> ' . htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8') . '</span>';
                     $html[] = '<input type="hidden" name="' . $this->name . '[' . $asset . '][id][]\" value="' . intval($item->id) . '"/>';
                     $html[] = '</div></li>';
                 }
@@ -250,7 +251,7 @@ class JFormFieldLabelManager extends JFormField
             $script[] = '          + "<option value=\"label-inverse\">' . JText::_('COM_PROJECTFORK_LABEL_OPTION_LABEL_STYLE_INVERSE') . '</option>"';
             $script[] = '          + "</select>"';
             $script[] = '          + "' . JText::_('COM_PROJECTFORK_LABEL_PREVIEW') . ': "';
-            $script[] = '          + "<span class=\"label\"><i class=\"icon-tag\"></i> ' . JText::_('COM_PROJECTFORK_LABEL_TITLE_PLACEHOLDER') . '</span>"';
+            $script[] = '          + "<span class=\"label\"><i class=\"icon-bookmark\"></i> ' . JText::_('COM_PROJECTFORK_LABEL_TITLE_PLACEHOLDER') . '</span>"';
             $script[] = '          + "<input type=\"hidden\" name=\"' . $this->name . '["+name+"][id][]\" value=\"0\"/>"';
             $script[] = '          + "</div></li>"';
             $script[] = '    ';
@@ -268,7 +269,7 @@ class JFormFieldLabelManager extends JFormField
             $script[] = '        if (data == "text") {';
             $script[] = '            var v = jQuery(el).val();';
             $script[] = '            if (v == "") v = "' . JText::_('COM_PROJECTFORK_LABEL_TITLE_PLACEHOLDER') . '";';
-            $script[] = '            lbl.html("<i class=\"icon-tag\"></i> " + v)';
+            $script[] = '            lbl.html("<i class=\"icon-bookmark\"></i> " + v)';
             $script[] = '        }';
             $script[] = '        if (data == "style") {';
             $script[] = '            var v = jQuery(el).val();';
