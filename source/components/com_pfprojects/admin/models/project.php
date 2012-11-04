@@ -455,6 +455,8 @@ class PFprojectsModelProject extends JModelAdmin
         $my_views = $user->getAuthorisedViewLevels();
         $projects = array();
 
+        $item_type = 'com_pfprojects.project';
+
         // Access checks.
         foreach ($pks as $i => $pk) {
             $table->reset();
@@ -484,7 +486,7 @@ class PFprojectsModelProject extends JModelAdmin
 
             if ($value == 0) {
                 $query->delete('#__pf_ref_observer')
-                      ->where('item_type = ' . $db->quote( str_replace('form', '', $this->getName()) ) )
+                      ->where('item_type = ' . $db->quote( $item_type ) )
                       ->where('item_id = ' . $db->quote((int) $pk))
                       ->where('user_id = ' . $db->quote((int) $user->get('id')));
 
@@ -499,7 +501,7 @@ class PFprojectsModelProject extends JModelAdmin
             else {
                 $query->select('COUNT(*)')
                       ->from('#__pf_ref_observer')
-                      ->where('item_type = ' . $db->quote( str_replace('form', '', $this->getName()) ) )
+                      ->where('item_type = ' . $db->quote( $item_type ) )
                       ->where('item_id = ' . $db->quote((int) $pk))
                       ->where('user_id = ' . $db->quote((int) $user->get('id')));
 
@@ -510,7 +512,7 @@ class PFprojectsModelProject extends JModelAdmin
                     $data = new stdClass;
 
                     $data->user_id   = (int) $user->get('id');
-                    $data->item_type = str_replace('form', '', $this->getName());
+                    $data->item_type = $item_type;
                     $data->item_id   = (int) $pk;
                     $data->project_id= (int) $projects[$pk];
 
