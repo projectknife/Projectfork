@@ -478,17 +478,18 @@ class PFprojectsModelProject extends JModelAdmin
         $pks   = (array) $pks;
 
         $is_admin = $user->authorise('core.admin', $this->option);
-        $my_views = $user->getAuthorisedViewLevels();
+        $levels   = $user->getAuthorisedViewLevels();
         $projects = array();
 
         $item_type = 'com_pfprojects.project';
 
         // Access checks.
-        foreach ($pks as $i => $pk) {
+        foreach ($pks as $i => $pk)
+        {
             $table->reset();
 
             if ($table->load($pk)) {
-                if (!$is_admin && !in_array($table->access, $my_views)) {
+                if (!$is_admin && !in_array($table->access, $levels)) {
                     unset($pks[$i]);
                     JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
                     $this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
@@ -512,7 +513,7 @@ class PFprojectsModelProject extends JModelAdmin
 
             if ($value == 0) {
                 $query->delete('#__pf_ref_observer')
-                      ->where('item_type = ' . $db->quote( $item_type ) )
+                      ->where('item_type = ' . $db->quote($item_type) )
                       ->where('item_id = ' . $db->quote((int) $pk))
                       ->where('user_id = ' . $db->quote((int) $user->get('id')));
 
@@ -527,7 +528,7 @@ class PFprojectsModelProject extends JModelAdmin
             else {
                 $query->select('COUNT(*)')
                       ->from('#__pf_ref_observer')
-                      ->where('item_type = ' . $db->quote( $item_type ) )
+                      ->where('item_type = ' . $db->quote($item_type) )
                       ->where('item_id = ' . $db->quote((int) $pk))
                       ->where('user_id = ' . $db->quote((int) $user->get('id')));
 

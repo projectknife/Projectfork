@@ -109,6 +109,14 @@ class PFControllerAdminJson extends JControllerAdmin
             $this->sendResponse($rdata);
         }
 
+        // Make sure the user is logged in
+        if (JFactory::getUser()->get('id') == 0) {
+            $rdata['success']    = "false";
+            $rdata['messages'][] = JText::_('JERROR_ALERTNOAUTHOR');
+
+            $this->sendResponse($rdata);
+        }
+
         $cid   = JRequest::getVar('cid', array(), '', 'array');
         $task  = $this->getTask();
         $data  = array('watch' => 1, 'unwatch' => 0);

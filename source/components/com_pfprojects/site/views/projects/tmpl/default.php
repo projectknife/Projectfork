@@ -98,8 +98,12 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                     if ($progress < 34)   $progress_class = 'danger label-important';
 
                     // Prepare the watch button
-                    $options = array('div-class' => 'pull-right', 'a-class' => 'btn-mini');
-                    $watch = JHtml::_('pfhtml.button.watch', 'projects', $i, $item->watching, $options);
+                    $watch = '';
+
+                    if ($uid) {
+                        $options = array('div-class' => 'pull-right', 'a-class' => 'btn-mini');
+                        $watch = JHtml::_('pfhtml.button.watch', 'projects', $i, $item->watching, $options);
+                    }
                 ?>
                 <?php if ($item->category_title != $current_cat && !is_numeric($this->state->get('filter.category'))) : ?>
                     </ul>
@@ -116,7 +120,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                         <?php endif ; ?>
                         <div class="caption">
                             <h3>
-                                <?php if ($can_change) : ?>
+                                <?php if ($can_change || $uid) : ?>
                                     <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
                                         <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
                                     </label>
