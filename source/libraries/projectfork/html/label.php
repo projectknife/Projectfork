@@ -68,10 +68,11 @@ abstract class PFhtmlLabel
         {
             $checked = (in_array($item->id, $selected) ? ' checked="checked"' : '');
             $class   = ($item->style != '' ? ' ' . $item->style : '');
+            $cbid    = htmlspecialchars(str_replace('.', '_', $asset) . '_label_' . $item->id, ENT_COMPAT, 'UTF-8');
 
             $html[] = '<li class="pull-left btn-group">';
-            $html[] = '<label class="checkbox">';
-            $html[] = '<input type="checkbox" class="inputbox" name="filter_label[]" value="' . (int) $item->id . '"' . $checked . '/>';
+            $html[] = '<label class="checkbox" for="' . $cbid . '" style="cursor:pointer">';
+            $html[] = '<input type="checkbox" id="' . $cbid . '" class="inputbox" name="filter_label[]" value="' . (int) $item->id . '"' . $checked . '/>';
             $html[] = '<span class="label' . $class . '">' . htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8') . '</span>';
             $html[] = '</label>';
             $html[] = '</li>';

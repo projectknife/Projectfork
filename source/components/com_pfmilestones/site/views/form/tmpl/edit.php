@@ -28,7 +28,7 @@ jQuery(document).ready(function()
 
 Joomla.submitbutton = function(task)
 {
-    if (task == 'milestoneform.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
+    if (task == 'form.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
         Joomla.submitform(task, document.getElementById('item-form'));
     } else {
         alert('<?php echo $this->escape(JText::_('JGLOBAL_VALIDATION_FORM_FAILED'));?>');
@@ -46,14 +46,16 @@ Joomla.submitbutton = function(task)
             <div class="formelm-buttons btn-toolbar">
                 <?php echo $this->toolbar; ?>
             </div>
-            <div class="formelm control-group">
-                <div class="control-label">
-                    <?php echo $this->form->getLabel('project_id'); ?>
+            <?php if ($this->item->id <= 0) : ?>
+                <div class="formelm control-group">
+                    <div class="control-label">
+                        <?php echo $this->form->getLabel('project_id'); ?>
+                    </div>
+                    <div class="controls">
+                        <?php echo $this->form->getInput('project_id'); ?>
+                    </div>
                 </div>
-                <div class="controls">
-                    <?php echo $this->form->getInput('project_id'); ?>
-                </div>
-            </div>
+            <?php endif; ?>
             <div class="formelm control-group">
                 <div class="control-label">
                     <?php echo $this->form->getLabel('title'); ?>
