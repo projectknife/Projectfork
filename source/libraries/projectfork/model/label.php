@@ -250,19 +250,6 @@ class PFModelLabel extends JModelAdmin
      */
     protected function canDelete($record)
     {
-        $user = JFactory::getUser();
-
-        if ($user->authorise('core.admin') || empty($record->id) || $record->id == 0) {
-            return true;
-        }
-
-        if (isset($record->item_type)) {
-            $access = ProjectforkHelperAccess::getActions('project', $record->project_id);
-            return ($access->get('project.delete') || $access->get('project.edit') || $access->get('project.edit.own'));
-        }
-        else {
-            $access = ProjectforkHelperAccess::getActions('project', $record->project_id);
-            return ($access->get('project.delete') || $access->get('project.edit') || $access->get('project.edit.own'));
-        }
+        return true;
     }
 }

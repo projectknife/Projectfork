@@ -208,11 +208,6 @@ class PFrepoModelAttachments extends JModelList
         // Get potential form data
         $form = JRequest::getVar('jform', array(), 'post', 'array');
 
-
-        // Item type
-        $value = str_replace('form', '', JRequest::getCmd('view', ''));
-        $this->setState('item.type', $value);
-
         // Item id
         $value = JRequest::getUint('id');
 
