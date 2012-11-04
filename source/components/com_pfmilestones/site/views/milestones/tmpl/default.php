@@ -107,8 +107,12 @@ $tasks_enabled = PFApplicationHelper::enabled('com_pftasks');
                 if ($progress < 34)   $progress_class = 'danger label-important';
 
                 // Prepare the watch button
-                $options = array('div-class' => 'pull-right', 'a-class' => 'btn-mini');
-                $watch = JHtml::_('pfhtml.button.watch', 'milestones', $i, $item->watching, $options);
+                $watch = '';
+
+                if ($uid) {
+                    $options = array('div-class' => 'pull-right', 'a-class' => 'btn-mini');
+                    $watch = JHtml::_('pfhtml.button.watch', 'milestones', $i, $item->watching, $options);
+                }
             ?>
                 <?php if ($item->project_title != $current_project && $pid <= 0) : ?>
                     <h3><?php echo $this->escape($item->project_title);?></h3>
@@ -116,7 +120,7 @@ $tasks_enabled = PFApplicationHelper::enabled('com_pftasks');
                 <?php $current_project = $item->project_title; endif; ?>
                 <div class="well well-small well-<?php echo $k;?>">
                 	<div class="btn-toolbar">
-                    	<?php if ($can_change) : ?>
+                    	<?php if ($can_change || $uid) : ?>
                             <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
                                 <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
                             </label>

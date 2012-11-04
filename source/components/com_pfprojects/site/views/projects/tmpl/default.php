@@ -152,8 +152,8 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                                     <span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $progress;?>%</span>
                                 </div>
                             </div>
-                            <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created, $this->params->get('date_format')); ?>
-                            <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date, $this->params->get('date_format')); ?>
+                            <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
+                            <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date); ?>
                     </div>
                 </li>
                 <?php
