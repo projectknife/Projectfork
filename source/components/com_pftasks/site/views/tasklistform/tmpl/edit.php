@@ -48,6 +48,7 @@ Joomla.submitbutton = function(task)
         <div class="formelm-buttons btn-toolbar">
             <?php echo $this->toolbar; ?>
         </div>
+        <?php if ($this->item->id <= 0) : ?>
         <div class="formelm control-group">
             <div class="control-label">
                 <?php echo $this->form->getLabel('project_id'); ?>
@@ -56,6 +57,7 @@ Joomla.submitbutton = function(task)
                 <?php echo $this->form->getInput('project_id'); ?>
             </div>
         </div>
+        <?php endif; ?>
         <?php if (PFApplicationHelper::enabled('com_pfmilestones')) : ?>
             <div class="formelm control-group">
                 <div class="control-label">

@@ -1,6 +1,7 @@
 <?php
 /**
  * @package      Projectfork
+ * @subpackage   Tasks
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
@@ -47,14 +48,16 @@ Joomla.submitbutton = function(task)
 		<div class="formelm-buttons btn-toolbar">
             <?php echo $this->toolbar; ?>
 		</div>
-		<div class="formelm control-group">
-			<div class="control-label">
-		    	<?php echo $this->form->getLabel('project_id'); ?>
-		    </div>
-		    <div class="controls">
-		    	<?php echo $this->form->getInput('project_id'); ?>
-		    </div>
-		</div>
+        <?php if ($this->item->id <= 0) : ?>
+    		<div class="formelm control-group">
+                <div class="control-label">
+    		    	<?php echo $this->form->getLabel('project_id'); ?>
+    		    </div>
+    		    <div class="controls">
+    		    	<?php echo $this->form->getInput('project_id'); ?>
+    		    </div>
+    		</div>
+        <?php endif; ?>
         <?php if (PFApplicationHelper::enabled('com_pfmilestones')) : ?>
     		<div class="formelm control-group">
     			<div class="control-label">
