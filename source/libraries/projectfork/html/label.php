@@ -140,12 +140,23 @@ abstract class PFhtmlLabel
      * Returns a date as literal label
      *
      * @param     string    $date      The date
-     * @param     string    $format    The new date format for the tooltip
+     * @param     string    $compact    If set to true, will only show the amount of days
      *
      * @return    string               The label html
      */
-    public static function datetime($date, $format = null)
+    public static function datetime($date, $compact = false)
     {
+        static $format = null;
+
+        if (is_null($format)) {
+            $params = JComponentHelper::getParams('com_projectfork');
+            $format = $params->get('date_format');
+
+            if (!$format) {
+                $format = JText::_('DATE_FORMAT_LC1');
+            }
+        }
+
         $string = PFdate::relative($date);
 
         if ($string == false) {
@@ -156,7 +167,11 @@ abstract class PFhtmlLabel
         $now       = time();
         $remaining = $timestamp - $now;
         $is_past   = ($remaining < 0) ? true : false;
-        $tooltip   = $string . '::' . JHtml::_('date', $date, ($format ? $format : JText::_('DATE_FORMAT_LC1')));
+        $tooltip   = $string . '::' . JHtml::_('date', $date, $format);
+
+        if ($compact) {
+            $string = ($is_past ? '' : '+') . round($remaining / 86400);
+        }
 
         $html = array();
         $html[] = '<span class="label ' . ($is_past ? 'label-important' : 'label-success');
@@ -202,6 +217,13 @@ abstract class PFhtmlLabel
     }
 
 
+    /**
+     * Returns the access level(s) of an item as label
+     *
+     * @param     integer    $id      The access level id
+     *
+     * @return    string               The label html
+     */
     public static function access($id = null)
     {
         static $is_admin = null;

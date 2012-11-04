@@ -153,7 +153,8 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                                 </div>
                             </div>
                             <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
-                            <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date); ?>
+                            <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
+                            <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date, true); ?>
                     </div>
                 </li>
                 <?php
