@@ -164,7 +164,7 @@ $tasks_enabled = PFApplicationHelper::enabled('com_pftasks');
                     <?php endif; ?>
                     <hr />
                     <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created, $this->params->get('date_format')); ?>
-                    <span class="label"><i class="icon-lock icon-white"></i> <?php echo $this->escape($item->access_level); ?></span>
+                    <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
                     <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date, $this->params->get('date_format')); ?>
                     <?php
                     if ($item->label_count > 0 && isset($item->labels))

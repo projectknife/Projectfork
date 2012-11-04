@@ -200,4 +200,76 @@ abstract class PFhtmlLabel
 
         return implode('', $html);
     }
+
+
+    public static function access($id = null)
+    {
+        static $is_admin = null;
+        static $cache    = array();
+
+        if (is_null($is_admin)) {
+            $is_admin = JFactory::getUser()->authorise('core.admin');
+        }
+
+        if (!$is_admin || !$id) {
+            return '';
+        }
+
+        if (!isset($cache[$id]) && $id) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $cache[$id] = array();
+
+            $query->select('rules')
+                  ->from('#__viewlevels')
+                  ->where('id = ' . $db->quote((int) $id));
+
+            $db->setQuery($query);
+            $rules = $db->loadResult();
+
+            if ($rules) {
+                $ids = json_decode($rules);
+
+                foreach ($ids AS $gid)
+                {
+                    $query->clear();
+                    $query->select('title')
+                          ->from('#__usergroups')
+                          ->where('id = ' . $db->quote((int) $gid));
+
+                    $db->setQuery($query);
+                    $title = $db->loadResult();
+
+                    if ($title) {
+                        $cache[$id][] = htmlspecialchars($title, ENT_COMPAT, 'UTF-8');
+                    }
+                }
+            }
+        }
+
+        $titles = $cache[$id];
+        $count  = count($titles);
+        $html   = array();
+
+        if ($count == 1) {
+            $html[] = '<span class="label access">';
+            $html[] = '<i class="icon-eye icon-white"></i> ';
+            $html[] = htmlspecialchars($titles[0], ENT_COMPAT, 'UTF-8');
+            $html[] = '</span>';
+        }
+        else {
+            $count = $count - 1;
+            $name  = trim(array_pop(array_reverse($titles)));
+
+            $tooltip = JText::_('JGRID_HEADING_ACCESS') . '::' . htmlspecialchars(implode('<br/>', $titles), ENT_COMPAT, 'UTF-8');
+
+            $html[] = '<span class="label hasTip" title="' . $tooltip . '" style="cursor: help">';
+            $html[] = '<i class="icon-eye icon-white"></i> ';
+            $html[] = htmlspecialchars($name, ENT_COMPAT, 'UTF-8') . ' +' . $count;
+            $html[] = '</span>';
+        }
+
+        return implode('', $html);
+    }
 }
