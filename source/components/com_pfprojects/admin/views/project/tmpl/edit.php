@@ -114,10 +114,7 @@ Joomla.submitbutton = function(task)
 
     <div>
 		<?php
-            echo $this->form->getInput('alias');
             echo $this->form->getInput('created');
-            echo $this->form->getInput('id');
-            echo $this->form->getInput('asset_id');
             echo $this->form->getInput('elements');
             echo $this->form->getInput('access');
         ?>

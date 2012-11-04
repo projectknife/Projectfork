@@ -107,9 +107,10 @@ class PFprojectsModelProjects extends JModelList
         }
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
-            $groups = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('a.access IN (' . $groups . ')');
+        if (!$user->authorise('core.admin', 'com_pfprojects')) {
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+
+            $query->where('a.access IN (' . $levels . ')');
         }
 
         // Filter by a single or group of categories.

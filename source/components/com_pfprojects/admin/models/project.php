@@ -237,16 +237,33 @@ class PFprojectsModelProject extends JModelAdmin
 
         // Check for existing item.
         // Modify the form based on Edit State access controls.
-        if ($id != 0 && (!$user->authorise('core.edit.state', 'com_pfprojects.project.' . $id))
-		      || ($id == 0 && !$user->authorise('core.edit.state', 'com_pfprojects'))
-		   )
+        if ($id != 0 && (!$user->authorise('core.edit.state', 'com_pfprojects.project.' . $id)) || ($id == 0 && !$user->authorise('core.edit.state', 'com_pfprojects')))
         {
             // Disable fields for display.
             $form->setFieldAttribute('state', 'disabled', 'true');
-            $form->setFieldAttribute('state', 'filter', 'unset');
+            $form->setFieldAttribute('start_date', 'disabled', 'true');
+            $form->setFieldAttribute('end_date', 'disabled', 'true');
+
+            // Disable fields while saving.
+			$form->setFieldAttribute('state', 'filter', 'unset');
+			$form->setFieldAttribute('start_date', 'filter', 'unset');
+			$form->setFieldAttribute('end_date', 'filter', 'unset');
+        }
+
+        // Always disable these fields while saving
+		$form->setFieldAttribute('alias', 'filter', 'unset');
+
+        // Disable these fields if not an admin
+        if (!$user->authorise('core.admin', 'com_pfprojects')) {
+            $form->setFieldAttribute('access', 'disabled', 'true');
+            $form->setFieldAttribute('access', 'filter', 'unset');
+
+            $form->setFieldAttribute('rules', 'disabled', 'true');
+            $form->setFieldAttribute('rules', 'filter', 'unset');
         }
 
         if ($id) {
+            // Set the project as active when editing
             PFApplicationHelper::setActiveProject($id);
         }
 
@@ -311,6 +328,11 @@ class PFprojectsModelProject extends JModelAdmin
             // Delete logo?
             if (isset($data['attribs']['logo']['delete']) && $pk && !$is_new) {
                 $this->deleteLogo($pk);
+            }
+
+            // Make item published by default if new
+            if (!isset($data['state']) && $is_new) {
+                $data['state'] = 1;
             }
 
             // Bind the data.
