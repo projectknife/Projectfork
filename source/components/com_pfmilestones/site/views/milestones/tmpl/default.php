@@ -163,21 +163,10 @@ $tasks_enabled = PFApplicationHelper::enabled('com_pftasks');
                         </div>
                     <?php endif; ?>
                     <hr />
-                    <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created, $this->params->get('date_format')); ?>
+                    <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
                     <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
-                    <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date, $this->params->get('date_format')); ?>
-                    <?php
-                    if ($item->label_count > 0 && isset($item->labels))
-                    {
-                        foreach ($item->labels AS $label)
-                        {
-                            $style = ($label->style ? ' ' . $label->style : '');
-                            ?>
-                            <span class="label<?php echo $style; ?>"><i class="icon-bookmark"></i> <?php echo $this->escape($label->title); ?></span>
-                            <?php
-                        }
-                    }
-                    ?>
+                    <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date); ?>
+                    <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
                     <?php if ($tasks_enabled) : ?>
                         <div class="btn-group pull-right">
                             <a class="btn btn-mini" href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->project_slug, $item->slug));?>">

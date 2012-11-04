@@ -90,6 +90,32 @@ abstract class PFhtmlLabel
 
 
     /**
+     * Returns the labels of an item as formatted html
+     *
+     * @param     array     $labels    The labels
+     *
+     * @return    string               The label html
+     */
+    public static function labels($labels = null)
+    {
+        if (!is_array($labels)) {
+            return '';
+        }
+
+        $html = array();
+
+        foreach ($labels AS $label)
+        {
+            $style  = ($label->style ? ' ' . $label->style : '');
+            $title  = htmlspecialchars($label->title, ENT_COMPAT, 'UTF-8');
+            $html[] = '<span class="label' . $style. '"><i class="icon-bookmark"></i> ' . $title . '</span>';
+        }
+
+        return implode(' ', $html);
+    }
+
+
+    /**
      * Translates a numerical priority value to a string label
      *
      * @param     int       $value    The priority
@@ -140,10 +166,10 @@ abstract class PFhtmlLabel
     /**
      * Returns a date as literal label
      *
-     * @param     string    $date      The date
+     * @param     string    $date       The date
      * @param     string    $compact    If set to true, will only show the amount of days
      *
-     * @return    string               The label html
+     * @return    string                The label html
      */
     public static function datetime($date, $compact = false)
     {
@@ -221,9 +247,9 @@ abstract class PFhtmlLabel
     /**
      * Returns the access level(s) of an item as label
      *
-     * @param     integer    $id      The access level id
+     * @param     integer    $id    The access level id
      *
-     * @return    string               The label html
+     * @return    string            The label html
      */
     public static function access($id = null)
     {
