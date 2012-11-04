@@ -129,9 +129,10 @@ class PFtasksControllerTasklistForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $user  = JFactory::getUser();
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $user   = JFactory::getUser();
+        $db     = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+        $access = true;
 
         if (isset($data['milestone_id'])) {
             // Check if the user has access to the milestone
@@ -141,21 +142,21 @@ class PFtasksControllerTasklistForm extends JControllerForm
 
             $db->setQuery($query);
             $level  = (int) $db->loadResult();
-            $access = in_array($id, $user->getAuthorisedViewLevels());
+            $access = in_array($level, $user->getAuthorisedViewLevels());
         }
-        elseif (isset($data['project_id'])) {
+
+        if (isset($data['project_id']) && $access) {
             // Check if the user has access to the project
+            $query->clear();
             $query->select('access')
                   ->from('#__pf_projects')
                   ->where('id = ' . $db->quote((int) $data['project_id']));
 
             $db->setQuery($query);
             $level  = (int) $db->loadResult();
-            $access = in_array($id, $user->getAuthorisedViewLevels());
+            $access = in_array($level, $user->getAuthorisedViewLevels());
         }
-        else {
-            $access = true;
-        }
+
 
         return ($user->authorise('core.create', 'com_pftasks') && $access);
     }
