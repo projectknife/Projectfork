@@ -85,7 +85,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                     $can_edit     = $access->get('core.edit');
                     $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
                     $can_edit_own = ($access->get('core.edit.own') && $item->created_by == $uid);
-                    $can_change   = ($access->get('core.edit.state') || $can_checkin);
+                    $can_change   = ($access->get('core.edit.state') && $can_checkin);
 
                     // Calculate project progress
                     $task_count = (int) $item->tasks;
