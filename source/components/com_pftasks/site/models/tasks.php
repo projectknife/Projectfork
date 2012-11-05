@@ -116,9 +116,6 @@ class PFtasksModelTasks extends JModelList
         if (!$user->authorise('core.admin', 'com_pftasks')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
-            $query->where('p.access IN (' . $groups . ')');
-            $query->where('m.access IN (' . $groups . ')');
-            $query->where('tl.access IN (' . $groups . ')');
         }
 
         // Filter by assigned user
@@ -179,6 +176,8 @@ class PFtasksModelTasks extends JModelList
 
         $query->order($db->escape($order_col . ' ' . $order_dir));
         $query->group('a.id');
+
+        echo nl2br($query);
 
         return $query;
     }
