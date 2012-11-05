@@ -247,9 +247,6 @@ class PFtableTask extends PFTable
             if (empty($this->created_by)) $this->created_by = $user->get('id');
         }
 
-        // Generate catid
-        $this->catid = intval($this->project_id).''.intval($this->milestone_id).''.intval($this->list_id);
-
         // Verify that the alias is unique
         $table = JTable::getInstance('Task','PFtable');
         $data  = array('alias' => $this->alias, 'project_id' => $this->project_id, 'milestone_id' => $this->milestone_id, 'list_id' => $this->list_id);

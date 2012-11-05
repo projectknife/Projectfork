@@ -139,7 +139,7 @@ class PFtasksModelTasks extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.project_id, a.list_id, a.milestone_id, a.catid, a.title, '
+                'a.id, a.project_id, a.list_id, a.milestone_id, a.title, '
                 . 'a.description, a.alias, a.checked_out, '
                 . 'a.checked_out_time, a.state, a.access, a.created, a.created_by, '
                 . 'a.start_date, a.end_date, a.ordering'
@@ -175,9 +175,6 @@ class PFtasksModelTasks extends JModelList
         if (!$user->authorise('core.admin')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
-            $query->where('p.access IN (' . $groups . ')');
-            $query->where('m.access IN (' . $groups . ')');
-            $query->where('tl.access IN (' . $groups . ')');
         }
 
         // Filter by project

@@ -65,7 +65,7 @@ class PFtasksModelTasks extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.project_id, a.list_id, a.milestone_id, a.catid, a.title, '
+                'a.id, a.project_id, a.list_id, a.milestone_id, a.title, '
                 . 'a.description, a.alias, a.checked_out, a.attribs, a.priority, '
                 . 'a.checked_out_time, a.state, a.access, a.created, a.created_by, '
                 . 'a.start_date, a.end_date, a.ordering, a.complete'

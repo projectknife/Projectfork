@@ -124,6 +124,30 @@ $save_order = ($list_order == 'a.ordering');
             $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
             $can_edit_own = ($access->get('core.edit.own') && $item->created_by == $uid);
             $can_change   = ($access->get('core.edit.state') && $can_checkin);
+
+            // Prepare re-order conditions
+            $order_up   = false;
+            $order_down = false;
+            $prev_item  = null;
+            $next_item  = null;
+            $prev_i     = $i - 1;
+            $next_i     = $i + 1;
+
+            if (array_key_exists($prev_i, $this->items)) {
+                $prev_item = $this->items[$prev_i];
+            }
+
+            if (array_key_exists($next_i, $this->items)) {
+                $next_item = $this->items[$next_i];
+            }
+
+            if ($prev_item) {
+                $order_up = ($item->project_id == $prev_item->project_id && $item->milestone_id == $prev_item->milestone_id && $item->list_id == $prev_item->list_id);
+            }
+
+            if ($next_item) {
+                $order_down = ($item->project_id == $next_item->project_id && $item->milestone_id == $next_item->milestone_id && $item->list_id == $next_item->list_id);
+            }
             ?>
             <tr class="row<?php echo $i % 2; ?>">
                 <td class="center hidden-phone">
@@ -156,11 +180,11 @@ $save_order = ($list_order == 'a.ordering');
                     <?php if ($can_change) : ?>
                         <?php if ($save_order) :?>
                             <?php if ($list_dir == 'asc') : ?>
-                                <span><?php echo $this->pagination->orderUpIcon($i, ($item->catid == @$this->items[$i-1]->catid), 'tasks.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-                                <span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, ($item->catid == @$this->items[$i+1]->catid), 'tasks.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
+                                <span><?php echo $this->pagination->orderUpIcon($i, $order_up, 'tasks.orderup', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
+                                <span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, $order_down, 'tasks.orderdown', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
                             <?php elseif ($list_dir == 'desc') : ?>
-                                <span><?php echo $this->pagination->orderUpIcon($i, ($item->catid == @$this->items[$i-1]->catid), 'tasks.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
-                                <span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, ($item->catid == @$this->items[$i+1]->catid), 'tasks.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
+                                <span><?php echo $this->pagination->orderUpIcon($i, $order_up, 'tasks.orderdown', 'JLIB_HTML_MOVE_UP', $ordering); ?></span>
+                                <span><?php echo $this->pagination->orderDownIcon($i, $this->pagination->total, $order_down, 'tasks.orderup', 'JLIB_HTML_MOVE_DOWN', $ordering); ?></span>
                             <?php endif; ?>
                         <?php endif; ?>
                         <?php $disabled = ($save_order ?  '' : 'disabled="disabled"'); ?>

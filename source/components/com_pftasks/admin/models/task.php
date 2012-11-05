@@ -226,12 +226,13 @@ class PFtasksModelTask extends JModelAdmin
      */
     protected function getReorderConditions($table)
     {
-        $catid = intval($table->project_id) . '-' . intval($table->milestone_id) . '-' . intval($table->list_id);
-
         $condition = array();
-        $condition[] = 'catid = '.(int) $catid;
 
-        return $condition;
+        $condition[] = 'project_id = ' . (int) $table->project_id;
+        $condition[] = 'milestone_id = ' . (int) $table->milestone_id;
+        $condition[] = 'list_id = ' . (int) $table->list_id;
+
+        return array(implode(' AND ', $condition));
     }
 
 
@@ -244,12 +245,17 @@ class PFtasksModelTask extends JModelAdmin
      */
     protected function prepareTable(&$table)
     {
-        // Generate catid
-        $catid = intval($table->project_id) . '-' . intval($table->milestone_id) . '-' . intval($table->list_id);
+        $condition = array();
+
+        $condition[] = 'project_id = ' . (int) $table->project_id;
+        $condition[] = 'milestone_id = ' . (int) $table->milestone_id;
+        $condition[] = 'list_id = ' . (int) $table->list_id;
+
+        $condition = implode(' AND ', $condition);
 
         // Reorder the items within the category so the new item is first
         if (empty($table->id)) {
-            $table->reorder('catid = '.(int) $catid.' AND state >= 0');
+            $table->reorder($condition . ' AND state >= 0');
         }
     }
 
