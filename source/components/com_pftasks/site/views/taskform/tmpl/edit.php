@@ -19,6 +19,7 @@ JHtml::_('pfhtml.script.form');
 
 // Create shortcut to parameters.
 $params = $this->state->get('params');
+$user   = JFactory::getUser();
 ?>
 <script type="text/javascript">
 jQuery(document).ready(function()
@@ -233,16 +234,18 @@ Joomla.submitbutton = function(task)
         <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'task-permissions') ;?>
-    <fieldset>
-        <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
-        <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
-        <div class="formlm" id="jform_rules_element">
-            <div id="jform_rules_reload" class="controls">
-                <?php echo $this->form->getInput('rules'); ?>
+    <?php if ($user->authorise('core.admin', 'com_pftasks')) : ?>
+        <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'task-permissions') ;?>
+        <fieldset>
+            <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+            <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+            <div class="formlm" id="jform_rules_element">
+                <div id="jform_rules_reload" class="controls">
+                    <?php echo $this->form->getInput('rules'); ?>
+                </div>
             </div>
-        </div>
-    </fieldset>
+        </fieldset>
+    <?php endif; ?>
 
     <?php echo JHtml::_('tabs.end') ;?>
 
@@ -253,8 +256,6 @@ Joomla.submitbutton = function(task)
     <?php
         echo $this->form->getInput('alias');
         echo $this->form->getInput('created');
-        echo $this->form->getInput('id');
-        echo $this->form->getInput('asset_id');
         echo $this->form->getInput('elements');
     ?>
 
