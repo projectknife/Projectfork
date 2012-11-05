@@ -150,7 +150,7 @@ class PFtasksModelTask extends JModelAdmin
 
         // Check for existing item.
         // Modify the form based on Edit State access controls.
-        if ($id != 0 && (!$user->authorise('core.edit.state', 'com_pftasks.tasklist.' . $id)) || ($id == 0 && !$user->authorise('core.edit.state', 'com_pftasks')))
+        if ($id != 0 && (!$user->authorise('core.edit.state', 'com_pftasks.task.' . $id)) || ($id == 0 && !$user->authorise('core.edit.state', 'com_pftasks')))
         {
             // Disable fields for display.
             $form->setFieldAttribute('state', 'disabled', 'true');
@@ -334,6 +334,11 @@ class PFtasksModelTask extends JModelAdmin
             // Make item published by default if new
             if (!isset($data['state']) && $is_new) {
                 $data['state'] = 1;
+            }
+
+            // Make item priority 1 by default if not set
+            if (!isset($data['priority']) && $is_new) {
+                $data['priority'] = 1;
             }
 
             // Bind the data.

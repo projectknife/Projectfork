@@ -177,8 +177,6 @@ class PFtasksModelTasks extends JModelList
         $query->order($db->escape($order_col . ' ' . $order_dir));
         $query->group('a.id');
 
-        echo nl2br($query);
-
         return $query;
     }
 

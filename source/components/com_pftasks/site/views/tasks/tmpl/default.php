@@ -202,8 +202,12 @@ jQuery(document).ready(function() {
                         $class = ($item->complete ? 'task-complete' : 'task-incomplete');
 
                         // Prepare the watch button
-                        $options = array('a-class' => 'btn-mini');
-                        $watch = JHtml::_('pfhtml.button.watch', 'tasks', $x, $item->watching, $options);
+                        $watch = '';
+
+                        if ($uid) {
+                            $options = array('a-class' => 'btn-mini', 'div-class' => 'pull-right');
+                            $watch = JHtml::_('pfhtml.button.watch', 'tasks', $x, $item->watching, $options);
+                        }
                     ?>
                     <li id="list-item-<?php echo $x; ?>" class="<?php echo $class;?>">
                         <input type="hidden" name="order[]" value="<?php echo (int) $item->ordering;?>"/>
@@ -217,26 +221,27 @@ jQuery(document).ready(function() {
                             <div class="btn-group">
                                 <?php echo JHtml::_('projectfork.task.complete', $x, $item->complete, $can_change); ?>
                             </div>
-                            <div class="btn-group">
-                                <h5 class="task-title"><a href="<?php echo JRoute::_(PFtasksHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>">
-                                    <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
-                                    <?php echo $this->escape($item->title);?>
-                                </a></h5>
-                            </div>
-                            <div class="btn-group">
-                                <small><?php echo $this->escape(JHtml::_('pf.html.truncate', $item->description));?></small>
-                            </div>
                             <?php
-                                echo $this->menu->assignedUsers($x, $item->id, 'tasks', $item->users, ($can_edit || $can_edit_own), 'btn-mini');
-                                echo $this->menu->priorityList($x, $item->id, 'tasks', $item->priority, ($can_edit || $can_edit_own || $can_change), 'btn-mini');
-
                                 $this->menu->start(array('class' => 'btn-mini'));
                                 $this->menu->itemEdit('taskform', $item->id, ($can_edit || $can_edit_own));
                                 $this->menu->itemTrash('tasks', $x, ($can_edit || $can_edit_own));
                                 $this->menu->end();
 
-                                echo $this->menu->render();
+                                echo $this->menu->render(array('class' => 'btn-mini'));
                             ?>
+                            <div class="btn-group">
+                                <h5 class="task-title">
+                                    <a href="<?php echo JRoute::_(PFtasksHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>">
+                                        <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
+                                        <?php echo $this->escape($item->title);?>
+                                    </a>
+                                </h5>
+                            </div>
+                            <div class="btn-group">
+                                <small><?php echo $this->escape(JHtml::_('pf.html.truncate', $item->description));?></small>
+                                <?php echo JHtml::_('pftasks.assignedLabel', $item->users, $x); ?>
+                                <?php echo JHtml::_('pftasks.priorityLabel', $item->priority, $x); ?>
+                            </div>
                             <?php echo $watch; ?>
                         </div>
                     </li>

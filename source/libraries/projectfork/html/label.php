@@ -116,54 +116,6 @@ abstract class PFhtmlLabel
 
 
     /**
-     * Translates a numerical priority value to a string label
-     *
-     * @param     int       $value    The priority
-     *
-     * @return    string    $html     The corresponding string label
-     */
-    public static function priority($value = 0)
-    {
-        switch((int) $value)
-        {
-            case 1:
-                $class = 'label-success very-low-priority';
-                $text  = JText::_('COM_PROJECTFORK_PRIORITY_VERY_LOW');
-                break;
-
-            case 2:
-                $class = 'label-success low-priority';
-                $text  = JText::_('COM_PROJECTFORK_PRIORITY_LOW');
-                break;
-
-            case 3:
-                $class = 'label-info medium-priority';
-                $text  = JText::_('COM_PROJECTFORK_PRIORITY_MEDIUM');
-                break;
-
-            case 4:
-                $class = 'label-warning high-priority';
-                $text  = JText::_('COM_PROJECTFORK_PRIORITY_HIGH');
-                break;
-
-            case 5:
-                $class = 'label-important very-high-priority';
-                $text  = JText::_('COM_PROJECTFORK_PRIORITY_VERY_HIGH');
-                break;
-
-            default:
-                $class = 'label-success very-low-priority';
-                $text  = JText::_('COM_PROJECTFORK_PRIORITY_VERY_LOW');
-                break;
-        }
-
-        $html = '<span class="label ' . $class.'">' . $text . '</span>';
-
-        return $html;
-    }
-
-
-    /**
      * Returns a date as literal label
      *
      * @param     string    $date       The date
