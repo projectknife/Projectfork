@@ -137,10 +137,10 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
             <table class="table table-striped">
             	<thead>
             		<tr>
-            			<th><?php echo JText::_('JGRID_HEADING_TASK');?></th>
-            			<th width="5%"></th>
+            			<th width="1%"></th>
+                        <th><?php echo JText::_('JGRID_HEADING_TASK');?></th>
             			<th width="10%"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TIME');?></th>
-            			<th width="20%"></th>
+            			<th width="10%"></th>
             			<th width="10%"><?php echo JText::_('JGRID_HEADING_AUTHOR');?></th>
             			<th width="10%"><?php echo JText::_('JGRID_HEADING_DATE');?></th>
             			<th width="10%"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_RATE');?></th>
@@ -180,8 +180,18 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
                         $exists = ((int) $item->task_exists > 0);
 			        ?>
 			        <tr>
+                        <td>
+                            <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
+			        		<?php
+                            $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
+                            $this->menu->itemEdit('form', $item->id, ($can_edit || $can_edit_own));
+                            $this->menu->itemTrash('timesheet', $i, $can_change);
+                            $this->menu->end();
+
+                            echo $this->menu->render(array('class' => 'btn-mini'));
+	                        ?>
+			        	</td>
 			        	<td>
-			        		<?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
                             <?php if ($exists) : ?>
                                 <a href="<?php echo JRoute::_(PFtasksHelperRoute::getTaskRoute($item->task_slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>"
                                     rel="popover"
@@ -193,16 +203,6 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
                             <?php else : ?>
                                 <?php echo $this->escape($item->task_title); ?>
                             <?php endif; ?>
-			        	</td>
-			        	<td>
-			        		<?php
-                            $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
-                            $this->menu->itemEdit('form', $item->id, ($can_edit || $can_edit_own));
-                            $this->menu->itemTrash('timesheet', $i, $can_change);
-                            $this->menu->end();
-
-                            echo $this->menu->render(array('class' => 'btn-mini'));
-	                        ?>
 			        	</td>
 			        	<td>
 			        		<?php echo JHtml::_('time.format', $item->log_time); ?>
