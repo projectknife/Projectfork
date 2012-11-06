@@ -80,13 +80,39 @@ class PFtimeModelTime extends JModelAdmin
         $form = $this->loadForm('com_pftime.time', 'time', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) return false;
 
-        // Check if a project id is already selected. If not, set the currently active project as value
-        $project_id = (int) $form->getValue('project_id');
+        $jinput = JFactory::getApplication()->input;
+        $user   = JFactory::getUser();
+        $id     = (int) $jinput->get('id', 0);
 
-        if (!$this->getState($this->getName() . '.id') && $project_id == 0) {
-            $active_id = PFApplicationHelper::getActiveProjectId();
+        // Check for existing item.
+        // Modify the form based on Edit State access controls.
+        if ($id != 0 && (!$user->authorise('core.edit.state', 'com_pfmilestones.milestone.' . $id)) || ($id == 0 && !$user->authorise('core.edit.state', 'com_pfmilestones')))
+        {
+            // Disable fields for display.
+            $form->setFieldAttribute('state', 'disabled', 'true');
 
-            $form->setValue('project_id', null, $active_id);
+            // Disable fields while saving.
+			$form->setFieldAttribute('state', 'filter', 'unset');
+        }
+
+        // Disable these fields if not an admin
+        if (!$user->authorise('core.admin', 'com_pftime')) {
+            $form->setFieldAttribute('access', 'disabled', 'true');
+            $form->setFieldAttribute('access', 'filter', 'unset');
+
+            $form->setFieldAttribute('rules', 'disabled', 'true');
+            $form->setFieldAttribute('rules', 'filter', 'unset');
+        }
+
+        // Disable these fields when updating
+        if ($id) {
+            $form->setFieldAttribute('project_id', 'disabled', 'true');
+            $form->setFieldAttribute('project_id', 'filter', 'unset');
+            $form->setFieldAttribute('project_id', 'required', 'false');
+
+            $form->setFieldAttribute('task_id', 'disabled', 'true');
+            $form->setFieldAttribute('task_id', 'filter', 'unset');
+            $form->setFieldAttribute('task_id', 'required', 'false');
         }
 
         return $form;
@@ -136,12 +162,10 @@ class PFtimeModelTime extends JModelAdmin
         }
 
         // Try to find the task title
-        $tid = (isset($data['task_id']) ? (int) $data['task_id'] : (int) $record->task_id);
-
-        if ($tid) {
+        if (isset($data['task_id']) && $is_new) {
             $query->select('title')
                   ->from('#__pf_tasks')
-                  ->where('id = ' . $tid);
+                  ->where('id = ' . (int) $data['task_id']);
 
             $db->setQuery($query);
             $task_title = $db->loadResult();
@@ -151,12 +175,12 @@ class PFtimeModelTime extends JModelAdmin
             }
         }
 
-        // Try to convert log string to time
+        // Try to convert estimate string to time
         if (isset($data['log_time'])) {
             if (!is_numeric($data['log_time'])) {
                 $log_time = strtotime($data['log_time']);
 
-                if ($log_time === false || $log_time < 0) {
+                if ($log_time === false || $log_time <= 0) {
                     $data['log_time'] = 1;
                 }
                 else {
@@ -167,6 +191,11 @@ class PFtimeModelTime extends JModelAdmin
                 // not a literal time, so convert minutes to secs
                 $data['log_time'] = $data['log_time'] * 60;
             }
+        }
+
+        // Make item published by default if new
+        if (!isset($data['state']) && $is_new) {
+            $data['state'] = 1;
         }
 
         if (parent::save($data)) {
@@ -196,7 +225,16 @@ class PFtimeModelTime extends JModelAdmin
         // Check the session for previously entered form data.
         $data = JFactory::getApplication()->getUserState('com_pftime.edit.' . $this->getName() . '.data', array());
 
-        if (empty($data)) $data = $this->getItem();
+        if (empty($data)) {
+			$data = $this->getItem();
+
+            // Set default values
+            if ($this->getState($this->getName() . '.id') == 0) {
+                $active_id = PFApplicationHelper::getActiveProjectId();
+
+                $data->set('project_id', $active_id);
+            }
+        }
 
         return $data;
     }

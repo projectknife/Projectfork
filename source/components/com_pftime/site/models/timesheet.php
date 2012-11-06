@@ -62,7 +62,7 @@ class PFtimeModelTimesheet extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.project_id, a.task_id, a.description, '
+                'a.id, a.project_id, a.task_id, a.task_title, a.description, '
                 . 'a.checked_out, a.checked_out_time, a.state, a.access, a.rate, a.billable,'
                 . 'a.created, a.created_by, a.log_date, a.log_time, a.attribs'
             )
@@ -87,7 +87,7 @@ class PFtimeModelTimesheet extends JModelList
         $query->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
 
         // Join over the tasks for the task title.
-        $query->select('t.title AS task_title, t.alias AS task_alias, t.estimate');
+        $query->select('t.id AS task_exists, t.alias AS task_alias, t.estimate');
         $query->join('LEFT', '#__pf_tasks AS t ON t.id = a.task_id');
 
         // Join over the milestones for the milestone alias.

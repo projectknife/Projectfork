@@ -176,19 +176,23 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
                         else {
                             $percentage_class .= ($item->billable == 1) ? ' progress-success' : '';
                         }
+
+                        $exists = ((int) $item->task_exists > 0);
 			        ?>
 			        <tr>
 			        	<td>
-			        		<a href="<?php echo JRoute::_(PFtasksHelperRoute::getTaskRoute($item->task_slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>"
-                                rel="popover"
-                                title="<?php echo $this->escape($item->task_title); ?>"
-                                data-content="<?php echo $this->escape($item->description); ?>"
-                            >
+			        		<?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
+                            <?php if ($exists) : ?>
+                                <a href="<?php echo JRoute::_(PFtasksHelperRoute::getTaskRoute($item->task_slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>"
+                                    rel="popover"
+                                    title="<?php echo $this->escape($item->task_title); ?>"
+                                    data-content="<?php echo $this->escape($item->description); ?>"
+                                >
+                                    <?php echo $this->escape($item->task_title); ?>
+                                </a>
+                            <?php else : ?>
                                 <?php echo $this->escape($item->task_title); ?>
-                            </a>
-                            <div style="display: none !important;">
-                                <?php echo JHtml::_('grid.id', $i, $item->id); ?>
-                            </div>
+                            <?php endif; ?>
 			        	</td>
 			        	<td>
 			        		<?php
