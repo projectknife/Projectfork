@@ -106,15 +106,16 @@ jQuery(document).ready(function() {
                             <?php echo JHtml::_('select.options', JHtml::_('projectfork.priorityOptions'), 'value', 'text', $this->state->get('filter.priority'), true);?>
                         </select>
                     </div>
-                    <div class="clearfix"> </div>
 
                     <?php if ($this->state->get('filter.project')) : ?>
                         <hr />
                         <div class="filter-labels">
-                            <?php echo JHtml::_('pfhtml.label.filter', 'task', $this->state->get('filter.project'), $this->state->get('filter.labels'));?>
+                            <?php echo JHtml::_('pfhtml.label.filter', 'com_pftasks.task', $this->state->get('filter.project'), $this->state->get('filter.labels'));?>
                         </div>
                         <div class="clearfix"> </div>
                     <?php endif; ?>
+
+                    <div class="clearfix"> </div>
 
                 </div>
             </div>
@@ -264,6 +265,7 @@ jQuery(document).ready(function() {
                                 <small><?php echo $this->escape(JHtml::_('pf.html.truncate', $item->description));?></small>
                                 <?php echo JHtml::_('pftasks.assignedLabel', $item->id, $x, $item->users); ?>
                                 <?php echo JHtml::_('pftasks.priorityLabel', $item->id, $x, $item->priority); ?>
+                                <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
                             </div>
                             <?php echo $watch; ?>
                         </div>
