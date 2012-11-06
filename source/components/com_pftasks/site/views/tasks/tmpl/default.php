@@ -226,6 +226,15 @@ jQuery(document).ready(function() {
                                 $this->menu->itemEdit('taskform', $item->id, ($can_edit || $can_edit_own));
                                 $this->menu->itemTrash('tasks', $x, ($can_edit || $can_edit_own));
 
+                                if (($can_edit || $can_edit_own)) {
+                                    $itm_icon = 'icon-plus';
+                                    $itm_txt  = 'COM_PROJECTFORK_ASSIGN_TO_USER';
+                                    $itm_link = PFusersHelperRoute::getUsersRoute() . '&amp;layout=modal&amp;tmpl=component&amp;field=PFtaskAssignUser';
+
+                                    $this->menu->itemDivider();
+                                    $this->menu->itemModal($itm_icon, $itm_txt, $itm_link, "PFlist.setTarget(" . $x . ");");
+                                }
+
                                 if ($can_change) {
                                     $itm_icon = 'icon-warning';
                                     $itm_pfx  = 'COM_PROJECTFORK_PRIORITY';
@@ -253,7 +262,7 @@ jQuery(document).ready(function() {
                             </div>
                             <div class="btn-group">
                                 <small><?php echo $this->escape(JHtml::_('pf.html.truncate', $item->description));?></small>
-                                <?php echo JHtml::_('pftasks.assignedLabel', $item->users, $x); ?>
+                                <?php echo JHtml::_('pftasks.assignedLabel', $item->id, $x, $item->users); ?>
                                 <?php echo JHtml::_('pftasks.priorityLabel', $item->id, $x, $item->priority); ?>
                             </div>
                             <?php echo $watch; ?>
@@ -271,6 +280,7 @@ jQuery(document).ready(function() {
             </div>
 
             <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
+            <input type="hidden" id="target-item" name="target_item" value="0" />
             <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
             <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
             <input type="hidden" name="task" value="" />

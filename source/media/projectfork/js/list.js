@@ -193,5 +193,21 @@ var PFlist =
             }
 	   });
 	   jQuery(ls).disableSelection();
+    },
+
+
+    /**
+     * Function to set the focus/target on a particular list item.
+     * This is currently used when selecting something from a modal window
+     *
+     * @param    string    i     The item iterator
+     */
+    setTarget: function(i)
+    {
+        var f = jQuery('#target-item');
+
+        if (f.length) {
+            f.val(i);
+        }
     }
 }

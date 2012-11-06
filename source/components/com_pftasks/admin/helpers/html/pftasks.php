@@ -13,17 +13,18 @@ defined('_JEXEC') or die();
 
 abstract class JHtmlPFtasks
 {
-    static public function assignedLabel($users = null, $i = 0)
+    static public function assignedLabel($id, $i = 0, $users = null)
     {
         if (!is_array($users) || !count($users)) {
-            return '<span id="assigned_' . $i . '"></span>';
+            return '<span id="assigned_' . $i . '_label"></span>'
+                 . '<input type="hidden" id="assigned' . $i . '" name="assigned[' . $id . ']" />';
         }
 
         $html  = array();
         $count = count($users);
 
         if ($count == 1) {
-            $html[] = '<span id="assigned_' . $i . '" class="label user">';
+            $html[] = '<span id="assigned_' . $i . '_label" class="label user">';
             $html[] = '<i class="icon-user icon-white"></i> ';
             $html[] = htmlspecialchars($users[0]->name, ENT_COMPAT, 'UTF-8');
             $html[] = '</span>';
@@ -40,11 +41,13 @@ abstract class JHtmlPFtasks
 
             $tooltip = '::' . htmlspecialchars(implode('<br/>', $names), ENT_COMPAT, 'UTF-8');
 
-            $html[] = '<span id="assigned_' . $i . '" class="label user hasTip" title="' . $tooltip . '" style="cursor: help">';
+            $html[] = '<span id="assigned_' . $i . '_label" class="label user hasTip" title="' . $tooltip . '" style="cursor: help">';
             $html[] = '<i class="icon-user icon-white"></i> ';
             $html[] = htmlspecialchars($first->name, ENT_COMPAT, 'UTF-8') . ' +' . $count;
             $html[] = '</span>';
         }
+
+        $html[] = '<input type="hidden" id="assigned' . $i . '" name="assigned[' . $id . ']" />';
 
         return implode('', $html);
     }

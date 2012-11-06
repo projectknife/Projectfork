@@ -103,3 +103,52 @@ var PFtask =
         });
     }
 }
+
+
+function jSelectUser_PFtaskAssignUser(id, title)
+{
+    SqueezeBox.close();
+
+    var ti = jQuery('#target-item');
+
+    if (ti.length) {
+        var i   = ti.val();
+        var f   = jQuery('#assigned' + i);
+        var cid = 'cb' + i;
+
+        if (f.length) {
+            f.val(id);
+
+            var rq = PFlist.listItemTask(cid, 'tasks.addUsers', 'adminForm', true);
+
+            rq.done(function(resp)
+            {
+                f.val(0);
+
+                if (Projectfork.isJsonString(resp)) {
+                    var lbl = jQuery('#assigned_' + i + '_label');
+
+                    if (lbl.length) {
+                        var c = lbl.html();
+
+                        if (c == '') {
+                            lbl.addClass('label');
+                            lbl.html('<i class="icon-user  icon-white"></i> ' + title);
+                        }
+                        else {
+                            var pts   = c.split('+');
+
+                            if (pts.length == 1) {
+                                pts[1] = 0;
+                            }
+
+                            var count = parseInt(pts[1]) + 1;
+
+                            lbl.html(pts[0] + ' +' + count);
+                        }
+                    }
+                }
+            });
+        }
+    }
+}
