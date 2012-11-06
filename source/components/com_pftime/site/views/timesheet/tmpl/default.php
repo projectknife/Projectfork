@@ -137,10 +137,10 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
             <table class="table table-striped">
             	<thead>
             		<tr>
-            			<th><?php echo JText::_('JGRID_HEADING_TASK');?></th>
-            			<th width="5%"></th>
+            			<th width="1%"></th>
+                        <th><?php echo JText::_('JGRID_HEADING_TASK');?></th>
             			<th width="10%"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TIME');?></th>
-            			<th width="20%"></th>
+            			<th width="10%"></th>
             			<th width="10%"><?php echo JText::_('JGRID_HEADING_AUTHOR');?></th>
             			<th width="10%"><?php echo JText::_('JGRID_HEADING_DATE');?></th>
             			<th width="10%"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_RATE');?></th>
@@ -176,21 +176,12 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
                         else {
                             $percentage_class .= ($item->billable == 1) ? ' progress-success' : '';
                         }
+
+                        $exists = ((int) $item->task_exists > 0);
 			        ?>
 			        <tr>
-			        	<td>
-			        		<a href="<?php echo JRoute::_(PFtasksHelperRoute::getTaskRoute($item->task_slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>"
-                                rel="popover"
-                                title="<?php echo $this->escape($item->task_title); ?>"
-                                data-content="<?php echo $this->escape($item->description); ?>"
-                            >
-                                <?php echo $this->escape($item->task_title); ?>
-                            </a>
-                            <div style="display: none !important;">
-                                <?php echo JHtml::_('grid.id', $i, $item->id); ?>
-                            </div>
-			        	</td>
-			        	<td>
+                        <td>
+                            <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
 			        		<?php
                             $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
                             $this->menu->itemEdit('form', $item->id, ($can_edit || $can_edit_own));
@@ -199,6 +190,19 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
 
                             echo $this->menu->render(array('class' => 'btn-mini'));
 	                        ?>
+			        	</td>
+			        	<td>
+                            <?php if ($exists) : ?>
+                                <a href="<?php echo JRoute::_(PFtasksHelperRoute::getTaskRoute($item->task_slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>"
+                                    rel="popover"
+                                    title="<?php echo $this->escape($item->task_title); ?>"
+                                    data-content="<?php echo $this->escape($item->description); ?>"
+                                >
+                                    <?php echo $this->escape($item->task_title); ?>
+                                </a>
+                            <?php else : ?>
+                                <?php echo $this->escape($item->task_title); ?>
+                            <?php endif; ?>
 			        	</td>
 			        	<td>
 			        		<?php echo JHtml::_('time.format', $item->log_time); ?>

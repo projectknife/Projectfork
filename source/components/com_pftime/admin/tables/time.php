@@ -62,32 +62,15 @@ class PFtableTime extends PFTable
 
         $query = $this->_db->getQuery(true);
 
-        if ($this->project_id) {
-            // Build the query to get the asset id for the parent project.
-            $query->select('asset_id')
-                  ->from('#__pf_projects')
-                  ->where('id = ' . (int) $this->project_id);
+        $query->select($this->_db->quoteName('id'))
+              ->from($this->_db->quoteName('#__assets'))
+              ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pftime"));
 
-            // Get the asset id from the database.
-            $this->_db->setQuery((string) $query);
-            $result = $this->_db->loadResult();
+        // Get the asset id from the database.
+        $this->_db->setQuery($query);
+        $result = $this->_db->loadResult();
 
-            if ($result) $asset_id = (int) $result;
-        }
-
-        if (!$asset_id) {
-            // No asset found, fall back to the component
-            $query->clear();
-            $query->select($this->_db->quoteName('id'))
-                  ->from($this->_db->quoteName('#__assets'))
-                  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pftime"));
-
-            // Get the asset id from the database.
-            $this->_db->setQuery($query);
-            $result = $this->_db->loadResult();
-
-            if ($result) $asset_id = (int) $result;
-        }
+        if ($result) $asset_id = (int) $result;
 
         // Return the asset id.
         if ($asset_id) return $asset_id;
