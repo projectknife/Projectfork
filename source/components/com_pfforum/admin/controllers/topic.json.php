@@ -11,14 +11,14 @@
 defined('_JEXEC') or die();
 
 
-jimport('projectfork.application.json.controllerform');
+jimport('projectfork.controller.form.json');
 
 
 /**
  * Projectfork Topic Form Controller
  *
  */
-class PFforumControllerTopic extends ProjectforkControllerFormJSON
+class PFforumControllerTopic extends PFControllerFormJson
 {
 
 }

@@ -4,7 +4,7 @@
         <field name="project_id" type="project"
             label="COM_PROJECTFORK_FIELD_PROJECT_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_DESC"
             class="inputbox" size="30" required="true" view="task"
-            onchange="PFform.reload('access,rules,labels');"
+            onchange="PFform.reload('access,rules,labels,attachment');"
         />
         <field name="title" type="text"
             label="JGLOBAL_TITLE" description="JFIELD_TITLE_DESC"
