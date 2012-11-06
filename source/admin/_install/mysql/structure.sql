@@ -289,6 +289,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_timesheet` (
   `asset_id` int(10) unsigned NOT NULL COMMENT 'FK to the #__assets table',
   `project_id` int(10) unsigned NOT NULL COMMENT 'Parent project ID',
   `task_id` int(10) unsigned NOT NULL COMMENT 'Parent task ID',
+  `task_title` varchar(128) NOT NULL COMMENT 'Parent task title',
   `description` varchar(255) NOT NULL COMMENT 'Description text',
   `created` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Creation date',
   `created_by` int(10) unsigned NOT NULL COMMENT 'Time author',
