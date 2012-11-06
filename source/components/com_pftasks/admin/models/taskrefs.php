@@ -51,11 +51,23 @@ class PFtasksModelTaskRefs extends JModelList
 
         $db     = $this->getDbo();
         $query  = $db->getQuery(true);
-        $fields = ($diagnostic ? 'a.parent_id' : 'a.id, a.task_id, a.parent_id');
+
+        if ($diagnostic) {
+            $fields = 'a.parent_id';
+        }
+        else {
+            $fields = 'a.id, a.task_id, a.parent_id, t.title, t.alias, '
+                    . 't.project_id, t.milestone_id, t.list_id, t.access, t.complete';
+        }
 
         $query->select($fields)
               ->from('#__pf_ref_tasks AS a')
               ->where('a.task_id = ' . $db->quote((int) $task_id));
+
+        if (!$diagnostic) {
+            $query->join('left', '#__pf_tasks AS t ON (t.id = a.parent_id)')
+                  ->group('a.parent_id');
+        }
 
         $db->setQuery((string) $query);
         $items = (array) ($diagnostic ? $db->loadColumn() : $db->loadObjectList());

@@ -223,7 +223,7 @@ jQuery(document).ready(function() {
                                 </label>
                             <?php endif; ?>
                             <div class="btn-group">
-                                <?php echo JHtml::_('projectfork.task.complete', $x, $item->complete, $can_change); ?>
+                                <?php echo JHtml::_('pftasks.complete', $x, $item->complete, $can_change, $item->dependencies, $item->users, $item->start_date); ?>
                             </div>
                             <?php
                                 $this->menu->start(array('class' => 'btn-mini'));

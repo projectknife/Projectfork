@@ -90,4 +90,98 @@ abstract class JHtmlPFtasks
         return $html;
 
     }
+
+
+    public static function complete($i, $complete = 0, $can_change = false, $parents = array(), $users = array(), $start = null)
+    {
+        $html = array();
+        $uid  = JFactory::getUser()->get('id');
+        $nd   = JFactory::getDbo()->getNullDate();
+
+        $p_tooltip = null;
+        $u_tooltip = null;
+        $s_tooltip = null;
+
+        if ($can_change) {
+            // Check if the user is assigned to the task
+            if (count($users)) {
+                $can_change = false;
+
+                foreach ($users AS $user)
+                {
+                    if ((int) $user->user_id == $uid) {
+                        $can_change = true;
+                    }
+                }
+
+                if (!$can_change) {
+                    $u_tooltip = JText::_('COM_PROJECTFORK_TASKS_NOT_ASSIGNED');
+                }
+            }
+
+            // Check if all dependencies are completed
+            if ($can_change && $complete == 0) {
+                if (count($parents)) {
+                    $req = array();
+
+                    foreach ($parents AS $parent)
+                    {
+                        if ($parent->complete != '1') {
+                            $can_change = false;
+                            $req[] = htmlspecialchars($parent->title, ENT_COMPAT, 'UTF-8');
+                        }
+                    }
+
+                    if (!$can_change) {
+                        $p_tooltip = JText::_('COM_PROJECTFORK_TASKS_DEPENDS_ON') . '::' . implode('<br/>', $req);
+                    }
+                }
+            }
+
+            // Check if the task can be started
+            if ($can_change && $complete == 0) {
+                if ($start && $start != $nd) {
+                    $now = time();
+                    $ts  = strtotime($start);
+
+                    if ($ts > $now) {
+                        $can_change = false;
+                        $s_tooltip  = JText::_('COM_PROJECTFORK_TASKS_NOT_STARTED') . '::' . PFDate::relative($start);
+                    }
+                }
+            }
+        }
+
+        if ($can_change) {
+            $class = ($complete ? ' btn-success active' : '');
+
+            $html[] = '<div class="btn-group">';
+            $html[] = '<a id="complete-btn-' . $i . '" class="btn btn-mini' . $class . '" href="javascript:void(0);" onclick="PFtask.complete(' . $i . ');">';
+            $html[] = '<i class="icon-ok"></i>';
+            $html[] = '</a>';
+            $html[] = '</div>';
+            $html[] = '<input type="hidden" id="complete' . $i . '" value="' . (int) $complete . '"/>';
+        }
+        else {
+            $class = ($complete ? ' label-success' : '');
+            $title = '';
+
+            if ($p_tooltip || $u_tooltip || $s_tooltip) {
+                $class .= ' hasTip';
+
+                if ($p_tooltip) $title = ' title="' . $p_tooltip . '"';
+                if ($u_tooltip) $title = ' title="' . $u_tooltip . '"';
+                if ($s_tooltip) $title = ' title="' . $s_tooltip . '"';
+            }
+
+            $html[] = '<div class="btn-group">';
+            $html[] = '<a id="complete-btn-' . $i . '" class="btn btn-mini disabled' . $class . '"' . $title . '>';
+            $html[] = '<i class="icon-lock"></i>';
+            $html[] = '</a>';
+            $html[] = '</div>';
+            $html[] = '<input type="hidden" id="complete' . $i . '" value="' . (int) $complete . '"/>';
+        }
+
+        return implode('', $html);
+    }
 }

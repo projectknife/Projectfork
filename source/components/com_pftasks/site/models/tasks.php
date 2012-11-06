@@ -112,6 +112,10 @@ class PFtasksModelTasks extends JModelList
                         );
         }
 
+        // Join over the task refs for dependencies
+        $query->select('COUNT(d.id) AS dependency_count');
+        $query->join('LEFT', '#__pf_ref_tasks AS d ON (d.task_id = a.id)');
+
         // Implement View Level Access
         if (!$user->authorise('core.admin', 'com_pftasks')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
@@ -191,7 +195,9 @@ class PFtasksModelTasks extends JModelList
     {
         $items  = parent::getItems();
         $ref    = JModelLegacy::getInstance('UserRefs', 'PFusersModel');
+        $tref   = JModelLegacy::getInstance('TaskRefs', 'PFtasksModel');
         $labels = $this->getInstance('Labels', 'PFModel');
+
 
         // Get the global params
         $global_params = JComponentHelper::getParams('com_pftasks', true);
@@ -216,6 +222,17 @@ class PFtasksModelTasks extends JModelList
             // Get the labels
             if ($items[$i]->label_count > 0) {
                 $items[$i]->labels = $labels->getConnections('com_pftasks.task', $items[$i]->id);
+            }
+            else {
+                $items[$i]->labels = array();
+            }
+
+            // Get the dependencies
+            if ($items[$i]->dependency_count > 0) {
+                $items[$i]->dependencies = $tref->getItems($items[$i]->id);
+            }
+            else {
+                $items[$i]->dependencies = array();
             }
         }
 
