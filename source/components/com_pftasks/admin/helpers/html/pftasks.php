@@ -30,7 +30,7 @@ abstract class JHtmlPFtasks
         }
         else {
             $count = $count - 1;
-            $first = trim(array_pop(array_reverse($users)));
+            $first = array_pop(array_reverse($users));
             $names = array();
 
             foreach ($users AS $user)

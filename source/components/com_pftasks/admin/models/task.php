@@ -115,19 +115,13 @@ class PFtasksModelTask extends JModelAdmin
 
         $query->select('user_id')
               ->from('#__pf_ref_users')
-              ->where('item_type = ' . $db->quote('task'))
+              ->where('item_type = ' . $db->quote('com_pftasks.task'))
               ->where('item_id = ' . $db->quote($pk));
 
         $db->setQuery((string) $query);
         $data = (array) $db->loadResultArray();
-        $list = array();
 
-        foreach($data AS $i => $uid)
-        {
-            $list['user' . $i] = $uid;
-        }
-
-        return $list;
+        return $data;
     }
 
 
@@ -455,6 +449,11 @@ class PFtasksModelTask extends JModelAdmin
                 }
             }
 
+            // Store users
+            if (isset($data['users'])) {
+                $this->saveUsers($id, $data['users']);
+            }
+
             // Clean the cache.
             $this->cleanCache();
 
@@ -464,6 +463,69 @@ class PFtasksModelTask extends JModelAdmin
         catch (Exception $e) {
             $this->setError($e->getMessage());
             return false;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Method to save the assigned users.
+     *
+     * @param     int        The task id
+     * @param     array      The users
+     *
+     * @return    boolean    True on success
+     */
+    public function saveUsers($pk, $data)
+    {
+        $item  = 'com_pftasks.task';
+        $table = JTable::getInstance('UserRef', 'PFtable');
+        $query = $this->_db->getQuery(true);
+
+        if (!$pk) return true;
+
+        $query->select('a.user_id')
+              ->from('#__pf_ref_users AS a')
+              ->where('a.item_type = ' . $this->_db->quote($item))
+              ->where('a.item_id = ' . $this->_db->quote($pk));
+
+        $this->_db->setQuery((string) $query);
+        $list = (array) $this->_db->loadResultArray();
+
+        // Add new references
+        foreach($data AS $uid)
+        {
+            $table = JTable::getInstance('UserRef', 'PFtable');
+            $uid   = (int) $uid;
+
+            if (!in_array($uid, $list) && $uid != 0) {
+                $sdata = array('item_type' => $item,
+                               'item_id'   => $pk,
+                               'user_id'   => $uid,
+                               'id'        => null);
+
+                if (!$table->save($sdata)) {
+                    return false;
+                }
+
+                $list[] = $uid;
+            }
+        }
+
+        // Delete old references
+        foreach($list AS $uid)
+        {
+            $table = JTable::getInstance('UserRef', 'PFtable');
+            $uid   = (int) $uid;
+
+            if (!in_array($uid, $data) && $uid != 0) {
+                if (!$table->load(array('item_type' => $item, 'item_id' => $pk, 'user_id' => $uid))) {
+                    return false;
+                }
+
+                if (!$table->delete()) return false;
+            }
         }
 
         return true;

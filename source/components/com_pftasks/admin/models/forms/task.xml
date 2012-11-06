@@ -83,6 +83,7 @@
             <option value="0">JNO</option>
             <option value="1">JYES</option>
         </field>
+        <field name="users" type="userref" multiple="true" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
         <field name="rules" type="groupaccess"
             component="com_pftasks" section="task" inheritonly="true" filter="PFFormHelper::filterRules" validate="groupaccess"
         />
@@ -95,19 +96,4 @@
         <field name="checked_out_time" type="hidden" filter="unset" />
         <field name="elements" type="hidden" />
     </fieldset>
-
-    <fields name="users">
-        <fieldset name="users" label="COM_PROJECTFORK_FIELDSET_ASSIGNED_USERS">
-            <field name="user0" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
-            <field name="user1" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
-            <field name="user2" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
-            <field name="user3" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
-            <field name="user4" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
-            <field name="user5" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
-            <field name="user6" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
-            <field name="user7" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
-            <field name="user8" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
-            <field name="user9" type="userref" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
-        </fieldset>
-    </fields>
 </form>

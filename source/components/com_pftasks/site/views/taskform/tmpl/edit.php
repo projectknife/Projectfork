@@ -179,14 +179,14 @@ Joomla.submitbutton = function(task)
     	<?php endif; ?>
     </fieldset>
 
-    <?php if (PFApplicationHelper::enabled('com_pfrepo')) : ?>
-    <?php echo JHtml::_('tabs.panel', 'Attachments', 'task-attachments') ;?>
-        <fieldset>
-        	<div class="formelm control-group">
-        		<?php echo $this->form->getInput('attachment'); ?>
-        	</div>
-        </fieldset>
-    <?php endif; ?>
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_ASSIGNED_USERS'), 'task-users') ;?>
+    <fieldset>
+    	<div id="jform_users_element" class="formelm control-group">
+            <div id="jform_users_reload">
+		        <?php echo $this->form->getInput('users'); ?>
+            </div>
+    	</div>
+    </fieldset>
 
     <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_DEPENDENCIES'), 'task-dependencies') ;?>
     <fieldset>
@@ -197,25 +197,14 @@ Joomla.submitbutton = function(task)
     	</div>
     </fieldset>
 
-    <?php $fieldsets = $this->form->getFieldsets('users'); ?>
-	<?php foreach ($fieldsets as $name => $fieldset) : ?>
-		<?php echo JHtml::_('tabs.panel', JText::_($fieldset->label), $name . '-options'); ?>
-		<?php if (isset($fieldset->description) && trim($fieldset->description)) : ?>
-			<p><?php echo $this->escape(JText::_($fieldset->description));?></p>
-		<?php endif; ?>
-		<fieldset>
-			    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
-			    	<div class="formelm control-group">
-			    		<div class="control-label">
-			    	    	<?php echo $field->label; ?>
-			    	    </div>
-			    	    <div class="controls">
-			    			<?php echo $field->input; ?>
-			    		</div>
-			    	</div>
-			    <?php endforeach; ?>
-		</fieldset>
-	<?php endforeach; ?>
+    <?php if (PFApplicationHelper::enabled('com_pfrepo')) : ?>
+    <?php echo JHtml::_('tabs.panel', 'Attachments', 'task-attachments') ;?>
+        <fieldset>
+        	<div class="formelm control-group">
+        		<?php echo $this->form->getInput('attachment'); ?>
+        	</div>
+        </fieldset>
+    <?php endif; ?>
 
     <?php
     $fieldsets = $this->form->getFieldsets('attribs');

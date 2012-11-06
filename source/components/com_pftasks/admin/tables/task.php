@@ -167,11 +167,6 @@ class PFtableTask extends PFTable
             $this->setRules($rules);
         }
 
-        // Bind the assigned users
-        if (isset($array['users']) && is_array($array['users'])) {
-            $this->users = $array['users'];
-        }
-
         return parent::bind($array, $ignore);
     }
 
@@ -199,14 +194,6 @@ class PFtableTask extends PFTable
         if (trim(str_replace('&nbsp;', '', $this->description)) == '') {
             $this->description = '';
         }
-
-        $users = array();
-        foreach($this->users AS $user)
-        {
-            if ((int) $user) $users[] = $user;
-        }
-
-        $this->users = $users;
 
         // Check if a project is selected
         if ((int) $this->project_id <= 0) {
@@ -259,65 +246,7 @@ class PFtableTask extends PFTable
         // Store the main record
         $success = parent::store($updateNulls);
 
-        if ($success && isset($this->users)) {
-            $success = $this->storeUsers($this->id, $this->users);
-        }
-
         return $success;
-    }
-
-
-    /**
-     * Method to save the assigned users.
-     *
-     * @param     int        The task id
-     * @param     array      The users
-     *
-     * @return    boolean    True on success
-     */
-    public function storeUsers($task_id, $data)
-    {
-        $item  = 'task';
-        $table = JTable::getInstance('UserRef','PFtable');
-        $query = $this->_db->getQuery(true);
-
-        if (!$task_id) return true;
-
-        $query->select('a.user_id')
-              ->from('#__pf_ref_users AS a')
-              ->where('a.item_type = ' . $this->_db->quote($item))
-              ->where('a.item_id = ' . $this->_db->quote($task_id));
-
-        $this->_db->setQuery((string) $query);
-        $list = (array) $this->_db->loadResultArray();
-
-        // Add new references
-        foreach($data AS $uid)
-        {
-            if (!in_array($uid, $list) && $uid != 0) {
-                $sdata = array('item_type' => $item,
-                               'item_id'   => $task_id,
-                               'user_id'   => $uid);
-
-                if (!$table->save($sdata)) return false;
-
-                $list[] = $uid;
-            }
-        }
-
-        // Delete old references
-        foreach($list AS $uid)
-        {
-            if (!in_array($uid, $data) && $uid != 0) {
-                if (!$table->load(array('item_type' => $item, 'item_id' => $task_id, 'user_id' => $uid))) {
-                    return false;
-                }
-
-                if (!$table->delete()) return false;
-            }
-        }
-
-        return true;
     }
 
 

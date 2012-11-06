@@ -84,23 +84,14 @@ Joomla.submitbutton = function(task)
                 </ul>
             </fieldset>
 
-            <?php $fieldsets = $this->form->getFieldsets('users'); ?>
-			<?php foreach ($fieldsets as $name => $fieldset) : ?>
-				<?php echo JHtml::_('sliders.panel', JText::_($fieldset->label), $name . '-options'); ?>
-				<?php if (isset($fieldset->description) && trim($fieldset->description)) : ?>
-					<p><?php echo $this->escape(JText::_($fieldset->description));?></p>
-				<?php endif; ?>
-				<fieldset class="panelform">
-					<ul class="adminformlist unstyled">
-					    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
-						    <li>
-                                <?php echo $field->label; ?>
-                                <div id="<?php echo $field->id; ?>_reload"><?php echo $field->input; ?></div>
-                            </li>
-					    <?php endforeach; ?>
-					</ul>
-				</fieldset>
-			<?php endforeach; ?>
+            <?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_ASSIGNED_USERS'), 'users'); ?>
+            <fieldset class="panelform">
+                <div id="jform_users_element">
+                    <div id="jform_users_reload">
+				        <?php echo $this->form->getInput('users'); ?>
+                    </div>
+                </div>
+            </fieldset>
 
             <?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_DEPENDENCIES'), 'dependencies'); ?>
             <fieldset class="panelform">
