@@ -107,6 +107,9 @@ class PFtimeModelTime extends JModelAdmin
         $pk     = (!empty($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
         $is_new = true;
 
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
         if ($pk > 0) {
             if ($record->load($pk)) {
                 $is_new = false;
@@ -129,6 +132,22 @@ class PFtimeModelTime extends JModelAdmin
                 if (isset($data['access'])) {
                     unset($data['access']);
                 }
+            }
+        }
+
+        // Try to find the task title
+        $tid = (isset($data['task_id']) ? (int) $data['task_id'] : (int) $record->task_id);
+
+        if ($tid) {
+            $query->select('title')
+                  ->from('#__pf_tasks')
+                  ->where('id = ' . $tid);
+
+            $db->setQuery($query);
+            $task_title = $db->loadResult();
+
+            if ($task_title) {
+                $data['task_title'] = $task_title;
             }
         }
 
