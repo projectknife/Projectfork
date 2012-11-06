@@ -268,6 +268,8 @@ jQuery(document).ready(function() {
                                 <small><?php echo $this->escape(JHtml::_('pf.html.truncate', $item->description));?></small>
                                 <?php echo JHtml::_('pftasks.assignedLabel', $item->id, $x, $item->users); ?>
                                 <?php echo JHtml::_('pftasks.priorityLabel', $item->id, $x, $item->priority); ?>
+                                <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date); ?>
+                                <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
                                 <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
                             </div>
                             <?php echo $watch; ?>
