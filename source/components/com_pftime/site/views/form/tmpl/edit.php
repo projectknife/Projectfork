@@ -102,8 +102,8 @@ Joomla.submitbutton = function(task)
             <div class="control-label">
                 <?php echo $this->form->getLabel('rate'); ?>
             </div>
-            <div class="controls">
-                <?php echo $this->form->getInput('rate'); ?>
+            <div class="controls" id="jform_rate_element">
+                <div id="jform_rate_reload"><?php echo $this->form->getInput('rate'); ?></div>
             </div>
         </div>
     </fieldset>

@@ -48,7 +48,12 @@ Joomla.submitbutton = function(task)
                 <li><?php echo $this->form->getLabel('log_date') . $this->form->getInput('log_date'); ?></li>
                 <li><?php echo $this->form->getLabel('log_time') . $this->form->getInput('log_time'); ?></li>
                 <li><?php echo $this->form->getLabel('billable') . $this->form->getInput('billable'); ?></li>
-                <li><?php echo $this->form->getLabel('rate') . $this->form->getInput('rate'); ?></li>
+                <li>
+                    <?php echo $this->form->getLabel('rate');?>
+                    <div id="jform_rate_reload">
+                        <?php echo $this->form->getInput('rate'); ?>
+                    </div>
+                </li>
             </ul>
             <div class="clr"></div>
         </fieldset>

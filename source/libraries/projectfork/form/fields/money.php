@@ -46,6 +46,24 @@ class JFormFieldMoney extends JFormField
             JFactory::getDocument()->addScriptDeclaration(implode("\n", $script));
         }
 
+        $task_id = (int) $this->form->getValue('task_id');
+
+        if ($task_id && (!$this->value || $this->value == '0.00')) {
+            $db = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('rate')
+                  ->from('#__pf_tasks')
+                  ->where('id = ' . $task_id);
+
+            $db->setQuery($query);
+            $task_rate = $db->loadResult();
+
+            if ($task_rate) {
+                $this->value = $task_rate;
+            }
+        }
+
         // Setup field values
         if ($this->value) {
             $v1 = substr($this->value, 0, -3);
