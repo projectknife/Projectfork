@@ -22,12 +22,15 @@ $uid        = $user->get('id');
 
 $action_count = count($this->actions);
 $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
+$can_order    = $user->authorise('core.edit.state', 'com_pftasks');
 ?>
+<?php if ($uid && $this->state->get('filter.project') && $can_order) : ?>
 <script type="text/javascript">
 jQuery(document).ready(function() {
     PFlist.sortable('.list-tasks', 'tasks');
 });
 </script>
+<?php endif; ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-tasks">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -164,7 +167,7 @@ jQuery(document).ready(function() {
                                         $this->menu->itemEdit('tasklistform', $item->list_id, ($can_edit || $can_edit_own));
                                         $this->menu->itemTrash('tasklists', $x, ($can_edit || $can_edit_own));
                                         $this->menu->end();
-                                        echo $this->menu->render();
+                                        echo $this->menu->render(array('class' => 'btn-mini'));
                                     ?>
 	                                <div class="clearfix"></div>
 	                            </div>
@@ -289,4 +292,11 @@ jQuery(document).ready(function() {
             <?php echo JHtml::_('form.token'); ?>
         </form>
     </div>
+    <?php if ($can_order) : ?>
+        <?php if (!$this->state->get('filter.project')) : ?>
+            <div class="alert"><?php echo JText::_('COM_PROJECTFORK_REORDER_DISABLED'); ?></div>
+        <?php else: ?>
+            <div class="alert alert-success"><?php echo JText::_('COM_PROJECTFORK_REORDER_ENABLED'); ?></div>
+        <?php endif; ?>
+    <?php endif; ?>
 </div>
