@@ -225,6 +225,20 @@ jQuery(document).ready(function() {
                                 $this->menu->start(array('class' => 'btn-mini'));
                                 $this->menu->itemEdit('taskform', $item->id, ($can_edit || $can_edit_own));
                                 $this->menu->itemTrash('tasks', $x, ($can_edit || $can_edit_own));
+
+                                if ($can_change) {
+                                    $itm_icon = 'icon-warning';
+                                    $itm_pfx  = 'COM_PROJECTFORK_PRIORITY';
+                                    $itm_ac   = 'PFtask.priority(' . $x . ',';
+
+                                    $this->menu->itemDivider();
+                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_VERY_LOW', $itm_ac . ' 1, \'' . addslashes(JText::_($itm_pfx. '_VERY_LOW')) . '\')');
+                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_LOW', $itm_ac . ' 2, \'' . addslashes(JText::_($itm_pfx. '_LOW')) . '\')');
+                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_MEDIUM', $itm_ac . ' 3, \'' . addslashes(JText::_($itm_pfx. '_MEDIUM')) . '\')');
+                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_HIGH', $itm_ac . ' 4, \'' . addslashes(JText::_($itm_pfx. '_HIGH')) . '\')');
+                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_VERY_HIGH', $itm_ac . ' 5, \'' . addslashes(JText::_($itm_pfx. '_VERY_HIGH')) . '\')');
+                                }
+
                                 $this->menu->end();
 
                                 echo $this->menu->render(array('class' => 'btn-mini'));
@@ -240,7 +254,7 @@ jQuery(document).ready(function() {
                             <div class="btn-group">
                                 <small><?php echo $this->escape(JHtml::_('pf.html.truncate', $item->description));?></small>
                                 <?php echo JHtml::_('pftasks.assignedLabel', $item->users, $x); ?>
-                                <?php echo JHtml::_('pftasks.priorityLabel', $item->priority, $x); ?>
+                                <?php echo JHtml::_('pftasks.priorityLabel', $item->id, $x, $item->priority); ?>
                             </div>
                             <?php echo $watch; ?>
                         </div>

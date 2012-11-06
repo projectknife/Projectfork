@@ -50,7 +50,7 @@ abstract class JHtmlPFtasks
     }
 
 
-    static public function priorityLabel($value = null, $i = 0)
+    static public function priorityLabel($id, $i = 0, $value = null)
     {
         switch((int) $value)
         {
@@ -76,11 +76,13 @@ abstract class JHtmlPFtasks
 
             default:
             case 1:
-                return '<span id="priority_' . $i . '"></span>';
+                return '<span id="priority_' . $i . '_label"></span>'
+                     . '<input type="hidden" name="priority[' . $id . ']" id="priority' . $i . '" value="1"/>';
                 break;
         }
 
-        $html = '<span id="priority_' . $i . '" class="label ' . $class . '"><i class="icon-warning icon-white"></i> ' . $text . '</span>';
+        $html = '<span id="priority_' . $i . '_label" class="label ' . $class . '"><i class="icon-warning icon-white"></i> ' . $text . '</span>'
+              . '<input type="hidden" name="priority[' . $id . ']" id="priority' . $i . '" value="' . (int) $value . '"/>';
 
         return $html;
 

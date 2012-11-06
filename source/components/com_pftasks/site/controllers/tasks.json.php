@@ -95,4 +95,58 @@ class PFtasksControllerTasks extends PFControllerAdminJson
 
         $this->sendResponse($data);
     }
+
+
+    /**
+     * Override for json return response
+     *
+     * @see       controlleradmin.php
+     *
+     * @return    string                 JSON encoded response
+     */
+    public function priority()
+    {
+        $data = array();
+        $data['success']  = "true";
+        $data['messages'] = array();
+        $data['data']     = array();
+
+        // Check for request forgeries
+        if (!JSession::checkToken()) {
+            $data['success']    = "false";
+            $data['messages'][] = JText::_('JINVALID_TOKEN');
+
+            $this->sendResponse($data);
+        }
+
+        // Get the input
+        $pks   = JRequest::getVar('cid', null, 'post', 'array');
+        $value = JRequest::getVar('priority', null, 'post', 'array');
+
+        if (empty($pks)) {
+            $data['success']    = "false";
+            $data['messages'][] = JText::_($this->text_prefix . '_NO_ITEM_SELECTED');
+        }
+        else {
+            // Get the model.
+            $model = $this->getModel();
+
+            // Make sure the item ids are integers
+            JArrayHelper::toInteger($pks);
+            JArrayHelper::toInteger($value);
+
+            if (!$model->savePriority($pks, $value)) {
+                 $data['success']    = "false";
+                 $data['messages'][] = $model->getError();
+            }
+            else {
+                $ntext = $this->text_prefix . '_N_ITEMS_UPDATED';
+
+                $data['success']    = "true";
+                $data['messages'][] = JText::plural($ntext, count($pks));
+            }
+        }
+
+        $this->sendResponse($data);
+    }
 }

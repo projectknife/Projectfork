@@ -52,5 +52,54 @@ var PFtask =
                 btn.addClass('btn-danger');
             }
         });
+    },
+
+    priority: function(i, v, t, fi)
+    {
+        var cid  = 'cb' + i;
+        var p    = jQuery('#priority' + i);
+
+        p.val(v);
+
+        var rq = PFlist.listItemTask(cid, 'tasks.priority', fi, true);
+
+        rq.done(function(resp)
+        {
+            if (resp != false) {
+                var l = jQuery('#priority_' + i + '_label');
+
+                if (l.length) {
+                    if (!l.hasClass('label')) {
+                        l.addClass('label');
+                    }
+
+                    l.removeClass('label-success');
+                    l.removeClass('label-info');
+                    l.removeClass('label-warning');
+                    l.removeClass('label-important');
+
+                    if (v > 1) {
+                        if (v == 2) {
+                            l.addClass('label-success');
+                        }
+                        if (v == 3) {
+                            l.addClass('label-info');
+                        }
+                        if (v == 4) {
+                            l.addClass('label-warning');
+                        }
+                        if (v == 5) {
+                            l.addClass('label-important');
+                        }
+
+                        l.html('<i class="icon-warning"></i> ' + t);
+                    }
+                    else {
+                        l.removeClass('label');
+                        l.html('');
+                    }
+                }
+            }
+        });
     }
 }
