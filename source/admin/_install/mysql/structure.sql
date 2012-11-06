@@ -226,15 +226,6 @@ CREATE TABLE IF NOT EXISTS `#__pf_task_lists` (
   KEY `idx_access` (`access`)
 ) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task list data';
 
-CREATE TABLE IF NOT EXISTS `#__pf_task_map` (
-  `id` int(10) unsigned NOT NULL COMMENT 'Dependency Map',
-  `task_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Task ID reference',
-  `dependency` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent Task dependency ID reference',
-  PRIMARY KEY (`id`),
-  KEY `idx_taskid` (`task_id`),
-  KEY `idx_dependency` (`dependency`)
-) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task dependency';
-
 CREATE TABLE IF NOT EXISTS `#__pf_topics` (
   `id` int(10) unsigned NOT NULL AUTO_INCREMENT COMMENT 'Topic ID',
   `asset_id` int(10) NOT NULL COMMENT 'FK to the #__assets table',
