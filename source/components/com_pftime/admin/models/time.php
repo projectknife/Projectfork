@@ -232,10 +232,6 @@ class PFtimeModelTime extends JModelAdmin
 		if (!empty($record->id)) {
 			return $user->authorise('core.edit.state', 'com_pftime.time.' . (int) $record->id);
 		}
-		elseif (!empty($record->project_id)) {
-		    // New item, so check against the project.
-			return $user->authorise('core.edit.state', 'com_pfprojects.project.' . (int) $record->project_id);
-		}
 		else {
 		    // Default to component settings if neither article nor category known.
 			return parent::canEditState('com_pftime');
