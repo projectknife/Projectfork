@@ -136,7 +136,7 @@ abstract class PFhtmlLabel
             }
         }
 
-        $string = PFdate::relative($date);
+        $string = PFDate::relative($date);
 
         if ($string == false) {
             return '';
