@@ -67,12 +67,18 @@ class PFforumModelTopicForm extends PFforumModelTopic
         $value->params->loadString($value->attribs);
 
         // Get the attachments
-        $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-        $value->attachment = $attachments->getItems('topic', $value->id);
+        if (PFApplicationHelper::exists('com_pfforum')) {
+            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+            $value->attachment = $attachments->getItems('com_pfforum.topic', $value->id);
+        }
+        else {
+            $value->attachment = array();
+        }
+
 
         // Get the labels
         $labels = $this->getInstance('Labels', 'PFModel');
-        $value->labels = $labels->getConnections('topic', $value->id);
+        $value->labels = $labels->getConnections('com_pfforum.topic', $value->id);
 
         // Compute selected asset permissions.
         $uid    = JFactory::getUser()->get('id');
