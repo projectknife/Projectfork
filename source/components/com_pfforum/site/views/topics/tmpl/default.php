@@ -61,7 +61,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                             </select>
                         </div>
                     <?php endif; ?>
-                    <?php if ($this->access->get('topic.edit.state') || $this->access->get('topic.edit')) : ?>
+                    <?php if ($this->access->get('core.edit.state') || $this->access->get('core.edit')) : ?>
                         <div class="filter-published btn-group">
                             <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
@@ -74,7 +74,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                     <?php if ($this->state->get('filter.project')) : ?>
                         <hr />
                         <div class="filter-labels">
-                            <?php echo JHtml::_('pfhtml.label.filter', 'topic', $this->state->get('filter.project'), $this->state->get('filter.labels'));?>
+                            <?php echo JHtml::_('pfhtml.label.filter', 'com_pfforum.topic', $this->state->get('filter.project'), $this->state->get('filter.labels'));?>
                         </div>
                         <div class="clearfix"> </div>
                     <?php endif; ?>
@@ -92,56 +92,46 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                 $can_edit_own = ($access->get('core.edit.own') && $item->created_by == $uid);
 
                 // Prepare the watch button
-                $options = array('div-class' => 'pull-right', 'a-class' => 'btn-mini');
-                $watch = JHtml::_('pfhtml.button.watch', 'topics', $i, $item->watching, $options);
+                $watch = '';
+
+                if ($uid) {
+                    $options = array('div-class' => 'pull-right', 'a-class' => 'btn-mini');
+                    $watch = JHtml::_('pfhtml.button.watch', 'topics', $i, $item->watching, $options);
+                }
             ?>
                 <div class="row-fluid row-<?php echo $k;?>">
-                    <?php if ($can_change) : ?>
+                    <?php if ($can_change || $uid) : ?>
                         <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
                             <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
                         </label>
                     <?php endif; ?>
-                    <?php echo $watch; ?>
-                    <h3 class="topic-title">
-                    	<span class="toolbar-inline pull-left">
-                        	<?php
-	                        $this->menu->start(array('class' => 'btn-mini', 'pull' => 'left'));
-	                        $this->menu->itemEdit('topicform', $item->id, ($can_edit || $can_edit_own));
-	                        $this->menu->itemTrash('topics', $i, $can_change);
-	                        $this->menu->end();
+                    <?php
+                        $this->menu->start(array('class' => 'btn-mini', 'pull' => 'left'));
+                        $this->menu->itemEdit('topicform', $item->id, ($can_edit || $can_edit_own));
+                        $this->menu->itemTrash('topics', $i, $can_change);
+                        $this->menu->end();
 
-	                        echo $this->menu->render(array('class' => 'btn-mini'));
-		                    ?>
-                        </span>
+                        echo $this->menu->render(array('class' => 'btn-mini'));
+                    ?>
+
+                    <?php echo $watch; ?>
+
+                    <h3 class="topic-title">
                         <a href="<?php echo JRoute::_(PFforumHelperRoute::getTopicRoute($item->slug, $item->project_slug));?>">
                             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
                             <?php echo $this->escape($item->title);?>
                         </a>
-                        <small>
-                        	<?php if (!$this->state->get('filter.project')) : ?>
-                            in <a href="<?php echo JRoute::_(PFprojectsHelperRoute::getDashboardRoute($item->project_slug));?>">
-                            <?php echo $this->escape($item->project_title);?>
-                            </a>
-                            <?php endif; ?>
-                            on
-                            <?php if ($item->modified != $this->nulldate) : ?>
-		                        <span class="list-edited small"><i class="icon-edit muted"></i>
-		                            <?php echo JHtml::_('date', $item->modified, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
-		                        </span>
-		                    <?php else: ?>
-			                    <span class="list-created small">
-			                        <?php echo JHtml::_('date', $item->last_activity, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1')))); ?>
-			                    </span>
-		                    <?php endif; ?>
-                        </small>
-                        <span class="label access">
-                            <i class="icon-eye icon-white"></i> <?php echo $this->escape($item->access_level);?>
-                        </span>
+                        &nbsp;
+                        <?php echo JHtml::_('pfforum.repliesLabel', $item->replies, $item->last_activity); ?>
                     </h3>
+
                     <blockquote class="item-description" id="topic-<?php echo $item->id;?>">
-                        <?php echo $item->description;?>
-                        <small>by <cite title="<?php echo $this->escape($item->author_name);?>"><?php echo $this->escape($item->author_name);?></cite></small>
+                        <?php echo JHtml::_('pf.html.truncate', $item->description, 300); ?>
                     </blockquote>
+                    <hr />
+                    <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
+                    <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
+                    <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
                 </div>
             <?php
             $k = 1 - $k;

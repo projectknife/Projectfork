@@ -39,10 +39,10 @@
         />
         <field name="labels" type="labels"
             label="COM_PROJECTFORK_FIELD_LABELS" description="COM_PROJECTFORK_FIELD_LABELS_DESC"
-            asset="topic"
+            asset="com_pfforum.topic"
         />
         <field name="rules" type="groupaccess"
-            component="com_projectfork" section="topic" inheritonly="true" filter="ProjectforkHelperForm::filterRules" validate="groupaccess"
+            component="com_pfforum" section="topic" inheritonly="true" filter="ProjectforkHelperForm::filterRules" validate="groupaccess"
         />
         <field name="id" type="hidden" readonly="true"/>
         <field name="access" type="inheritaccess" hidden="true" readonly="true"/>

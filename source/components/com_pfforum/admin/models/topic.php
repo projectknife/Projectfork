@@ -305,7 +305,7 @@ class PFforumModelTopic extends JModelAdmin
                     $labels->setState('item.project', $updated->project_id);
                 }
 
-                $labels->setState('item.type', 'topic');
+                $labels->setState('item.type', 'com_pfforum.topic');
                 $labels->setState('item.id', $id);
 
                 if (!$labels->saveRefs($data['labels'])) {

@@ -94,12 +94,15 @@ class PFforumModelTopics extends JModelList
 
         // Join over the label refs for label count
         $query->select('COUNT(DISTINCT lbl.id) AS label_count');
-        $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('topic') . ')');
+        $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('com_pfforum.topic') . ')');
 
         // Join over the observer table for email notification status
         if ($user->get('id') > 0) {
             $query->select('COUNT(DISTINCT obs.user_id) AS watching');
-            $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = ' . $db->quote('topic') . ' AND obs.item_id = a.id AND obs.user_id = ' . $db->quote($user->get('id')) . ')');
+            $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = '
+                               . $db->quote('com_pfforum.topic') . ' AND obs.item_id = a.id AND obs.user_id = '
+                               . $db->quote($user->get('id'))
+                               . ')');
         }
 
         // Implement View Level Access
@@ -173,7 +176,7 @@ class PFforumModelTopics extends JModelList
 
             // Get the labels
             if ($items[$i]->label_count > 0) {
-                $items[$i]->labels = $labels->getConnections('topic', $items[$i]->id);
+                $items[$i]->labels = $labels->getConnections('com_pfforum.topic', $items[$i]->id);
             }
         }
 
