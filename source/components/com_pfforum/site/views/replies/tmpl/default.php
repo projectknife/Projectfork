@@ -50,9 +50,8 @@ Joomla.submitbutton = function(task)
     <div class="cat-items">
 
         <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(PFforumHelperRoute::getRepliesRoute($topic, $project)); ?>" method="post">
-        	<?php if ($this->params->get('show_page_heading', 0)) : ?>
 	            <div class="btn-toolbar btn-toolbar-top">
-	                <?php echo $this->toolbar;?>
+                    <?php echo $this->toolbar; ?>
 	            </div>
 	            <div class="clearfix"> </div>
 
@@ -88,7 +87,6 @@ Joomla.submitbutton = function(task)
 	                    <div class="clearfix"> </div>
 	                </div>
 	            </div>
-             <?php endif; ?>
             <!-- Start Topic -->
 
             <div class="page-header">
@@ -124,7 +122,6 @@ Joomla.submitbutton = function(task)
             <blockquote class="item-description">
                 <?php echo $this->topic->description; ?>
             </blockquote>
-
             <!-- End Topic -->
 
             <!-- Start Replies -->
@@ -160,7 +157,7 @@ Joomla.submitbutton = function(task)
                         $this->menu->itemTrash('replies', $i, $can_change);
                         $this->menu->end();
 
-                        echo $this->menu->render(array('class' => 'btn-mini'));
+                        echo $this->menu->render(array('class' => 'btn-mini', 'pull' => 'left'));
 		                ?>
                     	</span>
                     	<?php echo $item->description;?>

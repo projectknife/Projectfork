@@ -63,16 +63,13 @@ class PFforumHelper
      *
      * @return    jobject
      */
-    public static function getActions($id = 0, $project = 0)
+    public static function getActions($id = 0)
     {
         $user   = JFactory::getUser();
         $result = new JObject;
 
-        if ((empty($id) || $id == 0) && (empty($project) || $project == 0)) {
+        if (empty($id) || $id == 0) {
             $asset = self::$extension;
-        }
-        elseif (empty($id) || $id == 0) {
-            $asset = 'com_pfprojects.project.' . (int) $project;
         }
         else {
             $asset = 'com_pfforum.topic.' . (int) $id;

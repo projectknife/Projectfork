@@ -211,7 +211,7 @@ class PFforumModelTopic extends JModelAdmin
         }
 
         if (!$is_new) {
-            $data['project_id'] = $table->project_id;
+            $data['project_id'] = $record->project_id;
         }
 
         // Make sure the title and alias are always unique

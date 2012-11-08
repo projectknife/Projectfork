@@ -77,7 +77,7 @@ abstract class PFforumHelperRoute
 
         $needles = array('id' => array((int) $id));
 
-        if ($item = PFApplicationHelper::itemRoute($needles, 'com_pfforum.topic')) {
+        if ($item = PFApplicationHelper::itemRoute($needles, 'com_pfforum.topics')) {
             $link .= '&Itemid=' . $item;
         }
         elseif ($item = PFApplicationHelper::itemRoute(null, 'com_pfforum.topics')) {

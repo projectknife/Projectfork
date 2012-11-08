@@ -59,7 +59,7 @@ abstract class PFToolbar
         $html[] = '    <i class="icon-search"></i>';
         $html[] = '</a>';
 
-        self::$html[] = implode("\n", $html);
+        self::$html[] = implode("", $html);
     }
 
 
@@ -108,7 +108,7 @@ abstract class PFToolbar
         $html[] = '    </ul>';
         $html[] = '</div>';
 
-        self::$html[] = implode("\n", $html);
+        self::$html[] = implode("", $html);
 
     }
 
@@ -197,7 +197,7 @@ abstract class PFToolbar
             $html[] = '    </ul>';
             $html[] = '</div>';
 
-            self::$html[] = implode("\n", $html);
+            self::$html[] = implode("", $html);
         }
     }
 
@@ -238,7 +238,7 @@ abstract class PFToolbar
         $html[] = addslashes(JText::_($text));
         $html[] = '</a>';
 
-        return implode("\n", $html);
+        return implode("", $html);
     }
 
 
@@ -256,7 +256,7 @@ abstract class PFToolbar
 
         if ($text == 'divider') {
             $html[] = '<li class="divider"></li>';
-            return implode("\n", $html);
+            return implode("", $html);
         }
 
         $html[] = '<li>';
@@ -286,6 +286,6 @@ abstract class PFToolbar
         $html[] = '</a>';
         $html[] = '</li>';
 
-        return implode("\n", $html);
+        return implode("", $html);
     }
 }
