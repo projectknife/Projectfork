@@ -123,7 +123,7 @@ abstract class PFhtmlLabel
      *
      * @return    string                The label html
      */
-    public static function datetime($date, $compact = false)
+    public static function datetime($date, $compact = false, $options = array())
     {
         static $format = null;
 
@@ -152,10 +152,16 @@ abstract class PFhtmlLabel
             $string = ($is_past ? '' : '+') . round($remaining / 86400);
         }
 
+        $past_class   = (isset($options['past-class'])   ? $options['past-class']   : 'label-important');
+        $past_icon    = (isset($options['past-icon'])    ? $options['past-icon']    : 'warning');
+        $future_class = (isset($options['future-class']) ? $options['future-class'] : 'label-success');
+        $future_icon  = (isset($options['future-icon'])  ? $options['future-icon']  : 'calendar');
+
+
         $html = array();
-        $html[] = '<span class="label ' . ($is_past ? 'label-important' : 'label-success');
+        $html[] = '<span class="label ' . ($is_past ? $past_class : $future_class);
         $html[] = ' hasTip" title="' . $tooltip . '" style="cursor: help">';
-        $html[] = '<i class="icon-' . ($is_past ? 'warning' : 'calendar') . '"></i> ';
+        $html[] = '<i class="icon-' . ($is_past ? $past_icon : $future_icon) . '"></i> ';
         $html[] = $string;
         $html[] = '</span>';
 
