@@ -180,6 +180,8 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   `state` tinyint(3) NOT NULL DEFAULT '0' COMMENT 'Task state: 1 = Active, 0 = Inactive, 2 = Archived, -2 = Trashed ',
   `priority` tinyint(3) NOT NULL DEFAULT '0' COMMENT 'Task priority ID',
   `complete` tinyint(1) NOT NULL DEFAULT '0' COMMENT 'Task complete state',
+  `completed` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Task completition date',
+  `completed_by` int(10) unsigned NOT NULL COMMENT 'The user who completed the task',
   `ordering` int(10) NOT NULL DEFAULT '0' COMMENT 'Task ordering in a task list',
   `start_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Task start date',
   `end_date` datetime NOT NULL DEFAULT '0000-00-00 00:00:00' COMMENT 'Task end date',
@@ -195,7 +197,8 @@ CREATE TABLE IF NOT EXISTS `#__pf_tasks` (
   KEY `idx_checkedout` (`checked_out`),
   KEY `idx_priority` (`priority`),
   KEY `idx_complete` (`complete`),
-  KEY `idx_state` (`state`)
+  KEY `idx_state` (`state`),
+  KEY `idx_completedby` (`completed_by`)
 ) DEFAULT CHARSET=utf8 COMMENT='Stores Projectfork task data';
 
 CREATE TABLE IF NOT EXISTS `#__pf_task_lists` (
