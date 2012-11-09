@@ -72,18 +72,6 @@ class PFtableNote extends PFTable
 
             if ($result) $asset_id = (int) $result;
         }
-        elseif ($this->project_id) {
-            // Build the query to get the asset id for the parent project.
-            $query->select('asset_id')
-                  ->from('#__pf_projects')
-                  ->where('id = ' . (int) $this->project_id);
-
-            // Get the asset id from the database.
-            $this->_db->setQuery((string) $query);
-            $result = $this->_db->loadResult();
-
-            if ($result) $asset_id = (int) $result;
-        }
 
         if (!$asset_id) {
             // Build the query to get the asset id for the parent component.
@@ -123,14 +111,6 @@ class PFtableNote extends PFTable
             $query->select('access')
                   ->from('#__pf_repo_dirs')
                   ->where('id = ' . $db->quote($dir));
-
-            $db->setQuery($query);
-            $access = (int) $db->loadResult();
-        }
-        elseif ($project > 0) {
-            $query->select('access')
-                  ->from('#__pf_projects')
-                  ->where('id = ' . $db->quote($project));
 
             $db->setQuery($query);
             $access = (int) $db->loadResult();

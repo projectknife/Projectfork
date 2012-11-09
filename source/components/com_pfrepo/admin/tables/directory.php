@@ -81,16 +81,6 @@ class PFTableDirectory extends JTableNested
             $this->_db->setQuery($query);
             $result = $this->_db->loadResult();
         }
-        elseif ($this->project_id > 0) {
-            $query->select($this->_db->quoteName('asset_id'))
-                  ->from($this->_db->quoteName('#__pf_repo_dirs'))
-                  ->where($this->_db->quoteName('project_id') . ' = ' . $this->_db->quote((int) $this->project_id))
-                  ->where($this->_db->quoteName('parent_id') . ' = 1');
-
-            // Get the asset id from the database.
-            $this->_db->setQuery($query);
-            $result = $this->_db->loadResult();
-        }
 
         if (!$result) {
             // Build the query to get the asset id for the parent component.

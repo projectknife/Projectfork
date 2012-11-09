@@ -74,7 +74,7 @@ class PFrepoModelDirectory extends JModelAdmin
 
             // Get the labels
             $labels = $this->getInstance('Labels', 'PFModel');
-            $item->labels = $labels->getConnections('directory', $item->id);
+            $item->labels = $labels->getConnections('com_pfrepo.directory', $item->id);
         }
 
         return $item;
@@ -479,20 +479,26 @@ class PFrepoModelDirectory extends JModelAdmin
         if (empty($form)) return false;
 
         $jinput = JFactory::getApplication()->input;
-        $id     = $jinput->get('id', 0);
+        $user   = JFactory::getUser();
+        $id     = (int) $jinput->get('id', 0);
 
-        $item_access = PFrepoHelper::getActions('directory', $id);
-        $access      = PFrepoHelper::getActions();
+        // Always disable these fields while saving
+		$form->setFieldAttribute('alias', 'filter', 'unset');
 
-        // Check if the project, and parent id are given
-        $project_id = (int) $form->getValue('project_id');
-        $parent_id  = $form->getValue('parent_id');
+        // Disable these fields if not an admin
+        if (!$user->authorise('core.admin', 'com_pfrepo')) {
+            $form->setFieldAttribute('access', 'disabled', 'true');
+            $form->setFieldAttribute('access', 'filter', 'unset');
 
-        if (!$project_id) {
-            $form->setValue('project_id', null, $this->getState($this->getName() . '.project'));
+            $form->setFieldAttribute('rules', 'disabled', 'true');
+            $form->setFieldAttribute('rules', 'filter', 'unset');
         }
-        if (!$parent_id) {
-            $form->setValue('parent_id', null, $this->getState($this->getName() . '.parent_id'));
+
+        // Disable these fields when updating
+        if ($id) {
+            $form->setFieldAttribute('project_id', 'disabled', 'true');
+            $form->setFieldAttribute('project_id', 'filter', 'unset');
+            $form->setFieldAttribute('project_id', 'required', 'false');
         }
 
         return $form;
@@ -528,6 +534,10 @@ class PFrepoModelDirectory extends JModelAdmin
             else {
                 $pk = 0;
             }
+        }
+
+        if (!$is_new) {
+            $data['project_id'] = $table->project_id;
         }
 
         // Make sure the title and alias are always unique
@@ -615,8 +625,8 @@ class PFrepoModelDirectory extends JModelAdmin
                 $labels->setState('item.project', $updated->project_id);
             }
 
-            $labels->setState('item.type', 'directory');
-            $labels->setState('item.id', $table->id);
+            $labels->setState('item.type', 'com_pfrepo.directory');
+            $labels->setState('item.id', $updated->id);
 
             if (!$labels->saveRefs($data['labels'])) {
                 return false;
@@ -798,13 +808,6 @@ class PFrepoModelDirectory extends JModelAdmin
                         return false;
                     }
 
-                    $tables = array('labelref');
-                    $field  = array('item_type' => 'directory', 'item_id' => $pk);
-
-                    if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
-                        return false;
-                    }
-
                     if (is_array($dir_list) && count($dir_list) > 0) {
                         $move_notes = array();
                         $del_notes  = array();
@@ -861,14 +864,6 @@ class PFrepoModelDirectory extends JModelAdmin
                             if ($db->getErrorMsg()) {
                                 $this->setError($db->getErrorMsg());
                             }
-
-                            foreach ($del_notes AS $note)
-                            {
-                                $tables = array('labelref');
-                                $field  = array('item_type' => 'note', 'item_id' => $note);
-
-                                ProjectforkHelperQuery::deleteFromTablesByField($tables, $field);
-                            }
                         }
 
                         // Move notes you cant delete
@@ -895,14 +890,6 @@ class PFrepoModelDirectory extends JModelAdmin
                             if ($db->getErrorMsg()) {
                                 $this->setError($db->getErrorMsg());
                             }
-
-                            foreach ($del_files AS $file)
-                            {
-                                $tables = array('labelref');
-                                $field  = array('item_type' => 'file', 'item_id' => $file);
-
-                                ProjectforkHelperQuery::deleteFromTablesByField($tables, $field);
-                            }
                         }
 
                         // Move files you cant delete
@@ -920,7 +907,7 @@ class PFrepoModelDirectory extends JModelAdmin
 
                     // Delete the physical directory if it exists
                     if ($dir_project) {
-                        $basepath = ProjectforkHelperRepository::getBasePath($dir_project);
+                        $basepath = PFrepoHelper::getBasePath($dir_project);
                         $fullpath = JPath::clean($basepath . '/' . $dir_path);
 
                         if (JFolder::exists($fullpath)) {
@@ -1075,9 +1062,9 @@ class PFrepoModelDirectory extends JModelAdmin
 		if (!empty($record->id)) {
 			return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->id);
 		}
-		elseif (!empty($record->project_id)) {
-		    // New item, so check against the project.
-			return $user->authorise('core.edit.state', 'com_pfprojects.project.' . (int) $record->project_id);
+		elseif (!empty($record->parent_id)) {
+		    // New item, so check against the parent dir.
+			return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->parent_id);
 		}
 		else {
 		    // Default to component settings.
@@ -1119,7 +1106,17 @@ class PFrepoModelDirectory extends JModelAdmin
         // Check the session for previously entered form data.
         $data = JFactory::getApplication()->getUserState('com_pfrepo.edit.' . $this->getName() . '.data', array());
 
-        if (empty($data)) $data = $this->getItem();
+        if (empty($data)) {
+			$data = $this->getItem();
+
+            // Set default values
+            if ($this->getState($this->getName() . '.id') == 0) {
+                $active_id = PFApplicationHelper::getActiveProjectId();
+
+                $data->set('project_id', $active_id);
+                $data->set('parent_id', $this->getState($this->getName() . '.parent_id'));
+            }
+        }
 
         return $data;
     }

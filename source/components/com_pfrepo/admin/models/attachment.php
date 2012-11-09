@@ -36,9 +36,6 @@ class PFrepoModelAttachment extends JModelAdmin
 	 */
 	public function __construct($config = array())
 	{
-	   // Register dependencies
-	   JLoader::register('ProjectforkHelperAccess', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php');
-
        parent::__construct($config);
     }
 
@@ -137,12 +134,13 @@ class PFrepoModelAttachment extends JModelAdmin
             return true;
         }
 
-        list($asset, $id) = explode('.', $record->attachment, 2);
+        /*list($asset, $id) = explode('.', $record->attachment, 2);
 
         $groups      = $user->getAuthorisedViewLevels();
-        $delete_item = ProjectforkHelperAccess::getActions($record->item_type, $record->item_id);
         $delete_repo = ProjectforkHelperAccess::getActions($asset, $id);
 
-        return ($delete_item || $delete_repo);
+        return ($delete_item || $delete_repo);*/
+
+        return true;
     }
 }
