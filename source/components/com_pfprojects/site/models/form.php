@@ -63,6 +63,7 @@ class PFprojectsModelForm extends PFprojectsModelProject
         // Convert attrib field to Registry.
         $value->params = new JRegistry;
         $value->params->loadString($value->attribs);
+        $value->attribs = $value->params->toArray();
 
         // Get the attachments
         if (PFApplicationHelper::exists('com_pfrepo')) {
