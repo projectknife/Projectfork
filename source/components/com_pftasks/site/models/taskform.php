@@ -213,6 +213,10 @@ class PFtasksModelTaskForm extends PFtasksModelTask
     {
         // Initialise variables.
         $table = $this->getTable();
+        $uid   = JFactory::getUser()->get('id');
+        $date  = new JDate();
+        $now   = $date->toSql();
+        $ndate = JFactory::getDbo()->getNullDate();
 
         if (empty($pks)) {
             JError::raiseWarning(500, JText::_($this->text_prefix . '_ERROR_NO_ITEMS_SELECTED'));
@@ -238,13 +242,28 @@ class PFtasksModelTaskForm extends PFtasksModelTask
             if (is_null($state)) {
                 if ($table->complete == '1') {
                     $table->complete = '0';
+                    $table->completed = $ndate;
+                    $table->completed_by = '0';
                 }
                 else {
                     $table->complete = '1';
+                    $table->completed = $now;
+                    $table->completed_by = $uid;
                 }
             }
             else {
                 $table->complete = (int) $state;
+
+                if ($table->complete == 1) {
+                    $table->complete = '0';
+                    $table->completed = $ndate;
+                    $table->completed_by = '0';
+                }
+                else {
+                    $table->complete = 0;
+                    $table->completed = $now;
+                    $table->completed_by = $uid;
+                }
             }
 
             // Trigger the onContentBeforeSave event.

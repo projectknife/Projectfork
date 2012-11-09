@@ -287,6 +287,28 @@ class PFtasksModelTask extends JModelAdmin
                 $data['milestone_id'] = ($is_new ? 0 : $table->milestone_id);
             }
 
+            // Handle task completition meta info
+            if (isset($data['complete'])) {
+                $date = new JDate();
+                if ($is_new && $data['complete'] == '1') {
+                    $data['completed']    = $date->toSql();
+                    $data['completed_by'] = JFactory::getUser()->id;
+                }
+
+                if (!$is_new) {
+                    if ($data['complete'] == '0') {
+                        $data['completed']    = JFactory::getDbo()->getNullDate();
+                        $data['completed_by'] = '0';
+                    }
+                    else {
+                        if (JFactory::getUser()->id != $table->completed_by) {
+                            $data['completed']    = $date->toSql();
+                            $data['completed_by'] = JFactory::getUser()->id;
+                        }
+                    }
+                }
+            }
+
             // Make sure the title and alias are always unique
             $data['alias'] = '';
             list($title, $alias) = $this->generateNewTitle($data['title'], $data['project_id'], $data['milestone_id'], $data['list_id'], $data['alias'], $pk);
