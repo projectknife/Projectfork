@@ -14,7 +14,7 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.view');
 
 
-class PFnoteViewNote extends JViewLegacy
+class PFrepoViewNote extends JViewLegacy
 {
     protected $form;
     protected $item;

@@ -55,7 +55,7 @@ class PFrepoControllerNote extends JControllerForm
 
         // Verify directory access
         if ($dir_id) {
-            $model = $this->getModel('Directory', 'ProjectforkModel');
+            $model = $this->getModel('Directory', 'PFrepoModel');
             $item  = $model->getItem($dir_id);
 
             if (!empty($item)) {
