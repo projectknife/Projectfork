@@ -290,7 +290,7 @@ class PFcommentsModelComment extends JModelAdmin
             $user  = JFactory::getUser();
             $asset = 'com_pfcomments.comment.' . (int) $record->id;
 
-            return $user->authorise('core.edit.state', $asset);
+            return ($user->authorise('core.edit', $asset) || ($user->authorise('core.edit.own', $asset) && $record->created_by == $user->id));
         }
 
         return parent::canEditState($record);
@@ -313,7 +313,7 @@ class PFcommentsModelComment extends JModelAdmin
         if (!empty($record->id)) {
             $asset  = 'com_pfcomments.comment.' . (int) $record->id;
 
-            return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
+            return ($user->authorise('core.edit', $asset) || ($user->authorise('core.edit.own', $asset) && $record->created_by == $user->id));
         }
 
         return $user->authorise('core.edit', 'com_pfcomments');

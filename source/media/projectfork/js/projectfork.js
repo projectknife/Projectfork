@@ -96,7 +96,7 @@ var Projectfork =
             return false;
         }
 
-        if (resp.length != 0 && typeof resp.length != 'undefined' && typeof resp.success != 'undefined') {
+        if (resp.length != 0 && typeof resp.success != 'undefined') {
             if (resp.success == "true") {
                 var msg_class = 'success';
             }

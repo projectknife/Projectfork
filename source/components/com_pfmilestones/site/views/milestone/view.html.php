@@ -90,7 +90,7 @@ class PFmilestonesViewMilestone extends JViewLegacy
 
 
         // Fake some content item properties to avoid plugin issues
-        PFObjectHelper::contentItem($item);
+        PFObjectHelper::toContentItem($item);
 
 		// Process the content plugins.
 		JPluginHelper::importPlugin('content');

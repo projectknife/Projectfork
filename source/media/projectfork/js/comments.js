@@ -22,7 +22,7 @@ var PFcomments =
         }
 
         // Override the task value
-        t.val('commentform.save');
+        t.val('form.save');
 
         // Serialize the form
         var d = f.serializeArray();
@@ -46,7 +46,6 @@ var PFcomments =
                 }
                 else {
                     resp = jQuery.parseJSON(resp);
-
                     Projectfork.displayMsg(resp);
                 }
             },
@@ -82,7 +81,7 @@ var PFcomments =
 
     trash: function(event)
     {
-        var i  = event.data.i;
+        var i = event.data.i;
         var f = jQuery('#commentForm');
         var t = jQuery('input[name|="task"]', f);
 
@@ -162,7 +161,7 @@ var PFcomments =
 
     reload: function()
     {
-        var rq = 'index.php?option=com_projectfork&view=comments';
+        var rq = 'index.php?option=com_pfcomments&view=comments';
         rq = rq + '&filter_context=' + jQuery('#jform_context').val();
         rq = rq + '&filter_item_id=' + jQuery('#jform_item_id').val();
         rq = rq + '&tmpl=component';

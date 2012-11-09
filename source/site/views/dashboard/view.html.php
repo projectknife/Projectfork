@@ -48,7 +48,7 @@ class ProjectforkViewDashboard extends JViewLegacy
 
     		// Import plugins
     		JPluginHelper::importPlugin('content');
-            $context = 'com_projectfork.' . $this->get('Name');
+            $context = 'com_pfprojects.project';
 
             // Trigger events
     		$results = $dispatcher->trigger('onContentPrepare', array ($context, &$this->item, &$this->params, 0));

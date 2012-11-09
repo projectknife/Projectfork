@@ -45,11 +45,11 @@ class plgContentPfcomments extends JPlugin
     {
         // List of valid contexts.
         // The context tells us which kind of item we're dealing with.
-        $context_items = array('com_projectfork.project',
-                               'com_projectfork.milestone',
-                               'com_projectfork.task',
-                               'com_projectfork.user',
-                               'com_projectfork.note'
+        $context_items = array('com_pfprojects.project',
+                               'com_pfmilestones.milestone',
+                               'com_pftasks.task',
+                               'com_pfusers.user',
+                               'com_pfrepo.note'
                               );
 
         // Check if the context is supported. Return empty string if its not.
@@ -71,11 +71,8 @@ class plgContentPfcomments extends JPlugin
         $this->item_context = $context;
         $this->item_id      = (isset($item->id) ? intval($item->id) : 0);
 
-        // Add include paths
-        JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/html');
-
         // Load comments JS
-        JHtml::_('projectfork.script.comments');
+        JHtml::_('pfhtml.script.comments');
 
         return $this->display();
     }
@@ -85,7 +82,7 @@ class plgContentPfcomments extends JPlugin
     {
         $doc  = JFactory::getDocument();
 
-        $url  = 'index.php?option=com_projectfork&view=comments';
+        $url  = 'index.php?option=com_pfcomments&view=comments';
         $url .= '&filter_context=' . $this->item_context;
         $url .= '&filter_item_id=' . $this->item_id;
         $url .= '&tmpl=component';

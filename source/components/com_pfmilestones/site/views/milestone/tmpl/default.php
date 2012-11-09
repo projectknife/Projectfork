@@ -37,7 +37,7 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
 			<?php echo JText::_('JGRID_HEADING_PROJECT');?>:
 		</dt>
 		<dd class="project-data">
-			<a href="<?php echo JRoute::_(ProjectforkHelperRoute::getDashboardRoute($item->project_slug));?>"><?php echo $item->project_title;?></a>
+			<a href="<?php echo JRoute::_(PFprojectsHelperRoute::getDashboardRoute($item->project_slug));?>"><?php echo $item->project_title;?></a>
 		</dd>
 		<?php if($item->start_date != JFactory::getDBO()->getNullDate()): ?>
 			<dt class="start-title">
