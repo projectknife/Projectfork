@@ -68,7 +68,7 @@ class PFrepoModelFileForm extends PFrepoModelFile
 
         // Get the labels
         $labels = $this->getInstance('Labels', 'PFModel');
-        $value->labels = $labels->getConnections('file', $value->id);
+        $value->labels = $labels->getConnections('com_pfrepo.file', $value->id);
 
         // Compute selected asset permissions.
         $uid    = JFactory::getUser()->get('id');

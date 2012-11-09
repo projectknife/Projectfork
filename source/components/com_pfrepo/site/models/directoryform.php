@@ -67,7 +67,7 @@ class PFrepoModelDirectoryForm extends PFrepoModelDirectory
 
         // Get the labels
         $labels = $this->getInstance('Labels', 'PFModel');
-        $value->labels = $labels->getConnections('directory', $value->id);
+        $value->labels = $labels->getConnections('com_pfrepo.directory', $value->id);
 
         // Compute selected asset permissions.
         $uid    = JFactory::getUser()->get('id');
