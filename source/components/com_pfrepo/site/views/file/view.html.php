@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
  * File Download View class for the Projectfork component
  *
  */
-class ProjectforkViewFile extends JViewLegacy
+class PFrepoViewFile extends JViewLegacy
 {
     protected $item;
     protected $state;
@@ -25,8 +25,6 @@ class ProjectforkViewFile extends JViewLegacy
 
     function display($tpl = null)
     {
-        JLoader::register('ProjectforkHelperRepository', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/repository.php');
-
         $this->item  = $this->get('Item');
         $this->state = $this->get('State');
 
@@ -36,7 +34,7 @@ class ProjectforkViewFile extends JViewLegacy
             return false;
         }
 
-        $uploadpath = ProjectforkHelperRepository::getBasePath($this->item->project_id);
+        $uploadpath = PFrepoHelper::getBasePath($this->item->project_id);
         $filepath   = $uploadpath . '/' . $this->item->file_name;
         $filename   = $this->item->file_name;
 
