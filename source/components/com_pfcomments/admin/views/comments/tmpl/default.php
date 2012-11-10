@@ -125,7 +125,7 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                         <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'comments.', $can_checkin); ?>
                     <?php endif; ?>
                     <?php if ($can_edit || $can_edit_own) : ?>
-                        <a href="<?php echo JRoute::_('index.php?option=&task=comment.edit&id=' . $item->id);?>">
+                        <a href="<?php echo JRoute::_('index.php?option=com_pfcomments&task=comment.edit&id=' . $item->id);?>">
                             <?php echo JHtml::_('string.truncate', $item->description, 40, true, false); ?>
                         </a>
                     <?php else : ?>

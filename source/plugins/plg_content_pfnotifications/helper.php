@@ -10,8 +10,6 @@
 defined('_JEXEC') or die();
 
 
-JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/html');
-
 class PFnotificationsHelper
 {
     public static function formatChanges(&$lang, $changes)
@@ -316,5 +314,47 @@ class PFnotificationsHelper
         }
 
         return $data;
+    }
+
+
+    public static function isSupported($context)
+    {
+        list($component, $item) = explode('.', $context, 2);
+
+        $components = PFApplicationHelper::getComponents();
+
+        if (!array_key_exists($component, $components)) {
+            return false;
+        }
+
+        if (!self::getComponentHelper($component)) {
+            return false;
+        }
+
+        $class_name = 'PF' . str_replace('com_pf', '', $component) . 'NotificationsHelper';
+        $methods    = get_class_methods($class_name);
+
+        if (!in_array('isSupported', $methods)) {
+            return false;
+        }
+
+        return $class_name::isSupported($context);
+    }
+
+
+    public static function getComponentHelper($component)
+    {
+        $helper_file = JPATH_ADMINISTRATOR . '/components/' . $component . '/helpers/notifications.php';
+        $class_name  = 'PF' . str_replace('com_pf', '', $component) . 'NotificationsHelper';
+
+        if (file_exists($helper_file)) {
+            JLoader::register($class_name, $helper_file);
+        }
+
+        if (!class_exists($class_name)) {
+            return false;
+        }
+
+        return true;
     }
 }

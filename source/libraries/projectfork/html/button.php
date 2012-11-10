@@ -15,6 +15,16 @@ abstract class PFhtmlButton
 {
     public static function watch($type, $i, $state = 0, $options = array())
     {
+        static $enabled = null;
+
+        if (is_null($enabled)) {
+            if (!JPluginHelper::isEnabled('content', 'pfnotifications')) {
+                $enabled = false;
+            }
+
+            $enabled = true;
+        }
+
         $html      = array();
         $div_class = (isset($options['div-class']) ? ' ' . $options['div-class'] : '');
         $a_class   = (isset($options['a-class'])   ? ' ' . $options['a-class'] : '');
