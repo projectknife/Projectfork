@@ -150,6 +150,7 @@ class plgContentPfnotifications extends JPlugin
                 $users[$i] = JFactory::getUser((int) $u);
             }
         }
+
         if (count($users) == 0) {
             return true;
         }

@@ -88,7 +88,6 @@ abstract class JHtmlPFtasks
               . '<input type="hidden" name="priority[' . $id . ']" id="priority' . $i . '" value="' . (int) $value . '"/>';
 
         return $html;
-
     }
 
 

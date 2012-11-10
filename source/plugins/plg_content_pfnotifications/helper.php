@@ -305,7 +305,12 @@ class PFnotificationsHelper
                 break;
 
             case 'priority':
-                $data = strip_tags(JHtml::_('projectfork.priorityToString', $value));
+                if (class_exists('PFtasksHelper')) {
+                    $data = PFtasksHelper::priority2string($value);
+                }
+                else {
+                    $data = $value;
+                }
                 break;
 
             default:

@@ -16,7 +16,7 @@ class PFtasksHelper
     /**
      * The component name
      *
-     * @var    string    
+     * @var    string
      */
     public static $extension = 'com_pftasks';
 
@@ -26,7 +26,7 @@ class PFtasksHelper
      *
      * @param     string    $view    The name of the active view.
      *
-     * @return    void               
+     * @return    void
      */
     public static function addSubmenu($view)
     {
@@ -69,7 +69,7 @@ class PFtasksHelper
      * @param     integer    $id      The item id
      * @param     integer    $list    The list id
      *
-     * @return    jobject             
+     * @return    jobject
      */
     public static function getActions($id = 0, $list = 0)
     {
@@ -107,7 +107,7 @@ class PFtasksHelper
      *
      * @param     integer    $id    The item id
      *
-     * @return    jobject           
+     * @return    jobject
      */
     public static function getListActions($id = 0)
     {
@@ -134,5 +134,35 @@ class PFtasksHelper
         }
 
         return $result;
+    }
+
+
+    static public function priority2string($value = null)
+    {
+        switch((int) $value)
+        {
+            case 2:
+                $text  = JText::_('COM_PROJECTFORK_PRIORITY_LOW');
+                break;
+
+            case 3:
+                $text  = JText::_('COM_PROJECTFORK_PRIORITY_MEDIUM');
+                break;
+
+            case 4:
+                $text  = JText::_('COM_PROJECTFORK_PRIORITY_HIGH');
+                break;
+
+            case 5:
+                $text  = JText::_('COM_PROJECTFORK_PRIORITY_VERY_HIGH');
+                break;
+
+            default:
+            case 1:
+                $text  = JText::_('COM_PROJECTFORK_PRIORITY_VERY_LOW');
+                break;
+        }
+
+        return $text;
     }
 }
