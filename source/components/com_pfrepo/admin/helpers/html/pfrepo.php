@@ -23,6 +23,69 @@ abstract class JHtmlPFrepo
     }
 
 
+    public static function attachments($items = array())
+    {
+        if (!is_array($items)) {
+            return '';
+        }
+
+        if (!count($items)) {
+            return '';
+        }
+
+        $user   = JFactory::getUser();
+        $levels = $user->getAuthorisedViewLevels();
+        $html[] = '<ul class="unstyled">';
+
+        foreach($items AS $item)
+        {
+            if (!isset($item->repo_data)) {
+                continue;
+            }
+
+            if (empty($item->repo_data)) {
+                continue;
+            }
+
+            $data = &$item->repo_data;
+
+            if (!in_array($data->access, $levels)) {
+                continue;
+            }
+
+            list($asset, $id) = explode('.', $item->attachment, 2);
+
+            $icon = '<i class="icon-file"></i> ';
+            $link = '#';
+
+            if ($asset == 'directory') {
+                $icon = '<i class="icon-folder"></i> ';
+                $link = PFrepoHelperRoute::getRepositoryRoute($data->project_id, $data->id . ':' . $data->title, $data->path);
+            }
+
+            if ($asset == 'note') {
+                $icon = '<i class="icon-pencil"></i> ';
+                $link = PFrepoHelperRoute::getNoteRoute($data->id . ':' . $data->title, $data->project_id, $data->dir_id);
+            }
+
+            if ($asset == 'file') {
+                $link = PFrepoHelperRoute::getFileRoute($data->id . ':' . $data->title, $data->project_id, $data->dir_id);
+            }
+
+            $html[] = '<li>';
+            $html[] = $icon;
+            $html[] = '<a href="' . JRoute::_($link) . '">';
+            $html[] = htmlspecialchars($data->title, ENT_COMPAT, 'UTF-8');
+            $html[] = '</a>';
+            $html[] = '</li>';
+        }
+
+        $html[] = '</ul>';
+
+        return implode('', $html);
+    }
+
+
     /**
      * Displays a batch widget for moving or copying items.
      *

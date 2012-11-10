@@ -109,7 +109,7 @@ class JFormFieldRepoAttachment extends JFormField
             $icon = '<i class="icon-file"></i> ';
 
             if ($asset == 'directory') {
-                $icon = '<i class="icon-folder-close"></i> ';
+                $icon = '<i class="icon-folder"></i> ';
             }
 
             if ($asset == 'note') {
@@ -177,7 +177,7 @@ class JFormFieldRepoAttachment extends JFormField
             $icon = '<i class="icon-file"></i> ';
 
             if ($asset == 'directory') {
-                $icon = '<i class="icon-folder-close"></i> ';
+                $icon = '<i class="icon-folder"></i> ';
             }
 
             if ($asset == 'note') {

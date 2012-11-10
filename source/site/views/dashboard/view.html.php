@@ -21,6 +21,7 @@ class ProjectforkViewDashboard extends JViewLegacy
     protected $modules;
     protected $item;
     protected $pageclass_sfx;
+    protected $toolbar;
 
 
 	function display($tpl = null)
@@ -29,6 +30,7 @@ class ProjectforkViewDashboard extends JViewLegacy
         $this->item    = $this->get('Item');
         $this->params  = $this->state->params;
         $this->modules = JFactory::getDocument()->loadRenderer('modules');
+        $this->toolbar = $this->getToolbar();
 
         $dispatcher	= JDispatcher::getInstance();
 
@@ -137,4 +139,33 @@ class ProjectforkViewDashboard extends JViewLegacy
 			$this->document->addHeadLink(JRoute::_($link . '&type=atom'), 'alternate', 'rel', $attribs);
 		}
 	}
+
+
+    /**
+     * Generates the toolbar for the top of the view
+     *
+     * @return    string    Toolbar with buttons
+     */
+    protected function getToolbar()
+    {
+        $access = PFprojectsHelper::getActions($this->item->id);
+        $uid    = JFactory::getUser()->get('id');
+
+        if ($this->item->id) {
+            $slug = $this->item->id . ':' . $this->item->alias;
+
+            PFToolbar::button(
+                'COM_PROJECTFORK_ACTION_EDIT',
+                '',
+                false,
+                array(
+                    'access' => ($access->get('core.edit') || $access->get('core.edit.own') && $uid == $this->item->created_by),
+                    'href' => JRoute::_(PFprojectsHelperRoute::getProjectsRoute() . '&task=form.edit&id=' . $slug)
+                )
+            );
+        }
+
+
+        return PFToolbar::render();
+    }
 }

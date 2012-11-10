@@ -72,7 +72,7 @@ class PFrepoModelAttachments extends JModelList
         $items      = array();
         $attachment = $this->getInstance('Attachment', 'PFrepoModel', array('ignore_request' => true));
 
-        // Get the fulle object of each attachment id
+        // Get the full object of each attachment id
         foreach($list AS $id)
         {
             $items[] = $attachment->getItem($id);

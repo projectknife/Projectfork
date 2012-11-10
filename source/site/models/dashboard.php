@@ -82,6 +82,15 @@ class ProjectforkModelDashboard extends JModelItem
                 $data->params = clone $this->getState('params');
                 $data->params->merge($registry);
 
+                // Get the attachments
+                if (PFApplicationHelper::exists('com_pfrepo')) {
+                    $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+                    $data->attachments = $attachments->getItems('com_pfprojects.project', $data->id);
+                }
+                else {
+                    $data->attachments = array();
+                }
+
                 // Compute selected asset permissions.
                 $user = JFactory::getUser();
 
@@ -91,11 +100,11 @@ class ProjectforkModelDashboard extends JModelItem
                     $access = PFprojectsHelper::getActions($data->id);
 
                     // Check general edit permission first.
-                    if ($access->get('project.edit')) {
+                    if ($access->get('core.edit')) {
                         $data->params->set('access-edit', true);
                     }
                     // Now check if edit.own is available.
-                    elseif (!empty($uid) && $access->get('project.edit.own')) {
+                    elseif (!empty($uid) && $access->get('core.edit.own')) {
                         // Check for a valid user and that they are the owner.
                         if ($uid == $data->created_by) {
                             $data->params->set('access-edit', true);
@@ -164,9 +173,10 @@ class ProjectforkModelDashboard extends JModelItem
         }
         elseif (!is_null($id)) {
             $project = PFApplicationHelper::getActiveProjectId('id');
+            $this->setState('project.request', true);
         }
         else {
-            $project = '';
+            $project = PFApplicationHelper::getActiveProjectId();
         }
 
         $this->setState('filter.project', $project);
