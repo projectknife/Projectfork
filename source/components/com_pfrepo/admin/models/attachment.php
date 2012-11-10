@@ -72,7 +72,9 @@ class PFrepoModelAttachment extends JModelAdmin
     {
         if ($item = parent::getItem($pk)) {
             // Try to get the record to which the item is attached to
-            $table = $this->getTable($item->item_type);
+            list($component, $item_type) = explode('.', $item->item_type, 2);
+
+            $table = $this->getTable($item_type);
 
             if ($table) {
                 if ($table->load($item->id)) {

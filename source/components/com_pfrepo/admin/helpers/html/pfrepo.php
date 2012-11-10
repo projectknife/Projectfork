@@ -1,20 +1,17 @@
 <?php
 /**
-* @package      Projectfork
-*
-* @author       Tobias Kuhn (eaxs)
-* @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
-* @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
-**/
+ * @package      Projectfork
+ * @subpackage   Repository
+ *
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ */
 
 defined('_JEXEC') or die();
 
 
-/**
- * Abstract class for Repository HTML elements
- *
- */
-abstract class ProjectforkRepository
+abstract class JHtmlPFrepo
 {
     /**
      * Displays a batch widget for moving or copying items.

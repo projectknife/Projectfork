@@ -23,6 +23,7 @@ jimport('projectfork.framework');
 
 // Register classes to autoload
 JLoader::register('PFrepoHelper', JPATH_ADMINISTRATOR . '/components/com_pfrepo/helpers/pfrepo.php');
+JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_pfrepo/helpers/html');
 
 $controller = JControllerLegacy::getInstance('PFrepo');
 $controller->execute(JFactory::getApplication()->input->get('task'));

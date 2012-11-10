@@ -18,7 +18,7 @@ if ($project && $dir) :
 ?>
     <fieldset class="batch">
     	<legend><?php echo JText::_('COM_PROJECTFORK_BATCH_OPTIONS');?></legend>
-    	<?php echo JHtml::_('projectfork.repository.batchItem', $project, $dir);?>
+    	<?php echo JHtml::_('pfrepo.batchItem', $project, $dir);?>
     	<button type="submit" class="btn btn-primary" onclick="Joomla.submitbutton('repository.batch');">
     		<?php echo JText::_('JGLOBAL_BATCH_PROCESS'); ?>
     	</button>
