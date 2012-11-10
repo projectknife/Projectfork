@@ -18,6 +18,8 @@ $params	 = $item->params;
 $canEdit = $item->params->get('access-edit');
 $uid	 = $user->get('id');
 
+$nulldate = JFactory::getDBO()->getNullDate();
+
 $asset_name = 'com_pfmilestones.milestone.' . $item->id;
 $canEdit	= ($user->authorise('core.edit', $asset_name) || $user->authorise('core.edit', $asset_name));
 $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authorise('core.edit.own', $asset_name)) && $item->created_by == $uid);
@@ -32,61 +34,58 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
 		<h2><?php echo $this->escape($item->title); ?></h2>
 	</div>
 
-	<dl class="article-info dl-horizontal pull-right">
-		<dt class="project-title">
-			<?php echo JText::_('JGRID_HEADING_PROJECT');?>:
-		</dt>
-		<dd class="project-data">
-			<a href="<?php echo JRoute::_(PFprojectsHelperRoute::getDashboardRoute($item->project_slug));?>"><?php echo $item->project_title;?></a>
-		</dd>
-		<?php if($item->start_date != JFactory::getDBO()->getNullDate()): ?>
-			<dt class="start-title">
-				<?php echo JText::_('JGRID_HEADING_START_DATE');?>:
-			</dt>
-			<dd class="start-data">
-				<?php echo JHtml::_('date', $item->start_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
-			</dd>
-		<?php endif; ?>
-		<?php if($item->end_date != JFactory::getDBO()->getNullDate()): ?>
-			<dt class="due-title">
-				<?php echo JText::_('JGRID_HEADING_DEADLINE');?>:
-			</dt>
-			<dd class="due-data">
-				<?php echo JHtml::_('date', $item->end_date, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
-			</dd>
-		<?php endif;?>
-		<dt class="owner-title">
-			<?php echo JText::_('JGRID_HEADING_CREATED_BY');?>:
-		</dt>
-		<dd class="owner-data">
-			 <?php echo $this->escape($item->author);?>
-		</dd>
-	</dl>
+    <div class="btn-toolbar btn-toolbar-top">
+        <?php echo $this->toolbar;?>
+    </div>
 
-	<div class="actions btn-toolbar">
-		<div class="btn-group">
-			<?php if($canEdit || $canEditOwn) : ?>
-			   <a class="btn" href="<?php echo JRoute::_('index.php?option=com_pfmilestones&task=form.edit&id='.intval($this->item->id).':'.$this->item->alias);?>">
-			       <i class="icon-edit"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
-			   </a>
-			<?php endif; ?>
-            <?php if (PFApplicationHelper::enabled('com_pftasks')) : ?>
-    			<a class="btn" href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($this->item->project_slug, $this->item->slug));?>">
-                    <i class="icon-th-list"></i> <?php echo $this->item->lists;?> <?php echo JText::_('JGRID_HEADING_TASKLISTS');?>
-                </a>
-    			<a class="btn" href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($this->item->project_slug, $this->item->slug));?>">
-                    <i class="icon-ok"></i> <?php echo $this->item->tasks;?> <?php echo JText::_('JGRID_HEADING_TASKS');?>
-                </a>
-            <?php endif; ?>
-            <?php echo $item->event->afterDisplayTitle;?>
-		</div>
-	</div>
+    <?php if($item) echo $item->event->afterDisplayTitle; ?>
 
     <?php echo $item->event->beforeDisplayContent;?>
 
 	<div class="item-description">
 		<?php echo $this->escape($item->text); ?>
+
+        <dl class="article-info dl-horizontal pull-right">
+    		<?php if($item->start_date != $nulldate): ?>
+    			<dt class="start-title">
+    				<?php echo JText::_('JGRID_HEADING_START_DATE');?>:
+    			</dt>
+    			<dd class="start-data">
+                    <?php echo JHtml::_('pfhtml.label.datetime', $item->start_date); ?>
+    			</dd>
+    		<?php endif; ?>
+    		<?php if($item->end_date != $nulldate): ?>
+    			<dt class="due-title">
+    				<?php echo JText::_('JGRID_HEADING_DEADLINE');?>:
+    			</dt>
+    			<dd class="due-data">
+                    <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date); ?>
+    			</dd>
+    		<?php endif;?>
+    		<dt class="owner-title">
+    			<?php echo JText::_('JGRID_HEADING_CREATED_BY');?>:
+    		</dt>
+    		<dd class="owner-data">
+    			 <?php echo JHtml::_('pfhtml.label.author', $item->author, $item->created); ?>
+    		</dd>
+            <dt class="project-title">
+    			<?php echo JText::_('JGRID_HEADING_PROJECT');?>:
+    		</dt>
+    		<dd class="project-data">
+    			<a href="<?php echo JRoute::_(PFprojectsHelperRoute::getDashboardRoute($item->project_slug));?>"><?php echo $item->project_title;?></a>
+    		</dd>
+            <?php if (PFApplicationHelper::enabled('com_pfrepo') && count($item->attachments)) : ?>
+                <dt class="attachment-title">
+        			<?php echo JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'); ?>:
+        		</dt>
+        		<dd class="attachment-data">
+                     <?php echo JHtml::_('pfrepo.attachments', $item->attachments); ?>
+        		</dd>
+            <?php endif; ?>
+    	</dl>
+        <div class="clearfix"></div>
 	</div>
+
 	<hr />
 
     <?php echo $item->event->afterDisplayContent;?>

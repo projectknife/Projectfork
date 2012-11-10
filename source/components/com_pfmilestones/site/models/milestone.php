@@ -109,6 +109,15 @@ class PFmilestonesModelMilestone extends JModelItem
                 $data->params = clone $this->getState('params');
                 $data->params->merge($registry);
 
+                // Get the attachments
+                if (PFApplicationHelper::exists('com_pfrepo')) {
+                    $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+                    $data->attachments = $attachments->getItems('com_pfmilestones.milestone', $data->id);
+                }
+                else {
+                    $data->attachments = array();
+                }
+
                 // Compute selected asset permissions.
                 // Technically guest could edit an article, but lets not check that to improve performance a little.
                 if (!JFactory::getUser()->get('guest')) {
