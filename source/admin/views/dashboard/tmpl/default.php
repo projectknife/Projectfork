@@ -13,44 +13,22 @@ defined('_JEXEC') or die();
 <div class="adminform row-fluid">
     <div class="cpanel-left span9 hidden-phone">
         <div class="cpanel row-fluid">
-            <?php if (PFApplicationHelper::enabled('com_pfprojects')) : ?>
-            <div class="icon-wrapper span2">
-                <div class="icon">
-                    <a href="index.php?option=com_pfprojects" class="thumbnail btn">
-                        <?php echo JHtml::image('com_projectfork/projectfork/header/icon-48-projects.png', JText::_('COM_PROJECTFORK_SUBMENU_PROJECTS'), null, true); ?>
-                        <span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_PROJECTS');?></span>
-                    </a>
-                </div>
-            </div>
-            <?php endif; ?>
-            <?php if (PFApplicationHelper::enabled('com_pfmilestones')) : ?>
-            <div class="icon-wrapper span2">
-                <div class="icon">
-                    <a href="index.php?option=com_pfmilestones" class="thumbnail btn">
-                        <?php echo JHtml::image('com_projectfork/projectfork/header/icon-48-milestones.png', JText::_('COM_PROJECTFORK_SUBMENU_MILESTONES'), null, true); ?>
-                        <span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_MILESTONES');?></span>
-                    </a>
-                </div>
-            </div>
-            <?php endif; ?>
-            <?php if (PFApplicationHelper::enabled('com_pftasks')) : ?>
-            <div class="icon-wrapper span2">
-                <div class="icon">
-                    <a href="index.php?option=com_pftasks&view=tasklists" class="thumbnail btn">
-                        <?php echo JHtml::image('com_projectfork/projectfork/header/icon-48-tasklists.png', JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS'), null, true); ?>
-                        <span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS');?></span>
-                    </a>
-                </div>
-            </div>
-            <div class="icon-wrapper span2">
-                <div class="icon">
-                    <a href="index.php?option=com_pftasks" class="thumbnail btn">
-                        <?php echo JHtml::image('com_projectfork/projectfork/header/icon-48-tasks.png', JText::_('COM_PROJECTFORK_SUBMENU_TASKS'), null, true); ?>
-                        <span><?php echo JText::_('COM_PROJECTFORK_SUBMENU_TASKS');?></span>
-                    </a>
-                </div>
-            </div>
-            <?php endif; ?>
+
+            <?php foreach ($this->buttons AS $component => $buttons) : ?>
+                <?php if (PFApplicationHelper::enabled($component)) : ?>
+                    <?php foreach ($buttons AS $button) : ?>
+                        <div class="icon-wrapper span2">
+                            <div class="icon">
+                                <a href="<?php echo $button['link']; ?>" class="thumbnail btn">
+                                    <?php echo $button['icon']; ?>
+                                    <span><?php echo JText::_($button['title']);?></span>
+                                </a>
+                            </div>
+                        </div>
+                    <?php endforeach; ?>
+                <?php endif; ?>
+            <?php endforeach; ?>
+
             <?php if ($this->user->authorise('core.admin')) : ?>
             <div class="icon-wrapper span2">
                 <div class="icon">
@@ -68,15 +46,13 @@ defined('_JEXEC') or die();
                 </div>
             </div>
             <?php endif; ?>
+
         </div>
     </div>
     <div class="cpanel-right span3 width-40">
         <div class="well well-small">
-            <div class="module-title nav-header"><?php echo JText::_('COM_PROJECTFORK');?></div>
-            <div class="well well-small">
-           	    <h4>Projectfork 4 Beta</h4>
-                <p>Consider this a preview-only version of Projectfork. We highly recommend against using in a production environment as there may be many bugs. </p>
-            </div>
+            <h4>Projectfork 4 Beta</h4>
+            <p>Consider this a preview-only version of Projectfork. We highly recommend against using in a production environment as there may be many bugs. </p>
             <p>
                 <a href="https://github.com/projectfork/Projectfork/issues" class="btn btn-small" target="_blank">
                     <i aria-hidden="true" class="icon-warning"></i> Report an issue on Github

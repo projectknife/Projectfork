@@ -25,16 +25,9 @@ else {
 
 jimport('joomla.filesystem.folder');
 
-// Register the projectfork library
-JLoader::registerPrefix('PF', JPATH_PLATFORM . '/projectfork');
-JLoader::register('PFQueryHelper', JPATH_PLATFORM . '/projectfork/database/query/helper.php');
 
-// Add include paths
-JHtml::addIncludePath(JPATH_PLATFORM . '/projectfork/html');
-JModelLegacy::addIncludePath(JPATH_PLATFORM . '/projectfork/model', 'PFModel');
-JTable::addIncludePath(JPATH_PLATFORM . '/projectfork/table', 'PFTable');
-JForm::addFieldPath(JPATH_PLATFORM . '/projectfork/form/fields');
-JForm::addRulePath(JPATH_PLATFORM . '/projectfork/form/rules');
+// Include the library
+require_once dirname(__FILE__) . '/library.php';
 
 
 // Get the list of Projectfork components, as well as the currently active

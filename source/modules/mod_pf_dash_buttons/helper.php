@@ -23,7 +23,41 @@ abstract class modPFdashButtonsHelper
      */
     public static function getButtons()
     {
-        $access  = ProjectforkHelperAccess::getActions(NULL, 0, true);
+        $components = PFapplicationHelper::getComponents();
+        $buttons    = array();
+
+        foreach ($components AS $component)
+        {
+            if (!PFApplicationHelper::enabled($component->element)) {
+                continue;
+            }
+
+            $helper = JPATH_ADMINISTRATOR . '/components/' . $component->element . '/helpers/dashboard.php';
+            $class  = str_replace('com_pf', 'PF', $component->element) . 'HelperDashboard';
+
+            if (!JFile::exists($helper)) {
+                continue;
+            }
+
+            JLoader::register($class, $helper);
+
+            if (class_exists($class)) {
+                if (in_array('getSiteButtons', get_class_methods($class))) {
+                    $com_buttons = (array) $class::getSiteButtons();
+
+                    $buttons[$component->element] = array();
+
+                    foreach ($com_buttons AS $button)
+                    {
+                        $buttons[$component->element][] = $button;
+                    }
+                }
+            }
+        }
+
+        return $buttons;
+
+
         $buttons = array();
 
         if ($access->get('project.create')) {

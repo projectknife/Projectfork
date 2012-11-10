@@ -19,13 +19,13 @@ if (stripos($module->position, 'pf-dashboard') !== false && $option == 'com_proj
 }
 
 // Stop if projectfork is not installed
-if (!file_exists(JPATH_SITE . '/components/com_projectfork/helpers/route.php')) {
+if (!file_exists(JPATH_SITE . '/components/com_projectfork/projectfork.php')) {
     echo JText::_('MOD_PF_DASH_BUTTONS_PROJECTFORK_NOT_INSTALLED');
 }
 else {
     // Include dependencies
-    require_once JPATH_SITE . '/components/com_projectfork/helpers/route.php';
-    require_once JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/access.php';
+    jimport('projectfork.library');
+
     require_once dirname(__FILE__) . '/helper.php';
 
     // Get buttons
