@@ -21,8 +21,13 @@ abstract class PFhtmlButton
             if (!JPluginHelper::isEnabled('content', 'pfnotifications')) {
                 $enabled = false;
             }
+            else {
+                $enabled = true;
+            }
+        }
 
-            $enabled = true;
+        if (!$enabled) {
+            return '';
         }
 
         $html      = array();
