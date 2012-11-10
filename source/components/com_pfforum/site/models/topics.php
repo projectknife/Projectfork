@@ -105,6 +105,11 @@ class PFforumModelTopics extends JModelList
                                . ')');
         }
 
+        // Join over the attachments for attachment count
+        $query->select('COUNT(DISTINCT at.id) AS attachments');
+        $query->join('LEFT', '#__pf_ref_attachments AS at ON (at.item_type = '
+              . $db->quote('com_pfforum.topic') . ' AND at.item_id = a.id)');
+
         // Implement View Level Access
         if (!$user->authorise('core.admin', 'com_pfforum')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());

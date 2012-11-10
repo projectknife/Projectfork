@@ -21,6 +21,8 @@ $pid        = (int) $this->state->get('filter.project');
 
 $filter_in     = ($this->state->get('filter.isset') ? 'in ' : '');
 $tasks_enabled = PFApplicationHelper::enabled('com_pftasks');
+$repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
+$cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-milestones">
 
@@ -166,6 +168,8 @@ $tasks_enabled = PFApplicationHelper::enabled('com_pftasks');
                     <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
                     <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
                     <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date); ?>
+                    <?php if ($cmnts_enabled) : echo JHtml::_('pfcomments.label', $item->comments); endif; ?>
+                    <?php if ($repo_enabled) : echo JHtml::_('pfrepo.attachmentsLabel', $item->attachments); endif; ?>
                     <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
                     <?php if ($tasks_enabled) : ?>
                         <div class="btn-group pull-right">

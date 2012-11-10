@@ -112,6 +112,16 @@ class PFtasksModelTasks extends JModelList
                         );
         }
 
+        // Join over the attachments for attachment count
+        $query->select('COUNT(DISTINCT at.id) AS attachments');
+        $query->join('LEFT', '#__pf_ref_attachments AS at ON (at.item_type = '
+              . $db->quote('com_pftasks.task') . ' AND at.item_id = a.id)');
+
+        // Join over the comments for comment count
+        $query->select('COUNT(DISTINCT co.id) AS comments');
+        $query->join('LEFT', '#__pf_comments AS co ON (co.context = '
+              . $db->quote('com_pftasks.task') . ' AND co.item_id = a.id)');
+
         // Join over the task refs for dependencies
         $query->select('COUNT(d.id) AS dependency_count');
         $query->join('LEFT', '#__pf_ref_tasks AS d ON (d.task_id = a.id)');

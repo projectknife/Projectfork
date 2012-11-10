@@ -18,7 +18,9 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
 $uid        = $user->get('id');
 
-$filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
+$filter_in     = ($this->state->get('filter.isset') ? 'in ' : '');
+$repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
+$cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects">
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -155,6 +157,8 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                             <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
                             <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
                             <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date, true); ?>
+                            <?php if ($cmnts_enabled) : echo JHtml::_('pfcomments.label', $item->comments); endif; ?>
+                            <?php if ($repo_enabled) : echo JHtml::_('pfrepo.attachmentsLabel', $item->attachments); endif; ?>
                     </div>
                 </li>
                 <?php

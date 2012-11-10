@@ -109,6 +109,16 @@ class PFprojectsModelProjects extends JModelList
             );
         }
 
+        // Join over the attachments for attachment count
+        $query->select('COUNT(DISTINCT at.id) AS attachments');
+        $query->join('LEFT', '#__pf_ref_attachments AS at ON (at.item_type = '
+              . $db->quote('com_pfprojects.project') . ' AND at.item_id = a.id)');
+
+        // Join over the comments for comment count
+        $query->select('COUNT(DISTINCT co.id) AS comments');
+        $query->join('LEFT', '#__pf_comments AS co ON (co.context = '
+              . $db->quote('com_pfprojects.project') . ' AND co.item_id = a.id)');
+
         // Implement View Level Access
         if (!$user->authorise('core.admin', 'com_pfprojects')) {
             $levels = implode(',', $user->getAuthorisedViewLevels());

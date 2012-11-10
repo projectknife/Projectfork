@@ -94,6 +94,11 @@ class PFforumModelReplies extends JModelList
             $query->where('a.access IN (' . $groups . ')');
         }
 
+        // Join over the attachments for attachment count
+        $query->select('COUNT(DISTINCT at.id) AS attachments');
+        $query->join('LEFT', '#__pf_ref_attachments AS at ON (at.item_type = '
+              . $db->quote('com_pfforum.reply') . ' AND at.item_id = a.id)');
+
         // Filter fields
         $filters = array();
         $filters['a.state']      = array('STATE',       $this->getState('filter.published'));
@@ -137,7 +142,7 @@ class PFforumModelReplies extends JModelList
             $items[$i]->params = clone $this->getState('params');
 
             // Create slugs
-            $items[$i]->project_slug = $items[$i]->project_alias ? ($items[$i]->project_id.':' . $items[$i]->project_alias) : $items[$i]->project_id;
+            $items[$i]->project_slug = $items[$i]->project_alias ? ($items[$i]->project_id . ':' . $items[$i]->project_alias) : $items[$i]->project_id;
         }
 
         return $items;

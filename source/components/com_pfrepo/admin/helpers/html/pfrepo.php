@@ -13,6 +13,16 @@ defined('_JEXEC') or die();
 
 abstract class JHtmlPFrepo
 {
+    public static function attachmentsLabel($count = 0)
+    {
+        if (!$count) {
+            return '';
+        }
+
+        return '<span class="label"><i class="icon-flag-2 icon-white"></i> ' . intval($count) . '</span>';
+    }
+
+
     /**
      * Displays a batch widget for moving or copying items.
      *

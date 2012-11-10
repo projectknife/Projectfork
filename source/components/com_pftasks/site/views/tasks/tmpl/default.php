@@ -23,6 +23,9 @@ $uid        = $user->get('id');
 $action_count = count($this->actions);
 $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
 $can_order    = $user->authorise('core.edit.state', 'com_pftasks');
+
+$repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
+$cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
 ?>
 <?php if ($uid && $this->state->get('filter.project') && $can_order) : ?>
 <script type="text/javascript">
@@ -270,6 +273,8 @@ jQuery(document).ready(function() {
                                 <?php echo JHtml::_('pftasks.priorityLabel', $item->id, $x, $item->priority); ?>
                                 <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date); ?>
                                 <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
+                                <?php if ($cmnts_enabled) : echo JHtml::_('pfcomments.label', $item->comments); endif; ?>
+                                <?php if ($repo_enabled) : echo JHtml::_('pfrepo.attachmentsLabel', $item->attachments); endif; ?>
                                 <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
                             </div>
                             <?php echo $watch; ?>

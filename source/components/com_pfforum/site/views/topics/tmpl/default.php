@@ -19,6 +19,7 @@ $user       = JFactory::getUser();
 $uid        = $user->get('id');
 
 $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
+$repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-topics">
 
@@ -131,6 +132,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                     <hr />
                     <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
                     <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
+                    <?php if ($repo_enabled) : echo JHtml::_('pfrepo.attachmentsLabel', $item->attachments); endif; ?>
                     <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
                 </div>
             <?php
