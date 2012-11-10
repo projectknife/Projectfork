@@ -3,7 +3,7 @@ CREATE TABLE IF NOT EXISTS `#__pf_comments` (
   `asset_id` int(10) unsigned NOT NULL COMMENT 'FK to the #__assets table',
   `project_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent project ID',
   `item_id` int(10) unsigned NOT NULL DEFAULT '0' COMMENT 'Parent item ID',
-  `context` varchar(32) NOT NULL COMMENT 'Context reference',
+  `context` varchar(50) NOT NULL COMMENT 'Context reference',
   `title` varchar(128) NOT NULL COMMENT 'The context item title',
   `alias` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL,
   `description` text NOT NULL COMMENT 'Comment content',
