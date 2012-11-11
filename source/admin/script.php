@@ -13,6 +13,32 @@ defined('_JEXEC') or die();
 class com_projectforkInstallerScript
 {
     /**
+     * Called before any type of action
+     *
+     * @param     string              $route      Which action is happening (install|uninstall|discover_install)
+     * @param     jadapterinstance    $adapter    The object responsible for running this script
+     *
+     * @return    boolean                         True on success
+     */
+    public function preflight($route, JAdapterInstance $adapter)
+    {
+        if (strtolower($route) == 'install') {
+            if (!defined('PF_LIBRARY')) {
+                jimport('projectfork.library');
+            }
+
+            // Check if the library is installed
+            if (!defined('PF_LIBRARY')) {
+                JLog::add('This extension requires the Projectfork Library to be installed!', JLog::WARNING, 'jerror');
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    /**
      * Called after any type of action
      *
      * @param     string              $route      Which action is happening (install|uninstall|discover_install)

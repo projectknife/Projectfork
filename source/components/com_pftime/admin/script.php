@@ -65,6 +65,20 @@ class com_pftimeInstallerScript
             // Make the admin component menu item a child of com_projectfork
             PFInstallerHelper::setComponentMenuItem($element);
 
+            // Create a menu item in the projectfork site menu
+            $com = JComponentHelper::getComponent($element);
+            $eid = (is_object($com) && isset($com->id)) ? $com->id : 0;
+
+            if ($eid) {
+                $item = array();
+                $item['title'] = 'Time Tracking';
+                $item['alias'] = 'timetracking';
+                $item['link']  = 'index.php?option=' . $element . '&view=timesheet';
+                $item['component_id'] = $eid;
+
+                PFInstallerHelper::addMenuItem($item);
+            }
+
             // Register the extension to uninstall with com_projectfork
             if (JFactory::getApplication()->get('pkg_projectfork_install') !== true) {
                 PFInstallerHelper::registerCustomUninstall($element);

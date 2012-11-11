@@ -9,54 +9,16 @@
 
 defined('_JEXEC') or die();
 
-
-// Get the db object
-$db    = JFactory::getDbo();
-$query = $db->getQuery(true);
-
 // Get new component id.
 $com    = JComponentHelper::getComponent('com_projectfork');
 $com_id = (is_object($com) && isset($com->id)) ? $com->id : 0;
 
-
 if ($com_id) {
-    // Update menu items with the correct component id
-    $query->clear();
-    $query->update('#__menu')
-          ->set('component_id = ' . $db->quote($com_id))
-          ->set('parent_id = ' . $db->quote('1'))
-          ->set('level = ' . $db->quote('1'))
-          ->where('menutype = ' . $db->quote('projectfork'))
-          ->where('component_id = ' . $db->quote('0'));
+    $item = array();
+    $item['title'] = 'Dashboard';
+    $item['alias'] = 'dashboard';
+    $item['link']  = 'index.php?option=com_projectfork&view=dashboard';
+    $item['component_id'] = $com_id;
 
-    $db->setQuery((string) $query);
-    $db->execute();
-}
-else {
-    // Something went wrong. Delete the menu items and the menu
-
-    // Get the Menu model
-    JLoader::register('MenusModelMenu', JPATH_ADMINISTRATOR . '/components/com_menus/models/menu.php');
-
-    if (!class_exists('JModel')) {
-        $menu_model = new MenusModelMenu();
-    }
-    else {
-        $menu_model = JModel::getInstance('Menu', 'MenusModel', array('ignore_request' => true));
-    }
-
-    // Find the menu id
-    $query->clear();
-    $query->select('id')
-          ->from('#__menu_types')
-          ->where('menutype = ' . $db->quote('projectfork'));
-
-    $db->setQuery((string) $query);
-    $menu_id = (int) $db->loadResult();
-
-    if (!$menu_id) return false;
-
-    $data = array($menu_id);
-
-    return $menu_model->delete($data);
+    PFInstallerHelper::addMenuItem($item);
 }

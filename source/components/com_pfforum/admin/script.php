@@ -76,9 +76,8 @@ class com_pfforumInstallerScript
                 $item['link']  = 'index.php?option=' . $element . '&view=topics';
                 $item['component_id'] = $eid;
 
-                PFInstallerHelper::addMenuItem();
+                PFInstallerHelper::addMenuItem($item);
             }
-
 
             // Register the extension to uninstall with com_projectfork
             if (JFactory::getApplication()->get('pkg_projectfork_install') !== true) {

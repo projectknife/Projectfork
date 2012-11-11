@@ -122,6 +122,9 @@ abstract class PFInstallerHelper
      */
     public static function addMenuItem($data)
     {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
         // Add any missing default properties
         if (!isset($data['menutype']))     $data['menutype']     = 'projectfork';
         if (!isset($data['parent_id']))    $data['parent_id']    = '1';
@@ -132,17 +135,17 @@ abstract class PFInstallerHelper
         if (!isset($data['language']))     $data['language']     = '*';
         if (!isset($data['access']))       $data['access']       = '1';
         if (!isset($data['params']))       $data['params']       = '{}';
-        if (!isset($data['ordering']))     $data['ordering']     = ($i + 1);
-        if (!isset($data['id']))           $data['id']           = null;
+        if (!isset($data['ordering']))     $data['ordering']     = 0;
+
+        $data['id'] = null;
 
         // Save the menu item
         $row = JTable::getInstance('menu');
 
-        foreach($data AS $key => $value)
-        {
-            if (property_exists($row, $key)) {
-                $row->$key = $value;
-            }
+        $row->setLocation(1, 'last-child');
+
+        if (!$row->bind($data)) {
+            return false;
         }
 
         if (!$row->check()) {
@@ -150,6 +153,24 @@ abstract class PFInstallerHelper
         }
 
         if (!$row->store()) {
+            return false;
+        }
+
+        $query->clear();
+        $query->update('#__menu')
+              ->set('parent_id = 1')
+              ->set('level = 1')
+              ->where('id = ' . (int) $row->id);
+
+        $db->setQuery($query);
+        $db->execute();
+
+        $row->parent_id = 1;
+        $row->level = 1;
+
+        $row->setLocation(1, 'last-child');
+
+        if (!$row->rebuildPath($row->id)) {
             return false;
         }
 

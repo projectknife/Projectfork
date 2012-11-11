@@ -53,48 +53,6 @@ $menu_id = $menu_model->getState('menu.id');
 // Do not continue if menu creation failed
 if (!$success || !$menu_id) return false;
 
-// Prepare the menu items we want to create
-$base_link  = 'index.php?option=com_projectfork';
-$menu_items = array();
-
-$menu_items[] = array('title' => 'Dashboard',
-                      'alias' => 'dashboard',
-                      'link'  => $base_link . '&view=dashboard');
-
-// Iterate through each item
-foreach($menu_items AS $i => $menu_item)
-{
-    // Add default properties
-    if (!isset($menu_item['menutype']))     $menu_item['menutype']     = 'projectfork';
-    if (!isset($menu_item['parent_id']))    $menu_item['parent_id']    = '1';
-    if (!isset($menu_item['level']))        $menu_item['level']        = '1';
-    if (!isset($menu_item['published']))    $menu_item['published']    = '1';
-    if (!isset($menu_item['type']))         $menu_item['type']         = 'component';
-    if (!isset($menu_item['component_id'])) $menu_item['component_id'] = 0;
-    if (!isset($menu_item['language']))     $menu_item['language']     = '*';
-    if (!isset($menu_item['access']))       $menu_item['access']       = '1';
-    if (!isset($menu_item['params']))       $menu_item['params']       = '{}';
-    if (!isset($menu_item['ordering']))     $menu_item['ordering']     = ($i + 1);
-    if (!isset($menu_item['id']))           $menu_item['id']           = null;
-
-    // Save the menu item
-    $row = JTable::getInstance('menu', 'JTable');
-
-    foreach($menu_item AS $key => $value)
-    {
-        if (property_exists($row, $key)) {
-            $row->$key = $value;
-        }
-    }
-
-    $row->check();
-
-    if (!$row->store()) {
-        return false;
-    }
-}
-
-
 $mm_pos = 'position-7';
 $mm_st  = '1';
 
