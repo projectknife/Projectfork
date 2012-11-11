@@ -256,4 +256,58 @@ abstract class PFInstallerHelper
 
         return true;
     }
+
+
+    /**
+     * Method to set module params such as position, publishing state and title
+     *
+     * @param     object     $manifest    Instance of the XML manifest
+     *
+     * @return    boolean                 True on success, False on error
+     */
+    public static function setModuleParams(&$manifest)
+    {
+        $db    = JFactory::getDBO();
+        $query = $db->getQuery(true);
+
+        // Get module name, position and published state
+        $name  = $manifest->name;
+        $pos   = (isset($manifest->position) ? $manifest->position : '');
+        $pub   = (isset($manifest->published) ? (int) $manifest->published : 0);
+        $title = (isset($manifest->show_title) ? (int) $manifest->show_title : 1);
+
+        // Get the module id
+        $query->select('id')
+              ->from('#__modules')
+              ->where('module = ' . $db->quote($name));
+
+        $db->setQuery((string) $query);
+        $id = (int) $db->loadResult();
+
+        if (!$id) return false;
+
+        // Update params
+        $query->clear();
+        $query->update('#__modules');
+        if ($pos) $query->set('position = ' . $db->quote($pos));
+        if ($pub) $query->set('published = ' . $db->quote($pub));
+        $query->set('showtitle = ' . $db->quote($title));
+        $query->where('module = ' . $db->quote($name));
+
+        $db->setQuery((string) $query);
+        $db->execute();
+
+        // Show the module on all pages if a position is given
+        if ($pos) {
+            $query->clear();
+            $query->insert('#__modules_menu')
+                  ->columns(array($db->quoteName('moduleid'), $db->quoteName('menuid')))
+                  ->values((int) $id . ', 0');
+
+            $db->setQuery((string) $query);
+            $db->execute();
+        }
+
+        return true;
+    }
 }
