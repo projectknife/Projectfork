@@ -66,7 +66,7 @@ class com_pftasksInstallerScript
             PFInstallerHelper::setComponentMenuItem($element);
 
             // Register the extension to uninstall with com_projectfork
-            if (JFactory::getApplication()->getUserState('pkg_projectfork.install') !== true) {
+            if (JFactory::getApplication()->get('pkg_projectfork_install') !== true) {
                 PFInstallerHelper::registerCustomUninstall($element);
             }
         }
@@ -82,7 +82,7 @@ class com_pftasksInstallerScript
      */
     public function uninstall(JAdapterInstance $adapter)
     {
-        if (JFactory::getApplication()->getUserState('pkg_projectfork.uninstall') === true) {
+        if (JFactory::getApplication()->get('pkg_projectfork_uninstall') === true) {
             // Skip this step if the user is removing the entire projectfork package
             return true;
         }

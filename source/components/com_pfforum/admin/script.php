@@ -65,8 +65,23 @@ class com_pfforumInstallerScript
             // Make the admin component menu item a child of com_projectfork
             PFInstallerHelper::setComponentMenuItem($element);
 
+            // Create a menu item in the projectfork site menu
+            $com = JComponentHelper::getComponent($element);
+            $eid = (is_object($com) && isset($com->id)) ? $com->id : 0;
+
+            if ($eid) {
+                $item = array();
+                $item['title'] = 'Forum';
+                $item['alias'] = 'forum';
+                $item['link']  = 'index.php?option=' . $element . '&view=topics';
+                $item['component_id'] = $eid;
+
+                PFInstallerHelper::addMenuItem();
+            }
+
+
             // Register the extension to uninstall with com_projectfork
-            if (JFactory::getApplication()->getUserState('pkg_projectfork.install') !== true) {
+            if (JFactory::getApplication()->get('pkg_projectfork_install') !== true) {
                 PFInstallerHelper::registerCustomUninstall($element);
             }
         }
@@ -82,7 +97,7 @@ class com_pfforumInstallerScript
      */
     public function uninstall(JAdapterInstance $adapter)
     {
-        if (JFactory::getApplication()->getUserState('pkg_projectfork.uninstall') === true) {
+        if (JFactory::getApplication()->get('pkg_projectfork_uninstall') === true) {
             // Skip this step if the user is removing the entire projectfork package
             return true;
         }
