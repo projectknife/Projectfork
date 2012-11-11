@@ -45,6 +45,11 @@ class mod_pf_dash_buttonsInstallerScript
 
             // Set the module params
             PFInstallerHelper::setModuleParams($manifest);
+
+            // Register the extension to uninstall with com_projectfork
+            if (JFactory::getApplication()->get('pkg_projectfork_install') !== true) {
+                PFInstallerHelper::registerCustomUninstall($manifest->name, 'module');
+            }
         }
 
         return true;

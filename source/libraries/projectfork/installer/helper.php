@@ -267,7 +267,7 @@ abstract class PFInstallerHelper
      */
     public static function setModuleParams(&$manifest)
     {
-        $db    = JFactory::getDBO();
+        $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
         // Get module name, position and published state
@@ -307,6 +307,43 @@ abstract class PFInstallerHelper
             $db->setQuery((string) $query);
             $db->execute();
         }
+
+        return true;
+    }
+
+
+    /**
+     * Method to set the publishing state of a plugin
+     *
+     * @param     string     $name     The name of the plugin
+     * @param     integer    $state    The new state of the plugin
+     *
+     * @return    boolean              True on success, False on error
+     */
+    public static function publishPlugin($name, $state = 0)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        // Get the plugin id
+        $query->select('extension_id')
+              ->from('#__extensions')
+              ->where('name = ' . $db->quote($name))
+              ->where('type = ' . $db->quote('plugin'));
+
+        $db->setQuery((string) $query);
+        $id = (int) $db->loadResult();
+
+        if (!$id) return false;
+
+        // Update params
+        $query->clear();
+        $query->update('#__extensions')
+              ->set('enabled = ' . $db->quote($state))
+              ->where('extension_id = ' . $db->quote($id));
+
+        $db->setQuery((string) $query);
+        $db->execute();
 
         return true;
     }

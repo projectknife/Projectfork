@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="content" method="upgrade">
 	<name>plg_content_pfnotifications</name>
-	<creationDate>October 2012</creationDate>
+	<creationDate>November 2012</creationDate>
 	<author>Tobias Kuhn</author>
 	<copyright>(C) 2006 - 2012 Tobias Kuhn. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>support@projectfork.net</authorEmail>
 	<authorUrl>www.projectfork.net</authorUrl>
-	<version>1.0.0</version>
+	<version>4.0.0b1</version>
 	<description>PLG_CONTENT_PFNOTIFICATIONS_XML_DESCRIPTION</description>
     <published>1</published>
     <scriptfile>script.php</scriptfile>

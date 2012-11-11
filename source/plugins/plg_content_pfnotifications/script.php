@@ -10,6 +10,11 @@
 defined('_JEXEC') or die();
 
 
+if (!defined('PF_LIBRARY')) {
+    jimport('projectfork.library');
+}
+
+
 class plgContentPfnotificationsInstallerScript
 {
     /**
@@ -23,37 +28,32 @@ class plgContentPfnotificationsInstallerScript
     public function postflight($route, JAdapterInstance $adapter)
     {
         if (strtolower($route) == 'install') {
-            $db    = JFactory::getDBO();
-            $query = $db->getQuery(true);
+            // Check if the library is installed
+            if (!defined('PF_LIBRARY')) {
+                JLog::add('This extension requires the Projectfork Library to be installed!', JLog::WARNING, 'jerror');
+                return false;
+            }
 
+            // Check if the projectfork component is installed
+            if (!PFApplicationHelper::exists('com_projectfork')) {
+                JLog::add('This extension requires the Projectfork Component to be installed!', JLog::WARNING, 'jerror');
+                return false;
+            }
             // Get the XML manifest data
             $manifest = $adapter->get('manifest');
 
             // Get plugin published state
-            $name = $manifest->name;
-            $pub  = (isset($manifest->published) ? (int) $manifest->published : 0);
+            $name  = $manifest->name;
+            $state = (isset($manifest->published) ? (int) $manifest->published : 0);
 
-            if (!$pub) return true;
+            if ($state) {
+                PFInstallerHelper::publishPlugin($name, $state);
+            }
 
-            // Get the plugin id
-            $query->select('extension_id')
-                  ->from('#__extensions')
-                  ->where('name = ' . $db->quote($name))
-                  ->where('type = ' . $db->quote('plugin'));
-
-            $db->setQuery((string) $query);
-            $id = (int) $db->loadResult();
-
-            if (!$id) return true;
-
-            // Update params
-            $query->clear();
-            $query->update('#__extensions')
-                  ->set('enabled = ' . $db->quote($pub))
-                  ->where('extension_id = ' . $db->quote($id));
-
-            $db->setQuery((string) $query);
-            $db->query();
+            // Register the extension to uninstall with com_projectfork
+            if (JFactory::getApplication()->get('pkg_projectfork_install') !== true) {
+                PFInstallerHelper::registerCustomUninstall($name, 'plugin');
+            }
         }
 
         return true;
