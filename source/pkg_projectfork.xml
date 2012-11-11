@@ -10,14 +10,14 @@
     <authorEmail>support@projectfork.net</authorEmail>
     <authorUrl>www.projectfork.net</authorUrl>
     <author>Tobias Kuhn</author>
-    <packager>Tobias Kuhn</packager>
+    <packager>Projectfork</packager>
     <packagerurl>http://www.projectfork.net</packagerurl>
     <description>Uninstalling this package will remove all Projectfork extensions.</description>
     <files>
         <!-- It is important that the library and com_projectfork are installed first -->
         <file type="library" id="projectfork">lib_projectfork.zip</file>
         <file type="component" id="com_projectfork">com_projectfork.zip</file>
-        <!-- It is important that the library and com_projectfork are installed first -->
+        <!-- Then install other components in any order -->
         <file type="component" id="com_pfprojects">com_pfprojects.zip</file>
         <file type="component" id="com_pfmilestones">com_pfmilestones.zip</file>
         <file type="component" id="com_pftasks">com_pftasks.zip</file>
@@ -26,5 +26,12 @@
         <file type="component" id="com_pfforum">com_pfforum.zip</file>
         <file type="component" id="com_pfusers">com_pfusers.zip</file>
         <file type="component" id="com_pfcomments">com_pfcomments.zip</file>
+        <!-- Then the plugins -->
+        <file type="plugin" id="pfcomments">plg_content_pfcomments.zip</file>
+        <file type="plugin" id="pfnotifications">plg_content_pfnotifications.zip</file>
+        <!-- Then the modules -->
+        <file type="module" id="mod_pf_dash_buttons">mod_pf_dash_buttons.zip</file>
+        <!-- And finally the templates -->
+        <file type="template" id="goggles">tpl_googles.zip</file>
     </files>
 </extension>
