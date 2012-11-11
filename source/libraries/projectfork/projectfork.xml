@@ -23,7 +23,6 @@
         <folder>menu</folder>
         <folder>model</folder>
         <folder>object</folder>
-        <folder>image</folder>
         <folder>table</folder>
         <folder>toolbar</folder>
         <file>framework.php</file>
