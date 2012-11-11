@@ -30,7 +30,7 @@ if ($com_id) {
           ->where('component_id = ' . $db->quote('0'));
 
     $db->setQuery((string) $query);
-    $db->query();
+    $db->execute();
 }
 else {
     // Something went wrong. Delete the menu items and the menu

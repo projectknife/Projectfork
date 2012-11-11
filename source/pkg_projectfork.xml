@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<extension type="package" version="2.5">
+    <name>Projectfork Project Management System</name>
+    <packagename>projectfork</packagename>
+    <version>4.0.0b1</version>
+    <url>http://www.projectfork.net</url>
+    <creationDate>November 2012</creationDate>
+    <copyright>(C) 2006 - 2012 Tobias Kuhn. All rights reserved.</copyright>
+    <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+    <authorEmail>support@projectfork.net</authorEmail>
+    <authorUrl>www.projectfork.net</authorUrl>
+    <author>Tobias Kuhn</author>
+    <packager>Tobias Kuhn</packager>
+    <packagerurl>http://www.projectfork.net</packagerurl>
+    <description>Uninstalling this package will remove all Projectfork extensions.</description>
+    <files>
+        <!-- It is important that the library and com_projectfork are installed first -->
+        <file type="library" id="projectfork">lib_projectfork.zip</file>
+        <file type="component" id="com_projectfork">com_projectfork.zip</file>
+        <!-- It is important that the library and com_projectfork are installed first -->
+        <file type="component" id="com_pfprojects">com_pfprojects.zip</file>
+        <file type="component" id="com_pfmilestones">com_pfmilestones.zip</file>
+        <file type="component" id="com_pftasks">com_pftasks.zip</file>
+        <file type="component" id="com_pftime">com_pftime.zip</file>
+        <file type="component" id="com_pfrepo">com_pfrepo.zip</file>
+        <file type="component" id="com_pfforum">com_pfforum.zip</file>
+        <file type="component" id="com_pfusers">com_pfusers.zip</file>
+        <file type="component" id="com_pfcomments">com_pfcomments.zip</file>
+    </files>
+</extension>

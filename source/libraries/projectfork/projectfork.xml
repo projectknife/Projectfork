@@ -18,6 +18,8 @@
         <folder>date</folder>
         <folder>form</folder>
         <folder>html</folder>
+        <folder>image</folder>
+        <folder>installer</folder>
         <folder>menu</folder>
         <folder>model</folder>
         <folder>object</folder>
@@ -25,6 +27,7 @@
         <folder>table</folder>
         <folder>toolbar</folder>
         <file>framework.php</file>
+        <file>library.php</file>
         <file>index.html</file>
     </files>
 </extension>

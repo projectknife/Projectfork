@@ -12,20 +12,20 @@ defined('_JEXEC') or die();
 
 class com_projectforkInstallerScript
 {
-	/**
-	 * Called after any type of action
-	 *
-	 * @param   string  $route  Which action is happening (install|uninstall|discover_install)
-	 * @param   JAdapterInstance  $adapter  The object responsible for running this script
-	 *
-	 * @return  boolean  True on success
-	 */
-	public function postflight($route, JAdapterInstance $adapter)
+    /**
+     * Called after any type of action
+     *
+     * @param     string              $route      Which action is happening (install|uninstall|discover_install)
+     * @param     jadapterinstance    $adapter    The object responsible for running this script
+     *
+     * @return    boolean                         True on success
+     */
+    public function postflight($route, JAdapterInstance $adapter)
     {
-        if(strtolower($route) == 'install') {
+        if (strtolower($route) == 'install') {
             $script = JPATH_ADMINISTRATOR . '/components/com_projectfork/_install/script.postprocess.php';
 
-            if(file_exists($script)) {
+            if (file_exists($script)) {
                 require_once($script);
                 return true;
             }
@@ -37,18 +37,18 @@ class com_projectforkInstallerScript
     }
 
 
-	/**
-	 * Called on installation
-	 *
-	 * @param   JAdapterInstance  $adapter  The object responsible for running this script
-	 *
-	 * @return  boolean  True on success
-	 */
-	public function install(JAdapterInstance $adapter)
+    /**
+     * Called on installation
+     *
+     * @param     jadapterinstance    $adapter    The object responsible for running this script
+     *
+     * @return    boolean                         True on success
+     */
+    public function install(JAdapterInstance $adapter)
     {
         $script = JPATH_ADMINISTRATOR . '/components/com_projectfork/_install/script.install.php';
 
-        if(file_exists($script)) {
+        if (file_exists($script)) {
             require_once($script);
             return true;
         }
@@ -57,29 +57,16 @@ class com_projectforkInstallerScript
     }
 
 
-	/**
-	 * Called on update
-	 *
-	 * @param   JAdapterInstance  $adapter  The object responsible for running this script
-	 *
-	 * @return  boolean  True on success
-	 */
-	public function update(JAdapterInstance $adapter)
-    {
-        return true;
-    }
-
-
-	/**
-	 * Called on uninstallation
-	 *
-	 * @param   JAdapterInstance  $adapter  The object responsible for running this script
-	 */
-	public function uninstall(JAdapterInstance $adapter)
+    /**
+     * Called on uninstallation
+     *
+     * @param    jadapterinstance    $adapter    The object responsible for running this script
+     */
+    public function uninstall(JAdapterInstance $adapter)
     {
         $script = JPATH_ADMINISTRATOR . '/components/com_projectfork/_uninstall/script.uninstall.php';
 
-        if(file_exists($script)) {
+        if (file_exists($script)) {
             require_once($script);
             return true;
         }
