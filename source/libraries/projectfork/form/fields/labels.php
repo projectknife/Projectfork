@@ -168,10 +168,10 @@ class JFormFieldLabels extends JFormField
               ->where('a.project_id = ' . $db->quote((int) $project));
 
         if ($asset) {
-            $query->where('(a.asset_group = ' . $db->quote($db->escape($asset)) . ' OR a.asset_group = ' . $db->quote('project') . ')');
+            $query->where('(a.asset_group = ' . $db->quote($db->escape($asset)) . ' OR a.asset_group = ' . $db->quote('com_pfprojects.project') . ')');
         }
         else {
-            $query->where('a.asset_group = ' . $db->quote('project'));
+            $query->where('a.asset_group = ' . $db->quote('com_pfprojects.project'));
         }
 
         $query->order('a.asset_group, a.title ASC');
