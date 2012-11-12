@@ -148,10 +148,12 @@ class ProjectforkViewDashboard extends JViewLegacy
      */
     protected function getToolbar()
     {
-        $access = PFprojectsHelper::getActions($this->item->id);
+        $id = (isset($this->item->id) ? $this->item->id : null);
+
+        $access = PFprojectsHelper::getActions($id);
         $uid    = JFactory::getUser()->get('id');
 
-        if ($this->item->id) {
+        if ($id) {
             $slug = $this->item->id . ':' . $this->item->alias;
 
             PFToolbar::button(
