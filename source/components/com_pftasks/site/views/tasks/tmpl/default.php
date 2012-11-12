@@ -109,7 +109,7 @@ jQuery(document).ready(function() {
                     <div class="filter-priority btn-group">
                         <select onchange="this.form.submit()" class="inputbox input-medium" name="filter_priority" id="filter_priority">
                             <option selected="selected" value=""><?php echo JText::_('JOPTION_SELECT_PRIORITY');?></option>
-                            <?php echo JHtml::_('select.options', JHtml::_('projectfork.priorityOptions'), 'value', 'text', $this->state->get('filter.priority'), true);?>
+                            <?php echo JHtml::_('select.options', JHtml::_('pftasks.priorityOptions'), 'value', 'text', $this->state->get('filter.priority'), true);?>
                         </select>
                     </div>
 
