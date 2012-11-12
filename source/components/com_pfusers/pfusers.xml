@@ -27,7 +27,6 @@
             <folder>models</folder>
             <folder>tables</folder>
             <filename>pfusers.php</filename>
-            <filename>script.php</filename>
             <filename>LICENSE.txt</filename>
             <filename>index.html</filename>
         </files>

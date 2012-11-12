@@ -297,17 +297,6 @@ abstract class PFInstallerHelper
         $db->setQuery((string) $query);
         $db->execute();
 
-        // Show the module on all pages if a position is given
-        if ($pos) {
-            $query->clear();
-            $query->insert('#__modules_menu')
-                  ->columns(array($db->quoteName('moduleid'), $db->quoteName('menuid')))
-                  ->values((int) $id . ', 0');
-
-            $db->setQuery((string) $query);
-            $db->execute();
-        }
-
         return true;
     }
 

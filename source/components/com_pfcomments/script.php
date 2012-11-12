@@ -23,7 +23,7 @@ class com_pfcommentsInstallerScript
      */
     public function preflight($route, JAdapterInstance $adapter)
     {
-        if (strtolower($route) == 'install') {
+        if (strtolower($route) == 'install' || strtolower($route) == 'update') {
             if (!defined('PF_LIBRARY')) {
                 jimport('projectfork.library');
             }
@@ -62,6 +62,13 @@ class com_pfcommentsInstallerScript
 
             // Restore assets from backup
             PFInstallerHelper::restoreAssets($element);
+
+            // Make the admin component menu item a child of com_projectfork
+            PFInstallerHelper::setComponentMenuItem($element);
+        }
+
+        if (strtolower($route) == 'update') {
+            $element = $adapter->get('element');
 
             // Make the admin component menu item a child of com_projectfork
             PFInstallerHelper::setComponentMenuItem($element);

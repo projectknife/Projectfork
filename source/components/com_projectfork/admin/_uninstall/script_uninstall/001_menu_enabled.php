@@ -16,12 +16,8 @@ $query = $db->getQuery(true);
 // Get the Menu model
 JLoader::register('MenusModelMenu', JPATH_ADMINISTRATOR . '/components/com_menus/models/menu.php');
 
-if (!class_exists('JModel')) {
-    $menu_model = new MenusModelMenu();
-}
-else {
-    $menu_model = JModel::getInstance('Menu', 'MenusModel', array('ignore_request' => true));
-}
+$options    = array('ignore_request' => true);
+$menu_model = new MenusModelMenu($options);
 
 // Find the menu id
 $query->select('id')
@@ -30,7 +26,6 @@ $query->select('id')
 
 $db->setQuery($query->__toString());
 $menu_id = (int) $db->loadResult();
-
 
 if(!$menu_id) return false;
 

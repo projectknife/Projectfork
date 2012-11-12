@@ -10,13 +10,42 @@
 defined('_JEXEC') or die();
 
 
-if (!defined('PF_LIBRARY')) {
-    jimport('projectfork.library');
-}
-
-
 class mod_pf_dash_buttonsInstallerScript
 {
+    /**
+     * Called before any type of action
+     *
+     * @param     string              $route      Which action is happening (install|uninstall|discover_install)
+     * @param     jadapterinstance    $adapter    The object responsible for running this script
+     *
+     * @return    boolean                         True on success
+     */
+    public function preflight($route, JAdapterInstance $adapter)
+    {
+        if (strtolower($route) == 'install' || strtolower($route) == 'update') {
+            if (!defined('PF_LIBRARY')) {
+                jimport('projectfork.library');
+            }
+
+            $name = htmlspecialchars($adapter->get('manifest')->name, ENT_QUOTES, 'UTF-8');
+
+            // Check if the library is installed
+            if (!defined('PF_LIBRARY')) {
+                JError::raiseWarning(1, JText::_('This extension (' . $name . ') requires the Projectfork Library to be installed!'));
+                return false;
+            }
+
+            // Check if the projectfork component is installed
+            if (!PFApplicationHelper::exists('com_projectfork')) {
+                JError::raiseWarning(1, JText::_('This extension (' . $name . ') requires the Projectfork Component to be installed!'));
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
     /**
      * Called after any type of action
      *
@@ -28,28 +57,11 @@ class mod_pf_dash_buttonsInstallerScript
     public function postflight($route, JAdapterInstance $adapter)
     {
         if (strtolower($route) == 'install') {
-            // Check if the library is installed
-            if (!defined('PF_LIBRARY')) {
-                JLog::add('This extension requires the Projectfork Library to be installed!', JLog::WARNING, 'jerror');
-                return false;
-            }
-
-            // Check if the projectfork component is installed
-            if (!PFApplicationHelper::exists('com_projectfork')) {
-                JLog::add('This extension requires the Projectfork Component to be installed!', JLog::WARNING, 'jerror');
-                return false;
-            }
-
             // Get the XML manifest data
             $manifest = $adapter->get('manifest');
 
             // Set the module params
             PFInstallerHelper::setModuleParams($manifest);
-
-            // Register the extension to uninstall with com_projectfork
-            if (JFactory::getApplication()->get('pkg_projectfork_install') !== true) {
-                PFInstallerHelper::registerCustomUninstall($manifest->name, 'module');
-            }
         }
 
         return true;

@@ -23,7 +23,7 @@ class com_pfusersInstallerScript
      */
     public function preflight($route, JAdapterInstance $adapter)
     {
-        if (strtolower($route) == 'install') {
+        if (strtolower($route) == 'install' || strtolower($route) == 'update') {
             if (!defined('PF_LIBRARY')) {
                 jimport('projectfork.library');
             }
@@ -79,6 +79,13 @@ class com_pfusersInstallerScript
 
                 PFInstallerHelper::addMenuItem($item);
             }
+        }
+
+        if (strtolower($route) == 'update') {
+            $element = $adapter->get('element');
+
+            // Make the admin component menu item a child of com_projectfork
+            PFInstallerHelper::setComponentMenuItem($element);
         }
 
         return true;
