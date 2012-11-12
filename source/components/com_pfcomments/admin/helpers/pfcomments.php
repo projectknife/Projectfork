@@ -30,6 +30,10 @@ class PFcommentsHelper
      */
     public static function addSubmenu($view)
     {
+        if ($view == 'comment' && version_compare(JVERSION, '3.0.0', 'ge')) {
+            return;
+        }
+
         $components = PFApplicationHelper::getComponents();
         $option     = JFactory::getApplication()->input->get('option');
 

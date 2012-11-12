@@ -30,6 +30,10 @@ class PFtasksHelper
      */
     public static function addSubmenu($view)
     {
+        if (in_array($view, array('task', 'tasklist')) && version_compare(JVERSION, '3.0.0', 'ge')) {
+            return;
+        }
+
         $components = PFApplicationHelper::getComponents();
         $option     = JFactory::getApplication()->input->get('option');
 

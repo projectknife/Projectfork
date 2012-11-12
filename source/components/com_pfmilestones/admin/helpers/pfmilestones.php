@@ -16,7 +16,7 @@ class PFmilestonesHelper
     /**
      * The component name
      *
-     * @var    string    
+     * @var    string
      */
     public static $extension = 'com_pfmilestones';
 
@@ -26,10 +26,14 @@ class PFmilestonesHelper
      *
      * @param     string    $view    The name of the active view.
      *
-     * @return    void               
+     * @return    void
      */
     public static function addSubmenu($view)
     {
+        if ($view == 'milestone' && version_compare(JVERSION, '3.0.0', 'ge')) {
+            return;
+        }
+
         $components = PFApplicationHelper::getComponents();
         $option     = JFactory::getApplication()->input->get('option');
 
@@ -60,7 +64,7 @@ class PFmilestonesHelper
      *
      * @param     integer    $id    The item id
      *
-     * @return    jobject           
+     * @return    jobject
      */
     public static function getActions($id = 0)
     {
