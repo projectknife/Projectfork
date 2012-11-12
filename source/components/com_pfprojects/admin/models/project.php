@@ -69,7 +69,7 @@ class PFprojectsModelProject extends JModelAdmin
                 $item->attachment = $attachments->getItems('com_pfprojects.project', $item->id);
             }
             else {
-                $item->attachments = array();
+                $item->attachment = array();
             }
 
             // Get the labels
@@ -595,6 +595,10 @@ class PFprojectsModelProject extends JModelAdmin
      */
     public function setActive($data)
     {
+        if (!isset($data['id'])) {
+            return false;
+        }
+
         $app = JFactory::getApplication();
         $id  = (int) $data['id'];
 

@@ -122,13 +122,15 @@ class PFrepoModelDirectoryForm extends PFrepoModelDirectory
         $app = JFactory::getApplication();
 
         // Load state from the request.
-        $pk = JRequest::getInt('id');
+        $pk     = JRequest::getInt('id');
+        $option = JRequest::getVar('option');
+
         $this->setState($this->getName() . '.id', $pk);
 
         $return = JRequest::getVar('return', null, 'default', 'base64');
         $this->setState('return_page', base64_decode($return));
 
-        if ($pk) {
+        if ($pk && $option == $this->option) {
             $table = $this->getTable();
 
             if ($table->load($pk)) {

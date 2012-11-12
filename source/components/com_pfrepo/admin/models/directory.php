@@ -1136,10 +1136,12 @@ class PFrepoModelDirectory extends JModelAdmin
         $key   = $table->getKeyName();
 
         // Get the pk of the record from the request.
-        $pk = JRequest::getUInt($key);
+        $pk     = JRequest::getUInt($key);
+        $option = JRequest::getVar('option');
+
         $this->setState($this->getName() . '.id', $pk);
 
-        if ($pk) {
+        if ($pk && $option == $this->option) {
             $table = $this->getTable();
 
             if ($table->load($pk)) {

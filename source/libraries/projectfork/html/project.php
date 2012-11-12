@@ -29,8 +29,8 @@ abstract class PFhtmlProject
         $app = JFactory::getApplication();
 
         // Get currently active project data
-        $active_id    = (int) PFapplicationHelper::getActiveProjectId();
-        $active_title = PFapplicationHelper::getActiveProjectTitle();
+        $active_id    = (int) PFApplicationHelper::getActiveProjectId();
+        $active_title = PFApplicationHelper::getActiveProjectTitle();
 
         if (!$active_title) $active_title = JText::_('COM_PROJECTFORK_SELECT_PROJECT');
 

@@ -20,7 +20,7 @@ abstract class PFApplicationHelper
     /**
      * Holds the Projectfork related components
      *
-     * @var    array    
+     * @var    array
      */
     protected static $components;
 
@@ -28,7 +28,7 @@ abstract class PFApplicationHelper
     /**
      * URL routing cache
      *
-     * @var    array    
+     * @var    array
      */
     protected static $routes;
 
@@ -37,7 +37,7 @@ abstract class PFApplicationHelper
      * Method to get all projectfork related components
      * (starting with com_pf)
      *
-     * @return    array    
+     * @return    array
      */
     public static function getComponents()
     {
@@ -79,7 +79,7 @@ abstract class PFApplicationHelper
      *
      * @param     string     $name    The name of the component
      *
-     * @return    boolean             
+     * @return    boolean
      */
     public static function exists($name)
     {
