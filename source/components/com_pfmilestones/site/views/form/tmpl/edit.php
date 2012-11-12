@@ -132,8 +132,10 @@ Joomla.submitbutton = function(task)
         <?php if (PFApplicationHelper::enabled('com_pfrepo')) : ?>
             <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'milestone-attachments') ;?>
             <fieldset>
-            	<div class="formelm control-group">
-            		<?php echo $this->form->getInput('attachment'); ?>
+            	<div class="formelm control-group"  id="jform_attachment_element">
+                    <div id="jform_attachment_reload" class="controls">
+            		  <?php echo $this->form->getInput('attachment'); ?>
+                    </div>
             	</div>
             </fieldset>
         <?php endif; ?>

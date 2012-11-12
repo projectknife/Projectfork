@@ -73,8 +73,8 @@ Joomla.submitbutton = function(task)
             <?php if (PFApplicationHelper::enabled('com_pfrepo')) : ?>
                 <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'attachments'); ?>
                 <fieldset class="panelform">
-    				<ul class="adminformlist unstyled">
-                        <li>
+    				<ul class="adminformlist unstyled" id="jform_attachment_element">
+                        <li id="jform_attachment_reload">
                             <?php echo $this->form->getInput('attachment'); ?>
                         </li>
                     </ul>
@@ -104,7 +104,6 @@ Joomla.submitbutton = function(task)
 
     <div class="width-100 fltlft span12">
 		<?php echo JHtml::_('sliders.start', 'permissions-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
-
 			<?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'access-rules'); ?>
 			<fieldset class="panelform">
                 <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
