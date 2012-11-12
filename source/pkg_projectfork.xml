@@ -12,26 +12,30 @@
     <author>Tobias Kuhn</author>
     <packager>Projectfork</packager>
     <packagerurl>http://www.projectfork.net</packagerurl>
-    <description>Uninstalling this package will remove all Projectfork extensions.</description>
+    <description></description>
     <files>
         <!-- It is important that the library and com_projectfork are installed first -->
-        <file type="library" id="projectfork">lib_projectfork.zip</file>
-        <file type="component" id="com_projectfork">com_projectfork.zip</file>
-        <!-- Then install other components in any order -->
-        <file type="component" id="com_pfprojects">com_pfprojects.zip</file>
-        <file type="component" id="com_pfmilestones">com_pfmilestones.zip</file>
-        <file type="component" id="com_pftasks">com_pftasks.zip</file>
-        <file type="component" id="com_pftime">com_pftime.zip</file>
-        <file type="component" id="com_pfrepo">com_pfrepo.zip</file>
-        <file type="component" id="com_pfforum">com_pfforum.zip</file>
-        <file type="component" id="com_pfusers">com_pfusers.zip</file>
-        <file type="component" id="com_pfcomments">com_pfcomments.zip</file>
-        <!-- Then the plugins -->
-        <file type="plugin" id="pfcomments">plg_content_pfcomments.zip</file>
-        <file type="plugin" id="pfnotifications">plg_content_pfnotifications.zip</file>
-        <!-- Then the modules -->
-        <file type="module" id="mod_pf_dash_buttons">mod_pf_dash_buttons.zip</file>
-        <!-- And finally the templates -->
-        <file type="template" id="goggles">tpl_googles.zip</file>
+        <file type="library" id="projectfork">libraries/projectfork</file>
+        <file type="component" id="com_projectfork">components/com_projectfork</file>
+
+        <!-- Install components -->
+        <file type="component" id="com_pfprojects">components/com_pfprojects</file>
+        <file type="component" id="com_pfmilestones">components/com_pfmilestones</file>
+        <file type="component" id="com_pftasks">components/com_pftasks</file>
+        <file type="component" id="com_pftime">components/com_pftime</file>
+        <file type="component" id="com_pfrepo">components/com_pfrepo</file>
+        <file type="component" id="com_pfforum">components/com_pfforum</file>
+        <file type="component" id="com_pfusers">components/com_pfusers</file>
+        <file type="component" id="com_pfcomments">components/com_pfcomments</file>
+
+        <!-- Install plugins -->
+        <file type="plugin" id="pfcomments">plugins/plg_content_pfcomments</file>
+        <file type="plugin" id="pfnotifications">plugins/plg_content_pfnotifications</file>
+
+        <!-- Install modules -->
+        <file type="module" id="mod_pf_dash_buttons">plugins/mod_pf_dash_buttons</file>
+
+        <!-- Install templates -->
+        <file type="template" id="goggles">templates/googles</file>
     </files>
 </extension>
