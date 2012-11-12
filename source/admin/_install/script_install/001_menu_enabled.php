@@ -20,7 +20,15 @@ $query->delete('#__menu')
       ->where('client_id = 1');
 
 $db->setQuery($query);
-$db->query();
+$db->execute();
+
+$query->clear();
+$query->delete('#__menu')
+      ->where('title = ' . $db->quote('com_projectfork'))
+      ->where('menutype = ' . $db->quote('main'));
+
+$db->setQuery($query);
+$db->execute();
 
 
 // Check if a projectfork menu already exists
@@ -86,24 +94,34 @@ $query->insert('#__modules')
       ->values(implode(', ', $values));
 
 $db->setQuery((string) $query);
-$db->query();
+$db->execute();
 
 $module_id = $db->insertid();
 
 if (!$module_id) return false;
 
-
-// Show the module on all pages
+// Check if there's an entry
 $query->clear();
-$query->insert('#__modules_menu')
-      ->columns(array($db->quoteName('moduleid'), $db->quoteName('menuid')))
-      ->values((int)$module_id . ', 0');
+$query->select('COUNT(*)')
+      ->from('#__modules_menu')
+      ->where('moduleid = ' . $db->quote($module_id));
 
-$db->setQuery((string) $query);
-$db->query();
+$db->setQuery($query);
+$exists = (int) $db->loadResult();
 
-// Notify the user about the module position
-$format = 'A Projectfork navigation module has been created on position "%s". You may need to change it in the Module Manager to fit into your template.';
-$app    = JFactory::getApplication();
+if (!$exists) {
+    // Show the module on all pages
+    $query->clear();
+    $query->insert('#__modules_menu')
+          ->columns(array($db->quoteName('moduleid'), $db->quoteName('menuid')))
+          ->values((int) $module_id . ', 0');
 
-$app->enqueueMessage(JText::sprintf($format, $mm_pos));
+    $db->setQuery((string) $query);
+    $db->execute();
+
+    // Notify the user about the module position
+    $format = 'A Projectfork navigation module has been created on position "%s". You may need to change it in the Module Manager to fit into your template.';
+    $app    = JFactory::getApplication();
+
+    $app->enqueueMessage(JText::sprintf($format, $mm_pos));
+}

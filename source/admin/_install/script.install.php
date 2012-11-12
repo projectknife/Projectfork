@@ -10,9 +10,6 @@
 defined('_JEXEC') or die();
 
 
-$app = JFactory::getApplication();
-$app->set('pkg_projectfork_install', true);
-
 // Check if the scripts folder exists
 $script_folder = dirname(__FILE__) . '/script_install';
 

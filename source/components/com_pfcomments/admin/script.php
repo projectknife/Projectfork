@@ -11,11 +11,6 @@
 defined('_JEXEC') or die();
 
 
-if (!defined('PF_LIBRARY')) {
-    jimport('projectfork.library');
-}
-
-
 class com_pfcommentsInstallerScript
 {
     /**
@@ -29,15 +24,21 @@ class com_pfcommentsInstallerScript
     public function preflight($route, JAdapterInstance $adapter)
     {
         if (strtolower($route) == 'install') {
+            if (!defined('PF_LIBRARY')) {
+                jimport('projectfork.library');
+            }
+
+            $name = htmlspecialchars($adapter->get('manifest')->name, ENT_QUOTES, 'UTF-8');
+
             // Check if the library is installed
             if (!defined('PF_LIBRARY')) {
-                JLog::add('This extension requires the Projectfork Library to be installed!', JLog::WARNING, 'jerror');
+                JError::raiseWarning(1, JText::_('This extension (' . $name . ') requires the Projectfork Library to be installed!'));
                 return false;
             }
 
             // Check if the projectfork component is installed
             if (!PFApplicationHelper::exists('com_projectfork')) {
-                JLog::add('This extension requires the Projectfork Component to be installed!', JLog::WARNING, 'jerror');
+                JError::raiseWarning(1, JText::_('This extension (' . $name . ') requires the Projectfork Component to be installed!'));
                 return false;
             }
         }
@@ -64,11 +65,6 @@ class com_pfcommentsInstallerScript
 
             // Make the admin component menu item a child of com_projectfork
             PFInstallerHelper::setComponentMenuItem($element);
-
-            // Register the extension to uninstall with com_projectfork
-            if (JFactory::getApplication()->get('pkg_projectfork_install') !== true) {
-                PFInstallerHelper::registerCustomUninstall($element);
-            }
         }
 
         return true;
@@ -82,8 +78,8 @@ class com_pfcommentsInstallerScript
      */
     public function uninstall(JAdapterInstance $adapter)
     {
-        if (JFactory::getApplication()->get('pkg_projectfork_uninstall') === true) {
-            // Skip this step if the user is removing the entire projectfork package
+        // Skip this step if the user is removing the entire projectfork package
+        if ($this->isRemovingAll()) {
             return true;
         }
 
@@ -97,5 +93,40 @@ class com_pfcommentsInstallerScript
         }
 
         return true;
+    }
+
+
+    /**
+     * Method to find out if the user is removing com_projectfork
+     * or pkg_projectfork
+     *
+     * @return    boolean
+     */
+    protected function isRemovingAll()
+    {
+        $cid = JFactory::getApplication()->input->get('cid', array(), 'array');
+
+		JArrayHelper::toInteger($cid, array());
+
+        if (count($cid) == 0) {
+            $extensions = array();
+        }
+        else {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('element')
+                  ->from('#__extensions')
+                  ->where('extension_id IN(' . implode(', ', $cid) . ')');
+
+            $db->setQuery($query);
+            $extensions = (array) $db->loadColumn();
+        }
+
+        if (in_array('pkg_projectfork', $extensions) || in_array('com_projectfork', $extensions)) {
+            return true;
+        }
+
+        return false;
     }
 }

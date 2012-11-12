@@ -10,9 +10,6 @@
 defined('_JEXEC') or die();
 
 
-$app = JFactory::getApplication();
-$app->set('pkg_projectfork_uninstall', true);
-
 // Check if the scripts folder exists
 $script_folder = dirname(__FILE__) . '/script_uninstall';
 
@@ -38,5 +35,3 @@ foreach($script_files AS $file)
         require_once($script_folder . '/' . $file);
     }
 }
-
-$app->set('pkg_projectfork_uninstall', false);
