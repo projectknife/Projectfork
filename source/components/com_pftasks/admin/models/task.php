@@ -119,7 +119,7 @@ class PFtasksModelTask extends JModelAdmin
               ->where('item_id = ' . $db->quote($pk));
 
         $db->setQuery((string) $query);
-        $data = (array) $db->loadResultArray();
+        $data = (array) $db->loadColumn();
 
         return $data;
     }
