@@ -34,3 +34,11 @@ JModelLegacy::addIncludePath(JPATH_PLATFORM . '/projectfork/model', 'PFModel');
 JTable::addIncludePath(JPATH_PLATFORM . '/projectfork/table', 'PFTable');
 JForm::addFieldPath(JPATH_PLATFORM . '/projectfork/form/fields');
 JForm::addRulePath(JPATH_PLATFORM . '/projectfork/form/rules');
+
+
+// Define version
+if (!defined('PFVERSION')) {
+    $pfversion = new PFVersion();
+
+    define('PFVERSION', $pfversion->getShortVersion());
+}
