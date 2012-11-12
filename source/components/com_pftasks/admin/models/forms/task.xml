@@ -4,7 +4,7 @@
         <field name="project_id" type="project"
             label="COM_PROJECTFORK_FIELD_PROJECT_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_DESC"
             class="inputbox" size="30" required="true" view="task"
-            onchange="PFform.reload('milestone_id,list_id,access,rules,labels,dependency');"
+            onchange="PFform.reload('milestone_id,list_id,access,rules,labels,dependency,attachment');"
         />
         <field name="milestone_id" type="milestone"
             label="COM_PROJECTFORK_FIELD_MILESTONE_LABEL" description="COM_PROJECTFORK_FIELD_MILESTONE_DESC"

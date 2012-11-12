@@ -114,8 +114,8 @@ Joomla.submitbutton = function(task)
             <?php if (PFApplicationHelper::enabled('com_pfrepo')) : ?>
                 <?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'attachments'); ?>
                 <fieldset class="panelform">
-    				<ul class="adminformlist unstyled">
-                        <li>
+    				<ul class="adminformlist unstyled" id="jform_attachment_element">
+                        <li id="jform_attachment_reload">
                             <?php echo $this->form->getInput('attachment'); ?>
                         </li>
                     </ul>
