@@ -35,6 +35,7 @@
 
         <!-- Install modules -->
         <file type="module" id="mod_pf_dash_buttons" client="site">modules/mod_pf_dash_buttons</file>
+        <file type="module" id="mod_pf_tasks" client="site">modules/mod_pf_tasks</file>
 
         <!-- Install templates -->
         <file type="template" id="goggles" client="site">templates/goggles</file>

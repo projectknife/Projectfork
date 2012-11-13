@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<extension type="module" version="1.6" client="site" method="upgrade">
+<extension type="module" version="2.5" client="site" method="upgrade">
 	<name>mod_pf_dash_buttons</name>
 	<author>Tobias Kuhn</author>
 	<creationDate>November 2012</creationDate>

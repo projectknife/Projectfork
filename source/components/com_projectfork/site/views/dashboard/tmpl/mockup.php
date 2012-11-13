@@ -40,7 +40,7 @@ $modules = &$this->modules;
 
             <fieldset class="filters btn-toolbar btn-toolbar-top">
                     <div class="filter-project btn-group">
-                        <?php echo JHtml::_('projectfork.filterProject');?>
+
                         <?php if($item) echo $item->event->afterDisplayTitle; ?>
                     </div>
             </fieldset>
@@ -158,7 +158,7 @@ $modules = &$this->modules;
         			<!-- end item -->
         			<!-- begin item -->
         			<div class="row-fluid">
-        				
+
         				<a href="#"><img class="thumbnail pull-left" src="http://placehold.it/32x32/624287/FFF/&amp;text=Avatar" alt=""></a>
         				<div class="offset1">
         					<span class="label label-important thumbnail pull-right"><i class="icon-briefcase hasTip" title="Project"></i></span>
@@ -171,7 +171,7 @@ $modules = &$this->modules;
         			<!-- end item -->
         			<!-- begin item -->
         			<div class="row-fluid">
-        				
+
         				<a href="#"><img class="thumbnail pull-left" src="http://placehold.it/32x32/624287/FFF/&amp;text=Avatar" alt=""></a>
         				<div class="offset1">
         					<span class="label label-success thumbnail pull-right"><i class="icon-checkbox hasTip" title="Task"></i></span>
@@ -183,7 +183,7 @@ $modules = &$this->modules;
         			<!-- end item -->
         			<!-- begin item -->
         			<div class="row-fluid">
-        				
+
         				<a href="#"><img class="thumbnail pull-left" src="http://placehold.it/32x32/624287/FFF/&amp;text=Avatar" alt=""></a>
         				<div class="offset1">
         					<span class="label label-inverse thumbnail pull-right"><i class="icon-flag hasTip" title="Milestone"></i></span>
@@ -195,7 +195,7 @@ $modules = &$this->modules;
         			<!-- end item -->
         			<!-- begin item -->
         			<div class="row-fluid">
-        				
+
         				<a href="#"><img class="thumbnail pull-left" src="http://placehold.it/32x32/624287/FFF/&amp;text=Avatar" alt=""></a>
         				<div class="offset1">
         					<span class="label label-info thumbnail pull-right"><i class="icon-clock hasTip" title="Timesheet"></i></span>

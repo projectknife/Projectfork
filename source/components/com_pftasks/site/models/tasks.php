@@ -163,6 +163,7 @@ class PFtasksModelTasks extends JModelList
         $filters['a.list_id']      = array('INT-NOTZERO', $this->getState('filter.tasklist'));
         $filters['a.created_by']   = array('INT-NOTZERO', $this->getState('filter.author'));
         $filters['a.priority']     = array('INT',         $this->getState('filter.priority'));
+        $filters['a.complete']     = array('INT',         $this->getState('filter.complete'));
         $filters['a']              = array('SEARCH',      $this->getState('filter.search'));
 
         // Apply Filter
@@ -524,6 +525,10 @@ class PFtasksModelTasks extends JModelList
         $priority = $app->getUserStateFromRequest($this->context . '.filter.priority', 'filter_priority', '');
         $this->setState('filter.priority', $priority);
 
+        // Filter - Complete
+        $complete = $app->getUserStateFromRequest($this->context . '.filter.complete', 'filter_complete', '');
+        $this->setState('filter.complete', $complete);
+
         // Filter - Labels
         $labels = JRequest::getVar('filter_label', array());
         $this->setState('filter.labels', $labels);
@@ -551,7 +556,7 @@ class PFtasksModelTasks extends JModelList
         $this->setState('filter.isset',
             (is_numeric($state) || !empty($search) || is_numeric($author) ||
             is_numeric($assigned) || (is_numeric($list) && $list > 0) || (is_numeric($milestone) && $milestone > 0) ||
-            count($labels))
+            count($labels) || is_numeric($complete))
         );
 
         // Call parent method
@@ -578,6 +583,7 @@ class PFtasksModelTasks extends JModelList
         $id .= ':' . $this->getState('filter.published');
         $id .= ':' . $this->getState('filter.assigned');
         $id .= ':' . $this->getState('filter.priority');
+        $id .= ':' . $this->getState('filter.complete');
         $id .= ':' . $this->getState('filter.author');
         $id .= ':' . $this->getState('filter.search');
 
