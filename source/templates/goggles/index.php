@@ -8,7 +8,7 @@
 
 	$app = JFactory::getApplication();
 	$doc = JFactory::getDocument();
-	
+
 	// Settings for Joomla 3.0.x
 	if (version_compare(JVERSION, '3.0.0', 'ge')) {
 		// Add JavaScript Frameworks
@@ -20,26 +20,26 @@
 	    $isset_jquery = TemplateHelperDocument::headContains('jquery', 'script');
 	    $isset_bsjs   = TemplateHelperDocument::headContains('bootstrap', 'script');
 	    $isset_bscss  = TemplateHelperDocument::headContains('bootstrap', 'stylesheet');
-	
+
 	    if ($this->params->get('bootstrap_javascript', 1)) {
 	        if (!$isset_jquery) {
 	            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/jquery.js');
 	        }
-	
+
 	        if (!$isset_bsjs) {
 	            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/bootstrap.min.js');
 	        }
-	
+
 	        $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/application.js');
 	    }
 	    // Add 2.5 System Stylesheets
 		$doc->addStyleSheet('templates/system/css/general.css');
 		$doc->addStyleSheet('templates/system/css/system.css');
 	}
-	
+
 	// Add Template Stylesheet
 	$doc->addStyleSheet('templates/'.$this->template.'/css/template.css');
-    
+
 ?>
 <!DOCTYPE html>
 <html>
@@ -112,7 +112,7 @@
 							<?php echo $user->username; ?> <b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_users&view=profile&Itemid='. $itemid);?>"><?php echo JText::_('TPL_GOGGLES_PROFILE');?></a></li>
-								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=tasks&Itemid='. $itemid);?>"><?php echo JText::_('TPL_GOGGLES_MY_TASKS');?></a></li>
+								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_pftasks&view=tasks&Itemid='. $itemid);?>"><?php echo JText::_('TPL_GOGGLES_MY_TASKS');?></a></li>
 								<li class="divider"></li>
 								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_users&task=user.logout&'. JSession::getFormToken() .'=1');?>"><?php echo JText::_('TPL_GOGGLES_LOGOUT');?></a></li>
 							</ul>
@@ -145,9 +145,6 @@
 			<div id="sidebar" class="span2">
 				<jdoc:include type="modules" name="create" style="xhtml" />
 				<!-- Begin Sidebar -->
-				<?php
-					if($user->authorise('create', 'com_projectfork')) :
-				?>
 				<div class="btn-group">
 				  <a href="#" class="btn btn-large btn-info btn-wide dropdown-toggle" data-toggle="dropdown">
 				    <?php echo JText::_('TPL_GOGGLES_CREATE');?>
@@ -155,47 +152,45 @@
 				  </a>
 				  <ul class="dropdown-menu">
 				  	<?php
-				  		if($user->authorise('create', 'com_projectfork.project')) :
+				  		if($user->authorise('core.create', 'com_pfprojects')) :
 				  	?>
-				    	<li><a href="index.php?option=com_projectfork&view=projectform&layout=edit"><i class="icon-briefcase"></i> <?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
+				    	<li><a href="index.php?option=com_pfprojects&view=form&layout=edit"><i class="icon-briefcase"></i> <?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
 				    <?php
 				    	endif;
-				    	if($user->authorise('create', 'com_projectfork.milestone')) :
+				    	if($user->authorise('core.create', 'com_pfmilestones')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=milestoneform&layout=edit"><i class="icon-flag"></i> <?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
+				    	<li><a href="index.php?option=com_pfmilestones&view=form&layout=edit"><i class="icon-flag"></i> <?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
 				    <?php
 				    	endif;
-				    	if($user->authorise('create', 'com_projectfork.tasklist')) :
+				    	if($user->authorise('core.create', 'com_pftasks')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=tasklistform&layout=edit"><i class="icon-list-view"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
+				    	<li><a href="index.php?option=com_pftasks&view=tasklistform&layout=edit"><i class="icon-list-view"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
 				    <?php
 				    	endif;
-				    	if($user->authorise('create', 'com_projectfork.task')) :
+				    	if($user->authorise('core.create', 'com_pftasks')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=taskform&layout=edit"><i class="icon-checkbox"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
+				    	<li><a href="index.php?option=com_pftasks&view=taskform&layout=edit"><i class="icon-checkbox"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
 				    <?php
 				    	endif;
-				    	if($user->authorise('create', 'com_projectfork.time')) :
+				    	if($user->authorise('core.create', 'com_pftime')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=timeform&layout=edit"><i class="icon-clock"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
+				    	<li><a href="index.php?option=com_pftime&view=form&layout=edit"><i class="icon-clock"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
 				    <?php
 				    	endif;
-				    	if($user->authorise('create', 'com_projectfork.topic')) :
+				    	if($user->authorise('core.create', 'com_pfforum')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=topicform&layout=edit"><i class="icon-comments-2"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
+				    	<li><a href="index.php?option=com_pfforum&view=topicform&layout=edit"><i class="icon-comments-2"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
 				    <?php
 				    	endif;
-				    	if($user->authorise('create', 'com_projectfork.file')) :
+				    	if($user->authorise('core.create', 'com_pfrepo')) :
 				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=fileform&layout=edit"><i class="icon-upload"></i> <?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
+				    	<li><a href="index.php?option=com_pfrepo&view=fileform&layout=edit"><i class="icon-upload"></i> <?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
 				    <?php
 				    	endif;
 				    ?>
 				  </ul>
 				</div>
-				<?php
-					endif;
-				?>
+
 				<hr />
 				<div class="sidebar-nav">
 					<a class="btn btn-large btn-info btn-wide btn-sidebar-collapse" data-toggle="collapse" data-target=".sidebar-collapse"> Menu <span class="caret"></span></a>
