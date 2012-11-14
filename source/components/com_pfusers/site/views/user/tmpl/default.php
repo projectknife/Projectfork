@@ -94,20 +94,20 @@ $access = PFusersHelper::getActions();
         <!-- Begin Dashboard Modules -->
         <div class="row-fluid">
         	<div class="span12">
-        		<?php echo $this->modules->render('pf-dashboard-top', array('style' => 'xhtml'), null); ?>
+        		<?php echo $this->modules->render('pf-user-top', array('style' => 'xhtml'), null); ?>
         	</div>
         </div>
         <div class="row-fluid">
         	<div class="span6">
-        		<?php echo $this->modules->render('pf-dashboard-left', array('style' => 'xhtml'), null); ?>
+        		<?php echo $this->modules->render('pf-user-left', array('style' => 'xhtml'), null); ?>
         	</div>
         	<div class="span6">
-        		<?php echo $this->modules->render('pf-dashboard-right', array('style' => 'xhtml'), null); ?>
+        		<?php echo $this->modules->render('pf-user-right', array('style' => 'xhtml'), null); ?>
         	</div>
         </div>
         <div class="row-fluid">
         	<div class="span12">
-        		<?php echo $this->modules->render('pf-dashboard-bottom', array('style' => 'xhtml'), null); ?>
+        		<?php echo $this->modules->render('pf-user-bottom', array('style' => 'xhtml'), null); ?>
         	</div>
         </div>
         <!-- End Dashboard Modules -->

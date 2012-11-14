@@ -16,6 +16,8 @@ jimport('joomla.application.component.controller');
 jimport('joomla.application.component.helper');
 jimport('projectfork.framework');
 
+JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_pftasks/helpers/html');
+
 
 $controller = JControllerLegacy::getInstance('PFtasks');
 $controller->execute(JFactory::getApplication()->input->get('task'));

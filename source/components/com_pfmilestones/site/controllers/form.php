@@ -133,14 +133,27 @@ class PFmilestonesControllerForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
+        $user = JFactory::getUser();
+        $db   = JFactory::getDbo();
+
         if (isset($data['project_id'])) {
-            $access = PFmilestonesHelper::getActions(null, (int) $data['project_id']);
+            // Check if the user has access to the project
+            $query = $db->getQuery(true);
+
+            $query->select('access')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . $db->quote((int) $data['project_id']));
+
+            $db->setQuery($query);
+            $level = (int) $db->loadResult();
+
+            $access = in_array($level, $user->getAuthorisedViewLevels());
         }
         else {
-            $access = PFmilestonesHelper::getActions();
+            $access = true;
         }
 
-        return $access->get('core.create');
+        return ($user->authorise('core.create', 'com_pfmilestones') && $access);
     }
 
 
@@ -183,7 +196,7 @@ class PFmilestonesControllerForm extends JControllerForm
             if ($owner == $uid) return true;
         }
 
-        // Since there is no asset tracking, revert to the component permissions.
+        // Fall back to the component permissions.
         return parent::allowEdit($data, $key);
     }
 

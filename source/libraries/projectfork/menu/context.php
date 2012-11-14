@@ -128,16 +128,18 @@ class PFMenuContext
     }
 
 
-    public function itemModal($icon, $title, $action, $size_x = '800', $size_y = '500', $return = false)
+    public function itemModal($icon, $title, $action, $click = null, $size_x = '800', $size_y = '500', $return = false)
     {
         static $modal;
+
+        $onclick = (empty($click) ? '' : ' onclick="' . $click . '"');
 
         // Load the modal behavior script.
         if (!isset($modal)) JHtml::_('behavior.modal', 'a.modal_item');
         $html = array();
 
         $html[] = '        <li>';
-        $html[] = '            <a class="modal_item" href="' . $action . '" rel="{handler: \'iframe\', size: {x: ' . $size_x . ', y: ' . $size_y.'}}">';
+        $html[] = '            <a class="modal_item" href="' . $action . '" rel="{handler: \'iframe\', size: {x: ' . $size_x . ', y: ' . $size_y.'}}" ' . $onclick . '>';
         $html[] = '                <i class="' . $icon.'"></i> ' . JText::_($title);
         $html[] = '            </a>';
         $html[] = '        </li>';

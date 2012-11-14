@@ -92,7 +92,7 @@ class PFrepoModelNotes extends JModelList
 
         // Join over the label refs for label count
         $query->select('COUNT(DISTINCT lbl.id) AS label_count');
-        $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('note') . ')');
+        $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('com_pfrepo.note') . ')');
 
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
@@ -178,7 +178,7 @@ class PFrepoModelNotes extends JModelList
 
             // Get the labels
             if ($items[$i]->label_count > 0) {
-                $items[$i]->labels = $labels->getConnections('note', $items[$i]->id);
+                $items[$i]->labels = $labels->getConnections('com_pfrepo.note', $items[$i]->id);
             }
         }
 

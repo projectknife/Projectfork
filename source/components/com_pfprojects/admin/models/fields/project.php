@@ -62,7 +62,7 @@ class JFormFieldProject extends JFormField
      */
     protected function getHTML($title)
     {
-        if (JFactory::getApplication()->isSite()) {
+        if (JFactory::getApplication()->isSite() || version_compare(JVERSION, '3.0.0', 'ge')) {
             return $this->getSiteHTML($title);
         }
 
@@ -121,14 +121,26 @@ class JFormFieldProject extends JFormField
     protected function getSiteHTML($title)
     {
         $html = array();
-        $link = PFprojectsHelperRoute::getProjectsRoute()
-              . '&amp;layout=modal&amp;tmpl=component'
-              . '&amp;function=pfSelectProject_' . $this->id;
+        $isJ3 = version_compare(JVERSION, '3.0.0', 'ge');
+
+        if (JFactory::getApplication()->isSite()) {
+            $link = PFprojectsHelperRoute::getProjectsRoute()
+                  . '&amp;layout=modal&amp;tmpl=component'
+                  . '&amp;function=pfSelectProject_' . $this->id;
+        }
+        else {
+            $link = 'index.php?option=com_pfprojects&amp;view=projects'
+                  . '&amp;layout=modal&amp;tmpl=component'
+                  . '&amp;function=pfSelectProject_' . $this->id;
+        }
 
         // Initialize some field attributes.
         $attr  = $this->element['class'] ? ' class="'.(string) $this->element['class'].'"' : '';
         $attr .= $this->element['size']  ? ' size="'.(int) $this->element['size'].'"'      : '';
 
+        if ($isJ3) {
+            $html[] = '<div class="input-append">';
+        }
         // Create a dummy text field with the project title.
         $html[] = '<input type="text" id="' . $this->id . '_name" value="' . htmlspecialchars($title, ENT_COMPAT, 'UTF-8') . '" disabled="disabled"' . $attr . ' />';
 
@@ -137,6 +149,10 @@ class JFormFieldProject extends JFormField
             $html[] = '<a class="modal_' . $this->id . ' btn" title="' . JText::_('COM_PROJECTFORK_SELECT_PROJECT') . '"'
                     . ' href="' . JRoute::_($link) . '" rel="{handler: \'iframe\', size: {x: 800, y: 500}}">';
             $html[] = JText::_('COM_PROJECTFORK_SELECT_PROJECT') . '</a>';
+        }
+
+        if ($isJ3) {
+            $html[] = '</div>';
         }
 
         // Create the hidden field, that stores the id.

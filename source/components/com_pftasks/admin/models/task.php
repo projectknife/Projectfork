@@ -77,13 +77,18 @@ class PFtasksModelTask extends JModelAdmin
                 $item->estimate = round($item->estimate / 60);
             }
 
-            // Get the attachments
-            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-            $item->attachment = $attachments->getItems('task', $item->id);
+            if (PFApplicationHelper::exists('PFrepo')) {
+                // Get the attachments
+                $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+                $item->attachment = $attachments->getItems('com_pftasks.task', $item->id);
+            }
+            else {
+                $item->attachment = array();
+            }
 
             // Get the labels
             $labels = $this->getInstance('Labels', 'PFModel');
-            $item->labels = $labels->getConnections('task', $item->id);
+            $item->labels = $labels->getConnections('com_pftasks.task', $item->id);
 
             // Get the dependencies
             $taskrefs = $this->getInstance('TaskRefs', 'PFtasksModel');
@@ -110,19 +115,13 @@ class PFtasksModelTask extends JModelAdmin
 
         $query->select('user_id')
               ->from('#__pf_ref_users')
-              ->where('item_type = ' . $db->quote('task'))
+              ->where('item_type = ' . $db->quote('com_pftasks.task'))
               ->where('item_id = ' . $db->quote($pk));
 
         $db->setQuery((string) $query);
-        $data = (array) $db->loadResultArray();
-        $list = array();
+        $data = (array) $db->loadColumn();
 
-        foreach($data AS $i => $uid)
-        {
-            $list['user' . $i] = $uid;
-        }
-
-        return $list;
+        return $data;
     }
 
 
@@ -139,28 +138,46 @@ class PFtasksModelTask extends JModelAdmin
         $form = $this->loadForm('com_pftasks.task', 'task', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) return false;
 
-        $is_new    = ((int) $this->getState($this->getName() . '.id') > 0) ? false : true;
-        $project   = (int) $form->getValue('project_id');
-        $milestone = (int) $form->getValue('milestone_id');
-        $list      = (int) $form->getValue('list_id');
+        $jinput = JFactory::getApplication()->input;
+        $user   = JFactory::getUser();
+        $id     = (int) $jinput->get('id', 0);
 
-        // Override data if not set
-        if ($is_new) {
-            if ($project == 0) {
-                $active_id = PFApplicationHelper::getActiveProjectId();
+        // Check for existing item.
+        // Modify the form based on Edit State access controls.
+        if ($id != 0 && (!$user->authorise('core.edit.state', 'com_pftasks.task.' . $id)) || ($id == 0 && !$user->authorise('core.edit.state', 'com_pftasks')))
+        {
+            // Disable fields for display.
+            $form->setFieldAttribute('state', 'disabled', 'true');
+            $form->setFieldAttribute('priority', 'disabled', 'true');
+            $form->setFieldAttribute('start_date', 'disabled', 'true');
+            $form->setFieldAttribute('end_date', 'disabled', 'true');
+            $form->setFieldAttribute('complete', 'disabled', 'true');
 
-                $form->setValue('project_id', null, $active_id);
-            }
+            // Disable fields while saving.
+			$form->setFieldAttribute('state', 'filter', 'unset');
+			$form->setFieldAttribute('priority', 'filter', 'unset');
+			$form->setFieldAttribute('start_date', 'filter', 'unset');
+			$form->setFieldAttribute('end_date', 'filter', 'unset');
+			$form->setFieldAttribute('complete', 'filter', 'unset');
+        }
 
-            // Override milestone selection if set
-            if ($milestone == 0) {
-                $form->setValue('milestone_id', null, JRequest::getUInt('milestone_id'));
-            }
+        // Always disable these fields while saving
+		$form->setFieldAttribute('alias', 'filter', 'unset');
 
-            // Override task list selection if set
-            if ($list == 0) {
-                $form->setValue('list_id', null, JRequest::getUInt('list_id'));
-            }
+        // Disable these fields if not an admin
+        if (!$user->authorise('core.admin', 'com_pftasks')) {
+            $form->setFieldAttribute('access', 'disabled', 'true');
+            $form->setFieldAttribute('access', 'filter', 'unset');
+
+            $form->setFieldAttribute('rules', 'disabled', 'true');
+            $form->setFieldAttribute('rules', 'filter', 'unset');
+        }
+
+        // Disable these fields when updating
+        if ($id) {
+            $form->setFieldAttribute('project_id', 'disabled', 'true');
+            $form->setFieldAttribute('project_id', 'filter', 'unset');
+            $form->setFieldAttribute('project_id', 'required', 'false');
         }
 
         return $form;
@@ -177,7 +194,18 @@ class PFtasksModelTask extends JModelAdmin
         // Check the session for previously entered form data.
         $data = JFactory::getApplication()->getUserState('com_pftasks.edit.' . $this->getName() . '.data', array());
 
-        if (empty($data)) $data = $this->getItem();
+        if (empty($data)) {
+			$data = $this->getItem();
+
+            // Set default values
+            if ($this->getState($this->getName() . '.id') == 0) {
+                $active_id = PFApplicationHelper::getActiveProjectId();
+
+                $data->set('project_id', $active_id);
+                $data->set('milestone_id', JRequest::getUInt('milestone_id'));
+                $data->set('list_id', JRequest::getUInt('list_id'));
+            }
+        }
 
         return $data;
     }
@@ -192,12 +220,13 @@ class PFtasksModelTask extends JModelAdmin
      */
     protected function getReorderConditions($table)
     {
-        $catid = intval($table->project_id) . '-' . intval($table->milestone_id) . '-' . intval($table->list_id);
-
         $condition = array();
-        $condition[] = 'catid = '.(int) $catid;
 
-        return $condition;
+        $condition[] = 'project_id = ' . (int) $table->project_id;
+        $condition[] = 'milestone_id = ' . (int) $table->milestone_id;
+        $condition[] = 'list_id = ' . (int) $table->list_id;
+
+        return array(implode(' AND ', $condition));
     }
 
 
@@ -210,12 +239,17 @@ class PFtasksModelTask extends JModelAdmin
      */
     protected function prepareTable(&$table)
     {
-        // Generate catid
-        $catid = intval($table->project_id) . '-' . intval($table->milestone_id) . '-' . intval($table->list_id);
+        $condition = array();
+
+        $condition[] = 'project_id = ' . (int) $table->project_id;
+        $condition[] = 'milestone_id = ' . (int) $table->milestone_id;
+        $condition[] = 'list_id = ' . (int) $table->list_id;
+
+        $condition = implode(' AND ', $condition);
 
         // Reorder the items within the category so the new item is first
         if (empty($table->id)) {
-            $table->reorder('catid = '.(int) $catid.' AND state >= 0');
+            $table->reorder($condition . ' AND state >= 0');
         }
     }
 
@@ -242,6 +276,36 @@ class PFtasksModelTask extends JModelAdmin
             if ($pk > 0) {
                 if ($table->load($pk)) {
                     $is_new = false;
+                }
+            }
+
+            if (!$is_new) {
+                $data['project_id'] = $table->project_id;
+            }
+
+            if (!PFApplicationHelper::enabled('com_pfmilestones')) {
+                $data['milestone_id'] = ($is_new ? 0 : $table->milestone_id);
+            }
+
+            // Handle task completition meta info
+            if (isset($data['complete'])) {
+                $date = new JDate();
+                if ($is_new && $data['complete'] == '1') {
+                    $data['completed']    = $date->toSql();
+                    $data['completed_by'] = JFactory::getUser()->id;
+                }
+
+                if (!$is_new) {
+                    if ($data['complete'] == '0') {
+                        $data['completed']    = JFactory::getDbo()->getNullDate();
+                        $data['completed_by'] = '0';
+                    }
+                    else {
+                        if (JFactory::getUser()->id != $table->completed_by) {
+                            $data['completed']    = $date->toSql();
+                            $data['completed_by'] = JFactory::getUser()->id;
+                        }
+                    }
                 }
             }
 
@@ -276,7 +340,7 @@ class PFtasksModelTask extends JModelAdmin
                 if (!is_numeric($data['estimate'])) {
                     $estimate_time = strtotime($data['estimate']);
 
-                    if ($estimate_time === false || $estimate_time < 0) {
+                    if ($estimate_time === false || $estimate_time <= 0) {
                         $data['estimate'] = 1;
                     }
                     else {
@@ -287,6 +351,16 @@ class PFtasksModelTask extends JModelAdmin
                     // not a literal time, so convert minutes to secs
                     $data['estimate'] = $data['estimate'] * 60;
                 }
+            }
+
+            // Make item published by default if new
+            if (!isset($data['state']) && $is_new) {
+                $data['state'] = 1;
+            }
+
+            // Make item priority 1 by default if not set
+            if (!isset($data['priority']) && $is_new) {
+                $data['priority'] = 1;
             }
 
             // Bind the data.
@@ -345,11 +419,19 @@ class PFtasksModelTask extends JModelAdmin
             }
 
             // Store the attachments
-            if (isset($data['attachment'])) {
+            if (isset($data['attachment']) && PFApplicationHelper::exists('com_pfrepo')) {
                 $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+
+                if (!$attachments->getState('item.type')) {
+                    $attachments->setState('item.type', 'com_pftasks.task');
+                }
 
                 if ($attachments->getState('item.id') == 0) {
                     $attachments->setState('item.id', $this->getState($this->getName() . '.id'));
+                }
+
+                if ((int) $attachments->getState('item.project') == 0) {
+                    $attachments->setState('item.project', $updated->project_id);
                 }
 
                 if (!$attachments->save($data['attachment'])) {
@@ -366,7 +448,7 @@ class PFtasksModelTask extends JModelAdmin
                     $labels->setState('item.project', $updated->project_id);
                 }
 
-                $labels->setState('item.type', 'task');
+                $labels->setState('item.type', 'com_pftasks.task');
                 $labels->setState('item.id', $id);
 
                 if (!$labels->saveRefs($data['labels'])) {
@@ -389,6 +471,11 @@ class PFtasksModelTask extends JModelAdmin
                 }
             }
 
+            // Store users
+            if (isset($data['users'])) {
+                $this->saveUsers($id, $data['users']);
+            }
+
             // Clean the cache.
             $this->cleanCache();
 
@@ -398,6 +485,69 @@ class PFtasksModelTask extends JModelAdmin
         catch (Exception $e) {
             $this->setError($e->getMessage());
             return false;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Method to save the assigned users.
+     *
+     * @param     int        The task id
+     * @param     array      The users
+     *
+     * @return    boolean    True on success
+     */
+    public function saveUsers($pk, $data)
+    {
+        $item  = 'com_pftasks.task';
+        $table = JTable::getInstance('UserRef', 'PFtable');
+        $query = $this->_db->getQuery(true);
+
+        if (!$pk) return true;
+
+        $query->select('a.user_id')
+              ->from('#__pf_ref_users AS a')
+              ->where('a.item_type = ' . $this->_db->quote($item))
+              ->where('a.item_id = ' . $this->_db->quote($pk));
+
+        $this->_db->setQuery((string) $query);
+        $list = (array) $this->_db->loadResultArray();
+
+        // Add new references
+        foreach($data AS $uid)
+        {
+            $table = JTable::getInstance('UserRef', 'PFtable');
+            $uid   = (int) $uid;
+
+            if (!in_array($uid, $list) && $uid != 0) {
+                $sdata = array('item_type' => $item,
+                               'item_id'   => $pk,
+                               'user_id'   => $uid,
+                               'id'        => null);
+
+                if (!$table->save($sdata)) {
+                    return false;
+                }
+
+                $list[] = $uid;
+            }
+        }
+
+        // Delete old references
+        foreach($list AS $uid)
+        {
+            $table = JTable::getInstance('UserRef', 'PFtable');
+            $uid   = (int) $uid;
+
+            if (!in_array($uid, $data) && $uid != 0) {
+                if (!$table->load(array('item_type' => $item, 'item_id' => $pk, 'user_id' => $uid))) {
+                    return false;
+                }
+
+                if (!$table->delete()) return false;
+            }
         }
 
         return true;
@@ -420,6 +570,8 @@ class PFtasksModelTask extends JModelAdmin
         $is_admin = $user->authorise('core.admin', $this->option);
         $my_views = $user->getAuthorisedViewLevels();
         $projects = array();
+
+        $item_type = 'com_pftasks.task';
 
         // Access checks.
         foreach ($pks as $i => $pk) {
@@ -450,7 +602,7 @@ class PFtasksModelTask extends JModelAdmin
 
             if ($value == 0) {
                 $query->delete('#__pf_ref_observer')
-                      ->where('item_type = ' . $db->quote( str_replace('form', '', $this->getName()) ) )
+                      ->where('item_type = ' . $db->quote( $item_type ) )
                       ->where('item_id = ' . $db->quote((int) $pk))
                       ->where('user_id = ' . $db->quote((int) $user->get('id')));
 
@@ -465,7 +617,7 @@ class PFtasksModelTask extends JModelAdmin
             else {
                 $query->select('COUNT(*)')
                       ->from('#__pf_ref_observer')
-                      ->where('item_type = ' . $db->quote( str_replace('form', '', $this->getName()) ) )
+                      ->where('item_type = ' . $db->quote( $item_type ) )
                       ->where('item_id = ' . $db->quote((int) $pk))
                       ->where('user_id = ' . $db->quote((int) $user->get('id')));
 
@@ -476,7 +628,7 @@ class PFtasksModelTask extends JModelAdmin
                     $data = new stdClass;
 
                     $data->user_id   = (int) $user->get('id');
-                    $data->item_type = str_replace('form', '', $this->getName());
+                    $data->item_type = $item_type;
                     $data->item_id   = (int) $pk;
                     $data->project_id= (int) $projects[$pk];
 
@@ -621,18 +773,10 @@ class PFtasksModelTask extends JModelAdmin
 		}
         elseif (!empty($record->list_id)) {
 		    // New item, so check against the list.
-			return $user->authorise('core.edit.state', 'com_pftasklists.tasklist.' . (int) $record->list_id);
-		}
-        elseif (!empty($record->milestone_id)) {
-		    // New item, so check against the milestone.
-			return $user->authorise('core.edit.state', 'com_pfmilestones.milestone.' . (int) $record->milestone_id);
-		}
-		elseif (!empty($record->project_id)) {
-		    // New item, so check against the project.
-			return $user->authorise('core.edit.state', 'com_pfprojects.project.' . (int) $record->project_id);
+			return $user->authorise('core.edit.state', 'com_pftasks.tasklist.' . (int) $record->list_id);
 		}
 		else {
-		    // Default to component settings if neither article nor category known.
+		    // Default to component settings.
 			return parent::canEditState('com_pftasks');
 		}
     }

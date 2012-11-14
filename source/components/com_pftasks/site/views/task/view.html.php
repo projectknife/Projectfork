@@ -25,6 +25,7 @@ class PFtasksViewTask extends JViewLegacy
 	protected $print;
 	protected $state;
 	protected $user;
+    protected $toolbar;
 
 
 	function display($tpl = null)
@@ -39,6 +40,7 @@ class PFtasksViewTask extends JViewLegacy
 		$this->print = JRequest::getBool('print');
 		$this->state = $this->get('State');
 		$this->user  = $user;
+        $this->toolbar = $this->getToolbar();
 
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
@@ -180,4 +182,31 @@ class PFtasksViewTask extends JViewLegacy
 		if ($app->getCfg('MetaAuthor') == '1') $this->document->setMetaData('author', $this->item->author);
 		if ($this->print)                      $this->document->setMetaData('robots', 'noindex, nofollow');
 	}
+
+
+    /**
+     * Generates the toolbar for the top of the view
+     *
+     * @return    string    Toolbar with buttons
+     */
+    protected function getToolbar()
+    {
+        $access = PFtasksHelper::getActions($this->item->id);
+        $uid    = JFactory::getUser()->get('id');
+
+        $slug = $this->item->id . ':' . $this->item->alias;
+
+        PFToolbar::button(
+            'COM_PROJECTFORK_ACTION_EDIT',
+            '',
+            false,
+            array(
+                'access' => ($access->get('core.edit') || $access->get('core.edit.own') && $uid == $this->item->created_by),
+                'href' => JRoute::_(PFtasksHelperRoute::getTasksRoute() . '&task=taskform.edit&id=' . $slug)
+            )
+        );
+
+
+        return PFToolbar::render();
+    }
 }

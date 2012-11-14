@@ -85,7 +85,7 @@ class PFusersModelUser extends UsersModelUser
 
     public function saveAvatar($pk, $file)
     {
-        if (!PFProcImage::isImage($file['name'], $file['tmp_name'])) {
+        if (!PFImage::isValid($file['name'], $file['tmp_name'])) {
             $this->setError(JText::_('COM_PROJECTFORK_WARNING_NOT_AN_IMAGE'));
             return false;
         }

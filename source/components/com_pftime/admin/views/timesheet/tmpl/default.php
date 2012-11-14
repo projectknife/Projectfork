@@ -127,7 +127,7 @@ $total_time = 0;
                     <?php echo JHtml::_('date', $item->log_date, JText::_('DATE_FORMAT_LC4')); ?>
                 </td>
                 <td class="center nowrap hidden-phone">
-                    <?php echo JHtml::_('timesheet.format', $item->log_time); ?>
+                    <?php echo JHtml::_('time.format', $item->log_time); ?>
                 </td>
                 <td class="center hidden-phone">
                     <?php echo $this->escape($item->author_name); ?>
@@ -142,7 +142,7 @@ $total_time = 0;
             <?php endforeach; ?>
             <tr>
                 <td colspan="5" style="text-align: right"><strong><?php echo JText::_('COM_PROJECTFORK_TOTALTIME_SPENT_HEADING'); ?></strong></td>
-                <td class="center nowrap hidden-phone"><strong><?php echo JHtml::_('timesheet.format', $total_time); ?></strong></td>
+                <td class="center nowrap hidden-phone"><strong><?php echo JHtml::_('time.format', $total_time); ?></strong></td>
                 <td class="hidden-phone" colspan="3"></td>
             </tr>
         </tbody>

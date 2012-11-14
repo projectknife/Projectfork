@@ -38,7 +38,7 @@ $access      = PFrepoHelper::getActions('directory', $this_dir->id);
             <?php if ($project) : ?>
                 <select name="filter_parent_id" class="inputbox" onchange="this.form.submit()">
                     <option value=""><?php echo JText::_('JOPTION_SELECT_DIRECTORY');?></option>
-                    <?php echo JHtml::_('select.options', JHtml::_('projectfork.repository.pathOptions', $project), 'value', 'text', $this->state->get('filter.parent_id'));?>
+                    <?php echo JHtml::_('select.options', JHtml::_('pfrepo.pathOptions', $project), 'value', 'text', $this->state->get('filter.parent_id'));?>
             </select>
             <?php endif; ?>
         </div>

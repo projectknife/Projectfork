@@ -56,8 +56,7 @@ class PFmilestonesViewMilestones extends JViewLegacy
      */
     protected function addToolbar()
     {
-        $project = $this->state->get('filter.project');
-        $access  = PFmilestonesHelper::getActions(null, $project);
+        $access = PFmilestonesHelper::getActions();
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_MILESTONES_TITLE'), 'article.png');
 
@@ -85,6 +84,10 @@ class PFmilestonesViewMilestones extends JViewLegacy
         elseif ($access->get('core.edit.state')) {
             JToolBarHelper::trash('milestones.trash');
             JToolBarHelper::divider();
+        }
+
+        if ($access->get('core.admin')) {
+            JToolBarHelper::preferences('com_pfmilestones');
         }
     }
 }

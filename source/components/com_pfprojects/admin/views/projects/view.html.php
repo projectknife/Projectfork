@@ -83,5 +83,9 @@ class PFprojectsViewProjects extends JViewLegacy
             JToolBarHelper::trash('projects.trash');
             JToolBarHelper::divider();
         }
+
+        if ($user->authorise('core.admin')) {
+            JToolBarHelper::preferences('com_pfprojects');
+        }
     }
 }

@@ -91,22 +91,38 @@ class PFtasksModelTasklist extends JModelAdmin
         $form = $this->loadForm('com_pftasks.tasklist', 'tasklist', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) return false;
 
-        $is_new    = ((int) $this->getState($this->getName() . '.id') > 0) ? false : true;
-        $project   = (int) $form->getValue('project_id');
-        $milestone = (int) $form->getValue('milestone_id');
+        $jinput = JFactory::getApplication()->input;
+        $user   = JFactory::getUser();
+        $id     = (int) $jinput->get('id', 0);
 
-        if ($is_new) {
-            // Override project if not set
-            if ($project == 0) {
-                $active_id = PFApplicationHelper::getActiveProjectId();
+        // Check for existing item.
+        // Modify the form based on Edit State access controls.
+        if ($id != 0 && (!$user->authorise('core.edit.state', 'com_pftasks.tasklist.' . $id)) || ($id == 0 && !$user->authorise('core.edit.state', 'com_pftasks')))
+        {
+            // Disable fields for display.
+            $form->setFieldAttribute('state', 'disabled', 'true');
 
-                $form->setValue('project_id', null, $active_id);
-            }
+            // Disable fields while saving.
+			$form->setFieldAttribute('state', 'filter', 'unset');
+        }
 
-            // Override milestone selection if set
-            if ($milestone == 0) {
-                $form->setValue('milestone_id', null, JRequest::getUInt('milestone_id'));
-            }
+        // Always disable these fields while saving
+		$form->setFieldAttribute('alias', 'filter', 'unset');
+
+        // Disable these fields if not an admin
+        if (!$user->authorise('core.admin', 'com_pfprojects')) {
+            $form->setFieldAttribute('access', 'disabled', 'true');
+            $form->setFieldAttribute('access', 'filter', 'unset');
+
+            $form->setFieldAttribute('rules', 'disabled', 'true');
+            $form->setFieldAttribute('rules', 'filter', 'unset');
+        }
+
+        // Disable these fields when updating
+        if ($id) {
+            $form->setFieldAttribute('project_id', 'disabled', 'true');
+            $form->setFieldAttribute('project_id', 'filter', 'unset');
+            $form->setFieldAttribute('project_id', 'required', 'false');
         }
 
         return $form;
@@ -123,7 +139,17 @@ class PFtasksModelTasklist extends JModelAdmin
         // Check the session for previously entered form data.
         $data = JFactory::getApplication()->getUserState('com_pftasks.edit.' . $this->getName() . '.data', array());
 
-        if (empty($data)) $data = $this->getItem();
+        if (empty($data)) {
+			$data = $this->getItem();
+
+            // Set default values
+            if ($this->getState($this->getName() . '.id') == 0) {
+                $active_id = PFApplicationHelper::getActiveProjectId();
+
+                $data->set('project_id', $active_id);
+                $data->set('milestone_id', JRequest::getUInt('milestone_id'));
+            }
+        }
 
         return $data;
     }
@@ -147,6 +173,10 @@ class PFtasksModelTasklist extends JModelAdmin
             if ($record->load($pk)) {
                 $is_new = false;
             }
+        }
+
+        if (!$is_new) {
+            $data['project_id'] = $record->project_id;
         }
 
         // Make sure the title and alias are always unique
@@ -173,6 +203,11 @@ class PFtasksModelTasklist extends JModelAdmin
                     unset($data['access']);
                 }
             }
+        }
+
+        // Make item published by default if new
+        if (!isset($data['state']) && $is_new) {
+            $data['state'] = 1;
         }
 
         // Store the record
@@ -349,17 +384,9 @@ class PFtasksModelTasklist extends JModelAdmin
 		if (!empty($record->id)) {
 			return $user->authorise('core.edit.state', 'com_pftasks.tasklist.' . (int) $record->id);
 		}
-        elseif (!empty($record->milestone)) {
-            // New item, so check against the project.
-			return $user->authorise('core.edit.state', 'com_pfmilestones.milestone.' . (int) $record->milestone_id);
-        }
-		elseif (!empty($record->project_id)) {
-		    // New item, so check against the project.
-			return $user->authorise('core.edit.state', 'com_pfprojects.project.' . (int) $record->project_id);
-		}
 		else {
 		    // Default to component settings.
-			return parent::canEditState('com_pftasklists');
+			return parent::canEditState('com_pftasks');
 		}
     }
 

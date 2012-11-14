@@ -17,7 +17,7 @@ jimport('joomla.application.component.view');
  * Task Form View Class for Projectfork component
  *
  */
-class ProjectforkViewTaskForm extends JViewLegacy
+class PFtasksViewTaskForm extends JViewLegacy
 {
     protected $form;
     protected $item;
@@ -42,8 +42,8 @@ class ProjectforkViewTaskForm extends JViewLegacy
 
         // Permission check.
         if ($this->item->id <= 0) {
-            $access = ProjectforkHelperAccess::getActions(NULL, 0, true);
-            $authorised = $access->get('task.create');
+            $access = PFtasksHelper::getActions();
+            $authorised = $access->get('core.create');
         }
         else {
             $authorised = $this->item->params->get('access-edit');
@@ -136,10 +136,10 @@ class ProjectforkViewTaskForm extends JViewLegacy
     protected function getToolbar()
     {
         $options = array();
-        $access  = ProjectforkHelperAccess::getActions(null, 0, true);
+        $user    = JFactory::getUser();
 
-        $create_list = $access->get('tasklist.create');
-        $create_ms   = $access->get('milestone.create');
+        $create_list = true;
+        $create_ms   = $user->authorise('core.create', 'com_pfmilestones');
 
         $options[] = array(
             'text' => 'JSAVE',
@@ -168,15 +168,15 @@ class ProjectforkViewTaskForm extends JViewLegacy
             'task' => $this->getName() . '.save2tasklist',
             'options' => array('access' => $create_list));
 
-        ProjectforkHelperToolbar::dropdownButton($options, array('icon' => 'icon-white icon-ok'));
+        PFToolbar::dropdownButton($options, array('icon' => 'icon-white icon-ok'));
 
-        ProjectforkHelperToolbar::button(
+        PFToolbar::button(
             'JCANCEL',
             $this->getName() . '.cancel',
             false,
             array('class' => '', 'icon' => '')
         );
 
-        return ProjectforkHelperToolbar::render();
+        return PFToolbar::render();
     }
 }

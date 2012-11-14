@@ -62,7 +62,7 @@ class PFtimeModelTimesheet extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.project_id, a.task_id, a.description, '
+                'a.id, a.project_id, a.task_id, a.task_title, a.description, '
                 . 'a.checked_out, a.checked_out_time, a.state, a.access, a.rate, a.billable,'
                 . 'a.created, a.created_by, a.log_date, a.log_time, a.attribs'
             )
@@ -87,7 +87,7 @@ class PFtimeModelTimesheet extends JModelList
         $query->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
 
         // Join over the tasks for the task title.
-        $query->select('t.title AS task_title, t.alias AS task_alias, t.estimate');
+        $query->select('t.id AS task_exists, t.alias AS task_alias, t.estimate');
         $query->join('LEFT', '#__pf_tasks AS t ON t.id = a.task_id');
 
         // Join over the milestones for the milestone alias.
@@ -344,12 +344,10 @@ class PFtimeModelTimesheet extends JModelList
         }
 
         // Construct the query
-        $query->select('SUM(a.log_time / 60) * (a.rate / 60)')
+        $query->select('SUM((a.log_time / 60) * (a.rate / 60))')
               ->from('#__pf_timesheet AS a')
               ->where('a.billable = 1')
-              ->where('a.state = 1')
-              ->where('a.rate > 0')
-              ->where('a.log_time > 0');
+              ->where('a.state = 1');
 
         $filters = array();
         $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
@@ -359,7 +357,7 @@ class PFtimeModelTimesheet extends JModelList
 
         // Get the result
         $db->setQuery((string) $query);
-        $sum = (int) $db->loadResult();
+        $sum = (float) $db->loadResult();
 
         // Return the items
         return $sum;
@@ -417,11 +415,9 @@ class PFtimeModelTimesheet extends JModelList
         }
 
         // Construct the query
-        $query->select('SUM(a.estimate / 60) * (a.rate / 60)')
+        $query->select('SUM((a.estimate / 60) * (a.rate / 60))')
               ->from('#__pf_tasks AS a')
-              ->where('a.state = 1')
-              ->where('a.rate > 0')
-              ->where('a.estimate > 0');
+              ->where('a.state = 1');
 
         $filters = array();
         $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
@@ -431,7 +427,7 @@ class PFtimeModelTimesheet extends JModelList
 
         // Get the result
         $db->setQuery((string) $query);
-        $sum = (int) $db->loadResult();
+        $sum = (float) $db->loadResult();
 
         // Return the items
         return $sum;

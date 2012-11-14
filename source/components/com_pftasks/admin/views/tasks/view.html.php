@@ -61,7 +61,7 @@ class PFtasksViewTasks extends JViewLegacy
     protected function addToolbar()
     {
         $project = PFApplicationHelper::getActiveProjectId();
-        $access  = PFtasksHelper::getActions(null, $project);
+        $access  = PFtasksHelper::getActions();
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_TASKS_TITLE'), 'article.png');
 
@@ -89,6 +89,10 @@ class PFtasksViewTasks extends JViewLegacy
         elseif ($access->get('core.edit.state')) {
             JToolBarHelper::trash('tasks.trash');
             JToolBarHelper::divider();
+        }
+
+        if (JFactory::getUser()->authorise('core.admin')) {
+            JToolBarHelper::preferences('com_pftasks');
         }
     }
 }

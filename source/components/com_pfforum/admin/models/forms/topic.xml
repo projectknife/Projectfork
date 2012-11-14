@@ -4,7 +4,7 @@
         <field name="project_id" type="project"
             label="COM_PROJECTFORK_FIELD_PROJECT_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_DESC"
             class="inputbox" size="30" required="true" view="task"
-            onchange="PFform.reload('access,rules,labels');"
+            onchange="PFform.reload('access,rules,labels,attachment');"
         />
         <field name="title" type="text"
             label="JGLOBAL_TITLE" description="JFIELD_TITLE_DESC"
@@ -39,10 +39,10 @@
         />
         <field name="labels" type="labels"
             label="COM_PROJECTFORK_FIELD_LABELS" description="COM_PROJECTFORK_FIELD_LABELS_DESC"
-            asset="topic"
+            asset="com_pfforum.topic"
         />
         <field name="rules" type="groupaccess"
-            component="com_projectfork" section="topic" inheritonly="true" filter="ProjectforkHelperForm::filterRules" validate="groupaccess"
+            component="com_pfforum" section="topic" inheritonly="true" filter="ProjectforkHelperForm::filterRules" validate="groupaccess"
         />
         <field name="id" type="hidden" readonly="true"/>
         <field name="access" type="inheritaccess" hidden="true" readonly="true"/>

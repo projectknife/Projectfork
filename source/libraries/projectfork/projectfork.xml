@@ -3,7 +3,7 @@
     <name>Projectfork</name>
     <libraryname>projectfork</libraryname>
     <author>Tobias Kuhn</author>
-    <creationDate>October 2012</creationDate>
+    <creationDate>November 2012</creationDate>
     <copyright>Copyright (C) 2006 - 2012 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later.</license>
     <authorEmail>support@projectfork.net</authorEmail>
@@ -18,13 +18,16 @@
         <folder>date</folder>
         <folder>form</folder>
         <folder>html</folder>
+        <folder>image</folder>
+        <folder>installer</folder>
         <folder>menu</folder>
         <folder>model</folder>
         <folder>object</folder>
-        <folder>proc</folder>
         <folder>table</folder>
         <folder>toolbar</folder>
+        <folder>version</folder>
         <file>framework.php</file>
+        <file>library.php</file>
         <file>index.html</file>
     </files>
 </extension>

@@ -188,7 +188,7 @@ class PFcommentsModelComments extends JModelList
         $this->setState('filter.published', 1);
 
         // Filter - Project
-        $value = $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
+        $value = PFApplicationHelper::getActiveProjectId();
         $this->setState('filter.project', $value);
 
         // Filter - Context

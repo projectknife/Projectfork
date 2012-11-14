@@ -25,6 +25,7 @@ class PFmilestonesViewMilestone extends JViewLegacy
 	protected $print;
 	protected $state;
 	protected $user;
+    protected $toolbar;
 
 
 	function display($tpl = null)
@@ -34,7 +35,7 @@ class PFmilestonesViewMilestone extends JViewLegacy
         $dispatcher	= JDispatcher::getInstance();
 		$user		= JFactory::getUser();
 
-		$uid  = $user->get('id');
+		$uid   = $user->get('id');
 		$item  = $this->get('Item');
 		$state = $this->get('State');
         $print = JRequest::getBool('print');
@@ -90,7 +91,7 @@ class PFmilestonesViewMilestone extends JViewLegacy
 
 
         // Fake some content item properties to avoid plugin issues
-        PFObjectHelper::contentItem($item);
+        PFObjectHelper::toContentItem($item);
 
 		// Process the content plugins.
 		JPluginHelper::importPlugin('content');
@@ -115,6 +116,8 @@ class PFmilestonesViewMilestone extends JViewLegacy
         $this->assignRef('user',   $user);
         $this->assignRef('item',   $item);
         $this->assignRef('print',  $print);
+
+        $this->toolbar = $this->getToolbar();
 
 		$this->_prepareDocument();
 
@@ -196,4 +199,47 @@ class PFmilestonesViewMilestone extends JViewLegacy
 		if ($app->getCfg('MetaAuthor') == '1') $this->document->setMetaData('author', $this->item->author);
 		if ($this->print)                      $this->document->setMetaData('robots', 'noindex, nofollow');
 	}
+
+
+    /**
+     * Generates the toolbar for the top of the view
+     *
+     * @return    string    Toolbar with buttons
+     */
+    protected function getToolbar()
+    {
+        $access = PFmilestonesHelper::getActions($this->item->id);
+        $uid    = JFactory::getUser()->get('id');
+
+        if ($this->item->id) {
+            $slug = $this->item->id . ':' . $this->item->alias;
+
+            PFToolbar::button(
+                'COM_PROJECTFORK_ACTION_EDIT',
+                '',
+                false,
+                array(
+                    'access' => ($access->get('core.edit') || $access->get('core.edit.own') && $uid == $this->item->created_by),
+                    'href' => JRoute::_(PFmilestonesHelperRoute::getMilestonesRoute() . '&task=form.edit&id=' . $slug)
+                )
+            );
+        }
+
+        if (PFApplicationHelper::enabled('com_pftasks')) {
+            PFToolbar::button(
+                JText::sprintf('JGRID_HEADING_TASKLISTS_AND_TASKS', intval($this->item->lists), intval($this->item->tasks)),
+                '',
+                false,
+                array(
+                    'href' => JRoute::_(PFtasksHelperRoute::getTasksRoute($this->item->project_id, $this->item->id)),
+                    'icon' => 'icon-chevron-right',
+                    'class'=> ''
+                )
+            );
+            ;
+        }
+
+
+        return PFToolbar::render();
+    }
 }

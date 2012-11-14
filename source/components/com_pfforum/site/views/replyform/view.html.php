@@ -137,7 +137,8 @@ class PFforumViewReplyForm extends JViewLegacy
     protected function getToolbar()
     {
         $options = array();
-        $access  = PFforumHelper::getActions($this->state->get($this->get('Name') . '.topic'));
+        $topic   = $this->state->get($this->get('Name') . '.topic');
+        $access  = PFforumHelper::getReplyActions($this->item->id, $topic);
 
         if ($access->get('core.create')) {
             PFToolbar::button(

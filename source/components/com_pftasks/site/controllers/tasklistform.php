@@ -129,17 +129,36 @@ class PFtasksControllerTasklistForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
+        $user   = JFactory::getUser();
+        $db     = JFactory::getDbo();
+        $query  = $db->getQuery(true);
+        $access = true;
+
         if (isset($data['milestone_id'])) {
-            $access = PFmilestonesHelper::getActions($data['milestone_id']);
-        }
-        elseif (isset($data['project_id'])) {
-            $access = PFprojectsHelper::getActions($data['project_id']);
-        }
-        else {
-            $access = PFtasksHelper::getListActions();
+            // Check if the user has access to the milestone
+            $query->select('access')
+                  ->from('#__pf_milestones')
+                  ->where('id = ' . $db->quote((int) $data['milestone_id']));
+
+            $db->setQuery($query);
+            $level  = (int) $db->loadResult();
+            $access = in_array($level, $user->getAuthorisedViewLevels());
         }
 
-        return $access->get('core.create');
+        if (isset($data['project_id']) && $access) {
+            // Check if the user has access to the project
+            $query->clear();
+            $query->select('access')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . $db->quote((int) $data['project_id']));
+
+            $db->setQuery($query);
+            $level  = (int) $db->loadResult();
+            $access = in_array($level, $user->getAuthorisedViewLevels());
+        }
+
+
+        return ($user->authorise('core.create', 'com_pftasks') && $access);
     }
 
 
@@ -229,7 +248,7 @@ class PFtasksControllerTasklistForm extends JControllerForm
         $return = JRequest::getVar('return', null, 'default', 'base64');
 
         if (empty($return) || !JUri::isInternal(base64_decode($return))) {
-            return JRoute::_('index.php?option=com_projectfork&view=' . $this->view_list, false);
+            return JRoute::_('index.php?option=com_pftasks&view=' . $this->view_list, false);
         }
         else {
             return base64_decode($return);

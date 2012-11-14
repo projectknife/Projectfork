@@ -102,14 +102,28 @@ class PFprojectsModelProjects extends JModelList
 
         // Join over the observer table for email notification status
         if ($user->get('id') > 0) {
-            $query->select('COUNT(obs.user_id) AS watching');
-            $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = ' . $db->quote('project') . ' AND obs.item_id = a.id AND obs.user_id = ' . $db->quote($user->get('id')) . ')');
+            $query->select('COUNT(DISTINCT obs.user_id) AS watching');
+            $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = '
+                  . $db->quote('com_pfprojects.project') . ' AND obs.item_id = a.id AND obs.user_id = '
+                  . $db->quote($user->get('id')) . ')'
+            );
         }
 
+        // Join over the attachments for attachment count
+        $query->select('COUNT(DISTINCT at.id) AS attachments');
+        $query->join('LEFT', '#__pf_ref_attachments AS at ON (at.item_type = '
+              . $db->quote('com_pfprojects.project') . ' AND at.item_id = a.id)');
+
+        // Join over the comments for comment count
+        $query->select('COUNT(DISTINCT co.id) AS comments');
+        $query->join('LEFT', '#__pf_comments AS co ON (co.context = '
+              . $db->quote('com_pfprojects.project') . ' AND co.item_id = a.id)');
+
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
-            $groups = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('a.access IN (' . $groups . ')');
+        if (!$user->authorise('core.admin', 'com_pfprojects')) {
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+
+            $query->where('a.access IN (' . $levels . ')');
         }
 
         // Filter by a single or group of categories.
@@ -168,7 +182,7 @@ class PFprojectsModelProjects extends JModelList
         $base_url  = JURI::root(true) . '/media/com_projectfork/repo/0/logo';
 
         // Get the global params
-        $global_params = JComponentHelper::getParams('com_projectfork', true);
+        $global_params = JComponentHelper::getParams('com_pfprojects', true);
 
         foreach ($items as $i => &$item)
         {

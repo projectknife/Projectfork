@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="2.5" client="site" method="upgrade">
+	<name>mod_pf_tasks</name>
+	<author>Tobias Kuhn</author>
+	<creationDate>November 2012</creationDate>
+	<copyright>Copyright (C) 2012 Tobias Kuhn. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>support@projectfork.net</authorEmail>
+	<authorUrl>www.projectfork.net</authorUrl>
+	<version>4.0.0b1</version>
+	<description>MOD_PF_TASKS_XML_DESCRIPTION</description>
+    <position>pf-dashboard-left</position>
+    <published>1</published>
+    <show_title>1</show_title>
+    <scriptfile>script.php</scriptfile>
+	<files>
+		<filename module="mod_pf_tasks">mod_pf_tasks.php</filename>
+		<folder>tmpl</folder>
+		<filename>helper.php</filename>
+		<filename>script.php</filename>
+		<filename>LICENSE.txt</filename>
+		<filename>index.html</filename>
+		<filename>mod_pf_tasks.xml</filename>
+	</files>
+	<languages>
+		<language tag="en-GB">language/en-GB/en-GB.mod_pf_tasks.ini</language>
+		<language tag="en-GB">language/en-GB/en-GB.mod_pf_tasks.sys.ini</language>
+	</languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field type="radio" name="tasks_of" default="0" class="btn-group"
+                    label="MOD_PF_TASKS_CONFIG_TASKS_OF_LABEL"
+                    description="MOD_PF_TASKS_CONFIG_TASKS_OF_DESC"
+                >
+                    <option value="0">MOD_PF_TASKS_CONFIG_TASKS_OF_CURRENT_LABEL</option>
+                    <option value="1">MOD_PF_TASKS_CONFIG_TASKS_OF_SPECIFIC_LABEL</option>
+                </field>
+                <field type="project" name="project" default="" addfieldpath="administrator/components/com_pfprojects/models/fields"
+                    label="MOD_PF_TASKS_CONFIG_PROJECT_LABEL" description="MOD_PF_TASKS_CONFIG_PROJECT_DESC"
+                />
+                <field type="list" name="filter_complete" default=""
+                    label="MOD_PF_TASKS_CONFIG_FILTER_COMPLETE_LABEL"
+                >
+                    <option value="1">MOD_PF_TASKS_CONFIG_FILTER_COMPLETE_ONLY_LABEL</option>
+                    <option value="0">MOD_PF_TASKS_CONFIG_FILTER_INCOMPLETE_ONLY_LABEL</option>
+                    <option value="">MOD_PF_TASKS_CONFIG_FILTER_SHOW_ALL_LABEL</option>
+                </field>
+                <field type="list" name="sort" default=""
+                    label="MOD_PF_TASKS_CONFIG_SORT_LABEL"
+                >
+                    <option value="">MOD_PF_TASKS_CONFIG_SORT_END_DATE_LABEL</option>
+                    <option value="a.start_date">MOD_PF_TASKS_CONFIG_SORT_START_DATE_LABEL</option>
+                    <option value="a.priority">MOD_PF_TASKS_CONFIG_SORT_PRIORITY_LABEL</option>
+                </field>
+                <field type="list" name="order" default="ASC"
+                    label="MOD_PF_TASKS_CONFIG_ORDER_LABEL"
+                >
+                    <option value="ASC">MOD_PF_TASKS_CONFIG_ORDER_ASC_LABEL</option>
+                    <option value="DESC">MOD_PF_TASKS_CONFIG_ORDER_DESC_LABEL</option>
+                </field>
+                <field type="radio" name="show_assigned" default="0" class="btn-group"
+                    label="MOD_PF_TASKS_CONFIG_SHOW_ASSIGNED_LABEL"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field type="radio" name="show_priority" default="0" class="btn-group"
+                    label="MOD_PF_TASKS_CONFIG_SHOW_PRIORITY_LABEL"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field type="radio" name="show_deadline" default="1" class="btn-group"
+                    label="MOD_PF_TASKS_CONFIG_SHOW_DEADLINE_LABEL"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+            </fieldset>
+            <fieldset name="advanced">
+				<field
+					name="layout"
+					type="modulelayout"
+					label="JFIELD_ALT_LAYOUT_LABEL"
+					description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
+				<field
+					name="moduleclass_sfx"
+					type="text"
+					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+					description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC" />
+				<field
+					name="cache"
+					type="list"
+					default="1"
+					label="COM_MODULES_FIELD_CACHING_LABEL"
+					description="COM_MODULES_FIELD_CACHING_DESC">
+					<option
+						value="1">JGLOBAL_USE_GLOBAL</option>
+					<option
+						value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
+				</field>
+				<field
+					name="cache_time"
+					type="text"
+					default="900"
+					label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+					description="COM_MODULES_FIELD_CACHE_TIME_DESC" />
+				<field
+					name="cachemode"
+					type="hidden"
+					default="static">
+					<option
+						value="static"></option>
+				</field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

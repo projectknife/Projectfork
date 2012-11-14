@@ -30,6 +30,10 @@ class PFtasksHelper
      */
     public static function addSubmenu($view)
     {
+        if (in_array($view, array('task', 'tasklist')) && version_compare(JVERSION, '3.0.0', 'ge')) {
+            return;
+        }
+
         $components = PFApplicationHelper::getComponents();
         $option     = JFactory::getApplication()->input->get('option');
 
@@ -39,15 +43,22 @@ class PFtasksHelper
                 continue;
             }
 
+            $title = JText::_($component->element);
+            $parts = explode('-', $title, 2);
+
+            if (count($parts) == 2) {
+                $title = trim($parts[1]);
+            }
+
             JSubMenuHelper::addEntry(
-                JText::_($component->element),
+                $title,
                 'index.php?option=' . $component->element,
-                ($option == $component->element && $view == 'tasks')
+                ($option == $component->element)
             );
 
             if ($option == $component->element) {
                 JSubMenuHelper::addEntry(
-                    JText::_('COM_PROJECTFORK_TASKLISTS'),
+                    JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS'),
                     'index.php?option=' . $component->element . '&view=tasklists',
                     ($option == $component->element && $view == 'tasklists')
                 );
@@ -59,14 +70,12 @@ class PFtasksHelper
     /**
      * Gets a list of actions that can be performed.
      *
-     * @param     integer    $id           The item id
-     * @param     integer    $project      The project id
-     * @param     integer    $milestone    The milestone id
-     * @param     integer    $list         The list id
+     * @param     integer    $id      The item id
+     * @param     integer    $list    The list id
      *
      * @return    jobject
      */
-    public static function getActions($id = 0, $project = 0, $milestone = 0, $list = 0)
+    public static function getActions($id = 0, $list = 0)
     {
         $user   = JFactory::getUser();
         $result = new JObject;
@@ -76,12 +85,6 @@ class PFtasksHelper
         }
         elseif ((int) $list > 0) {
             $asset = 'com_pftasks.tasklist.' . (int) $list;
-        }
-        elseif ((int) $milestone > 0) {
-            $asset = 'com_pfmilestones.milestone.' . (int) $milestone;
-        }
-        elseif ((int) $project > 0) {
-            $asset = 'com_pfprojects.project.' . (int) $project;
         }
         else {
             $asset = self::$extension;
@@ -106,25 +109,17 @@ class PFtasksHelper
     /**
      * Gets a list of actions that can be performed on a task list.
      *
-     * @param     integer    $id           The item id
-     * @param     integer    $project      The project id
-     * @param     integer    $milestone    The milestone id
+     * @param     integer    $id    The item id
      *
      * @return    jobject
      */
-    public static function getListActions($id = 0, $project = 0, $milestone = 0)
+    public static function getListActions($id = 0)
     {
         $user   = JFactory::getUser();
         $result = new JObject;
 
         if ((int) $id > 0) {
             $asset = 'com_pftasks.tasklist.' . (int) $id;
-        }
-        elseif ((int) $milestone > 0) {
-            $asset = 'com_pfmilestones.milestone.' . (int) $milestone;
-        }
-        elseif ((int) $project > 0) {
-            $asset = 'com_pfprojects.project.' . (int) $project;
         }
         else {
             $asset = self::$extension;
@@ -143,5 +138,35 @@ class PFtasksHelper
         }
 
         return $result;
+    }
+
+
+    static public function priority2string($value = null)
+    {
+        switch((int) $value)
+        {
+            case 2:
+                $text  = JText::_('COM_PROJECTFORK_PRIORITY_LOW');
+                break;
+
+            case 3:
+                $text  = JText::_('COM_PROJECTFORK_PRIORITY_MEDIUM');
+                break;
+
+            case 4:
+                $text  = JText::_('COM_PROJECTFORK_PRIORITY_HIGH');
+                break;
+
+            case 5:
+                $text  = JText::_('COM_PROJECTFORK_PRIORITY_VERY_HIGH');
+                break;
+
+            default:
+            case 1:
+                $text  = JText::_('COM_PROJECTFORK_PRIORITY_VERY_LOW');
+                break;
+        }
+
+        return $text;
     }
 }

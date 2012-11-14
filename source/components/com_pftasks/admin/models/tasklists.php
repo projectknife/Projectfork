@@ -156,6 +156,8 @@ class PFtasksModelTasklists extends JModelList
         if (!$user->authorise('core.admin', 'com_pftasks')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
+            $query->where('p.access IN (' . $groups . ')');
+            $query->where('m.access IN (' . $groups . ')');
         }
 
         // Filter by project

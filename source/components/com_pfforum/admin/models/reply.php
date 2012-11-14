@@ -71,8 +71,13 @@ class PFforumModelReply extends JModelAdmin
             $item->attribs = $registry->toArray();
 
             // Get the attachments
-            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-            $item->attachment = $attachments->getItems('reply', $item->id);
+            if (PFApplicationHelper::enabled('com_pfrepo')) {
+                $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+                $item->attachment = $attachments->getItems('com_pfforum.reply', $item->id);
+            }
+            else {
+                $item->attachment = array();
+            }
         }
 
         return $item;
@@ -92,15 +97,39 @@ class PFforumModelReply extends JModelAdmin
         $form = $this->loadForm('com_pfforum.reply', 'reply', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) return false;
 
-        // Check if a project and topic is already selected. If not, get them from the current state
-        $project_id = (int) $form->getValue('project_id');
-        $topic_id   = (int) $form->getValue('topic_id');
+        $jinput = JFactory::getApplication()->input;
+        $user   = JFactory::getUser();
+        $id     = (int) $jinput->get('id', 0);
 
-        if (!$project_id) {
-            $form->setValue('project_id', null, $this->getState($this->getName() . '.project'));
+        // Check for existing item.
+        // Modify the form based on Edit State access controls.
+        if ($id != 0 && (!$user->authorise('core.edit.state', 'com_pfforum.reply.' . $id)) || ($id == 0 && !$user->authorise('core.edit.state', 'com_pfforum')))
+        {
+            // Disable fields for display.
+            $form->setFieldAttribute('state', 'disabled', 'true');
+
+            // Disable fields while saving.
+			$form->setFieldAttribute('state', 'filter', 'unset');
         }
-        if (!$topic_id) {
-            $form->setValue('topic_id', null, $this->getState($this->getName() . '.topic'));
+
+        // Disable these fields if not an admin
+        if (!$user->authorise('core.admin', 'com_pfforum')) {
+            $form->setFieldAttribute('access', 'disabled', 'true');
+            $form->setFieldAttribute('access', 'filter', 'unset');
+
+            $form->setFieldAttribute('rules', 'disabled', 'true');
+            $form->setFieldAttribute('rules', 'filter', 'unset');
+        }
+
+        // Disable these fields when updating
+        if ($id) {
+            $form->setFieldAttribute('project_id', 'disabled', 'true');
+            $form->setFieldAttribute('project_id', 'filter', 'unset');
+            $form->setFieldAttribute('project_id', 'required', 'false');
+
+            $form->setFieldAttribute('topic_id', 'disabled', 'true');
+            $form->setFieldAttribute('topic_id', 'filter', 'unset');
+            $form->setFieldAttribute('topic_id', 'required', 'false');
         }
 
         return $form;
@@ -117,7 +146,17 @@ class PFforumModelReply extends JModelAdmin
         // Check the session for previously entered form data.
         $data = JFactory::getApplication()->getUserState('com_pfforum.edit.' . $this->getName() . '.data', array());
 
-        if (empty($data)) $data = $this->getItem();
+        if (empty($data)) {
+			$data = $this->getItem();
+
+            // Set default values
+            if ($this->getState($this->getName() . '.id') == 0) {
+                $active_id = PFApplicationHelper::getActiveProjectId();
+
+                $data->set('project_id', $active_id);
+                $data->set('topic_id',   $this->getState($this->getName() . '.topic'));
+            }
+        }
 
         return $data;
     }
@@ -162,6 +201,16 @@ class PFforumModelReply extends JModelAdmin
             }
         }
 
+        if (!$is_new) {
+            $data['project_id'] = $record->project_id;
+            $data['topic_id']   = $record->topic_id;
+        }
+
+        // Make item published by default if new
+        if (!isset($data['state']) && $is_new) {
+            $data['state'] = 1;
+        }
+
         // On quick-save, access and publishing state are missing
         if ($this->getState('task') == 'quicksave' && isset($data['topic_id'])) {
             $db    = JFactory::getDbo();
@@ -195,12 +244,19 @@ class PFforumModelReply extends JModelAdmin
             PFApplicationHelper::setActiveProject($updated->project_id);
 
             // Store the attachments
-            if (isset($data['attachment']) && !$is_new) {
+            if (isset($data['attachment']) && PFApplicationHelper::exists('com_pfrepo')) {
                 $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+
+                if (!$attachments->getState('item.type')) {
+                    $attachments->setState('item.type', 'com_pfforum.reply');
+                }
 
                 if ($attachments->getState('item.id') == 0) {
                     $attachments->setState('item.id', $id);
-                    $attachments->setState('item.type', 'reply');
+                }
+
+                if ((int) $attachments->getState('item.project') == 0) {
+                    $attachments->setState('item.project', $updated->project_id);
                 }
 
                 if (!$attachments->save($data['attachment'])) {
@@ -269,10 +325,6 @@ class PFforumModelReply extends JModelAdmin
             // New item, so check against the topic.
 			return $user->authorise('core.edit.state', 'com_pfforum.topic.' . (int) $record->topic_id);
         }
-		elseif (!empty($record->project_id)) {
-		    // New item, so check against the project.
-			return $user->authorise('core.edit.state', 'com_pfprojects.project.' . (int) $record->project_id);
-		}
 		else {
 		    // Default to component settings if neither article nor category known.
 			return parent::canEditState('com_pfforum');

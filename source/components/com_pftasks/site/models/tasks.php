@@ -65,7 +65,7 @@ class PFtasksModelTasks extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.project_id, a.list_id, a.milestone_id, a.catid, a.title, '
+                'a.id, a.project_id, a.list_id, a.milestone_id, a.title, '
                 . 'a.description, a.alias, a.checked_out, a.attribs, a.priority, '
                 . 'a.checked_out_time, a.state, a.access, a.created, a.created_by, '
                 . 'a.start_date, a.end_date, a.ordering, a.complete'
@@ -101,16 +101,33 @@ class PFtasksModelTasks extends JModelList
 
         // Join over the label refs for label count
         $query->select('COUNT(DISTINCT lbl.id) AS label_count');
-        $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('task') . ')');
+        $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('com_pftasks.task') . ')');
 
         // Join over the observer table for email notification status
         if ($user->get('id') > 0) {
-            $query->select('COUNT(obs.user_id) AS watching');
-            $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = ' . $db->quote('task') . ' AND obs.item_id = a.id AND obs.user_id = ' . $db->quote($user->get('id')) . ')');
+            $query->select('COUNT(DISTINCT obs.user_id) AS watching');
+            $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = '
+                               . $db->quote('com_pftasks.task') . ' AND obs.item_id = a.id AND obs.user_id = '
+                               . $db->quote($user->get('id')) . ')'
+                        );
         }
 
+        // Join over the attachments for attachment count
+        $query->select('COUNT(DISTINCT at.id) AS attachments');
+        $query->join('LEFT', '#__pf_ref_attachments AS at ON (at.item_type = '
+              . $db->quote('com_pftasks.task') . ' AND at.item_id = a.id)');
+
+        // Join over the comments for comment count
+        $query->select('COUNT(DISTINCT co.id) AS comments');
+        $query->join('LEFT', '#__pf_comments AS co ON (co.context = '
+              . $db->quote('com_pftasks.task') . ' AND co.item_id = a.id)');
+
+        // Join over the task refs for dependencies
+        $query->select('COUNT(d.id) AS dependency_count');
+        $query->join('LEFT', '#__pf_ref_tasks AS d ON (d.task_id = a.id)');
+
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_pftasks')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
         }
@@ -118,7 +135,7 @@ class PFtasksModelTasks extends JModelList
         // Filter by assigned user
         $assigned = $this->getState('filter.assigned');
         if (is_numeric($assigned) && intval($assigned) != 0) {
-            $query->join('INNER', '#__pf_ref_users AS ru ON (ru.item_type = ' . $db->quote('task') . ' AND ru.item_id = a.id)');
+            $query->join('INNER', '#__pf_ref_users AS ru ON (ru.item_type = ' . $db->quote('com_pftasks.task') . ' AND ru.item_id = a.id)');
             $query->where('ru.user_id = ' . (int) $assigned);
         }
 
@@ -146,6 +163,7 @@ class PFtasksModelTasks extends JModelList
         $filters['a.list_id']      = array('INT-NOTZERO', $this->getState('filter.tasklist'));
         $filters['a.created_by']   = array('INT-NOTZERO', $this->getState('filter.author'));
         $filters['a.priority']     = array('INT',         $this->getState('filter.priority'));
+        $filters['a.complete']     = array('INT',         $this->getState('filter.complete'));
         $filters['a']              = array('SEARCH',      $this->getState('filter.search'));
 
         // Apply Filter
@@ -188,7 +206,9 @@ class PFtasksModelTasks extends JModelList
     {
         $items  = parent::getItems();
         $ref    = JModelLegacy::getInstance('UserRefs', 'PFusersModel');
+        $tref   = JModelLegacy::getInstance('TaskRefs', 'PFtasksModel');
         $labels = $this->getInstance('Labels', 'PFModel');
+
 
         // Get the global params
         $global_params = JComponentHelper::getParams('com_pftasks', true);
@@ -202,7 +222,7 @@ class PFtasksModelTasks extends JModelList
             $items[$i]->params = clone $this->getState('params');
 
             // Get assigned users
-            $items[$i]->users = $ref->getItems('task', $items[$i]->id);
+            $items[$i]->users = $ref->getItems('com_pftasks.task', $items[$i]->id);
 
             // Create item slugs
             $items[$i]->slug           = $items[$i]->alias           ? ($items[$i]->id . ':' . $items[$i]->alias)                     : $items[$i]->id;
@@ -212,7 +232,18 @@ class PFtasksModelTasks extends JModelList
 
             // Get the labels
             if ($items[$i]->label_count > 0) {
-                $items[$i]->labels = $labels->getConnections('task', $items[$i]->id);
+                $items[$i]->labels = $labels->getConnections('com_pftasks.task', $items[$i]->id);
+            }
+            else {
+                $items[$i]->labels = array();
+            }
+
+            // Get the dependencies
+            if ($items[$i]->dependency_count > 0) {
+                $items[$i]->dependencies = $tref->getItems($items[$i]->id);
+            }
+            else {
+                $items[$i]->dependencies = array();
             }
         }
 
@@ -244,7 +275,7 @@ class PFtasksModelTasks extends JModelList
         $query->join('INNER', '#__pf_tasks AS a ON a.created_by = u.id');
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_pftasks')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
         }
@@ -287,6 +318,7 @@ class PFtasksModelTasks extends JModelList
 
         // Return empty array if no project is select
         $project = (int) $this->getState('filter.project');
+
         if ($project < 0) {
             return array();
         }
@@ -297,7 +329,7 @@ class PFtasksModelTasks extends JModelList
         // $query->join('LEFT', '#__pf_tasks AS a ON a.milestone_id = m.id');
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_pftasks')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
         }
@@ -350,7 +382,7 @@ class PFtasksModelTasks extends JModelList
         // $query->join('LEFT', '#__pf_tasks AS a ON a.list_id = t.id');
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_pftasks')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
         }
@@ -405,7 +437,7 @@ class PFtasksModelTasks extends JModelList
         $query->where('a.item_type = ' . $db->quote('task'));
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_pftasks')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('t.access IN (' . $groups . ')');
         }
@@ -493,6 +525,10 @@ class PFtasksModelTasks extends JModelList
         $priority = $app->getUserStateFromRequest($this->context . '.filter.priority', 'filter_priority', '');
         $this->setState('filter.priority', $priority);
 
+        // Filter - Complete
+        $complete = $app->getUserStateFromRequest($this->context . '.filter.complete', 'filter_complete', '');
+        $this->setState('filter.complete', $complete);
+
         // Filter - Labels
         $labels = JRequest::getVar('filter_label', array());
         $this->setState('filter.labels', $labels);
@@ -520,7 +556,7 @@ class PFtasksModelTasks extends JModelList
         $this->setState('filter.isset',
             (is_numeric($state) || !empty($search) || is_numeric($author) ||
             is_numeric($assigned) || (is_numeric($list) && $list > 0) || (is_numeric($milestone) && $milestone > 0) ||
-            count($labels))
+            count($labels) || is_numeric($complete))
         );
 
         // Call parent method
@@ -547,6 +583,7 @@ class PFtasksModelTasks extends JModelList
         $id .= ':' . $this->getState('filter.published');
         $id .= ':' . $this->getState('filter.assigned');
         $id .= ':' . $this->getState('filter.priority');
+        $id .= ':' . $this->getState('filter.complete');
         $id .= ':' . $this->getState('filter.author');
         $id .= ':' . $this->getState('filter.search');
 

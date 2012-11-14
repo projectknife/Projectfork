@@ -13,17 +13,6 @@ defined('_JEXEC') or die();
 class plgContentPfcommentsInstallerScript
 {
     /**
-     * Constructor
-     *
-     * @param    jadapterinstance    $adapter    The object responsible for running this script
-     */
-    public function __constructor(JAdapterInstance $adapter)
-    {
-
-    }
-
-
-    /**
      * Called before any type of action
      *
      * @param     string              $route      Which action is happening (install|uninstall|discover_install)
@@ -33,6 +22,26 @@ class plgContentPfcommentsInstallerScript
      */
     public function preflight($route, JAdapterInstance $adapter)
     {
+        if (strtolower($route) == 'install' || strtolower($route) == 'update') {
+            if (!defined('PF_LIBRARY')) {
+                jimport('projectfork.library');
+            }
+
+            $name = htmlspecialchars($adapter->get('manifest')->name, ENT_QUOTES, 'UTF-8');
+
+            // Check if the library is installed
+            if (!defined('PF_LIBRARY')) {
+                JError::raiseWarning(1, JText::_('This extension (' . $name . ') requires the Projectfork Library to be installed!'));
+                return false;
+            }
+
+            // Check if the projectfork component is installed
+            if (!PFApplicationHelper::exists('com_projectfork')) {
+                JError::raiseWarning(1, JText::_('This extension (' . $name . ') requires the Projectfork Component to be installed!'));
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -48,76 +57,18 @@ class plgContentPfcommentsInstallerScript
     public function postflight($route, JAdapterInstance $adapter)
     {
         if (strtolower($route) == 'install') {
-            $db    = JFactory::getDBO();
-            $query = $db->getQuery(true);
-
             // Get the XML manifest data
             $manifest = $adapter->get('manifest');
 
             // Get plugin published state
-            $name = $manifest->name;
-            $pub  = (isset($manifest->published) ? (int) $manifest->published : 0);
+            $name  = $manifest->name;
+            $state = (isset($manifest->published) ? (int) $manifest->published : 0);
 
-            if (!$pub) return true;
-
-            // Get the plugin id
-            $query->select('extension_id')
-                  ->from('#__extensions')
-                  ->where('name = ' . $db->quote($name))
-                  ->where('type = ' . $db->quote('plugin'));
-
-            $db->setQuery((string) $query);
-            $id = (int) $db->loadResult();
-
-            if (!$id) return true;
-
-            // Update params
-            $query->clear();
-            $query->update('#__extensions')
-                  ->set('enabled = ' . $db->quote($pub))
-                  ->where('extension_id = ' . $db->quote($id));
-
-            $db->setQuery((string) $query);
-            $db->query();
+            if ($state) {
+                PFInstallerHelper::publishPlugin($name, $state);
+            }
         }
 
-        return true;
-    }
-
-
-    /**
-     * Called on installation
-     *
-     * @param     jadapterinstance    $adapter    The object responsible for running this script
-     *
-     * @return    boolean                         True on success
-     */
-    public function install(JAdapterInstance $adapter)
-    {
-        return true;
-    }
-
-
-    /**
-     * Called on update
-     *
-     * @param     jadapterinstance    $adapter    The object responsible for running this script
-     *
-     * @return    boolean                         True on success
-     */
-    public function update(JAdapterInstance $adapter)
-    {
-        return true;
-    }
-
-
-    /**
-     * Called on uninstallation
-     *
-     * @param    jadapterinstance    $adapter    The object responsible for running this script
-     */
-    public function uninstall(JAdapterInstance $adapter)
-    {
         return true;
     }
 }

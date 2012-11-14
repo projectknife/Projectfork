@@ -16,23 +16,82 @@ class PFTable extends JTable
     /**
      * Should the table delete all child items too?
      *
-     * @var    boolean
+     * @var    boolean    
      */
     protected $_delete_children = false;
 
     /**
      * Should the table update all child items too?
      *
-     * @var    boolean
+     * @var    boolean    
      */
     protected $_update_children = false;
 
     /**
      * The fields of the child items to update
      *
-     * @var    array
+     * @var    array    
      */
     protected $_update_fields = array();
+
+
+    /**
+     * Method to get the children on an asset (which are not directly connected in the assets table)
+     *
+     * @param     string    $name    The name of the parent asset
+     *
+     * @return    array              The names of the child assets
+     */
+    public function getAssetChildren($name)
+    {
+        return array();
+    }
+
+
+    /**
+     * Method to find all foreign component table classes and their child assets
+     *
+     * @param     string    $name    The name of the parent asset
+     *
+     * @return    array              The names of the child assets
+     */
+    protected function _findAssetChildren($name)
+    {
+        $components = PFApplicationHelper::getComponents();
+        $assets     = array();
+
+        foreach ($components AS $component)
+        {
+            $tables_path = JPath::clean(JPATH_ADMINISTRATOR . '/components/' . $component->element . '/tables');
+
+            if (JFolder::exists($tables_path)) {
+                JLoader::discover('PFtable', $tables_path, false);
+
+                $tables = (array) JFolder::files($tables_path, '.php$');
+
+                foreach ($tables AS $table_file)
+                {
+                    $table_name = JFile::stripExt($table_file);
+                    $class      = 'PFtable' . ucfirst($table_name);
+
+                    if (class_exists($class)) {
+                        $instance     = self::getInstance(ucfirst($table_name), 'PFtable');
+                        $methods      = get_class_methods($instance);
+
+                        if (in_array('getAssetChildren', $methods)) {
+                            $table_assets = (array) $instance->getAssetChildren($name);
+
+                            if (count($table_assets)) {
+                                $assets = array_merge($assets, $table_assets);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return $assets;
+    }
 
 
     /**
@@ -77,7 +136,10 @@ class PFTable extends JTable
                           ->where('parent_id = ' . $this->_db->quote($asset->id));
 
                     $this->_db->setQuery($query);
-                    $children = (array) $this->_db->loadObjectList();
+                    $direct_children   = (array) $this->_db->loadObjectList();
+                    $indirect_children = (array) $this->_findAssetChildren($name);
+
+                    $children = array_merge($direct_children, $indirect_children);
 
                     foreach ($children AS $child)
                     {
@@ -88,13 +150,7 @@ class PFTable extends JTable
 
                         list($component, $asset_name, $asset_id) = explode('.', $child->name, 3);
 
-                        if ($component != 'com_projectfork') {
-                            $table_prefix = ucfirst(str_replace('com_', '', $component));
-                        }
-                        else {
-                            $table_prefix = 'PFtable';
-                        }
-
+                        $table_prefix = 'PFtable';
                         $table_name   = ucfirst($asset_name);
                         $cache_key    = $table_prefix . '.' . $table_name;
                         $asset_id     = (int) $asset_id;
@@ -198,7 +254,10 @@ class PFTable extends JTable
                       ->where('parent_id = ' . $this->_db->quote($asset->id));
 
                 $this->_db->setQuery($query);
-                $children = (array) $this->_db->loadObjectList();
+                $direct_children   = (array) $this->_db->loadObjectList();
+                $indirect_children = (array) $this->_findAssetChildren($name);
+
+                $children = array_merge($direct_children, $indirect_children);
 
                 foreach ($children AS $child)
                 {
@@ -209,13 +268,7 @@ class PFTable extends JTable
 
                     list($component, $asset_name, $asset_id) = explode('.', $child->name, 3);
 
-                    if ($component != 'com_projectfork') {
-                        $table_prefix = ucfirst(str_replace('com_', '', $component));
-                    }
-                    else {
-                        $table_prefix = 'PFtable';
-                    }
-
+                    $table_prefix = 'PFtable';
                     $table_name   = ucfirst($asset_name);
                     $cache_key    = $table_prefix . '.' . $table_name;
                     $asset_id     = (int) $asset_id;
@@ -273,7 +326,7 @@ class PFTable extends JTable
      *
      * @param     mixed      $pk    An primary key value to delete.
      *
-     * @return    boolean
+     * @return    boolean           
      */
     public function deleteReferences($pk = null)
     {
@@ -421,7 +474,10 @@ class PFTable extends JTable
               ->where('parent_id = ' . $this->_db->quote($asset->id));
 
         $this->_db->setQuery($query);
-        $children = (array) $this->_db->loadObjectList();
+        $direct_children   = (array) $this->_db->loadObjectList();
+        $indirect_children = (array) $this->_findAssetChildren($name);
+
+        $children = array_merge($direct_children, $indirect_children);
 
         foreach ($children AS $child)
         {
@@ -432,13 +488,7 @@ class PFTable extends JTable
 
             list($component, $asset_name, $asset_id) = explode('.', $child->name, 3);
 
-            if ($component != 'com_projectfork') {
-                $table_prefix = ucfirst(str_replace('com_', '', $component));
-            }
-            else {
-                $table_prefix = 'PFtable';
-            }
-
+            $table_prefix = 'PFtable';
             $table_name   = ucfirst($asset_name);
             $cache_key    = $table_prefix . '.' . $table_name;
             $asset_id     = (int) $asset_id;
@@ -535,7 +585,7 @@ class PFTable extends JTable
      * @param     mixed      $pk      An primary key value of the updated item.
      * @param     array      $data    The changed data
      *
-     * @return    boolean
+     * @return    boolean             
      */
     public function updateReferences($pk = null, $data = array())
     {
@@ -549,7 +599,7 @@ class PFTable extends JTable
      * @param     mixed    $old    The current value
      * @param     mixed    $new    The new value
      *
-     * @return    mixed
+     * @return    mixed            
      */
     public function setStartDateValue($old = null, $new = null)
     {
@@ -571,7 +621,7 @@ class PFTable extends JTable
      * @param     mixed    $old    The current value
      * @param     mixed    $new    The new value
      *
-     * @return    mixed
+     * @return    mixed            
      */
     public function setEndDateValue($old = null, $new = null)
     {
@@ -593,7 +643,7 @@ class PFTable extends JTable
      * @param     mixed    $old    The current value
      * @param     mixed    $new    The new value
      *
-     * @return    mixed
+     * @return    mixed            
      */
     public function setAccessValue($old = null, $new = null)
     {
@@ -613,7 +663,7 @@ class PFTable extends JTable
      * @param     mixed    $old    The current value
      * @param     mixed    $new    The new value
      *
-     * @return    mixed
+     * @return    mixed            
      */
     public function setStateValue($old = null, $new = null)
     {

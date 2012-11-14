@@ -61,6 +61,7 @@ class PFrepoViewRepository extends JViewLegacy
      */
     protected function addToolbar()
     {
+        $user  = JFactory::getUser();
         $state = $this->get('State');
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_REPO_TITLE'), 'article.png');
@@ -78,6 +79,10 @@ class PFrepoViewRepository extends JViewLegacy
                 JToolBarHelper::divider();
                 JToolBarHelper::deleteList('', 'repository.delete','JTOOLBAR_DELETE');
             }
+        }
+
+        if ($user->authorise('core.admin')) {
+            JToolBarHelper::preferences('com_pfrepo');
         }
     }
 }

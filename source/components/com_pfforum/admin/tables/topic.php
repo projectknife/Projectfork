@@ -92,33 +92,17 @@ class PFtableTopic extends PFTable
         $asset_id = null;
         $query    = $this->_db->getQuery(true);
 
-        // This is a topic under a project.
-        if ($this->project_id) {
-            // Build the query to get the asset id for the parent project.
-            $query->select('asset_id')
-                  ->from('#__pf_projects')
-                  ->where('id = '. (int) $this->project_id);
+        // No asset found, fall back to the component
+        $query->clear();
+        $query->select($this->_db->quoteName('id'))
+              ->from($this->_db->quoteName('#__assets'))
+              ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pfforum"));
 
-            // Get the asset id from the database.
-            $this->_db->setQuery($query);
-            $result = $this->_db->loadResult();
+        // Get the asset id from the database.
+        $this->_db->setQuery($query);
+        $result = $this->_db->loadResult();
 
-            if ($result) $asset_id = (int) $result;
-        }
-
-        if (!$asset_id) {
-            // No asset found, fall back to the component
-            $query->clear();
-            $query->select($this->_db->quoteName('id'))
-                  ->from($this->_db->quoteName('#__assets'))
-                  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pfforum"));
-
-            // Get the asset id from the database.
-            $this->_db->setQuery($query);
-            $result = $this->_db->loadResult();
-
-            if ($result) $asset_id = (int) $result;
-        }
+        if ($result) $asset_id = (int) $result;
 
         // Return the asset id.
         if ($asset_id) return $asset_id;
@@ -148,6 +132,38 @@ class PFtableTopic extends PFTable
         if (!$access) $access = 1;
 
         return $access;
+    }
+
+
+    /**
+     * Method to get the children on an asset (which are not directly connected in the assets table)
+     *
+     * @param    string    $name    The name of the parent asset
+     *
+     * @return    array    The names of the child assets
+     */
+    public function getAssetChildren($name)
+    {
+        $assets = array();
+
+        list($component, $item, $id) = explode('.', $name, 3);
+
+        // Get the project assets
+        if ($component == 'com_pfprojects' && $item == 'project') {
+            $db    = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('c.*')
+                  ->from('#__assets AS c')
+                  ->join('INNER', $this->_tbl . ' AS a ON (a.asset_id = c.id)')
+                  ->where('a.project_id = ' . $db->quote((int) $id))
+                  ->group('c.id');
+
+            $db->setQuery($query);
+            $assets = (array) $db->loadObjectList();
+        }
+
+        return $assets;
     }
 
 

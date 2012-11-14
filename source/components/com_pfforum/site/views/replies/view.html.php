@@ -180,11 +180,13 @@ class PFforumViewReplies extends JViewLegacy
         $access = PFforumHelper::getActions($this->topic->id);
         $state  = $this->get('State');
 
+        $opts = array('access' => $access->get('core.create'));
+
         PFToolbar::button(
             'COM_PROJECTFORK_ACTION_NEW',
             'replyform.add',
             false,
-            array('access' => $state->get('core.create'))
+            $opts
         );
 
         $options = array();

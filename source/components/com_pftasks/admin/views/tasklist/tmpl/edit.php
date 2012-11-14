@@ -15,10 +15,12 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.keepalive');
 JHtml::_('pfhtml.script.form');
+
+$user = JFactory::getUser();
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task) {
-    if (task == 'tasklist.cancel' || document.formvalidator.isValid(document.id('item-form')) || task == 'tasklist.setProject') {
+    if (task == 'tasklist.cancel' || document.formvalidator.isValid(document.id('item-form'))) {
         Joomla.submitform(task, document.getElementById('item-form'));
     }
     else {
@@ -32,7 +34,9 @@ Joomla.submitbutton = function(task) {
         <fieldset class="adminform">
             <legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_TASKLIST') : JText::_('COM_PROJECTFORK_EDIT_TASKLIST'); ?></legend>
             <ul class="adminformlist unstyled">
-                <li><?php echo $this->form->getLabel('project_id') . $this->form->getInput('project_id'); ?></li>
+                <?php if ($this->item->id <= 0) : ?>
+                    <li><?php echo $this->form->getLabel('project_id') . $this->form->getInput('project_id'); ?></li>
+                <?php endif; ?>
                 <li>
                     <?php echo $this->form->getLabel('milestone_id'); ?>
                     <div id="jform_milestone_id_reload">
@@ -82,21 +86,23 @@ Joomla.submitbutton = function(task) {
 
     <div class="clr"></div>
 
-    <div class="width-100 fltlft span12">
-		<?php echo JHtml::_('sliders.start', 'permissions-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
+    <?php if ($user->authorise('core.admin', 'com_pftasks')) : ?>
+        <div class="width-100 fltlft span12">
+    		<?php echo JHtml::_('sliders.start', 'permissions-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
 
-			<?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'access-rules'); ?>
-			<fieldset class="panelform">
-                <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
-                <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
-				<div id="jform_rules_element">
-                    <div id="jform_rules_reload" style="clear: both;">
-                        <?php echo $this->form->getInput('rules'); ?>
+    			<?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'access-rules'); ?>
+    			<fieldset class="panelform">
+                    <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+                    <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+    				<div id="jform_rules_element">
+                        <div id="jform_rules_reload" style="clear: both;">
+                            <?php echo $this->form->getInput('rules'); ?>
+                        </div>
                     </div>
-                </div>
-			</fieldset>
-		<?php echo JHtml::_('sliders.end'); ?>
-	</div>
+    			</fieldset>
+    		<?php echo JHtml::_('sliders.end'); ?>
+    	</div>
+    <?php endif; ?>
 
     <div>
         <div id="jform_access_element">

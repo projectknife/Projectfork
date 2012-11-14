@@ -42,7 +42,7 @@ class PFforumViewTopicForm extends JViewLegacy
 
         // Permission check.
         if ($this->item->id <= 0) {
-            $access = PFforumHelper::getActions(NULL, 0, true);
+            $access = PFforumHelper::getActions();
             $authorised = $access->get('core.create');
         }
         else {

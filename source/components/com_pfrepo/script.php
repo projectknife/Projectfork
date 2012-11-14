@@ -23,36 +23,22 @@ class com_pfrepoInstallerScript
      */
     public function preflight($route, JAdapterInstance $adapter)
     {
-        if (strtolower($route) == 'install') {
-            $db    = JFactory::getDbo();
-            $query = $db->getQuery(true);
+        if (strtolower($route) == 'install' || strtolower($route) == 'update') {
+            if (!defined('PF_LIBRARY')) {
+                jimport('projectfork.library');
+            }
 
-            // Check if Projectfork is installed
-            $query->select('extension_id')
-                  ->from('#__extensions')
-                  ->where('element = ' . $db->quote('com_projectfork'))
-                  ->where('type = ' . $db->quote('component'));
+            $name = htmlspecialchars($adapter->get('manifest')->name, ENT_QUOTES, 'UTF-8');
 
-            $db->setQuery($query);
-            $installed = (int) $db->loadResult();
-
-            if (!$installed) {
-                JLog::add('This extension requires Projectfork to be installed!', JLog::WARNING, 'jerror');
+            // Check if the library is installed
+            if (!defined('PF_LIBRARY')) {
+                JError::raiseWarning(1, JText::_('This extension (' . $name . ') requires the Projectfork Library to be installed!'));
                 return false;
             }
 
-            // Check if the library is installed
-            $query->clear();
-            $query->select('extension_id')
-                  ->from('#__extensions')
-                  ->where('element = ' . $db->quote('projectfork'))
-                  ->where('type = ' . $db->quote('library'));
-
-            $db->setQuery($query);
-            $installed = (int) $db->loadResult();
-
-            if (!$installed) {
-                JLog::add('This extension requires the Projectfork library to be installed!', JLog::WARNING, 'jerror');
+            // Check if the projectfork component is installed
+            if (!PFApplicationHelper::exists('com_projectfork')) {
+                JError::raiseWarning(1, JText::_('This extension (' . $name . ') requires the Projectfork Component to be installed!'));
                 return false;
             }
         }
@@ -72,59 +58,34 @@ class com_pfrepoInstallerScript
     public function postflight($route, JAdapterInstance $adapter)
     {
         if (strtolower($route) == 'install') {
-            $element   = $adapter->get('element');
-            $asset_bak = JTable::getInstance('Asset');
-            $asset_new = JTable::getInstance('Asset');
+            $element = $adapter->get('element');
 
-            // Check if we have a backup asset container from a previous install
-            if ($asset_bak->loadByName($element . '_bak')) {
-                // Yes, then try to load the current (new) one
-                if ($asset_new->loadByName($element)) {
-                    // Delete the current asset
-                    if ($asset_new->delete()) {
-                        // And make the old one the current again
-                        $asset_bak->name = $element;
-                        $asset_bak->store();
-                    }
-                }
+            // Restore assets from backup
+            PFInstallerHelper::restoreAssets($element);
+
+            // Make the admin component menu item a child of com_projectfork
+            PFInstallerHelper::setComponentMenuItem($element);
+
+            // Create a menu item in the projectfork site menu
+            $com = JComponentHelper::getComponent($element);
+            $eid = (is_object($com) && isset($com->id)) ? $com->id : 0;
+
+            if ($eid) {
+                $item = array();
+                $item['title'] = 'Repository';
+                $item['alias'] = 'repository';
+                $item['link']  = 'index.php?option=' . $element . '&view=repository';
+                $item['component_id'] = $eid;
+
+                PFInstallerHelper::addMenuItem($item);
             }
+        }
 
-            // Next, make the admin menu item a child item of com_projectfork
-            $db    = JFactory::getDbo();
-            $query = $db->getQuery(true);
+        if (strtolower($route) == 'update') {
+            $element = $adapter->get('element');
 
-            // Find the menu item id of com_projectfork
-            $query->select('id')
-                  ->from('#__menu')
-                  ->where('menutype = ' . $db->quote('main'))
-                  ->where('title = ' . $db->quote('com_projectfork'))
-                  ->where('client_id = 1');
-
-            $db->setQuery($query);
-            $parent = (int) $db->loadResult();
-
-            if ($parent > 1) {
-                // Find the menu item id of this component
-                $query->clear();
-                $query->select('id')
-                      ->from('#__menu')
-                      ->where('menutype = ' . $db->quote('main'))
-                      ->where('title = ' . $db->quote($element))
-                      ->where('client_id = 1');
-
-                $db->setQuery($query);
-                $mid = (int) $db->loadResult();
-
-                if ($mid) {
-                    $menu = JTable::getInstance('menu');
-
-                    // Set the new parent item
-                    if ($menu->load($mid)) {
-                        $menu->setLocation($parent, 'last-child');
-                        $menu->store();
-                    }
-                }
-            }
+            // Make the admin component menu item a child of com_projectfork
+            PFInstallerHelper::setComponentMenuItem($element);
         }
 
         return true;
@@ -138,20 +99,55 @@ class com_pfrepoInstallerScript
      */
     public function uninstall(JAdapterInstance $adapter)
     {
-        if (JFactory::getApplication()->getUserState('com_projectfork.uninstall') === true) {
-            // Skip this step if the user is removing projectfork itself
+        // Skip this step if the user is removing the entire projectfork package
+        if ($this->isRemovingAll()) {
             return true;
         }
 
         $element = $adapter->get('element');
         $asset   = JTable::getInstance('Asset');
 
-        // We want to preserve the asset container and its children for any replacement component
+        // Backup any assets for another component that might take over
         if ($asset->loadByName($element)) {
             $asset->name = $asset->name . '_bak';
             $asset->store();
         }
 
         return true;
+    }
+
+
+    /**
+     * Method to find out if the user is removing com_projectfork
+     * or pkg_projectfork
+     *
+     * @return    boolean
+     */
+    protected function isRemovingAll()
+    {
+        $cid = JFactory::getApplication()->input->get('cid', array(), 'array');
+
+		JArrayHelper::toInteger($cid, array());
+
+        if (count($cid) == 0) {
+            $extensions = array();
+        }
+        else {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('element')
+                  ->from('#__extensions')
+                  ->where('extension_id IN(' . implode(', ', $cid) . ')');
+
+            $db->setQuery($query);
+            $extensions = (array) $db->loadColumn();
+        }
+
+        if (in_array('pkg_projectfork', $extensions) || in_array('com_projectfork', $extensions)) {
+            return true;
+        }
+
+        return false;
     }
 }

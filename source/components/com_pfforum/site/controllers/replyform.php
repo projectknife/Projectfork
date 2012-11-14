@@ -59,23 +59,6 @@ class PFforumControllerReplyform extends JControllerForm
 
 
     /**
-     * Method to add a new record.
-     *
-     * @return    boolean    True if the item can be added, false if not.
-     */
-    public function add()
-    {
-        if (!parent::add()) {
-            // Redirect to the return page.
-            $this->setRedirect($this->getReturnPage());
-            return false;
-        }
-
-        return true;
-    }
-
-
-    /**
      * Method to cancel an edit.
      *
      * @param     string     $key    The name of the primary key of the URL variable.
@@ -85,9 +68,6 @@ class PFforumControllerReplyform extends JControllerForm
     public function cancel($key = 'id')
     {
         $result = parent::cancel($key);
-
-        // Redirect to the return page.
-        $this->setRedirect($this->getReturnPage());
 
         return $result;
     }
@@ -136,12 +116,7 @@ class PFforumControllerReplyform extends JControllerForm
      */
     public function save($key = null, $url_var = 'id')
     {
-        $result  = parent::save($key, $url_var);
-        $project = JRequest::getUint('filter_project', 0);
-        $topic   = JRequest::getUint('filter_topic', 0);
-
-        // If ok, redirect to the return page.
-        if ($result) $this->setRedirect($this->getReturnPage($topic, $project));
+        $result = parent::save($key, $url_var);
 
         return $result;
     }
@@ -228,7 +203,6 @@ class PFforumControllerReplyform extends JControllerForm
         $item_id = JRequest::getUInt('Itemid');
         $project = JRequest::getUint('filter_project', 0);
         $topic   = JRequest::getUint('filter_topic', 0);
-        $return  = $this->getReturnPage($topic, $project);
         $append  = '';
 
 
@@ -259,53 +233,11 @@ class PFforumControllerReplyform extends JControllerForm
         $topic   = JRequest::getUint('filter_topic', 0);
         $append  = '';
 
-
         // Setup redirect info.
         if ($project) $append .= '&filter_project=' . $project;
         if ($topic)   $append .= '&filter_topic=' . $topic;
         if ($tmpl)    $append .= '&tmpl=' . $tmpl;
 
         return $append;
-    }
-
-
-    /**
-     * Get the return URL.
-     * If a "return" variable has been passed in the request
-     *
-     * @return    string    The return URL.
-     */
-    protected function getReturnPage($topic, $project = 0)
-    {
-        $return = JRequest::getVar('return', null, 'default', 'base64');
-        $append = '';
-
-        if ($project) $append .= '&filter_project=' . $project;
-        if ($topic)   $append .= '&filter_topic=' . $topic;
-
-        if (empty($return) || !JUri::isInternal(base64_decode($return))) {
-            return JRoute::_('index.php?option=com_pfforum&view=' . $this->view_list . $append, false);
-        }
-        else {
-            return base64_decode($return);
-        }
-    }
-
-
-    /**
-     * Function that allows child controller access to model data after the data has been saved.
-     *
-     * @param     jmodel    $model    The data model object.
-     * @param     array     $data     The validated data.
-     *
-     * @return    void
-     */
-    protected function postSaveHook(&$model, $data)
-    {
-        $task = $this->getTask();
-
-        if ($task == 'save') {
-            $this->setRedirect(JRoute::_('index.php?option=com_pfforum&view=' . $this->view_list, false));
-        }
     }
 }

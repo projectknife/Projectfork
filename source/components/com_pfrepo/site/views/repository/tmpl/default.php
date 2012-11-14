@@ -54,7 +54,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                     <?php if ($this->state->get('filter.project')) : ?>
                         <hr />
                         <div class="filter-labels">
-                            <?php echo JHtml::_('pfhtml.label.filter', 'repository', $this->state->get('filter.project'), $this->state->get('filter.labels'));?>
+                            <?php echo JHtml::_('pfhtml.label.filter', 'com_pfrepo', $this->state->get('filter.project'), $this->state->get('filter.labels'));?>
                         </div>
                         <div class="clearfix"> </div>
                     <?php endif; ?>

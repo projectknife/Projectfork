@@ -1,16 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
-	<layout title="COM_PROJECTFORK_MILESTONE_FORM_VIEW_DEFAULT_TITLE" option="COM_PROJECTFORK_MILESTONE_FORM_VIEW_DEFAULT_OPTION">
-		<help
-			key = "JHELP_MENUS_MENU_ITEM_MILESTONE_CREATE"
-		/>
-		<message>
-			<![CDATA[COM_PROJECTFORK_MILESTONE_FORM_VIEW_DEFAULT_DESC]]>
-		</message>
+	<layout title="COM_PFMILESTONES_FORM_VIEW_DEFAULT_TITLE" option="COM_PFMILESTONES_FORM_VIEW_DEFAULT_OPTION">
+		<message><![CDATA[COM_PFMILESTONES_FORM_VIEW_DEFAULT_DESC]]></message>
 	</layout>
-	<fields name="params">
-		<fieldset name="basic">
-			
-		</fieldset>
-	</fields>
 </metadata>

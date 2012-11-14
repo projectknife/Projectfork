@@ -15,6 +15,8 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.keepalive');
 JHtml::_('pfhtml.script.form');
+
+$user = JFactory::getUser();
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task)
@@ -34,7 +36,9 @@ Joomla.submitbutton = function(task)
         <fieldset class="adminform">
             <legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_TOPIC') : JText::_('COM_PROJECTFORK_EDIT_TOPIC'); ?></legend>
             <ul class="adminformlist unstyled">
-                <li><?php echo $this->form->getLabel('project_id') . $this->form->getInput('project_id'); ?></li>
+                <?php if ($this->item->id <= 0) : ?>
+                    <li><?php echo $this->form->getLabel('project_id') . $this->form->getInput('project_id'); ?></li>
+                <?php endif; ?>
                 <li><?php echo $this->form->getLabel('title') . $this->form->getInput('title'); ?></li>
             </ul>
             <div class="clr"></div>
@@ -69,14 +73,16 @@ Joomla.submitbutton = function(task)
                 </div>
             </fieldset>
 
-            <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'attachments'); ?>
-            <fieldset class="panelform">
-				<ul class="adminformlist unstyled">
-                    <li>
-                        <?php echo $this->form->getInput('attachment'); ?>
-                    </li>
-                </ul>
-            </fieldset>
+            <?php if (PFApplicationHelper::enabled('com_pfrepo')) : ?>
+                <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'attachments'); ?>
+                <fieldset class="panelform">
+    				<ul class="adminformlist unstyled">
+                        <li>
+                            <?php echo $this->form->getInput('attachment'); ?>
+                        </li>
+                    </ul>
+                </fieldset>
+            <?php endif; ?>
 
             <?php $fieldsets = $this->form->getFieldsets('attribs'); ?>
 			<?php foreach ($fieldsets as $name => $fieldset) : ?>
@@ -99,21 +105,23 @@ Joomla.submitbutton = function(task)
 
     <div class="clr"></div>
 
-    <div class="width-100 fltlft span12">
-		<?php echo JHtml::_('sliders.start', 'permissions-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
+    <?php if ($user->authorise('core.admin', 'com_pfforum')) : ?>
+        <div class="width-100 fltlft span12">
+    		<?php echo JHtml::_('sliders.start', 'permissions-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
 
-			<?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'access-rules'); ?>
-			<fieldset class="panelform">
-                <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
-                <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
-				<div id="jform_rules_element">
-                    <div id="jform_rules_reload" style="clear: both;">
-                        <?php echo $this->form->getInput('rules'); ?>
+    			<?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'access-rules'); ?>
+    			<fieldset class="panelform">
+                    <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+                    <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+    				<div id="jform_rules_element">
+                        <div id="jform_rules_reload" style="clear: both;">
+                            <?php echo $this->form->getInput('rules'); ?>
+                        </div>
                     </div>
-                </div>
-			</fieldset>
-		<?php echo JHtml::_('sliders.end'); ?>
-	</div>
+    			</fieldset>
+    		<?php echo JHtml::_('sliders.end'); ?>
+    	</div>
+    <?php endif; ?>
 
     <div>
         <div id="jform_access_element">

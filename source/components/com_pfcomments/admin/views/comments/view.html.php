@@ -133,5 +133,9 @@ class PFcommentsViewComments extends JViewLegacy
             JToolBarHelper::trash('comments.trash');
             JToolBarHelper::divider();
         }
+
+        if (JFactory::getUser()->authorise('core.admin')) {
+            JToolBarHelper::preferences('com_pfcomments');
+        }
     }
 }

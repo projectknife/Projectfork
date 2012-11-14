@@ -18,7 +18,9 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
 $uid        = $user->get('id');
 
-$filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
+$filter_in     = ($this->state->get('filter.isset') ? 'in ' : '');
+$repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
+$cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects">
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -85,7 +87,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                     $can_edit     = $access->get('core.edit');
                     $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
                     $can_edit_own = ($access->get('core.edit.own') && $item->created_by == $uid);
-                    $can_change   = ($access->get('core.edit.state') || $can_checkin);
+                    $can_change   = ($access->get('core.edit.state') && $can_checkin);
 
                     // Calculate project progress
                     $task_count = (int) $item->tasks;
@@ -98,8 +100,12 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                     if ($progress < 34)   $progress_class = 'danger label-important';
 
                     // Prepare the watch button
-                    $options = array('div-class' => 'pull-right', 'a-class' => 'btn-mini');
-                    $watch = JHtml::_('pfhtml.button.watch', 'projects', $i, $item->watching, $options);
+                    $watch = '';
+
+                    if ($uid) {
+                        $options = array('div-class' => 'pull-right', 'a-class' => 'btn-mini');
+                        $watch = JHtml::_('pfhtml.button.watch', 'projects', $i, $item->watching, $options);
+                    }
                 ?>
                 <?php if ($item->category_title != $current_cat && !is_numeric($this->state->get('filter.category'))) : ?>
                     </ul>
@@ -116,7 +122,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                         <?php endif ; ?>
                         <div class="caption">
                             <h3>
-                                <?php if ($can_change) : ?>
+                                <?php if ($can_change || $uid) : ?>
                                     <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
                                         <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
                                     </label>
@@ -148,8 +154,11 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                                     <span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $progress;?>%</span>
                                 </div>
                             </div>
-                            <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created, $this->params->get('date_format')); ?>
-                            <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date, $this->params->get('date_format')); ?>
+                            <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
+                            <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
+                            <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date, true); ?>
+                            <?php if ($cmnts_enabled) : echo JHtml::_('pfcomments.label', $item->comments); endif; ?>
+                            <?php if ($repo_enabled) : echo JHtml::_('pfrepo.attachmentsLabel', $item->attachments); endif; ?>
                     </div>
                 </li>
                 <?php

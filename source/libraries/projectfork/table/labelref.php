@@ -9,6 +9,7 @@
 
 defined('_JEXEC') or die();
 
+
 /**
  * Project Label Reference table
  *

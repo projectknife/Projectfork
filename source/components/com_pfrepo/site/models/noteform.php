@@ -68,7 +68,7 @@ class PFrepoModelNoteForm extends PFrepoModelNote
 
         // Get the labels
         $labels = $this->getInstance('Labels', 'PFModel');
-        $value->labels = $labels->getConnections('note', $value->id);
+        $value->labels = $labels->getConnections('com_pfrepo.note', $value->id);
 
         // Compute selected asset permissions.
         $uid    = JFactory::getUser()->get('id');

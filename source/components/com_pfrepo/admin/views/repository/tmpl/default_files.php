@@ -18,11 +18,11 @@ foreach ($this->items['files'] as $i => $item) :
     $edit_link = 'task=file.edit&filter_project=' . $item->project_id . 'filter_parent_id=' . $item->dir_id . '&id=' . $item->id;
     $access    = PFrepoHelper::getActions('file', $item->id);
 
-    $can_create   = $access->get('file.create');
-    $can_edit     = $access->get('file.edit');
+    $can_create   = $access->get('core.create');
+    $can_edit     = $access->get('core.edit');
     $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
-    $can_edit_own = ($access->get('file.edit.own') && $item->created_by == $uid);
-    $can_change   = ($access->get('file.edit.state') && $can_checkin);
+    $can_edit_own = ($access->get('core.edit.own') && $item->created_by == $uid);
+    $can_change   = ($access->get('core.edit.state') && $can_checkin);
     ?>
     <tr class="row<?php echo $i % 2; ?>">
         <td class="center hidden-phone">

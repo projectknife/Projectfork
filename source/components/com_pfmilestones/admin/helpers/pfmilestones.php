@@ -30,6 +30,10 @@ class PFmilestonesHelper
      */
     public static function addSubmenu($view)
     {
+        if ($view == 'milestone' && version_compare(JVERSION, '3.0.0', 'ge')) {
+            return;
+        }
+
         $components = PFApplicationHelper::getComponents();
         $option     = JFactory::getApplication()->input->get('option');
 
@@ -39,8 +43,15 @@ class PFmilestonesHelper
                 continue;
             }
 
+            $title = JText::_($component->element);
+            $parts = explode('-', $title, 2);
+
+            if (count($parts) == 2) {
+                $title = trim($parts[1]);
+            }
+
             JSubMenuHelper::addEntry(
-                JText::_($component->element),
+                $title,
                 'index.php?option=' . $component->element,
                 ($option == $component->element)
             );
@@ -51,21 +62,17 @@ class PFmilestonesHelper
     /**
      * Gets a list of actions that can be performed.
      *
-     * @param     integer    $id         The item id
-     * @param     integer    $project    The project id
+     * @param     integer    $id    The item id
      *
      * @return    jobject
      */
-    public static function getActions($id = 0, $project = 0)
+    public static function getActions($id = 0)
     {
         $user   = JFactory::getUser();
         $result = new JObject;
 
-        if ((empty($id) || $id == 0) && (empty($project) || $project == 0)) {
+        if ((int) $id <= 0) {
             $asset = self::$extension;
-        }
-        elseif (empty($id) || $id == 0) {
-            $asset = 'com_pfprojects.project.' . (int) $project;
         }
         else {
             $asset = 'com_pfmilestones.milestone.' . (int) $id;

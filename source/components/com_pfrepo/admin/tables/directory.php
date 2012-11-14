@@ -81,16 +81,6 @@ class PFTableDirectory extends JTableNested
             $this->_db->setQuery($query);
             $result = $this->_db->loadResult();
         }
-        elseif ($this->project_id > 0) {
-            $query->select($this->_db->quoteName('asset_id'))
-                  ->from($this->_db->quoteName('#__pf_repo_dirs'))
-                  ->where($this->_db->quoteName('project_id') . ' = ' . $this->_db->quote((int) $this->project_id))
-                  ->where($this->_db->quoteName('parent_id') . ' = 1');
-
-            // Get the asset id from the database.
-            $this->_db->setQuery($query);
-            $result = $this->_db->loadResult();
-        }
 
         if (!$result) {
             // Build the query to get the asset id for the parent component.
@@ -151,6 +141,38 @@ class PFTableDirectory extends JTableNested
         if (!$access) $access = 1;
 
         return $access;
+    }
+
+
+    /**
+     * Method to get the children on an asset (which are not directly connected in the assets table)
+     *
+     * @param    string    $name    The name of the parent asset
+     *
+     * @return    array    The names of the child assets
+     */
+    public function getAssetChildren($name)
+    {
+        $assets = array();
+
+        list($component, $item, $id) = explode('.', $name, 3);
+
+        // Get the project assets
+        if ($component == 'com_pfprojects' && $item == 'project') {
+            $db    = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('c.*')
+                  ->from('#__assets AS c')
+                  ->join('INNER', $this->_tbl . ' AS a ON (a.asset_id = c.id)')
+                  ->where('a.project_id = ' . $db->quote((int) $id))
+                  ->group('c.id');
+
+            $db->setQuery($query);
+            $assets = (array) $db->loadObjectList();
+        }
+
+        return $assets;
     }
 
 

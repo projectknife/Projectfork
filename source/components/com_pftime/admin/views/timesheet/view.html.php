@@ -87,7 +87,7 @@ class PFtimeViewTimesheet extends JViewLegacy
      */
     protected function addToolbar()
     {
-        $access = PFtimeHelper::getActions(null, $this->state->get('filter.project'));
+        $access = PFtimeHelper::getActions();
         $user  = JFactory::getUser();
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_TIMESHEET_TITLE'), 'article.png');
@@ -116,6 +116,10 @@ class PFtimeViewTimesheet extends JViewLegacy
         elseif ($access->get('core.edit.state')) {
             JToolBarHelper::trash('timesheet.trash');
             JToolBarHelper::divider();
+        }
+
+        if ($user->authorise('core.admin')) {
+            JToolBarHelper::preferences('com_pftime');
         }
     }
 }

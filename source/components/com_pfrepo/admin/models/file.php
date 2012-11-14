@@ -234,7 +234,7 @@ class PFrepoModelFile extends JModelAdmin
         // Check that user has create and edit permission
         $access = PFrepoHelper::getActions('directory', $dest);
 
-        if (!$access->get('file.create')) {
+        if (!$access->get('core.create')) {
             $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_CANNOT_CREATE_FILE'));
             return false;
         }
@@ -316,7 +316,7 @@ class PFrepoModelFile extends JModelAdmin
             // Check that user has create permission for parent directory
             $access = PFrepoHelper::getActions('directory', $dest);
 
-            if (!$access->get('file.create')) {
+            if (!$access->get('core.create')) {
                 // Error since user cannot create in parent dir
                 $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_CANNOT_CREATE_FILE'));
                 return false;
@@ -402,7 +402,7 @@ class PFrepoModelFile extends JModelAdmin
 
             // Get the labels
             $labels = $this->getInstance('Labels', 'PFModel');
-            $item->labels = $labels->getConnections('file', $item->id);
+            $item->labels = $labels->getConnections('com_pfrepo.file', $item->id);
         }
 
         return $item;
@@ -514,7 +514,7 @@ class PFrepoModelFile extends JModelAdmin
                 $labels->setState('item.project', $updated->project_id);
             }
 
-            $labels->setState('item.type', 'file');
+            $labels->setState('item.type', 'com_pfrepo.file');
             $labels->setState('item.id', $table->id);
 
             if (!$labels->saveRefs($data['labels'])) {
@@ -618,15 +618,24 @@ class PFrepoModelFile extends JModelAdmin
         $form = $this->loadForm('com_pfrepo.file', 'file', array('control' => 'jform', 'load_data' => $loadData));
         if (empty($form)) return false;
 
-        // Check if a project and directory is already selected. If not, get them from the current state
-        $project_id = (int) $form->getValue('project_id');
-        $dir_id     = (int) $form->getValue('dir_id');
+        $jinput = JFactory::getApplication()->input;
+        $user   = JFactory::getUser();
+        $id     = (int) $jinput->get('id', 0);
 
-        if (!$project_id) {
-            $form->setValue('project_id', null, $this->getState($this->getName() . '.project'));
+        // Disable these fields if not an admin
+        if (!$user->authorise('core.admin', 'com_pfrepo')) {
+            $form->setFieldAttribute('access', 'disabled', 'true');
+            $form->setFieldAttribute('access', 'filter', 'unset');
+
+            $form->setFieldAttribute('rules', 'disabled', 'true');
+            $form->setFieldAttribute('rules', 'filter', 'unset');
         }
-        if (!$dir_id) {
-            $form->setValue('dir_id', null, $this->getState($this->getName() . '.dir_id'));
+
+        // Disable these fields when updating
+        if ($id) {
+            $form->setFieldAttribute('project_id', 'disabled', 'true');
+            $form->setFieldAttribute('project_id', 'filter', 'unset');
+            $form->setFieldAttribute('project_id', 'required', 'false');
         }
 
         return $form;
@@ -643,7 +652,17 @@ class PFrepoModelFile extends JModelAdmin
         // Check the session for previously entered form data.
         $data = JFactory::getApplication()->getUserState('com_pfrepo.edit.' . $this->getName() . '.data', array());
 
-        if (empty($data)) $data = $this->getItem();
+        if (empty($data)) {
+			$data = $this->getItem();
+
+            // Set default values
+            if ($this->getState($this->getName() . '.id') == 0) {
+                $active_id = PFApplicationHelper::getActiveProjectId();
+
+                $data->set('project_id', $active_id);
+                $data->set('dir_id', $this->getState($this->getName() . '.dir_id'));
+            }
+        }
 
         return $data;
     }

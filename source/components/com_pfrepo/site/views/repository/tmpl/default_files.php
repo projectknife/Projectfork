@@ -26,6 +26,7 @@ foreach ($this->items['files'] as $i => $item) :
     $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
     $can_edit_own = ($access->get('core.edit.own') && $item->created_by == $uid);
     $can_change   = ($access->get('core.edit.state') && $can_checkin);
+    $date_opts    = array('past-class' => '', 'past-icon' => 'calendar');
     ?>
     <tr class="row<?php echo $i % 2; ?>">
         <?php if ($this_dir->parent_id >= 1) : ?>
@@ -49,14 +50,17 @@ foreach ($this->items['files'] as $i => $item) :
                 $this->menu->itemDelete('repository', $x, ($can_edit || $can_edit_own));
                 $this->menu->end();
 
-                echo $this->menu->render();
+                echo $this->menu->render(array('class' => 'btn-mini'));
             ?>
         </td>
         <td>
-            <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
+            <?php echo JHtml::_('pfhtml.label.datetime', $item->created, false, $date_opts); ?>
         </td>
         <td>
-            <?php echo JHtml::_('pf.html.truncate', $item->description); ?> <i class="icon-user"></i> <?php echo $this->escape($item->author_name); ?>
+            <?php echo JHtml::_('pf.html.truncate', $item->description); ?>
+            <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
+            <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
+            <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
         </td>
     </tr>
 <?php $x++; endforeach; ?>

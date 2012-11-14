@@ -79,30 +79,7 @@ class PFtableTask extends PFTable
 
             if ($result) $asset_id = (int) $result;
         }
-        elseif ($this->milestone_id)  {
-            // This is a task under a milestone.
-            $query->select('asset_id')
-                  ->from('#__pf_milestones')
-                  ->where('id = ' . (int) $this->milestone_id);
-
-            $this->_db->setQuery($query);
-            $result = $this->_db->loadResult();
-
-            if ($result) $asset_id = (int) $result;
-        }
-        elseif ($this->project_id) {
-            // This is a task under a project.
-            $query->select('asset_id')
-                  ->from('#__pf_projects')
-                  ->where('id = ' . (int) $this->project_id);
-
-            $this->_db->setQuery($query);
-            $result = $this->_db->loadResult();
-
-            if ($result) $asset_id = (int) $result;
-        }
-
-        if (!$asset_id) {
+        else {
             // No asset found, fall back to the component
             $query->clear();
             $query->select($this->_db->quoteName('id'))
@@ -169,6 +146,53 @@ class PFtableTask extends PFTable
 
 
     /**
+     * Method to get the children on an asset (which are not directly connected in the assets table)
+     *
+     * @param    string    $name    The name of the parent asset
+     *
+     * @return    array    The names of the child assets
+     */
+    public function getAssetChildren($name)
+    {
+        $assets = array();
+
+        list($component, $item, $id) = explode('.', $name, 3);
+
+        // Get the project assets
+        if ($component == 'com_pfprojects' && $item == 'project') {
+            $db    = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('c.*')
+                  ->from('#__assets AS c')
+                  ->join('INNER', $this->_tbl . ' AS a ON (a.asset_id = c.id)')
+                  ->where('a.project_id = ' . $db->quote((int) $id))
+                  ->group('c.id');
+
+            $db->setQuery($query);
+            $assets = (array) $db->loadObjectList();
+        }
+
+        // Get the milestone assets
+        if ($component == 'com_pfmilestones' && $item == 'milestone') {
+            $db    = $this->getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('c.*')
+                  ->from('#__assets AS c')
+                  ->join('INNER', $this->_tbl . ' AS a ON (a.asset_id = c.id)')
+                  ->where('a.milestone_id = ' . $db->quote((int) $id))
+                  ->group('c.id');
+
+            $db->setQuery($query);
+            $assets = (array) $db->loadObjectList();
+        }
+
+        return $assets;
+    }
+
+
+    /**
      * Overloaded bind function
      *
      * @param     array    $array     Named array
@@ -188,11 +212,6 @@ class PFtableTask extends PFTable
         if (isset($array['rules']) && is_array($array['rules'])) {
             $rules = new JRules($array['rules']);
             $this->setRules($rules);
-        }
-
-        // Bind the assigned users
-        if (isset($array['users']) && is_array($array['users'])) {
-            $this->users = $array['users'];
         }
 
         return parent::bind($array, $ignore);
@@ -222,14 +241,6 @@ class PFtableTask extends PFTable
         if (trim(str_replace('&nbsp;', '', $this->description)) == '') {
             $this->description = '';
         }
-
-        $users = array();
-        foreach($this->users AS $user)
-        {
-            if ((int) $user) $users[] = $user;
-        }
-
-        $this->users = $users;
 
         // Check if a project is selected
         if ((int) $this->project_id <= 0) {
@@ -270,9 +281,6 @@ class PFtableTask extends PFTable
             if (empty($this->created_by)) $this->created_by = $user->get('id');
         }
 
-        // Generate catid
-        $this->catid = intval($this->project_id).''.intval($this->milestone_id).''.intval($this->list_id);
-
         // Verify that the alias is unique
         $table = JTable::getInstance('Task','PFtable');
         $data  = array('alias' => $this->alias, 'project_id' => $this->project_id, 'milestone_id' => $this->milestone_id, 'list_id' => $this->list_id);
@@ -285,65 +293,7 @@ class PFtableTask extends PFTable
         // Store the main record
         $success = parent::store($updateNulls);
 
-        if ($success && isset($this->users)) {
-            $success = $this->storeUsers($this->id, $this->users);
-        }
-
         return $success;
-    }
-
-
-    /**
-     * Method to save the assigned users.
-     *
-     * @param     int        The task id
-     * @param     array      The users
-     *
-     * @return    boolean    True on success
-     */
-    public function storeUsers($task_id, $data)
-    {
-        $item  = 'task';
-        $table = JTable::getInstance('UserRef','PFtable');
-        $query = $this->_db->getQuery(true);
-
-        if (!$task_id) return true;
-
-        $query->select('a.user_id')
-              ->from('#__pf_ref_users AS a')
-              ->where('a.item_type = ' . $this->_db->quote($item))
-              ->where('a.item_id = ' . $this->_db->quote($task_id));
-
-        $this->_db->setQuery((string) $query);
-        $list = (array) $this->_db->loadResultArray();
-
-        // Add new references
-        foreach($data AS $uid)
-        {
-            if (!in_array($uid, $list) && $uid != 0) {
-                $sdata = array('item_type' => $item,
-                               'item_id'   => $task_id,
-                               'user_id'   => $uid);
-
-                if (!$table->save($sdata)) return false;
-
-                $list[] = $uid;
-            }
-        }
-
-        // Delete old references
-        foreach($list AS $uid)
-        {
-            if (!in_array($uid, $data) && $uid != 0) {
-                if (!$table->load(array('item_type' => $item, 'item_id' => $task_id, 'user_id' => $uid))) {
-                    return false;
-                }
-
-                if (!$table->delete()) return false;
-            }
-        }
-
-        return true;
     }
 
 

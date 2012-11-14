@@ -101,7 +101,7 @@ class PFtasksModelTaskRef extends JModelAdmin
     {
         if (!empty($record->task_id)) {
             $user  = JFactory::getUser();
-            $asset = 'com_projectfork.task.' . (int) $record->task_id;
+            $asset = 'com_pftasks.task.' . (int) $record->task_id;
 
             return $user->authorise('core.delete', $asset);
         }

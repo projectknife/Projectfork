@@ -324,12 +324,7 @@ class PFModelLabels extends JModelList
         $this->setState('item.id', $value);
 
         // Item type
-        $value = str_replace('form', '', JRequest::getCmd('view', ''));
-
-        if ($value && $value != 'com_projectfork') {
-            $value = 'com_projectfork' . $value;
-        }
-
+        $value = null;
         $this->setState('item.type', $value);
     }
 }

@@ -80,7 +80,7 @@ abstract class PFObjectHelper
 
             foreach ($content_props AS $prop)
             {
-                if (!in_array($prop, $item_props)) {
+                if (!array_key_exists($prop, $item_props)) {
                     $item->$prop = $content[$prop];
                 }
             }

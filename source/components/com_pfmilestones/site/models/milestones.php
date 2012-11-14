@@ -98,18 +98,32 @@ class PFmilestonesModelMilestones extends JModelList
 
         // Join over the label refs for label count
         $query->select('COUNT(DISTINCT lbl.id) AS label_count');
-        $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('milestone') . ')');
+        $query->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id AND lbl.item_type = ' . $db->quote('com_pfmilestones.milestone') . ')');
 
         // Join over the observer table for email notification status
         if ($user->get('id') > 0) {
-            $query->select('COUNT(obs.user_id) AS watching');
-            $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = ' . $db->quote('milestone') . ' AND obs.item_id = a.id AND obs.user_id = ' . $db->quote($user->get('id')) . ')');
+            $query->select('COUNT(DISTINCT obs.user_id) AS watching');
+            $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = ' . $db->quote('com_pfmilestones.milestone')
+                               . ' AND obs.item_id = a.id AND obs.user_id = '
+                               . $db->quote($user->get('id')) . ')'
+                        );
         }
 
+        // Join over the attachments for attachment count
+        $query->select('COUNT(DISTINCT at.id) AS attachments');
+        $query->join('LEFT', '#__pf_ref_attachments AS at ON (at.item_type = '
+              . $db->quote('com_pfmilestones.milestone') . ' AND at.item_id = a.id)');
+
+        // Join over the comments for comment count
+        $query->select('COUNT(DISTINCT co.id) AS comments');
+        $query->join('LEFT', '#__pf_comments AS co ON (co.context = '
+              . $db->quote('com_pfmilestones.milestone') . ' AND co.item_id = a.id)');
+
         // Implement View Level Access
-        if (!$user->authorise('core.admin', 'com_projectfork')) {
+        if (!$user->authorise('core.admin', 'com_pfmilestones')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
+            $query->where('p.access IN (' . $groups . ')');
         }
 
         // Filter labels
@@ -185,7 +199,7 @@ class PFmilestonesModelMilestones extends JModelList
 
             // Get the labels
             if ($items[$i]->label_count > 0) {
-                $items[$i]->labels = $labels->getConnections('milestone', $items[$i]->id);
+                $items[$i]->labels = $labels->getConnections('com_pfmilestones.milestone', $items[$i]->id);
             }
 
             if (!isset($items[$i]->watching)) {
@@ -222,7 +236,7 @@ class PFmilestonesModelMilestones extends JModelList
         $query->join('INNER', '#__pf_milestones AS a ON a.created_by = u.id');
 
         // Implement View Level Access
-        if (!$access->get('core.admin')) {
+        if (!$access->get('core.admin', 'com_pfmilestones')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
         }

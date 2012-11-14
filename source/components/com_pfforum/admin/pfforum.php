@@ -23,6 +23,7 @@ jimport('projectfork.framework');
 
 // Register classes to autoload
 JLoader::register('PFforumHelper', JPATH_ADMINISTRATOR . '/components/com_pfforum/helpers/pfforum.php');
+JHtml::addincludepath(JPATH_ADMINISTRATOR . '/components/com_pfforum/helpers/html');
 
 $controller = JControllerLegacy::getInstance('PFforum');
 $controller->execute(JFactory::getApplication()->input->get('task'));

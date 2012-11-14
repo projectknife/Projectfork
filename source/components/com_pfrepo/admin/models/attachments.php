@@ -72,7 +72,7 @@ class PFrepoModelAttachments extends JModelList
         $items      = array();
         $attachment = $this->getInstance('Attachment', 'PFrepoModel', array('ignore_request' => true));
 
-        // Get the fulle object of each attachment id
+        // Get the full object of each attachment id
         foreach($list AS $id)
         {
             $items[] = $attachment->getItem($id);
@@ -207,11 +207,6 @@ class PFrepoModelAttachments extends JModelList
     {
         // Get potential form data
         $form = JRequest::getVar('jform', array(), 'post', 'array');
-
-
-        // Item type
-        $value = str_replace('form', '', JRequest::getCmd('view', ''));
-        $this->setState('item.type', $value);
 
         // Item id
         $value = JRequest::getUint('id');

@@ -1,7 +1,7 @@
 <?php
 /**
  * @package      Projectfork
- * @subpackage   Tasklists
+ * @subpackage   Tasks
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
@@ -14,7 +14,7 @@ defined('_JEXEC') or die();
 jimport('joomla.application.component.controllerform');
 
 
-class PFtasklistsControllerTasklist extends JControllerForm
+class PFtasksControllerTasklist extends JControllerForm
 {
     /**
 	 * The prefix to use with controller messages.
@@ -45,7 +45,7 @@ class PFtasklistsControllerTasklist extends JControllerForm
      *
      * @return    object               The model.
      */
-    public function getModel($name = 'Tasklist', $prefix = 'PFtasklistsModel', $config = array('ignore_request' => true))
+    public function getModel($name = 'Tasklist', $prefix = 'PFtasksModel', $config = array('ignore_request' => true))
     {
         return parent::getModel($name, $prefix, $config);
     }

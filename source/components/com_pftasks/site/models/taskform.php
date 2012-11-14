@@ -63,13 +63,15 @@ class PFtasksModelTaskForm extends PFtasksModelTask
             $value->estimate = round($value->estimate / 60);
         }
 
-        // Get the attachments
-        $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-        $value->attachment = $attachments->getItems('task', $value->id);
+        if (PFApplicationHelper::exists('com_pfrepo')) {
+            // Get the attachments
+            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+            $value->attachment = $attachments->getItems('com_pftasks.task', $value->id);
+        }
 
         // Get the labels
         $labels = $this->getInstance('Labels', 'PFModel');
-        $value->labels = $labels->getConnections('task', $value->id);
+        $value->labels = $labels->getConnections('com_pftasks.task', $value->id);
 
         // Get the Dependencies
         $taskrefs = $this->getInstance('TaskRefs', 'PFtasksModel');
@@ -80,7 +82,7 @@ class PFtasksModelTaskForm extends PFtasksModelTask
             $value->params->set('access-edit', true);
         }
         // Now check if edit.own is available.
-        elseif (!empty($uid) && $access->authorise('core.edit.own')) {
+        elseif (!empty($uid) && $access->get('core.edit.own')) {
             // Check for a valid user and that they are the owner.
             if ($uid == $value->created_by) {
                 $value->params->set('access-edit', true);
@@ -186,9 +188,9 @@ class PFtasksModelTaskForm extends PFtasksModelTask
                 JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_EDIT_NOT_PERMITTED'));
             }
 
-            $refs = $this->getInstance('UserRefs', 'ProjectforkModel', array('ignore_request' => true));
+            $refs = $this->getInstance('UserRefs', 'PFusersModel', array('ignore_request' => true));
 
-            if (!$refs->store($uids, 'task', $pk)) {
+            if (!$refs->store($uids, 'com_pftasks.task', $pk)) {
                 return false;
             }
         }
@@ -211,6 +213,10 @@ class PFtasksModelTaskForm extends PFtasksModelTask
     {
         // Initialise variables.
         $table = $this->getTable();
+        $uid   = JFactory::getUser()->get('id');
+        $date  = new JDate();
+        $now   = $date->toSql();
+        $ndate = JFactory::getDbo()->getNullDate();
 
         if (empty($pks)) {
             JError::raiseWarning(500, JText::_($this->text_prefix . '_ERROR_NO_ITEMS_SELECTED'));
@@ -236,13 +242,28 @@ class PFtasksModelTaskForm extends PFtasksModelTask
             if (is_null($state)) {
                 if ($table->complete == '1') {
                     $table->complete = '0';
+                    $table->completed = $ndate;
+                    $table->completed_by = '0';
                 }
                 else {
                     $table->complete = '1';
+                    $table->completed = $now;
+                    $table->completed_by = $uid;
                 }
             }
             else {
                 $table->complete = (int) $state;
+
+                if ($table->complete == 1) {
+                    $table->complete = '0';
+                    $table->completed = $ndate;
+                    $table->completed_by = '0';
+                }
+                else {
+                    $table->complete = 0;
+                    $table->completed = $now;
+                    $table->completed_by = $uid;
+                }
             }
 
             // Trigger the onContentBeforeSave event.

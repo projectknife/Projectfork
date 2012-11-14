@@ -128,7 +128,7 @@ class PFtimeModelTimesheet extends JModelList
         $query->select(
             $this->getState(
                 'list.select',
-                'a.id, a.project_id, a.task_id, a.description, '
+                'a.id, a.project_id, a.task_id, a.task_title, a.description, '
                 . 'a.checked_out, a.checked_out_time, a.state, a.access, '
                 . 'a.created, a.created_by, a.log_date, a.log_time'
             )
@@ -151,8 +151,8 @@ class PFtimeModelTimesheet extends JModelList
         $query->select('p.title AS project_title')
               ->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
 
-        // Join over the tasks for the task title.
-        $query->select('t.title AS task_title')
+        // Join over the tasks.
+        $query->select('t.id AS task_exists')
               ->join('LEFT', '#__pf_tasks AS t ON t.id = a.task_id');
 
         // Implement View Level Access

@@ -81,12 +81,11 @@ class PFtableComment extends JTableNested
             $this->_db->setQuery($query);
             $result = $this->_db->loadResult();
         }
-        elseif ($asset_id === null) {
-            // This is a comment that needs to parent with the context item.
-            // Build the query to get the asset id for the parent comment.
+        else {
+            // Get the asset id of the component
             $query->select($this->_db->quoteName('id'))
                   ->from($this->_db->quoteName('#__assets'))
-                  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote($this->context . '.' . $this->item_id));
+                  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pfcomments"));
 
             // Get the asset id from the database.
             $this->_db->setQuery($query);

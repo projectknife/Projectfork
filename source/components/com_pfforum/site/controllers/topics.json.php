@@ -11,14 +11,14 @@
 defined('_JEXEC') or die();
 
 
-jimport('joomla.application.component.controlleradmin');
+jimport('projectfork.controller.admin.json');
 
 
 /**
  * Projectfork Topic List Controller
  *
  */
-class PFforumControllerTopics extends PFforumControllerAdminJson
+class PFforumControllerTopics extends PFControllerAdminJson
 {
     /**
      * The default view

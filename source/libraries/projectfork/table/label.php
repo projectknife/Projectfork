@@ -1,6 +1,7 @@
 <?php
 /**
- * @package      Projectfork
+ * @package      Projectfork.Library
+ * @subpackage   Table
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
@@ -11,7 +12,6 @@ defined('_JEXEC') or die();
 
 
 jimport('joomla.database.tableasset');
-JLoader::register('ProjectforkHelperQuery', JPATH_ADMINISTRATOR . '/components/com_projectfork/helpers/query.php');
 
 
 /**
@@ -37,9 +37,6 @@ class PFTableLabel extends JTable
 	 * @param   mixed  $pk  An optional primary key value to delete.  If not set the instance property value is used.
 	 *
 	 * @return  boolean  True on success.
-	 *
-	 * @link	http://docs.joomla.org/JTable/delete
-	 * @since   11.1
 	 */
 	public function delete($pk = null)
 	{
@@ -71,12 +68,18 @@ class PFTableLabel extends JTable
 		}
 
         // Delete the references
-        $tables = array('labelref');
-        $field  = 'label_id.' . $pk;
+        $query->clear();
+        $query->delete('#__pf_ref_labels')
+              ->where('label_id = ' . $this->_db->quote($pk));
 
-        if (!ProjectforkHelperQuery::deleteFromTablesByField($tables, $field)) {
-            return false;
-        }
+        $this->_db->setQuery($query);
+
+        // Check for a database error.
+		if (!$this->_db->execute()) {
+			$e = new JException(JText::sprintf('JLIB_DATABASE_ERROR_DELETE_FAILED', get_class($this), $this->_db->getErrorMsg()));
+			$this->setError($e);
+			return false;
+		}
 
 		return true;
 	}

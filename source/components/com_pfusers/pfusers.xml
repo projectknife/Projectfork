@@ -2,7 +2,7 @@
 <extension type="component" version="2.5" method="upgrade">
     <name>com_pfusers</name>
     <author>Tobias Kuhn</author>
-    <creationDate>October 2012</creationDate>
+    <creationDate>November 2012</creationDate>
     <copyright>(C) 2006 - 2012 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>support@projectfork.net</authorEmail>
@@ -27,7 +27,6 @@
             <folder>models</folder>
             <folder>tables</folder>
             <filename>pfusers.php</filename>
-            <filename>script.php</filename>
             <filename>LICENSE.txt</filename>
             <filename>index.html</filename>
         </files>

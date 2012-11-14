@@ -16,6 +16,8 @@ JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
 JHtml::_('behavior.keepalive');
 JHtml::_('pfhtml.script.form');
+
+$user = JFactory::getUser();
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task)
@@ -93,21 +95,23 @@ Joomla.submitbutton = function(task)
 
     <div class="clr"></div>
 
-    <div class="width-100 fltlft">
-		<?php echo JHtml::_('sliders.start', 'permissions-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
+    <?php if ($user->authorise('core.admin', 'com_pfrepo')) : ?>
+        <div class="width-100 fltlft">
+    		<?php echo JHtml::_('sliders.start', 'permissions-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
 
-			<?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'access-rules'); ?>
-			<fieldset class="panelform">
-                <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
-                <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
-				<div id="jform_rules_element">
-                    <div id="jform_rules_reload" style="clear: both;">
-                        <?php echo $this->form->getInput('rules'); ?>
+    			<?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'access-rules'); ?>
+    			<fieldset class="panelform">
+                    <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>
+                    <p><?php echo JText::_('COM_PROJECTFORK_RULES_NOTE'); ?></p>
+    				<div id="jform_rules_element">
+                        <div id="jform_rules_reload" style="clear: both;">
+                            <?php echo $this->form->getInput('rules'); ?>
+                        </div>
                     </div>
-                </div>
-			</fieldset>
-		<?php echo JHtml::_('sliders.end'); ?>
-	</div>
+    			</fieldset>
+    		<?php echo JHtml::_('sliders.end'); ?>
+    	</div>
+    <?php endif; ?>
 
     <div>
         <div id="jform_access_element">

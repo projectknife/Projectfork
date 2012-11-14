@@ -30,6 +30,10 @@ class PFrepoHelper
      */
     public static function addSubmenu($view)
     {
+        if (in_array($view, array('directory', 'file', 'note')) && version_compare(JVERSION, '3.0.0', 'ge')) {
+            return;
+        }
+
         $components = PFApplicationHelper::getComponents();
         $option     = JFactory::getApplication()->input->get('option');
 
@@ -39,8 +43,15 @@ class PFrepoHelper
                 continue;
             }
 
+            $title = JText::_($component->element);
+            $parts = explode('-', $title, 2);
+
+            if (count($parts) == 2) {
+                $title = trim($parts[1]);
+            }
+
             JSubMenuHelper::addEntry(
-                JText::_($component->element),
+                $title,
                 'index.php?option=' . $component->element,
                 ($option == $component->element)
             );

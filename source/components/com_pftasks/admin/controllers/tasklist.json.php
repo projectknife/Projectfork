@@ -1,6 +1,7 @@
 <?php
 /**
 * @package      Projectfork
+* @subpackage   Tasks
 *
 * @author       Tobias Kuhn (eaxs)
 * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
@@ -10,14 +11,14 @@
 defined('_JEXEC') or die();
 
 
-jimport('projectfork.application.json.controllerform');
+jimport('projectfork.controller.form.json');
 
 
 /**
  * Projectfork Task List Form Controller
  *
  */
-class PFtasklistsControllerTasklist extends ProjectforkControllerFormJSON
+class PFtasksControllerTasklist extends PFControllerFormJson
 {
 
 }
