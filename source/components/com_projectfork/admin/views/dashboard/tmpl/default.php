@@ -9,6 +9,9 @@
 **/
 
 defined('_JEXEC') or die();
+
+
+$modules = &$this->modules;
 ?>
 <div class="adminform row-fluid">
     <div class="cpanel-left span9 hidden-phone">
@@ -46,7 +49,13 @@ defined('_JEXEC') or die();
                 </div>
             </div>
             <?php endif; ?>
-
+            <div class="clr clearfix"></div>
+            <?php echo $modules->render('pf-dashboard-top', array('style' => 'xhtml'), null); ?>
+        </div>
+        <div class="row-fluid">
+        	<div class="span12">
+        		<?php echo $modules->render('pf-dashboard-left', array('style' => 'xhtml'), null); ?>
+        	</div>
         </div>
     </div>
     <div class="cpanel-right span3 width-40">
@@ -59,5 +68,6 @@ defined('_JEXEC') or die();
                 </a>
             </p>
         </div>
+        <?php echo $modules->render('pf-dashboard-right', array('style' => 'xhtml'), null); ?>
     </div>
 </div>

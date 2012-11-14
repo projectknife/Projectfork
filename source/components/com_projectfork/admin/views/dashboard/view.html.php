@@ -37,6 +37,8 @@ class ProjectforkViewDashboard extends JViewLegacy
      */
     protected $buttons;
 
+    protected $modules;
+
 
     /**
      * Display the view
@@ -47,6 +49,7 @@ class ProjectforkViewDashboard extends JViewLegacy
         $this->components = PFapplicationHelper::getComponents();
         $this->user       = JFactory::getUser();
         $this->buttons    = $this->getButtons();
+        $this->modules    = JFactory::getDocument()->loadRenderer('modules');
 
         if ($this->getLayout() !== 'modal') $this->addToolbar();
 
