@@ -27,7 +27,7 @@ final class PFVersion
     public $DEV_LEVEL = '0';
 
     /** @var  string  Development status. */
-    public $DEV_STATUS = 'Beta';
+    public $DEV_STATUS = 'Beta 1';
 
     /** @var  string  Build number. */
     public $BUILD = '';
@@ -36,10 +36,10 @@ final class PFVersion
     public $CODENAME = 'Sweat And Tears';
 
     /** @var  string  Release date. */
-    public $RELDATE = '12-November-2012';
+    public $RELDATE = '14-November-2012';
 
     /** @var  string  Release time. */
-    public $RELTIME = '00:00';
+    public $RELTIME = '10:00';
 
     /** @var  string  Release timezone. */
     public $RELTZ = 'CET';

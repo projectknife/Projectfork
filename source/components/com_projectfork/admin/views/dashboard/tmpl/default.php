@@ -12,6 +12,8 @@ defined('_JEXEC') or die();
 
 
 $modules = &$this->modules;
+$pfv     = new PFVersion();
+$jv      = new JVersion();
 ?>
 <div class="adminform row-fluid">
     <div class="cpanel-left span9 hidden-phone">
@@ -64,9 +66,15 @@ $modules = &$this->modules;
             <p>Consider this a preview-only version of Projectfork. We highly recommend against using in a production environment as there may be many bugs. </p>
             <p>
                 <a href="https://github.com/projectfork/Projectfork/issues" class="btn btn-small" target="_blank">
-                    <i aria-hidden="true" class="icon-warning"></i> Report an issue on Github
+                    <i aria-hidden="true" class="icon-warning"></i> Report an issue on Github*
                 </a>
             </p>
+            <small>* Please be sure to include the following information:</small>
+            <ul>
+                <li><small>Joomla Version: <?php echo JVERSION; ?> <?php echo $jv->DEV_STATUS;?></small></li>
+                <li><small>Projectfork Version: <?php echo PFVERSION; ?> <?php echo $pfv->DEV_STATUS;?></small></li>
+                <li><small>PHP Version: <?php echo phpversion(); ?></small></li>
+            </ul>
         </div>
         <?php echo $modules->render('pf-dashboard-right', array('style' => 'xhtml'), null); ?>
     </div>
