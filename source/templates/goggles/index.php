@@ -216,7 +216,7 @@
 				    	endif;
 				    	if($user->authorise('core.create', 'com_pfmilestones')) :
 				    ?>
-				    	<li><a href="index.php?option=com_pfmilestones&view=form&layout=edit"><i class="icon-flag"></i> <?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
+				    	<li><a href="<?php echo JRoute::_($link_ms . '&task=form.add');?>"><i class="icon-flag"></i> <?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
 				    <?php
 				    	endif;
 				    	if($user->authorise('core.create', 'com_pftasks')) :
