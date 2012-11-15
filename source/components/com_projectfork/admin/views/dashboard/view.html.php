@@ -93,7 +93,7 @@ class ProjectforkViewDashboard extends JViewLegacy
 
             if (class_exists($class)) {
                 if (in_array('getAdminButtons', get_class_methods($class))) {
-                    $com_buttons = (array) $class::getAdminButtons();
+                    $com_buttons = (array) call_user_func(array($class, 'getAdminButtons'));
 
                     $buttons[$component->element] = array();
 

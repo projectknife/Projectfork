@@ -43,7 +43,7 @@ abstract class modPFdashButtonsHelper
 
             if (class_exists($class)) {
                 if (in_array('getSiteButtons', get_class_methods($class))) {
-                    $com_buttons = (array) $class::getSiteButtons();
+                    $com_buttons = (array) call_user_func(array($class, 'getSiteButtons'));
 
                     $buttons[$component->element] = array();
 
@@ -53,31 +53,6 @@ abstract class modPFdashButtonsHelper
                     }
                 }
             }
-        }
-
-        return $buttons;
-
-
-        $buttons = array();
-
-        if ($access->get('project.create')) {
-            $buttons['projectform.add'] = array('label' => 'MOD_PF_DASH_BUTTONS_ADD_PROJECT',
-                                                'link'  => ProjectforkHelperRoute::getProjectsRoute());
-        }
-
-        if ($access->get('milestone.create')) {
-            $buttons['milestoneform.add'] = array('label' => 'MOD_PF_DASH_BUTTONS_ADD_MILESTONE',
-                                                  'link'  => ProjectforkHelperRoute::getMilestonesRoute());
-        }
-
-        if ($access->get('tasklist.create')) {
-            $buttons['tasklistform.add'] = array('label' => 'MOD_PF_DASH_BUTTONS_ADD_TASKLIST',
-                                                 'link'  => ProjectforkHelperRoute::getTasksRoute());
-        }
-
-        if ($access->get('task.create')) {
-            $buttons['taskform.add'] = array('label' => 'MOD_PF_DASH_BUTTONS_ADD_TASK',
-                                             'link'  => ProjectforkHelperRoute::getTasksRoute());
         }
 
         return $buttons;
