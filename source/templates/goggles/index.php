@@ -159,7 +159,7 @@
 				<div class="nav-collapse">
 					<jdoc:include type="modules" name="position-1" style="none" />
 					<ul class="nav pull-right">
-						<?php if($user->username):?>
+						<?php if($user->id):?>
 						<li class="dropdown"> <a class="dropdown-toggle" data-toggle="dropdown" href="#">
 							<?php echo $user->username; ?> <b class="caret"></b></a>
 							<ul class="dropdown-menu">
@@ -201,7 +201,8 @@
 			<div id="sidebar" class="span2">
 				<jdoc:include type="modules" name="create" style="xhtml" />
 				<!-- Begin Sidebar -->
-				<div class="btn-group">
+				<?php if ($user->id) : ?>
+                <div class="btn-group">
 				  <a href="#" class="btn btn-large btn-info btn-wide dropdown-toggle" data-toggle="dropdown">
 				    <?php echo JText::_('TPL_GOGGLES_CREATE');?>
 				    <span class="caret"></span>
@@ -246,8 +247,9 @@
 				    ?>
 				  </ul>
 				</div>
-
 				<hr />
+                <?php endif; ?>
+
 				<div class="sidebar-nav">
 					<a class="btn btn-large btn-info btn-wide btn-sidebar-collapse" data-toggle="collapse" data-target=".sidebar-collapse"> Menu <span class="caret"></span></a>
 					<div class="sidebar-collapse">
