@@ -40,6 +40,58 @@
 	// Add Template Stylesheet
 	$doc->addStyleSheet('templates/'.$this->template.'/css/template.css');
 
+    // Register component route helper classes
+    $pid = (int) $app->getUserState('com_projectfork.project.active.id');
+
+    if (jimport('projectfork.library')) {
+        $components = array(
+            'com_pfprojects',
+            'com_pfmilestones',
+            'com_pftasks',
+            'com_pftime',
+            'com_pfrepo',
+            'com_pfforum'
+        );
+
+        foreach ($components AS $component)
+        {
+            $route_helper = JPATH_SITE . '/components/' . $component . '/helpers/route.php';
+            $class_name   = 'PF' . str_replace('com_pf', '', $component) . 'HelperRoute';
+
+            if (file_exists($route_helper)) {
+                JLoader::register($class_name, $route_helper);
+            }
+        }
+    }
+
+    // Have to find the project repo base dir
+    if ($pid) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('attribs')
+              ->from('#__pf_projects')
+              ->where('id = ' . $db->quote($pid));
+
+        $db->setQuery($query);
+        $project_attribs = $db->loadResult();
+
+        $project_params = new JRegistry;
+        $project_params->loadString($project_attribs);
+
+        $repo_dir = (int) $project_params->get('repo_dir');
+    }
+    else {
+        $repo_dir = 1;
+    }
+
+    // Prepare component base links
+    $link_tasks    = (class_exists('PFtasksHelperRoute') ? PFtasksHelperRoute::getTasksRoute() : 'index.php?option=com_pftasks');
+    $link_projects = (class_exists('PFprojectsHelperRoute') ? PFprojectsHelperRoute::getProjectsRoute() : 'index.php?option=com_pfprojects');
+    $link_time     = (class_exists('PFtimeHelperRoute') ? PFtimeHelperRoute::getTimesheetRoute() : 'index.php?option=com_pftime');
+    $link_ms       = (class_exists('PFmilestonesHelperRoute') ? PFmilestonesHelperRoute::getMilestonesRoute() : 'index.php?option=com_pfmilestones');
+    $link_forum    = (class_exists('PFforumHelperRoute') ? PFforumHelperRoute::getTopicsRoute() : 'index.php?option=com_pfforum');
+    $link_repo     = (class_exists('PFrepoHelperRoute') ? PFrepoHelperRoute::getRepositoryRoute($pid, $repo_dir) : 'index.php?option=com_pfrepo&filter_project=' . $pid . '&parent_id=' . $repo_dir);
 ?>
 <!DOCTYPE html>
 <html>
@@ -112,7 +164,11 @@
 							<?php echo $user->username; ?> <b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_users&view=profile&Itemid='. $itemid);?>"><?php echo JText::_('TPL_GOGGLES_PROFILE');?></a></li>
-								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_pftasks&view=tasks&Itemid='. $itemid);?>"><?php echo JText::_('TPL_GOGGLES_MY_TASKS');?></a></li>
+								<li class="">
+                                    <a href="<?php echo JRoute::_($link_tasks . '&filter_assigned=' . $user->id);?>">
+                                        <?php echo JText::_('TPL_GOGGLES_MY_TASKS');?>
+                                    </a>
+                                </li>
 								<li class="divider"></li>
 								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_users&task=user.logout&'. JSession::getFormToken() .'=1');?>"><?php echo JText::_('TPL_GOGGLES_LOGOUT');?></a></li>
 							</ul>
@@ -154,7 +210,7 @@
 				  	<?php
 				  		if($user->authorise('core.create', 'com_pfprojects')) :
 				  	?>
-				    	<li><a href="index.php?option=com_pfprojects&view=form&layout=edit"><i class="icon-briefcase"></i> <?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
+				    	<li><a href="<?php echo JRoute::_($link_projects . '&task=form.add');?>"><i class="icon-briefcase"></i> <?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
 				    <?php
 				    	endif;
 				    	if($user->authorise('core.create', 'com_pfmilestones')) :
@@ -164,27 +220,27 @@
 				    	endif;
 				    	if($user->authorise('core.create', 'com_pftasks')) :
 				    ?>
-				    	<li><a href="index.php?option=com_pftasks&view=tasklistform&layout=edit"><i class="icon-list-view"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
+				    	<li><a href="<?php echo JRoute::_($link_tasks . '&task=tasklistform.add');?>"><i class="icon-list-view"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
 				    <?php
 				    	endif;
 				    	if($user->authorise('core.create', 'com_pftasks')) :
 				    ?>
-				    	<li><a href="index.php?option=com_pftasks&view=taskform&layout=edit"><i class="icon-checkbox"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
+				    	<li><a href="<?php echo JRoute::_($link_tasks . '&task=taskform.add');?>"><i class="icon-checkbox"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
 				    <?php
 				    	endif;
 				    	if($user->authorise('core.create', 'com_pftime')) :
 				    ?>
-				    	<li><a href="index.php?option=com_pftime&view=form&layout=edit"><i class="icon-clock"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
+				    	<li><a href="<?php echo JRoute::_($link_time . '&task=form.add');?>"><i class="icon-clock"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
 				    <?php
 				    	endif;
 				    	if($user->authorise('core.create', 'com_pfforum')) :
 				    ?>
-				    	<li><a href="index.php?option=com_pfforum&view=topicform&layout=edit"><i class="icon-comments-2"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
+				    	<li><a href="<?php echo JRoute::_($link_forum . '&task=topicform.add');?>"><i class="icon-comments-2"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
 				    <?php
 				    	endif;
-				    	if($user->authorise('core.create', 'com_pfrepo')) :
+				    	if($user->authorise('core.create', 'com_pfrepo') && $app->getUserState('com_projectfork.project.active.id')) :
 				    ?>
-				    	<li><a href="index.php?option=com_pfrepo&view=fileform&layout=edit"><i class="icon-upload"></i> <?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
+				    	<li><a href="<?php echo JRoute::_($link_repo . '&task=fileform.add');?>"><i class="icon-upload"></i> <?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
 				    <?php
 				    	endif;
 				    ?>
