@@ -257,10 +257,11 @@ class PFtableTask extends PFTable
         $query      = $this->_db->getQuery(true);
         $nulldate   = $this->_db->getNullDate();
         $date_table = ($this->milestone_id > 0) ? '#__pf_milestones' : '#__pf_projects';
+        $date_fld   = ($this->milestone_id > 0) ? 'milestone_id' : 'project_id';
 
         $query->select('start_date, end_date')
               ->from($date_table)
-              ->where('id = ' . $this->_db->quote((int) $this->project_id));
+              ->where('id = ' . $this->_db->quote((int) $this->$date_fld));
 
         $this->_db->setQuery($query);
         $dates = $this->_db->loadObject();
