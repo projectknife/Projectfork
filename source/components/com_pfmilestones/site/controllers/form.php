@@ -172,13 +172,13 @@ class PFmilestonesControllerForm extends JControllerForm
         $access = PFmilestonesHelper::getActions($id);
 
         // Check general edit permission first.
-        if ($access->get('core.edit', 'com_pfmilestones')) {
+        if ($access->get('core.edit')) {
             return true;
         }
 
         // Fallback on edit.own.
         // First test if the permission is available.
-        if ($access->get('core.edit.own', 'com_pfmilestones')) {
+        if ($access->get('core.edit.own')) {
             // Now test the owner is the user.
             $owner = (int) isset($data['created_by']) ? $data['created_by'] : 0;
 
