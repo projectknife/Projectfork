@@ -253,6 +253,51 @@ class PFtableTask extends PFTable
             $this->access = $this->_getParentAccess();
         }
 
+        // Get the milestone or project start and end date for comparison
+        $query      = $this->_db->getQuery(true);
+        $nulldate   = $this->_db->getNullDate();
+        $date_table = ($this->milestone_id > 0) ? '#__pf_milestones' : '#__pf_projects';
+
+        $query->select('start_date, end_date')
+              ->from($date_table)
+              ->where('id = ' . $this->_db->quote((int) $this->project_id));
+
+        $this->_db->setQuery($query);
+        $dates = $this->_db->loadObject();
+
+        if ($dates) {
+            $p_start = $dates->start_date;
+            $p_end   = $dates->end_date;
+        }
+        else {
+            $p_start = $nulldate;
+            $p_end   = $nulldate;
+        }
+
+        // Turn dates to timestamps
+        $p_start_time = ($p_start == $nulldate) ? 0 : strtotime($p_start);
+        $p_end_time   = ($p_end == $nulldate)   ? 0 : strtotime($p_end);
+
+        $a_start_time = ($this->start_date == $nulldate)  ? 0 : strtotime($this->start_date);
+        $a_end_time   = ($this->end_date == $nulldate)    ? 0 : strtotime($this->end_date);
+
+        // Check the start date
+        if ($p_start_time > $a_start_time) {
+            $a_start_time = $p_start_time;
+            $this->start_date = $p_start;
+        }
+
+        // Check the end date
+        if ($a_end_time > $p_end_time) {
+            $a_end_time = $p_end_time;
+            $this->end_date = $p_end;
+        }
+
+        // Check the start date is not earlier than the end date.
+        if ($a_start_time > $a_end_time) {
+            $this->start_date = $this->end_date;
+        }
+
         return true;
     }
 
