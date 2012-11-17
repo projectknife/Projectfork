@@ -24,9 +24,21 @@ abstract class PFObjectHelper
      */
     public static function getDiff($old, $new, $props)
     {
-        $changes   = array();
-        $old_props = get_object_vars($old);
-        $new_props = get_object_vars($new);
+        $changes = array();
+
+        if ($old instanceof JTable) {
+            $old_props = $old->getProperties(true);
+        }
+        else {
+            $old_props = get_object_vars($old);
+        }
+
+        if ($new instanceof JTable) {
+            $new_props = $new->getProperties(true);
+        }
+        else {
+            $new_props = get_object_vars($new);
+        }
 
         foreach($props AS $prop)
         {

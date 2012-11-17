@@ -16,21 +16,21 @@ class PFTable extends JTable
     /**
      * Should the table delete all child items too?
      *
-     * @var    boolean    
+     * @var    boolean
      */
     protected $_delete_children = false;
 
     /**
      * Should the table update all child items too?
      *
-     * @var    boolean    
+     * @var    boolean
      */
     protected $_update_children = false;
 
     /**
      * The fields of the child items to update
      *
-     * @var    array    
+     * @var    array
      */
     protected $_update_fields = array();
 
@@ -326,7 +326,7 @@ class PFTable extends JTable
      *
      * @param     mixed      $pk    An primary key value to delete.
      *
-     * @return    boolean           
+     * @return    boolean
      */
     public function deleteReferences($pk = null)
     {
@@ -564,7 +564,10 @@ class PFTable extends JTable
 
                 if ($has_changed) {
                     $child_table->store();
-                    $child_table->updateReferences($asset_id, $tbl_fields[$cache_key]);
+
+                    if (in_array('updateReferences', $tbl_methods[$cache_key])) {
+                        $child_table->updateReferences($asset_id, $tbl_fields[$cache_key]);
+                    }
                 }
             }
 
@@ -585,7 +588,7 @@ class PFTable extends JTable
      * @param     mixed      $pk      An primary key value of the updated item.
      * @param     array      $data    The changed data
      *
-     * @return    boolean             
+     * @return    boolean
      */
     public function updateReferences($pk = null, $data = array())
     {
@@ -599,7 +602,7 @@ class PFTable extends JTable
      * @param     mixed    $old    The current value
      * @param     mixed    $new    The new value
      *
-     * @return    mixed            
+     * @return    mixed
      */
     public function setStartDateValue($old = null, $new = null)
     {
@@ -607,7 +610,7 @@ class PFTable extends JTable
         $old_time = ($old == $nulldate ? 0 : strtotime($old));
         $new_time = ($new == $nulldate ? 0 : strtotime($new));
 
-        if ($new_time > $old_time) {
+        if ($old_time > $new_time) {
             return $new;
         }
 
@@ -621,7 +624,7 @@ class PFTable extends JTable
      * @param     mixed    $old    The current value
      * @param     mixed    $new    The new value
      *
-     * @return    mixed            
+     * @return    mixed
      */
     public function setEndDateValue($old = null, $new = null)
     {
@@ -643,7 +646,7 @@ class PFTable extends JTable
      * @param     mixed    $old    The current value
      * @param     mixed    $new    The new value
      *
-     * @return    mixed            
+     * @return    mixed
      */
     public function setAccessValue($old = null, $new = null)
     {
@@ -663,7 +666,7 @@ class PFTable extends JTable
      * @param     mixed    $old    The current value
      * @param     mixed    $new    The new value
      *
-     * @return    mixed            
+     * @return    mixed
      */
     public function setStateValue($old = null, $new = null)
     {

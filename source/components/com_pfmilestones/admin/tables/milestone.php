@@ -239,8 +239,8 @@ class PFtableMilestone extends PFTable
         }
 
         // Turn dates to timestamps
-        $p_start_time = ($p_start == $nulldate) ? 0 : strtotime($p_start_time);
-        $p_end_time   = ($p_end == $nulldate)   ? 0 : strtotime($p_end_time);
+        $p_start_time = ($p_start == $nulldate) ? 0 : strtotime($p_start);
+        $p_end_time   = ($p_end == $nulldate)   ? 0 : strtotime($p_end);
 
         $a_start_time = ($this->start_date == $nulldate)  ? 0 : strtotime($this->start_date);
         $a_end_time   = ($this->end_date == $nulldate)    ? 0 : strtotime($this->end_date);
@@ -252,7 +252,7 @@ class PFtableMilestone extends PFTable
         }
 
         // Check the end date
-        if ($p_end_time > $a_end_time) {
+        if ($a_end_time > $p_end_time) {
             $a_end_time = $p_end_time;
             $this->end_date = $p_end;
         }

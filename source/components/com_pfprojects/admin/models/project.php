@@ -284,6 +284,7 @@ class PFprojectsModelProject extends JModelAdmin
         $key    = $table->getKeyName();
         $pk     = (!empty($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
         $is_new = true;
+        $old    = null;
 
         // Include the content plugins for the on save events.
         JPluginHelper::importPlugin('content');
@@ -295,6 +296,7 @@ class PFprojectsModelProject extends JModelAdmin
             if ($pk > 0) {
                 if ($table->load($pk)) {
                     $is_new = false;
+                    $old    = clone $table;
                 }
             }
 
@@ -372,22 +374,17 @@ class PFprojectsModelProject extends JModelAdmin
 
             $this->setState($this->getName() . '.new', $is_new);
 
-
             $id = $this->getState($this->getName() . '.id');
 
             $this->setActive(array('id' => $id));
 
-            // Load the just updated row
-            $updated = $this->getTable();
-            if ($updated->load($id) === false) return false;
-
             // To keep data integrity, update all child assets
             if (!$is_new) {
                 $props   = array('access', 'state', array('start_date', 'NE-SQLDATE'), array('end_date', 'NE-SQLDATE'));
-                $changes = PFObjectHelper::getDiff($table, $updated, $props);
+                $changes = PFObjectHelper::getDiff($old, $table, $props);
 
                 if (count($changes)) {
-                    $updated->updateChildren($updated->id, $changes);
+                    $table->updateChildren($table->id, $changes);
                 }
             }
 
@@ -402,7 +399,7 @@ class PFprojectsModelProject extends JModelAdmin
 
             // Create repo base and attachments folder
             if (PFApplicationHelper::exists('com_pfrepo')) {
-                if (!$this->createRepository($updated)) {
+                if (!$this->createRepository($table)) {
                     return false;
                 }
 
