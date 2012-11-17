@@ -1034,8 +1034,6 @@ class PFrepoModelDirectory extends JModelAdmin
     protected function canDelete($record)
     {
         if (!empty($record->id)) {
-            if ($record->state != -2) return false;
-
             $user  = JFactory::getUser();
             $asset = 'com_pfrepo.directory.' . (int) $record->id;
 
