@@ -173,7 +173,7 @@ class PFrepoControllerFileForm extends JControllerForm
             }
         }
 
-        if (count($files) == 1) {
+        if (count($files) == 1 && !empty($files[0]['tmp_name'])) {
             $result = $model->upload(array_pop($files), $data['project_id']);
 
             if (is_array($result)) {
