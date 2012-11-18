@@ -10,13 +10,15 @@
         <action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE_COMPONENT_DESC" />
 	</section>
     <section name="topic">
-		<action name="core.edit" title="COM_PROJECTFORK_THIS_TOPIC_ACTION_EDIT" description="COM_PROJECTFORK_THIS_TOPIC_ACTION_EDIT_DESC" />
-		<action name="core.edit.state" title="COM_PROJECTFORK_THIS_TOPIC_ACTION_EDITSTATE" description="COM_PROJECTFORK_THIS_TOPIC_ACTION_EDITSTATE_DESC" />
-        <action name="core.delete" title="COM_PROJECTFORK_THIS_TOPIC_ACTION_DELETE" description="COM_PROJECTFORK_THIS_TOPIC_ACTION_DELETE_DESC" />
+		<action name="core.create" title="JACTION_CREATE" description="COM_PFFORUM_TOPIC_ACCESS_CREATE_DESC" />
+		<action name="core.edit" title="JACTION_EDIT" description="COM_PFFORUM_TOPIC_ACCESS_EDIT_DESC" />
+		<action name="core.edit.state" title="JACTION_EDITSTATE" description="COM_PFFORUM_TOPIC_ACCESS_EDITSTATE_DESC" />
+		<action name="core.edit.own" title="JACTION_EDITOWN" description="COM_PFFORUM_TOPIC_ACCESS_EDITOWN_DESC" />
+        <action name="core.delete" title="JACTION_DELETE" description="COM_PFFORUM_TOPIC_ACCESS_DELETE_DESC" />
     </section>
     <section name="reply">
-		<action name="core.edit" title="COM_PROJECTFORK_THIS_REPLY_ACTION_EDIT" description="COM_PROJECTFORK_THIS_REPLY_ACTION_EDIT_DESC" />
-		<action name="core.edit.state" title="COM_PROJECTFORK_THIS_REPLY_ACTION_EDITSTATE" description="COM_PROJECTFORK_THIS_REPLY_ACTION_EDITSTATE_DESC" />
-        <action name="core.delete" title="COM_PROJECTFORK_THIS_REPLY_ACTION_DELETE" description="COM_PROJECTFORK_THIS_REPLY_ACTION_DELETE_DESC" />
+		<action name="core.edit" title="JACTION_EDIT" description="COM_PFFORUM_REPLY_ACCESS_EDIT_DESC" />
+		<action name="core.edit.state" title="JACTION_EDITSTATE" description="COM_PFFORUM_REPLY_ACCESS_EDITSTATE_DESC" />
+        <action name="core.delete" title="JACTION_DELETE" description="COM_PFFORUM_REPLY_ACCESS_DELETE_DESC" />
     </section>
 </access>

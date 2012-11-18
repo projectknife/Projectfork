@@ -10,8 +10,8 @@
         <action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE_COMPONENT_DESC" />
 	</section>
     <section name="time">
-		<action name="core.edit" title="COM_PROJECTFORK_THIS_TIME_ACTION_EDIT" description="COM_PROJECTFORK_THIS_TIME_ACTION_EDIT_DESC" />
-		<action name="core.edit.state" title="COM_PROJECTFORK_THIS_TIME_ACTION_EDITSTATE" description="COM_PROJECTFORK_THIS_TIME_ACTION_EDITSTATE_DESC" />
-        <action name="core.delete" title="COM_PROJECTFORK_THIS_TIME_ACTION_DELETE" description="COM_PROJECTFORK_THIS_TIME_ACTION_DELETE_DESC" />
+		<action name="core.edit" title="JACTION_EDIT" description="COM_PFTIME_ACCESS_EDIT_DESC" />
+		<action name="core.edit.state" title="JACTION_EDITSTATE" description="COM_PFTIME_ACCESS_EDITSTATE_DESC" />
+        <action name="core.delete" title="JACTION_DELETE" description="COM_PFTIME_ACCESS_DELETE_DESC" />
     </section>
 </access>
