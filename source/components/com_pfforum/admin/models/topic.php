@@ -133,6 +133,19 @@ class PFforumModelTopic extends JModelAdmin
             $form->setFieldAttribute('project_id', 'disabled', 'true');
             $form->setFieldAttribute('project_id', 'filter', 'unset');
             $form->setFieldAttribute('project_id', 'required', 'false');
+
+            // We still need to inject the project id when reloading the form
+            if (!isset($data['project_id'])) {
+                $db    = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('project_id')
+                      ->from('#__pf_topics')
+                      ->where('id = ' . $db->quote($id));
+
+                $db->setQuery($query);
+                $form->setValue('project_id', null, (int) $db->loadResult());
+            }
         }
 
         return $form;
