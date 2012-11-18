@@ -153,16 +153,51 @@ class PFrepoControllerDirectoryForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        if (empty($data)) {
-           $parent  = JRequest::getUint('filter_parent_id');
-           $project = JRequest::getUint('filter_project');
+        $user  = JFactory::getUser();
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-           if ($parent == 0 || $project == 0) {
+        $access  = true;
+        $levels  = $user->getAuthorisedViewLevels();
+        $dir     = isset($data['parent_id'])  ? (int) $data['parent_id'] : 0;
+        $project = isset($data['project_id']) ? (int) $data['project_id'] : 0;
+
+        if (empty($data)) {
+            $dir     = JRequest::getUint('filter_parent_id');
+            $project = JRequest::getUint('filter_project');
+
+            // Do not allow if no dir or project is given
+            if ($dir == 0 || $project == 0) {
                 return false;
-           }
+            }
         }
 
-        return parent::allowAdd($data);
+        // Check if the user has access to the parent directory
+        if (!$user->authorise('core.admin', 'com_pfrepo')) {
+            if ($dir) {
+                $query->select('access')
+                      ->from('#__pf_repo_dirs')
+                      ->where('id = ' . $db->quote($dir));
+
+                $db->setQuery($query);
+                $access = (in_array((int) $db->loadResult(), $levels) && $user->authorise('core.create', 'com_pfrepo.directory.' . $dir));
+            }
+        }
+
+        // Check if the user has access to the project
+        if (!$user->authorise('core.admin', 'com_pfprojects')) {
+            if ($project && $access) {
+                $query->clear();
+                $query->select('access')
+                      ->from('#__pf_projects')
+                      ->where('id = ' . $db->quote((int) $project));
+
+                $db->setQuery($query);
+                $access = in_array((int) $db->loadResult(), $levels);
+            }
+        }
+
+        return ($user->authorise('core.create', 'com_pfrepo') && $access);
     }
 
 
