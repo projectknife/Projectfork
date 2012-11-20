@@ -36,6 +36,8 @@
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_pfcomments.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pfcomments.sys.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.com_pfcomments.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.com_pfcomments.sys.ini</language>
         </languages>
     </administration>
 </extension>

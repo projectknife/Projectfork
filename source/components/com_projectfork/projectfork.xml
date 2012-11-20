@@ -34,6 +34,7 @@
     </files>
     <languages folder="site">
         <language tag="en-GB">language/en-GB/en-GB.com_projectfork.ini</language>
+        <language tag="fr-FR">language/fr-FR/fr-FR.com_projectfork.ini</language>
     </languages>
     <administration>
         <files folder="admin">
@@ -50,6 +51,8 @@
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_projectfork.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_projectfork.sys.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.com_projectfork.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.com_projectfork.sys.ini</language>
         </languages>
     </administration>
     <media destination="com_projectfork" folder="media">

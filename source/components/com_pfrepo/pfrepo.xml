@@ -38,6 +38,8 @@
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_pfrepo.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pfrepo.sys.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.com_pfrepo.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.com_pfrepo.sys.ini</language>
         </languages>
     </administration>
 </extension>
