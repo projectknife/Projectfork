@@ -378,6 +378,19 @@ dl.tabs {
 	.logo{
 		background-size: 100% auto;
 	}
+	#login-form {
+	  .add-on,
+	  .dropdown-toggle {
+	  	display: none;
+	  }
+	  .input-prepend input,
+	  .btn-group > .btn:first-child {
+	  	.border-radius (3px);
+	  }
+	  .btn-toolbar.pull-right {
+	  	float: none;
+	  }
+	}
 }
 @media (max-width: 768px) {
 	.header{
@@ -385,10 +398,18 @@ dl.tabs {
 		margin-right: -20px;
 	}
 }
+@media (min-width: 480px) and (max-width: 979px) {
+	#sidebar {
+		form {
+			max-width: 95%;
+		}
+	}
+}
 @media (max-width: 480px) {
   .sidebar-collapse {
     -webkit-transform: translate3d(0, 0, 0);
-    display: none;
+    height: 0;
+    overflow: hidden;
   }
   .btn-sidebar-collapse{
   	display: block;
