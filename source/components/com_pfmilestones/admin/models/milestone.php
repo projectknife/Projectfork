@@ -197,6 +197,7 @@ class PFmilestonesModelMilestone extends JModelAdmin
         $key    = $table->getKeyName();
         $pk     = (!empty($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
         $is_new = true;
+        $old    = null;
 
         // Include the content plugins for the on save events.
         JPluginHelper::importPlugin('content');
@@ -207,6 +208,7 @@ class PFmilestonesModelMilestone extends JModelAdmin
             if ($pk > 0) {
                 if ($table->load($pk)) {
                     $is_new = false;
+                    $old    = clone $table;
                 }
             }
 
@@ -284,20 +286,16 @@ class PFmilestonesModelMilestone extends JModelAdmin
 
             $id = $this->getState($this->getName() . '.id');
 
-            // Load the just updated row
-            $updated = $this->getTable();
-            if ($updated->load($id) === false) return false;
-
             // Set the active project
-            PFApplicationHelper::setActiveProject($updated->project_id);
+            PFApplicationHelper::setActiveProject($table->project_id);
 
             // To keep data integrity, update all child assets
             if (!$is_new) {
                 $props   = array('access', 'state', array('start_date', 'NE-SQLDATE'), array('end_date', 'NE-SQLDATE'));
-                $changes = PFObjectHelper::getDiff($table, $updated, $props);
+                $changes = PFObjectHelper::getDiff($old, $table, $props);
 
                 if (count($changes)) {
-                    $updated->updateChildren($updated->id, $changes);
+                    $table->updateChildren($table->id, $changes);
                 }
             }
 
@@ -323,7 +321,7 @@ class PFmilestonesModelMilestone extends JModelAdmin
                 }
 
                 if ((int) $attachments->getState('item.project') == 0) {
-                    $attachments->setState('item.project', $updated->project_id);
+                    $attachments->setState('item.project', $table->project_id);
                 }
 
                 if (!$attachments->save($data['attachment'])) {
@@ -337,7 +335,7 @@ class PFmilestonesModelMilestone extends JModelAdmin
                 $labels = $this->getInstance('Labels', 'PFModel');
 
                 if ((int) $labels->getState('item.project') == 0) {
-                    $labels->setState('item.project', $updated->project_id);
+                    $labels->setState('item.project', $table->project_id);
                 }
 
                 $labels->setState('item.type', 'com_pfmilestones.milestone');
