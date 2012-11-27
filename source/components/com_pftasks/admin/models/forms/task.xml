@@ -4,17 +4,17 @@
         <field name="project_id" type="project"
             label="COM_PROJECTFORK_FIELD_PROJECT_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_DESC"
             class="inputbox" size="30" required="true" view="task"
-            onchange="PFform.reload('milestone_id,list_id,access,rules,labels,dependency,attachment');"
+            onchange="PFform.reload('milestone_id,list_id,access,rules,labels,dependency,attachment,start_date,end_date');"
         />
         <field name="milestone_id" type="milestone"
             label="COM_PROJECTFORK_FIELD_MILESTONE_LABEL" description="COM_PROJECTFORK_FIELD_MILESTONE_DESC"
             class="inputbox"
-            onchange="PFform.reload('list_id,access,rules');"
+            onchange="PFform.reload('list_id,access,rules,start_date,end_date');"
         />
         <field name="list_id" type="tasklist"
             label="COM_PROJECTFORK_FIELD_TASKLIST_LABEL" description="COM_PROJECTFORK_FIELD_TASKLIST_DESC"
             class="inputbox"
-            onchange="PFform.reload('milestone_id,access,rules');"
+            onchange="PFform.reload('milestone_id,access,rules,start_date,end_date');"
         />
         <field name="title" type="text"
             label="JGLOBAL_TITLE" description="JFIELD_TITLE_DESC"
@@ -36,13 +36,13 @@
         <field name="created_by" type="user"
             label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_CREATED_BY_DESC"
         />
-        <field name="start_date" type="calendar"
+        <field name="start_date" type="calendarrange"
             label="COM_PROJECTFORK_FIELD_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_START_DATE_OPTIONAL_DESC"
-            size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" class="inputbox"
+            size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" class="inputbox" clip="start"
         />
-        <field name="end_date" type="calendar"
+        <field name="end_date" type="calendarrange"
             label="COM_PROJECTFORK_FIELD_DEADLINE_LABEL" description="COM_PROJECTFORK_FIELD_DEADLINE_OPTIONAL_LABEL"
-            size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" class="inputbox"
+            size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" class="inputbox" clip="end"
         />
         <field name="estimate" type="text" size="10" default="1"
             label="COM_PROJECTFORK_FIELD_TIME_ESTIMATE" description="COM_PROJECTFORK_FIELD_TASK_TIME_ESTIMATE_DESC"

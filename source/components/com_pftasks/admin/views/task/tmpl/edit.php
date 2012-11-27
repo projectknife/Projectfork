@@ -73,8 +73,8 @@ Joomla.submitbutton = function(task)
                     <li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
                     <li><?php echo $this->form->getLabel('priority').$this->form->getInput('priority'); ?></li>
                     <li><?php echo $this->form->getLabel('complete').$this->form->getInput('complete'); ?></li>
-                    <li><?php echo $this->form->getLabel('start_date').$this->form->getInput('start_date'); ?></li>
-                    <li><?php echo $this->form->getLabel('end_date').$this->form->getInput('end_date'); ?></li>
+                    <li><?php echo $this->form->getLabel('start_date') . '<span id="jform_start_date_reload">' . $this->form->getInput('start_date') . '</span>'; ?></li>
+                    <li><?php echo $this->form->getLabel('end_date') . '<span id="jform_end_date_reload">' . $this->form->getInput('end_date') . '</span>'; ?></li>
                     <li><?php echo $this->form->getLabel('rate').$this->form->getInput('rate'); ?></li>
                     <li><?php echo $this->form->getLabel('estimate').$this->form->getInput('estimate'); ?></li>
                     <?php if ($this->item->modified_by) : ?>
