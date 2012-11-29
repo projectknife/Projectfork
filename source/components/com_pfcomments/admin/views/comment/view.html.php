@@ -79,7 +79,7 @@ class PFcommentsViewComment extends JViewLegacy
                 }
             }
 
-            JToolBarHelper::save2copy('comment.save2copy');
+            // JToolBarHelper::save2copy('comment.save2copy');
             JToolBarHelper::cancel('comment.cancel', 'JTOOLBAR_CLOSE');
         }
     }
