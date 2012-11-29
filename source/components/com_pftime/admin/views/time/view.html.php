@@ -80,7 +80,6 @@ class PFtimeViewTime extends JViewLegacy
                 }
             }
 
-            JToolBarHelper::save2copy('time.save2copy');
             JToolBarHelper::cancel('time.cancel', 'JTOOLBAR_CLOSE');
         }
     }
