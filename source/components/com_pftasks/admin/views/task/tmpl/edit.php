@@ -36,9 +36,7 @@ Joomla.submitbutton = function(task)
         <fieldset class="adminform">
 			<legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_TASK') : JText::_('COM_PROJECTFORK_EDIT_TASK'); ?></legend>
 			<ul class="adminformlist unstyled">
-				<?php if ($this->item->id <= 0) : ?>
-                    <li><?php echo $this->form->getLabel('project_id').$this->form->getInput('project_id'); ?></li>
-                <?php endif; ?>
+                <li><?php echo $this->form->getLabel('project_id').$this->form->getInput('project_id'); ?></li>
                 <?php if (PFApplicationHelper::enabled('com_pfmilestones')) : ?>
     				<li>
                         <?php echo $this->form->getLabel('milestone_id'); ?>
