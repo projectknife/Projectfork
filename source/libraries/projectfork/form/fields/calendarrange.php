@@ -233,7 +233,7 @@ class JFormFieldCalendarRange extends JFormField
             }
 
             if (version_compare(JVERSION, '3.0.0', 'ge')) {
-                return '<div class="input-append"><input type="text" title="' . (0 !== (int) $value ? self::_('date', $value) : '') . '" name="' . $name . '" id="' . $id
+                return '<div class="input-append"><input type="text" title="' . (0 !== (int) $value ? JHtml::_('date', $value) : '') . '" name="' . $name . '" id="' . $id
                 . '" value="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '" ' . $attribs . ' /><button class="btn" id="' . $id . '_img"><i class="icon-calendar"></i></button></div>'
                 . '<script type="text/javascript">' . implode("\n", $script) . '</script>';
             }
