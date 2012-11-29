@@ -94,6 +94,7 @@ class PFtasksModelTasklist extends JModelAdmin
         $jinput = JFactory::getApplication()->input;
         $user   = JFactory::getUser();
         $id     = (int) $jinput->get('id', 0);
+        $task   = $jinput->get('task');
 
         // Check for existing item.
         // Modify the form based on Edit State access controls.
@@ -120,9 +121,13 @@ class PFtasksModelTasklist extends JModelAdmin
 
         // Disable these fields when updating
         if ($id) {
-            $form->setFieldAttribute('project_id', 'disabled', 'true');
-            $form->setFieldAttribute('project_id', 'filter', 'unset');
+            $form->setFieldAttribute('project_id', 'readonly', 'true');
             $form->setFieldAttribute('project_id', 'required', 'false');
+
+            if ($task != 'save2copy') {
+                $form->setFieldAttribute('project_id', 'disabled', 'true');
+                $form->setFieldAttribute('project_id', 'filter', 'unset');
+            }
 
             // We still need to inject the project id when reloading the form
             if (!isset($data['project_id'])) {
