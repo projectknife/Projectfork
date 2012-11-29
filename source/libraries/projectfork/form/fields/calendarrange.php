@@ -232,15 +232,23 @@ class JFormFieldCalendarRange extends JFormField
                 $done[] = $id;
             }
 
-            return '<input type="text" title="' . (0 !== (int) $value ? JHtml::_('date', $value, null, null) : '') . '" name="' . $name . '" id="' . $id
+            if (version_compare(JVERSION, '3.0.0', 'ge')) {
+                return '<div class="input-append"><input type="text" title="' . (0 !== (int) $value ? self::_('date', $value) : '') . '" name="' . $name . '" id="' . $id
+                . '" value="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '" ' . $attribs . ' /><button class="btn" id="' . $id . '_img"><i class="icon-calendar"></i></button></div>'
+                . '<script type="text/javascript">' . implode("\n", $script) . '</script>';
+            }
+            else {
+                return '<input type="text" title="' . (0 !== (int) $value ? JHtml::_('date', $value, null, null) : '') . '" name="' . $name . '" id="' . $id
                 . '" value="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '" ' . $attribs . ' />'
                 . JHtml::_('image', 'system/calendar.png', JText::_('JLIB_HTML_CALENDAR'), array('class' => 'calendar', 'id' => $id . '_img'), true)
                 . '<script type="text/javascript">' . implode("\n", $script) . '</script>';
+            }
+
         }
         else {
-            return '<input type="text" title="' . (0 !== (int) $value ? JHtml::_('date', $value, null, null) : '')
-                . '" value="' . (0 !== (int) $value ? JHtml::_('date', $value, 'Y-m-d H:i:s', null) : '') . '" ' . $attribs
-                . ' /><input type="hidden" name="' . $name . '" id="' . $id . '" value="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '" />';
+             return '<input type="text" title="' . (0 !== (int) $value ? JHtml::_('date', $value, null, null) : '')
+             . '" value="' . (0 !== (int) $value ? JHtml::_('date', $value, 'Y-m-d H:i:s', null) : '') . '" ' . $attribs
+             . ' /><input type="hidden" name="' . $name . '" id="' . $id . '" value="' . htmlspecialchars($value, ENT_COMPAT, 'UTF-8') . '" />';
         }
     }
 }
