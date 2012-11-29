@@ -99,9 +99,13 @@ class JFormFieldMilestone extends JFormFieldList
               ->where('id = ' . (int) $list);
 
         $db->setQuery((string) $query);
-        $milestone = $db->loadResult();
+        $milestone = (int) $db->loadResult();
 
-        return (int) $milestone;
+        if (!$milestone) {
+            $milestone = $this->value;
+        }
+
+        return $milestone;
     }
 
 
