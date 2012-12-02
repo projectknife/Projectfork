@@ -40,7 +40,4 @@
         <!-- Install templates -->
         <file type="template" id="goggles" client="site">templates/goggles</file>
     </files>
-    <updateservers>
-		<server type="extension" priority="1" name="Projectfork 4 Package Update">http://4.projectfork.net/index.php?option=com_ars&amp;view=update&amp;task=stream&amp;format=xml&amp;id=1&amp;dummy=extension.xml</server>
-	</updateservers>
 </extension>
