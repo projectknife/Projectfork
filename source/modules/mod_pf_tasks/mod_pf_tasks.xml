@@ -2,12 +2,12 @@
 <extension type="module" version="2.5" client="site" method="upgrade">
 	<name>mod_pf_tasks</name>
 	<author>Tobias Kuhn</author>
-	<creationDate>November 2012</creationDate>
+	<creationDate>December 2012</creationDate>
 	<copyright>Copyright (C) 2012 Tobias Kuhn. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>support@projectfork.net</authorEmail>
 	<authorUrl>www.projectfork.net</authorUrl>
-	<version>4.0.0b1</version>
+	<version>4.0.0b2</version>
 	<description>MOD_PF_TASKS_XML_DESCRIPTION</description>
     <position>pf-dashboard-left</position>
     <published>1</published>
