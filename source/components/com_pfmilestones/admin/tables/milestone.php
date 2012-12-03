@@ -218,25 +218,103 @@ class PFtableMilestone extends PFTable
             $this->access = $this->_getAccessProjectId();
         }
 
-        // Check the start date is not earlier than the end date.
-        if ($this->end_date > $this->_db->getNullDate() && $this->end_date < $this->start_date) {
-            // Swap the dates
-            $temp = $this->start_date;
-            $this->start_date = $this->end_date;
-            $this->end_date   = $temp;
+        // Get the project start and end date for comparison
+        $query    = $this->_db->getQuery(true);
+        $nulldate = $this->_db->getNullDate();
+
+        $query->select('start_date, end_date')
+              ->from('#__pf_projects')
+              ->where('id = ' . $this->_db->quote((int) $this->project_id));
+
+        $this->_db->setQuery($query);
+        $dates = $this->_db->loadObject();
+
+        if ($dates) {
+            $p_start = $dates->start_date;
+            $p_end   = $dates->end_date;
+        }
+        else {
+            $p_start = $nulldate;
+            $p_end   = $nulldate;
         }
 
-        // Check if the start and end dates are in bounds of the parent dates
-        $project = JTable::getInstance('Project', 'PFtable');
-        $project->load((int)$this->project_id);
+        // Turn dates to timestamps
+        $p_start_time = ($p_start == $nulldate) ? 0 : strtotime($p_start);
+        $p_end_time   = ($p_end == $nulldate)   ? 0 : strtotime($p_end);
 
-        $a_start = strtotime($project->start_date);
-        $a_end   = strtotime($project->end_date);
-        $b_start = strtotime($this->start_date);
-        $b_end   = strtotime($this->end_date);
+        $a_start_time = ($this->start_date == $nulldate)  ? 0 : strtotime($this->start_date);
+        $a_end_time   = ($this->end_date == $nulldate)    ? 0 : strtotime($this->end_date);
 
-        if ($a_start > $b_start) $this->start_date = $project->start_date;
-        if ($a_end < $b_end)     $this->end_date   = $project->end_date;
+        if ($a_start_time && $a_end_time) {
+            // Make sure the start is before the end
+            if ($a_start_time > $a_end_time) {
+                $a_start_time     = $a_end_time;
+                $this->start_date = $this->end_date;
+            }
+        }
+        else {
+            // Use the parent start date if not set
+            if ($a_start_time == 0) {
+                $a_start_time     = $p_start_time;
+                $this->start_date = $p_start;
+            }
+
+            // Use the parent end date if not set
+            if ($p_end_time == 0) {
+                $a_end_time     = $p_end_time;
+                $this->end_date = $p_end;
+            }
+
+            // Make sure the start is before the end if a deadline is set
+            if ($a_start_time > $a_end_time && $a_end_time > 0) {
+                $a_start_time     = $a_end_time;
+                $this->start_date = $this->end_date;
+            }
+        }
+
+        // Use the task start date if parent is not set
+        if ($p_start_time == 0) {
+            $p_start_time = $a_start_time;
+            $p_start      = $this->start_date;
+        }
+
+        // Use the task end date if parent is not set
+        if ($p_end_time == 0) {
+            $p_end_time = $a_end_time;
+            $p_end      = $this->end_date;
+        }
+
+        // Check that the start date is within range of the parent start
+        if ($p_start_time > $a_start_time) {
+            $a_start_time     = $p_start_time;
+            $this->start_date = $p_start;
+        }
+
+        // Check that the start date is within range of the parent deadline
+        if ($a_start_time > $p_end_time) {
+            $a_start_time     = $p_end_time;
+            $this->start_date = $p_end;
+        }
+
+        // Make sure we have a deadline
+        if ($a_end_time == 0) {
+            $a_end_time     = $p_end_time;
+            $this->end_date = $p_end;
+        }
+
+        if ($a_end_time > 0) {
+            // Check that the end date is after the start date
+            if ($a_start_time > $a_end_time) {
+                $a_end_time     = $a_start_time;
+                $this->end_date = $this->start_date;
+            }
+
+            // Check that the end date is within range of the parent deadline
+            if ($a_end_time > $p_end_time && $p_end_time > 0) {
+                $a_end_time     = $p_end_time;
+                $this->end_date = $p_end;
+            }
+        }
 
         return true;
     }

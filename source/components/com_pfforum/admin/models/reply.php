@@ -101,6 +101,9 @@ class PFforumModelReply extends JModelAdmin
         $user   = JFactory::getUser();
         $id     = (int) $jinput->get('id', 0);
 
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
         // Check for existing item.
         // Modify the form based on Edit State access controls.
         if ($id != 0 && (!$user->authorise('core.edit.state', 'com_pfforum.reply.' . $id)) || ($id == 0 && !$user->authorise('core.edit.state', 'com_pfforum')))
@@ -130,6 +133,27 @@ class PFforumModelReply extends JModelAdmin
             $form->setFieldAttribute('topic_id', 'disabled', 'true');
             $form->setFieldAttribute('topic_id', 'filter', 'unset');
             $form->setFieldAttribute('topic_id', 'required', 'false');
+
+            // We still need to inject the project id when reloading the form
+            if (!isset($data['project_id'])) {
+                $query->select('project_id')
+                      ->from('#__pf_replies')
+                      ->where('id = ' . $db->quote($id));
+
+                $db->setQuery($query);
+                $form->setValue('project_id', null, (int) $db->loadResult());
+            }
+
+            // Same for the topic id
+            if (!isset($data['topic_id'])) {
+                $query->clear();
+                $query->select('topic_id')
+                      ->from('#__pf_replies')
+                      ->where('id = ' . $db->quote($id));
+
+                $db->setQuery($query);
+                $form->setValue('topic_id', null, (int) $db->loadResult());
+            }
         }
 
         return $form;

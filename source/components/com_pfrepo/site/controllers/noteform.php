@@ -146,40 +146,37 @@ class PFrepoControllerNoteForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $acl    = PFrepoHelper::getActions();
-        $user   = JFactory::getUser();
-        $parent = JRequest::getUint('filter_parent_id', 0);
+        $user  = JFactory::getUser();
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-        $can_create = $acl->get('core.create');
-        $access     = true;
+        $access  = true;
+        $levels  = $user->getAuthorisedViewLevels();
+        $dir     = isset($data['dir_id'])  ? (int) $data['dir_id'] : 0;
 
-        if (isset($data['dir_id'])) {
-            $parent = (int) $data['dir_id'];
-        }
+        if (empty($data)) {
+            $dir = JRequest::getUint('filter_parent_id');
 
-        // Verify topic access
-        if ($parent) {
-            $model = $this->getModel('DirectoryForm', 'PFrepoModel', array('ignore_request' => true));
-            $item  = $model->getItem($parent);
-
-            if (!empty($item)) {
-                if (!$user->authorise('core.admin')) {
-                    if (!in_array($item->access, $user->getAuthorisedViewLevels())) {
-                        $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_ACCESS_DENIED'));
-                        $access = false;
-                    }
-                }
-            }
-            else {
+            // Do not allow if no dir is given
+            if (!$dir) {
                 $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_NOT_FOUND'));
-                $access = false;
+                return false;
             }
         }
-        else {
-            $access = false;
+
+        // Check if the user has access to the parent directory
+        if (!$user->authorise('core.admin', 'com_pfrepo')) {
+            if ($dir) {
+                $query->select('access')
+                      ->from('#__pf_repo_dirs')
+                      ->where('id = ' . $db->quote($dir));
+
+                $db->setQuery($query);
+                $access = (in_array((int) $db->loadResult(), $levels) && $user->authorise('core.create', 'com_pfrepo.directory.' . $dir));
+            }
         }
 
-        return ($access && $can_create);
+        return ($user->authorise('core.create', 'com_pfrepo') && $access);
     }
 
 

@@ -46,7 +46,7 @@ foreach ($this->items['directories'] as $i => $item) :
         <?php if ($this_dir->parent_id >= 1) : ?>
         <td>
             <label for="cb<?php echo $i; ?>" class="checkbox">
-                <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
+                <?php echo JHtml::_('pf.html.id', $i, $item->id, false, 'did'); ?>
             </label>
         </td>
         <?php endif; ?>

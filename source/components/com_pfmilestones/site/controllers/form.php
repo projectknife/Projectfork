@@ -133,24 +133,23 @@ class PFmilestonesControllerForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $user = JFactory::getUser();
-        $db   = JFactory::getDbo();
+        $user  = JFactory::getUser();
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-        if (isset($data['project_id'])) {
-            // Check if the user has access to the project
-            $query = $db->getQuery(true);
+        $access  = true;
+        $project = isset($data['project_id']) ? (int) $data['project_id'] : 0;
 
-            $query->select('access')
-                  ->from('#__pf_projects')
-                  ->where('id = ' . $db->quote((int) $data['project_id']));
+        // Check if the user has access to the project
+        if (!$user->authorise('core.admin', 'com_pfprojects')) {
+            if ($project) {
+                $query->select('access')
+                      ->from('#__pf_projects')
+                      ->where('id = ' . $db->quote((int) $project));
 
-            $db->setQuery($query);
-            $level = (int) $db->loadResult();
-
-            $access = in_array($level, $user->getAuthorisedViewLevels());
-        }
-        else {
-            $access = true;
+                $db->setQuery($query);
+                $access = in_array((int) $db->loadResult(), $user->getAuthorisedViewLevels());
+            }
         }
 
         return ($user->authorise('core.create', 'com_pfmilestones') && $access);

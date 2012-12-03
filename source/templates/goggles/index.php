@@ -8,7 +8,7 @@
 
 	$app = JFactory::getApplication();
 	$doc = JFactory::getDocument();
-	
+
 	// Settings for Joomla 3.0.x
 	if (version_compare(JVERSION, '3.0.0', 'ge')) {
 		// Add JavaScript Frameworks
@@ -20,26 +20,78 @@
 	    $isset_jquery = TemplateHelperDocument::headContains('jquery', 'script');
 	    $isset_bsjs   = TemplateHelperDocument::headContains('bootstrap', 'script');
 	    $isset_bscss  = TemplateHelperDocument::headContains('bootstrap', 'stylesheet');
-	
+
 	    if ($this->params->get('bootstrap_javascript', 1)) {
 	        if (!$isset_jquery) {
 	            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/jquery.js');
 	        }
-	
+
 	        if (!$isset_bsjs) {
 	            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/bootstrap.min.js');
 	        }
-	
+
 	        $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/application.js');
 	    }
 	    // Add 2.5 System Stylesheets
 		$doc->addStyleSheet('templates/system/css/general.css');
 		$doc->addStyleSheet('templates/system/css/system.css');
 	}
-	
+
 	// Add Template Stylesheet
 	$doc->addStyleSheet('templates/'.$this->template.'/css/template.css');
-    
+
+    // Register component route helper classes
+    $pid = (int) $app->getUserState('com_projectfork.project.active.id');
+
+    if (jimport('projectfork.library')) {
+        $components = array(
+            'com_pfprojects',
+            'com_pfmilestones',
+            'com_pftasks',
+            'com_pftime',
+            'com_pfrepo',
+            'com_pfforum'
+        );
+
+        foreach ($components AS $component)
+        {
+            $route_helper = JPATH_SITE . '/components/' . $component . '/helpers/route.php';
+            $class_name   = 'PF' . str_replace('com_pf', '', $component) . 'HelperRoute';
+
+            if (file_exists($route_helper)) {
+                JLoader::register($class_name, $route_helper);
+            }
+        }
+    }
+
+    // Have to find the project repo base dir
+    if ($pid) {
+        $db = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('attribs')
+              ->from('#__pf_projects')
+              ->where('id = ' . $db->quote($pid));
+
+        $db->setQuery($query);
+        $project_attribs = $db->loadResult();
+
+        $project_params = new JRegistry;
+        $project_params->loadString($project_attribs);
+
+        $repo_dir = (int) $project_params->get('repo_dir');
+    }
+    else {
+        $repo_dir = 1;
+    }
+
+    // Prepare component base links
+    $link_tasks    = (class_exists('PFtasksHelperRoute') ? PFtasksHelperRoute::getTasksRoute() : 'index.php?option=com_pftasks');
+    $link_projects = (class_exists('PFprojectsHelperRoute') ? PFprojectsHelperRoute::getProjectsRoute() : 'index.php?option=com_pfprojects');
+    $link_time     = (class_exists('PFtimeHelperRoute') ? PFtimeHelperRoute::getTimesheetRoute() : 'index.php?option=com_pftime');
+    $link_ms       = (class_exists('PFmilestonesHelperRoute') ? PFmilestonesHelperRoute::getMilestonesRoute() : 'index.php?option=com_pfmilestones');
+    $link_forum    = (class_exists('PFforumHelperRoute') ? PFforumHelperRoute::getTopicsRoute() : 'index.php?option=com_pfforum');
+    $link_repo     = (class_exists('PFrepoHelperRoute') ? PFrepoHelperRoute::getRepositoryRoute($pid, $repo_dir) : 'index.php?option=com_pfrepo&filter_project=' . $pid . '&parent_id=' . $repo_dir);
 ?>
 <!DOCTYPE html>
 <html>
@@ -107,12 +159,16 @@
 				<div class="nav-collapse">
 					<jdoc:include type="modules" name="position-1" style="none" />
 					<ul class="nav pull-right">
-						<?php if($user->username):?>
+						<?php if($user->id):?>
 						<li class="dropdown"> <a class="dropdown-toggle" data-toggle="dropdown" href="#">
 							<?php echo $user->username; ?> <b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_users&view=profile&Itemid='. $itemid);?>"><?php echo JText::_('TPL_GOGGLES_PROFILE');?></a></li>
-								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_projectfork&view=tasks&Itemid='. $itemid);?>"><?php echo JText::_('TPL_GOGGLES_MY_TASKS');?></a></li>
+								<li class="">
+                                    <a href="<?php echo JRoute::_($link_tasks . '&filter_assigned=' . $user->id);?>">
+                                        <?php echo JText::_('TPL_GOGGLES_MY_TASKS');?>
+                                    </a>
+                                </li>
 								<li class="divider"></li>
 								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_users&task=user.logout&'. JSession::getFormToken() .'=1');?>"><?php echo JText::_('TPL_GOGGLES_LOGOUT');?></a></li>
 							</ul>
@@ -145,64 +201,116 @@
 			<div id="sidebar" class="span2">
 				<jdoc:include type="modules" name="create" style="xhtml" />
 				<!-- Begin Sidebar -->
-				<?php
-					if($user->authorise('create', 'com_projectfork')) :
-				?>
-				<div class="btn-group">
-				  <a href="#" class="btn btn-large btn-info btn-wide dropdown-toggle" data-toggle="dropdown">
-				    <?php echo JText::_('TPL_GOGGLES_CREATE');?>
-				    <span class="caret"></span>
-				  </a>
-				  <ul class="dropdown-menu">
-				  	<?php
-				  		if($user->authorise('create', 'com_projectfork.project')) :
-				  	?>
-				    	<li><a href="index.php?option=com_projectfork&view=projectform&layout=edit"><i class="icon-briefcase"></i> <?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
-				    <?php
-				    	endif;
-				    	if($user->authorise('create', 'com_projectfork.milestone')) :
-				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=milestoneform&layout=edit"><i class="icon-flag"></i> <?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
-				    <?php
-				    	endif;
-				    	if($user->authorise('create', 'com_projectfork.tasklist')) :
-				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=tasklistform&layout=edit"><i class="icon-list-view"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
-				    <?php
-				    	endif;
-				    	if($user->authorise('create', 'com_projectfork.task')) :
-				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=taskform&layout=edit"><i class="icon-checkbox"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
-				    <?php
-				    	endif;
-				    	if($user->authorise('create', 'com_projectfork.time')) :
-				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=timeform&layout=edit"><i class="icon-clock"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
-				    <?php
-				    	endif;
-				    	if($user->authorise('create', 'com_projectfork.topic')) :
-				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=topicform&layout=edit"><i class="icon-comments-2"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
-				    <?php
-				    	endif;
-				    	if($user->authorise('create', 'com_projectfork.file')) :
-				    ?>
-				    	<li><a href="index.php?option=com_projectfork&view=fileform&layout=edit"><i class="icon-upload"></i> <?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
-				    <?php
-				    	endif;
-				    ?>
-				  </ul>
+				<?php if ($user->id) : ?>
+				<div class="hidden-phone">
+	                <div class="btn-group">
+					  <a href="#" class="btn btn-large btn-info btn-wide dropdown-toggle" data-toggle="dropdown">
+					    <?php echo JText::_('TPL_GOGGLES_CREATE');?>
+					    <span class="caret"></span>
+					  </a>
+					  <ul class="dropdown-menu">
+					  	<?php
+					  		if($user->authorise('core.create', 'com_pfprojects')) :
+					  	?>
+					    	<li><a href="<?php echo JRoute::_($link_projects . '&task=form.add');?>"><i class="icon-briefcase"></i> <?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
+					    <?php
+					    	endif;
+					    	if($user->authorise('core.create', 'com_pfmilestones')) :
+					    ?>
+					    	<li><a href="<?php echo JRoute::_($link_ms . '&task=form.add');?>"><i class="icon-flag"></i> <?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
+					    <?php
+					    	endif;
+					    	if($user->authorise('core.create', 'com_pftasks')) :
+					    ?>
+					    	<li><a href="<?php echo JRoute::_($link_tasks . '&task=tasklistform.add');?>"><i class="icon-list-view"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
+					    <?php
+					    	endif;
+					    	if($user->authorise('core.create', 'com_pftasks')) :
+					    ?>
+					    	<li><a href="<?php echo JRoute::_($link_tasks . '&task=taskform.add');?>"><i class="icon-checkbox"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
+					    <?php
+					    	endif;
+					    	if($user->authorise('core.create', 'com_pftime')) :
+					    ?>
+					    	<li><a href="<?php echo JRoute::_($link_time . '&task=form.add');?>"><i class="icon-clock"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
+					    <?php
+					    	endif;
+					    	if($user->authorise('core.create', 'com_pfforum')) :
+					    ?>
+					    	<li><a href="<?php echo JRoute::_($link_forum . '&task=topicform.add');?>"><i class="icon-comments-2"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
+					    <?php
+					    	endif;
+					    	if($user->authorise('core.create', 'com_pfrepo') && $app->getUserState('com_projectfork.project.active.id')) :
+					    ?>
+					    	<li><a href="<?php echo JRoute::_($link_repo . '&task=fileform.add');?>"><i class="icon-upload"></i> <?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
+					    <?php
+					    	endif;
+					    ?>
+					  </ul>
+					  </div>
+					  <hr />
 				</div>
-				<?php
-					endif;
-				?>
-				<hr />
+                <?php endif; ?>
+                
+                <?php if ($user->id) : ?>
+                <div class="visible-phone">
+                  <a href="#" data-target=".create-collapse" class="btn btn-large btn-info btn-wide dropdown-toggle" data-toggle="collapse">
+                    <?php echo JText::_('TPL_GOGGLES_CREATE');?>
+                    <span aria-hidden="true" class="icon-pencil"></span>
+                  </a>
+                  <div class="create-collapse collapse">
+                  	<br />
+                  	<ul class="nav nav-tabs nav-stacked">
+                  		<?php
+                  			if($user->authorise('core.create', 'com_pfprojects')) :
+                  		?>
+                  	  	<li><a href="<?php echo JRoute::_($link_projects . '&task=form.add');?>"><i class="icon-briefcase"></i> <?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
+                  	  <?php
+                  	  	endif;
+                  	  	if($user->authorise('core.create', 'com_pfmilestones')) :
+                  	  ?>
+                  	  	<li><a href="<?php echo JRoute::_($link_ms . '&task=form.add');?>"><i class="icon-flag"></i> <?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
+                  	  <?php
+                  	  	endif;
+                  	  	if($user->authorise('core.create', 'com_pftasks')) :
+                  	  ?>
+                  	  	<li><a href="<?php echo JRoute::_($link_tasks . '&task=tasklistform.add');?>"><i class="icon-list-view"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
+                  	  <?php
+                  	  	endif;
+                  	  	if($user->authorise('core.create', 'com_pftasks')) :
+                  	  ?>
+                  	  	<li><a href="<?php echo JRoute::_($link_tasks . '&task=taskform.add');?>"><i class="icon-checkbox"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
+                  	  <?php
+                  	  	endif;
+                  	  	if($user->authorise('core.create', 'com_pftime')) :
+                  	  ?>
+                  	  	<li><a href="<?php echo JRoute::_($link_time . '&task=form.add');?>"><i class="icon-clock"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
+                  	  <?php
+                  	  	endif;
+                  	  	if($user->authorise('core.create', 'com_pfforum')) :
+                  	  ?>
+                  	  	<li><a href="<?php echo JRoute::_($link_forum . '&task=topicform.add');?>"><i class="icon-comments-2"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
+                  	  <?php
+                  	  	endif;
+                  	  	if($user->authorise('core.create', 'com_pfrepo') && $app->getUserState('com_projectfork.project.active.id')) :
+                  	  ?>
+                  	  	<li><a href="<?php echo JRoute::_($link_repo . '&task=fileform.add');?>"><i class="icon-upload"></i> <?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
+                  	  <?php
+                  	  	endif;
+                  	  ?>
+                  	</ul>
+                  </div>
+                  <hr />
+                </div>
+                <?php endif; ?>
+
 				<div class="sidebar-nav">
-					<a class="btn btn-large btn-info btn-wide btn-sidebar-collapse" data-toggle="collapse" data-target=".sidebar-collapse"> Menu <span class="caret"></span></a>
+					<a class="btn btn-large btn-wide btn-sidebar-collapse" data-toggle="collapse" data-target=".sidebar-collapse"> <?php echo JText::_('TPL_GOGGLES_MENU');?> <span aria-hidden="true" class="icon-list-view"></span></a>
 					<div class="sidebar-collapse">
 						<jdoc:include type="modules" name="position-7" style="xhtml" />
 						<jdoc:include type="modules" name="left" style="xhtml" />
 					</div>
+					<hr class="visible-phone" />
 	            </div>
 	        	<!-- End Sidebar -->
 			</div>

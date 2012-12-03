@@ -2,12 +2,12 @@
 <extension type="component" version="2.5" method="upgrade">
     <name>com_pftasks</name>
     <author>Tobias Kuhn</author>
-    <creationDate>November 2012</creationDate>
+    <creationDate>December 2012</creationDate>
     <copyright>(C) 2006 - 2012 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>support@projectfork.net</authorEmail>
     <authorUrl>www.projectfork.net</authorUrl>
-    <version>4.0.0b1</version>
+    <version>4.0.0b2</version>
     <description>COM_PFTASKS_XML_DESCRIPTION</description>
     <scriptfile>script.php</scriptfile>
     <files folder="site">
@@ -38,6 +38,8 @@
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_pftasks.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pftasks.sys.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.com_pftasks.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.com_pftasks.sys.ini</language>
         </languages>
     </administration>
 </extension>

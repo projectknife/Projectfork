@@ -109,11 +109,12 @@ class JFormFieldTasklist extends JFormFieldList
         }
 
         // Filter by milestone.
-        if ($milestone) $query->where('a.milestone_id = ' . (int) $milestone);
+        if ($milestone) $query->where('(a.milestone_id = ' . (int) $milestone . ' OR a.milestone_id = 0)');
 
         // Filter state
         if (!is_null($state)) $query->where('a.state = ' . $db->quote($state));
 
+        $query->group('a.id');
         $query->order('a.title');
 
         $db->setQuery((string) $query);

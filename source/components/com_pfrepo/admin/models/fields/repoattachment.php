@@ -154,7 +154,7 @@ class JFormFieldRepoAttachment extends JFormField
                   . '&amp;function=pfSelectAttachment_' . $this->id;
         }
         else {
-            $link = 'index.php?option=com_projectfork&amp;view=repository'
+            $link = 'index.php?option=com_pfrepo&amp;view=repository'
                   . '&amp;filter_project=' . (int) $project
                   . '&amp;layout=modal&amp;tmpl=component'
                   . '&amp;function=pfSelectAttachment_' . $this->id;

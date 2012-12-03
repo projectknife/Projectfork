@@ -34,9 +34,7 @@ Joomla.submitbutton = function(task)
         <fieldset class="adminform">
             <legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_MILESTONE') : JText::_('COM_PROJECTFORK_EDIT_MILESTONE'); ?></legend>
             <ul class="adminformlist unstyled">
-                <?php if ($this->item->id <= 0) : ?>
-                    <li><?php echo $this->form->getLabel('project_id') . $this->form->getInput('project_id'); ?></li>
-                <?php endif; ?>
+                <li><?php echo $this->form->getLabel('project_id') . $this->form->getInput('project_id'); ?></li>
                 <li><?php echo $this->form->getLabel('title') . $this->form->getInput('title'); ?></li>
                 <li><?php echo $this->form->getLabel('description') . $this->form->getInput('description'); ?></li>
             </ul>
@@ -52,8 +50,8 @@ Joomla.submitbutton = function(task)
                 <ul class="adminformlist unstyled">
                     <li><?php echo $this->form->getLabel('created_by') . $this->form->getInput('created_by'); ?></li>
                     <li><?php echo $this->form->getLabel('state') . $this->form->getInput('state'); ?></li>
-                    <li><?php echo $this->form->getLabel('start_date') . $this->form->getInput('start_date'); ?></li>
-                    <li><?php echo $this->form->getLabel('end_date') . $this->form->getInput('end_date'); ?></li>
+                    <li><?php echo $this->form->getLabel('start_date') . '<span id="jform_start_date_reload">' . $this->form->getInput('start_date') . '</span>'; ?></li>
+                    <li><?php echo $this->form->getLabel('end_date') . '<span id="jform_end_date_reload">' . $this->form->getInput('end_date') . '</span>'; ?></li>
                     <?php if ($this->item->modified_by) : ?>
                         <li><?php echo $this->form->getLabel('modified_by') . $this->form->getInput('modified_by'); ?></li>
                         <li><?php echo $this->form->getLabel('modified') . $this->form->getInput('modified'); ?></li>

@@ -20,7 +20,7 @@
         </field>
         <field name="catid" type="category"
             label="JCATEGORY" description="COM_PROJECTFORK_FIELD_CATEGORY_DESC"
-            extension="com_projectfork" class="inputbox" show_root="true"
+            extension="com_pfprojects" class="inputbox" show_root="true"
         >
         </field>
         <field name="created_by" type="user"

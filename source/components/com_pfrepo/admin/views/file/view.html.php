@@ -78,7 +78,7 @@ class PFrepoViewFile extends JViewLegacy
                 }
             }
 
-            JToolBarHelper::save2copy('file.save2copy');
+            // JToolBarHelper::save2copy('file.save2copy');
             JToolBarHelper::cancel('file.cancel', 'JTOOLBAR_CLOSE');
         }
     }

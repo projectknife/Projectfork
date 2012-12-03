@@ -131,15 +131,48 @@ class PFforumControllerReplyform extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $topic  = (isset($data['topic_id']) ? (int) $data['topic_id'] : JRequest::getUInt('filter_topic'));
-        $access = PFforumHelper::getActions($topic);
+        $user  = JFactory::getUser();
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
+        $access  = true;
+        $levels  = $user->getAuthorisedViewLevels();
+        $project = isset($data['project_id']) ? (int) $data['project_id'] : 0;
+        $topic   = (isset($data['topic_id'])  ? (int) $data['topic_id']   : JRequest::getUInt('filter_topic'));
+
+        // Topic is required
         if (!$topic) {
             $this->setError(JText::_('COM_PROJECTFORK_WARNING_TOPIC_NOT_FOUND'));
             return false;
         }
 
-        return $access->get('core.create');
+        // Check if the user has access to the topic
+        if (!$user->authorise('core.admin', 'com_pfforum')) {
+            if ($topic && $access) {
+                $query->clear();
+                $query->select('access')
+                      ->from('#__pf_topics')
+                      ->where('id = ' . $db->quote((int) $topic));
+
+                $db->setQuery($query);
+                $access = in_array((int) $db->loadResult(), $levels);
+            }
+        }
+
+        // Check if the user has access to the project
+        if (!$user->authorise('core.admin', 'com_pfprojects')) {
+            if ($project && $access) {
+                $query->clear();
+                $query->select('access')
+                      ->from('#__pf_projects')
+                      ->where('id = ' . $db->quote((int) $project));
+
+                $db->setQuery($query);
+                $access = in_array((int) $db->loadResult(), $levels);
+            }
+        }
+
+        return ($user->authorise('core.create', 'com_pfforum') && $access);
     }
 
 

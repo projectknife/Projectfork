@@ -343,7 +343,9 @@ class PFnotificationsHelper
             return false;
         }
 
-        return $class_name::isSupported($context);
+        $supported = call_user_func(array($class_name, 'isSupported'), $context);
+
+        return $supported;
     }
 
 

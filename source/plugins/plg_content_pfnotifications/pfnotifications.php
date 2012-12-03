@@ -57,7 +57,7 @@ class plgContentPfnotifications extends JPlugin
         $methods    = get_class_methods($class_name);
 
         if (in_array('getItemName', $methods)) {
-            $item = $class_name::getItemName($context);
+            $item = call_user_func(array($class_name, 'getItemName'), $context);
         }
 
         if ($is_new) {
@@ -99,7 +99,7 @@ class plgContentPfnotifications extends JPlugin
         $methods    = get_class_methods($class_name);
 
         if (in_array('getItemName', $methods)) {
-            $item = $class_name::getItemName($context);
+            $item = call_user_func(array($class_name, 'getItemName'), $context);
         }
 
         $subject_method = 'get' . ucfirst($item) . 'Subject';
@@ -120,7 +120,7 @@ class plgContentPfnotifications extends JPlugin
             return true;
         }
 
-        $users = $class_name::$users_method($context, $table, $is_new);
+        $users = call_user_func_array(array($class_name, $users_method), array($context, $table, $is_new));
 
         if (count($users) == 0) {
             return true;
@@ -180,8 +180,8 @@ class plgContentPfnotifications extends JPlugin
             }
 
             // Generate the subject and body
-            $subject = $class_name::$subject_method($lang, $receiver, $user, $this->table_after, $this->table_before, $is_new);
-            $message = $class_name::$message_method($lang, $receiver, $user, $this->table_after, $this->table_before, $is_new);
+            $subject = call_user_func_array(array($class_name, $subject_method), array($lang, $receiver, $user, $this->table_after, $this->table_before, $is_new));
+            $message = call_user_func_array(array($class_name, $message_method), array($lang, $receiver, $user, $this->table_after, $this->table_before, $is_new));
 
             if ($subject === false || $message === false) {
                 // Abort if the subject or message is False

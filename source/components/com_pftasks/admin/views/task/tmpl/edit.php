@@ -36,9 +36,7 @@ Joomla.submitbutton = function(task)
         <fieldset class="adminform">
 			<legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_TASK') : JText::_('COM_PROJECTFORK_EDIT_TASK'); ?></legend>
 			<ul class="adminformlist unstyled">
-				<?php if ($this->item->id <= 0) : ?>
-                    <li><?php echo $this->form->getLabel('project_id').$this->form->getInput('project_id'); ?></li>
-                <?php endif; ?>
+                <li><?php echo $this->form->getLabel('project_id').$this->form->getInput('project_id'); ?></li>
                 <?php if (PFApplicationHelper::enabled('com_pfmilestones')) : ?>
     				<li>
                         <?php echo $this->form->getLabel('milestone_id'); ?>
@@ -73,8 +71,8 @@ Joomla.submitbutton = function(task)
                     <li><?php echo $this->form->getLabel('state').$this->form->getInput('state'); ?></li>
                     <li><?php echo $this->form->getLabel('priority').$this->form->getInput('priority'); ?></li>
                     <li><?php echo $this->form->getLabel('complete').$this->form->getInput('complete'); ?></li>
-                    <li><?php echo $this->form->getLabel('start_date').$this->form->getInput('start_date'); ?></li>
-                    <li><?php echo $this->form->getLabel('end_date').$this->form->getInput('end_date'); ?></li>
+                    <li><?php echo $this->form->getLabel('start_date') . '<span id="jform_start_date_reload">' . $this->form->getInput('start_date') . '</span>'; ?></li>
+                    <li><?php echo $this->form->getLabel('end_date') . '<span id="jform_end_date_reload">' . $this->form->getInput('end_date') . '</span>'; ?></li>
                     <li><?php echo $this->form->getLabel('rate').$this->form->getInput('rate'); ?></li>
                     <li><?php echo $this->form->getLabel('estimate').$this->form->getInput('estimate'); ?></li>
                     <?php if ($this->item->modified_by) : ?>

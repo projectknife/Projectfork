@@ -48,7 +48,7 @@ class JFormFieldProjectLogo extends JFormField
     protected function getHTML()
     {
         if (!$this->value) {
-            $this->value = PFApplicationHelper::getActiveProjectId();
+            $this->value = (int) $this->form->getValue('id');
         }
 
         if (JFactory::getApplication()->isSite() || version_compare(JVERSION, '3.0.0', 'ge')) {

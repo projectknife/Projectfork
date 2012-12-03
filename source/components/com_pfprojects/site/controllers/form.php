@@ -124,7 +124,7 @@ class PFprojectsControllerForm extends JControllerForm
     {
         $access = PFprojectsHelper::getActions();
 
-        return $access->get('core.create');
+        return $access->get('core.create', 'com_pfprojects');
     }
 
 
@@ -144,13 +144,13 @@ class PFprojectsControllerForm extends JControllerForm
         $access = PFprojectsHelper::getActions($id);
 
         // Check general edit permission first.
-        if ($access->get('core.edit')) {
+        if ($access->get('core.edit', 'com_pfprojects')) {
             return true;
         }
 
         // Fallback on edit.own.
         // First test if the permission is available.
-        if ($access->get('core.edit.own')) {
+        if ($access->get('core.edit.own', 'com_pfprojects')) {
             // Now test the owner is the user.
             $owner = (int) isset($data['created_by']) ? $data['created_by'] : 0;
 

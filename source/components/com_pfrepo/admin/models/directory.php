@@ -499,6 +499,19 @@ class PFrepoModelDirectory extends JModelAdmin
             $form->setFieldAttribute('project_id', 'disabled', 'true');
             $form->setFieldAttribute('project_id', 'filter', 'unset');
             $form->setFieldAttribute('project_id', 'required', 'false');
+
+            // We still need to inject the project id when reloading the form
+            if (!isset($data['project_id'])) {
+                $db    = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('project_id')
+                      ->from('#__pf_repo_dirs')
+                      ->where('id = ' . $db->quote($id));
+
+                $db->setQuery($query);
+                $form->setValue('project_id', null, (int) $db->loadResult());
+            }
         }
 
         return $form;
@@ -1034,8 +1047,6 @@ class PFrepoModelDirectory extends JModelAdmin
     protected function canDelete($record)
     {
         if (!empty($record->id)) {
-            if ($record->state != -2) return false;
-
             $user  = JFactory::getUser();
             $asset = 'com_pfrepo.directory.' . (int) $record->id;
 

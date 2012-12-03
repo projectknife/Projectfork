@@ -4,7 +4,7 @@
         <field name="project_id" type="project"
             label="COM_PROJECTFORK_FIELD_PROJECT_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_DESC" class="inputbox" size="30"
             required="true" view="milestone"
-            onchange="PFform.reload('access,rules,labels,attachment');"
+            onchange="PFform.reload('access,rules,labels,attachment,start_date,end_date');"
         />
         <field name="title" type="text"
             label="JGLOBAL_TITLE" description="JFIELD_TITLE_DESC"
@@ -26,13 +26,13 @@
         <field name="created_by" type="user"
             label="COM_PROJECTFORK_FIELD_CREATED_BY_LABEL" description="COM_PROJECTFORK_FIELD_CREATED_BY_DESC"
         />
-        <field name="start_date" type="calendar"
+        <field name="start_date" type="calendarrange"
             label="COM_PROJECTFORK_FIELD_START_DATE_LABEL" description="COM_PROJECTFORK_FIELD_START_DATE_OPTIONAL_DESC"
-            class="inputbox" size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
+            class="inputbox" size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" clip="start"
         />
-        <field name="end_date" type="calendar"
+        <field name="end_date" type="calendarrange"
             label="COM_PROJECTFORK_FIELD_DEADLINE_LABEL" description="COM_PROJECTFORK_FIELD_DEADLINE_OPTIONAL_LABEL"
-            class="inputbox" size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc"
+            class="inputbox" size="22" format="%Y-%m-%d %H:%M:%S" filter="user_utc" clip="end"
         />
         <field name="modified" type="calendar"
             label="JGLOBAL_FIELD_MODIFIED_LABEL"

@@ -57,19 +57,24 @@ var PFform =
             dataType: 'html',
             success: function(resp)
             {
-                resp = jQuery.parseJSON(resp);
+                if (Projectfork.isJsonString(resp) == false) {
+                    Projectfork.displayException(resp);
+                }
+                else {
+                    resp = jQuery.parseJSON(resp);
 
-                if (resp.success == "true") {
-                    if (typeof resp.data != 'undefined') {
-                        for(var i = 0; i < els.length; i++)
-                        {
-                            var eln = jQuery.trim(els[i]);
-                            var elo = jQuery('#' + fn + '_' + eln + '_reload');
-                            var eld = resp.data[eln];
+                    if (resp.success == "true") {
+                        if (typeof resp.data != 'undefined') {
+                            for(var i = 0; i < els.length; i++)
+                            {
+                                var eln = jQuery.trim(els[i]);
+                                var elo = jQuery('#' + fn + '_' + eln + '_reload');
+                                var eld = resp.data[eln];
 
-                            if (elo.length > 0 && eld.length > 0) {
-                                elo.empty();
-                                elo.append(eld);
+                                if (elo.length > 0 && eld.length > 0) {
+                                    elo.empty();
+                                    elo.append(eld);
+                                }
                             }
                         }
                     }
@@ -77,7 +82,7 @@ var PFform =
             },
             error: function(resp, e, msg)
             {
-                alert(msg);
+                Projectfork.displayMsg(resp, msg);
             },
             complete: function()
             {

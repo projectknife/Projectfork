@@ -128,43 +128,47 @@ class PFtasksControllerTaskForm extends JControllerForm
         $query = $db->getQuery(true);
 
         $access  = true;
+        $levels  = $user->getAuthorisedViewLevels();
         $list    = isset($data['list_id'])      ? (int) $data['list_id'] : 0;
         $ms      = isset($data['milestone_id']) ? (int) $data['milestone_id'] : 0;
         $project = isset($data['project_id'])   ? (int) $data['project_id'] : 0;
 
-        if ($list) {
-            // Check if the user has access to the task list
-            $query->select('access')
-                  ->from('#__pf_task_lists')
-                  ->where('id = ' . $db->quote($list));
+        if (!$user->authorise('core.admin', 'com_pftasks')) {
+            if ($list) {
+                // Check if the user has access to the task list
+                $query->select('access')
+                      ->from('#__pf_task_lists')
+                      ->where('id = ' . $db->quote($list));
 
-            $db->setQuery($query);
-            $level  = (int) $db->loadResult();
-            $access = (in_array($level, $user->getAuthorisedViewLevels()) && $user->authorise('core.create', 'com_pftasks.tasklist.' . $list));
+                $db->setQuery($query);
+                $access = (in_array((int) $db->loadResult(), $levels) && $user->authorise('core.create', 'com_pftasks.tasklist.' . $list));
+            }
         }
 
-        if ($ms && $access) {
-            // Check if the user has access to the milestone
-            $query->clear();
-            $query->select('access')
-                  ->from('#__pf_milestones')
-                  ->where('id = ' . $db->quote($ms));
+        // Check if the user has access to the milestone
+        if (!$user->authorise('core.admin', 'com_pfmilestones')) {
+            if ($ms) {
+                $query->clear();
+                $query->select('access')
+                      ->from('#__pf_milestones')
+                      ->where('id = ' . $db->quote((int) $ms));
 
-            $db->setQuery($query);
-            $level  = (int) $db->loadResult();
-            $access = in_array($level, $user->getAuthorisedViewLevels());
+                $db->setQuery($query);
+                $access = in_array((int) $db->loadResult(), $levels);
+            }
         }
 
-        if ($project && $access) {
-            // Check if the user has access to the project
-            $query->clear();
-            $query->select('access')
-                  ->from('#__pf_projects')
-                  ->where('id = ' . $db->quote($project));
+        // Check if the user has access to the project
+        if (!$user->authorise('core.admin', 'com_pfprojects')) {
+            if ($project && $access) {
+                $query->clear();
+                $query->select('access')
+                      ->from('#__pf_projects')
+                      ->where('id = ' . $db->quote((int) $project));
 
-            $db->setQuery($query);
-            $level  = (int) $db->loadResult();
-            $access = in_array($level, $user->getAuthorisedViewLevels());
+                $db->setQuery($query);
+                $access = in_array((int) $db->loadResult(), $levels);
+            }
         }
 
         return ($user->authorise('core.create', 'com_pftasks') && $access);
@@ -187,7 +191,7 @@ class PFtasksControllerTaskForm extends JControllerForm
         $access = PFtasksHelper::getActions($id);
 
         // Check general edit permission first.
-        if ($access->get('task.edit')) {
+        if ($access->get('core.edit')) {
             return true;
         }
 

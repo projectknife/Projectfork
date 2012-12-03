@@ -78,7 +78,7 @@ class PFforumViewReply extends JViewLegacy
                 }
             }
 
-            JToolBarHelper::save2copy('reply.save2copy');
+            // JToolBarHelper::save2copy('reply.save2copy');
             JToolBarHelper::cancel('reply.cancel', 'JTOOLBAR_CLOSE');
         }
     }

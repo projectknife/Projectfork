@@ -212,9 +212,13 @@ class JFormFieldTaskDependency extends JFormField
      */
     protected function getOptions($project)
     {
+        $app   = JFactory::getApplication();
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
         $opts  = array();
+
+        $id   = (int) $this->form->getValue('id');
+        $view = $app->input->get('view');
 
         $query->select('a.id AS value, a.title AS text')
               ->from('#__pf_tasks AS a')
@@ -230,6 +234,11 @@ class JFormFieldTaskDependency extends JFormField
 
         foreach ($items AS $item)
         {
+            if ($view == 'taskform' && $id == (int) $item->value) {
+                // Skip if the value is the same as the task we're editing
+                continue;
+            }
+
             $opts[] = JHtml::_('select.option', $item->value, $item->text);
         }
 

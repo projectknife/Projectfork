@@ -118,11 +118,11 @@ abstract class PFrepoNotificationsHelper
             $methods = get_class_methods($class_name);
 
             if (in_array('getItemName', $methods)) {
-                $item = $class_name::getItemName($after->context);
+                $item = call_user_func(array($class_name, 'getItemName'), $after->context);
             }
 
             if (in_array('translateItem', $methods)) {
-                $value = $class_name::translateItem($after->context, $after->item_id);
+                $value = call_user_func_array(array($class_name, 'translateItem'), array($after->context, $after->item_id));
             }
         }
 
@@ -174,11 +174,11 @@ abstract class PFrepoNotificationsHelper
             $methods = get_class_methods($class_name);
 
             if (in_array('getItemName', $methods)) {
-                $item = $class_name::getItemName($after->context);
+                $item = call_user_func(array($class_name, 'getItemName'), $after->context);
             }
 
             if (in_array('translateItem', $methods)) {
-                $value = $class_name::translateItem($after->item_type, $after->item_id);
+                $value = call_user_func_array(array($class_name, 'translateItem'), array($after->item_type, $after->item_id));
             }
         }
 
@@ -199,7 +199,7 @@ abstract class PFrepoNotificationsHelper
 
                 if (class_exists($class_name)) {
                     if (in_array($method, get_class_methods($class_name))) {
-                        $link = $class_name::$method($after->item_id, $after->project_id);
+                        $link = call_user_func_array(array($class_name, $method), array($after->item_id, $after->project_id));
                     }
                 }
                 break;
