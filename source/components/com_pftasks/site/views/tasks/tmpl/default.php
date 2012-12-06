@@ -291,6 +291,28 @@ jQuery(document).ready(function() {
                 <?php $list_open = false; endif; ?>
             </div>
 
+            <?php if ($can_order) : ?>
+                <?php if (!$this->state->get('filter.project')) : ?>
+                    <div class="alert"><?php echo JText::_('COM_PROJECTFORK_REORDER_DISABLED'); ?></div>
+                <?php else: ?>
+                    <div class="alert alert-success"><?php echo JText::_('COM_PROJECTFORK_REORDER_ENABLED'); ?></div>
+                <?php endif; ?>
+            <?php endif; ?>
+
+            <?php if (!$this->state->get('filter.project')) : ?>
+                <div class="filters btn-toolbar">
+                    <div class="btn-group display-limit">
+                        <?php echo $this->pagination->getLimitBox(); ?>
+                    </div>
+                    <?php if ($this->pagination->get('pages.total') > 1) : ?>
+                        <div class="btn-group pagination">
+                            <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
+                            <?php echo $this->pagination->getPagesLinks(); ?>
+                        </div>
+                    <?php endif; ?>
+                </div>
+            <?php endif; ?>
+
             <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
             <input type="hidden" id="target-item" name="target_item" value="0" />
             <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
@@ -299,11 +321,4 @@ jQuery(document).ready(function() {
             <?php echo JHtml::_('form.token'); ?>
         </form>
     </div>
-    <?php if ($can_order) : ?>
-        <?php if (!$this->state->get('filter.project')) : ?>
-            <div class="alert"><?php echo JText::_('COM_PROJECTFORK_REORDER_DISABLED'); ?></div>
-        <?php else: ?>
-            <div class="alert alert-success"><?php echo JText::_('COM_PROJECTFORK_REORDER_ENABLED'); ?></div>
-        <?php endif; ?>
-    <?php endif; ?>
 </div>

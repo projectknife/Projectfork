@@ -54,11 +54,6 @@ class PFtasksViewTasks extends JViewLegacy
             $this->setLayout($active->query['layout']);
         }
 
-        // Set list limit to 0 if default layout and if a project is selected
-        if (($project > 0) && ($layout == '' || $layout == 'default')) {
-            // $state->set('list.limit', 0);
-        }
-
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
         $this->state      = $this->get('State');
