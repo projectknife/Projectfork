@@ -241,8 +241,15 @@ class PFtasksModelTask extends JModelAdmin
         $condition = array();
 
         $condition[] = 'project_id = ' . (int) $table->project_id;
-        $condition[] = 'milestone_id = ' . (int) $table->milestone_id;
-        $condition[] = 'list_id = ' . (int) $table->list_id;
+
+        if ($table->list_id) {
+            $condition[] = 'list_id = ' . (int) $table->list_id;
+        }
+        elseif($table->milestone_id) {
+            $condition[] = 'milestone_id = ' . (int) $table->milestone_id;
+        }
+
+
 
         return array(implode(' AND ', $condition));
     }
@@ -260,8 +267,13 @@ class PFtasksModelTask extends JModelAdmin
         $condition = array();
 
         $condition[] = 'project_id = ' . (int) $table->project_id;
-        $condition[] = 'milestone_id = ' . (int) $table->milestone_id;
-        $condition[] = 'list_id = ' . (int) $table->list_id;
+
+        if ($table->list_id) {
+            $condition[] = 'list_id = ' . (int) $table->list_id;
+        }
+        elseif($table->milestone_id) {
+            $condition[] = 'milestone_id = ' . (int) $table->milestone_id;
+        }
 
         $condition = implode(' AND ', $condition);
 

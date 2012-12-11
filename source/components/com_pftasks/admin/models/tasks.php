@@ -245,7 +245,7 @@ class PFtasksModelTasks extends JModelList
         $order_dir = $this->state->get('list.direction', 'asc');
 
         if ($order_col == 'a.ordering') {
-            $order_col = 'p.title, m.title, tl.title ' . $order_dir . ', ' . $order_col;
+            $order_col = 'p.title, tl.title ' . $order_dir . ', ' . $order_col;
         }
         if ($order_col == 'project_title') {
             $order_col = 'm.title, tl.title, a.title ' . $order_dir . ', p.title';
