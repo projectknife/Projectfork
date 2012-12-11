@@ -76,7 +76,7 @@ $access = PFusersHelper::getActions();
                         				<i class="icon-calendar" rel="tooltip" title="<?php echo JText::_('COM_PROJECTFORK_USER_VISIT_DATE');?>"></i> <?php echo JHtml::_('date', $this->item->lastvisitDate, $this->escape( $this->params->get('date_format', JText::_('DATE_FORMAT_LC1'))));?>
                         			</li>
                         		<?php endif; ?>
-                        	</dl>
+                        	</ul>
                         	<div class="clearfix"></div>
                     	</div>
                     </div>
