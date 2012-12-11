@@ -176,7 +176,7 @@ class PFtimeModelTime extends JModelAdmin
         }
         else {
             if ($is_new) {
-                $data['access'] = 1;
+                $data['access'] = (int) JFactory::getConfig()->get('access');
             }
             else {
                 if (isset($data['access'])) {
