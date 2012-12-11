@@ -14,7 +14,7 @@ defined('_JEXEC') or die();
 $state = $this->state;
 ?>
 <form class="form-validate" id="commentForm" name="commentForm" method="post" action="<?php echo JRoute::_('index.php?option=com_pfcomments&view=comments'); ?>">
-    <h4><?php echo count($this->items) . ' ' . JText::_('COM_PROJECTFORK_COMMENTS'); ?></h4>
+    <h4><span id="comment_count"><?php echo count($this->items); ?></span><?php echo ' ' . JText::_('COM_PROJECTFORK_COMMENTS'); ?></h4>
     <hr />
 
     <ul class="unstyled" id="comment-node-0">

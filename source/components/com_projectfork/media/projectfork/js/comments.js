@@ -47,6 +47,15 @@ var PFcomments =
                 else {
                     resp = jQuery.parseJSON(resp);
                     Projectfork.displayMsg(resp);
+
+                    // Increase comment count
+                    var cc = jQuery('#comment_count');
+
+                    if (cc.length) {
+                        var cci = parseInt(cc.text());
+                        cci++;
+                        cc.text(cci);
+                    }
                 }
             },
             error: function(resp, e, msg)
@@ -110,8 +119,16 @@ var PFcomments =
                 }
                 else {
                     resp = jQuery.parseJSON(resp);
-
                     Projectfork.displayMsg(resp);
+
+                    // Decrease comment count
+                    var cc = jQuery('#comment_count');
+
+                    if (cc.length) {
+                        var cci = parseInt(cc.text());
+                        cci--;
+                        cc.text(cci);
+                    }
                 }
             },
             error: function(resp, e, msg)
