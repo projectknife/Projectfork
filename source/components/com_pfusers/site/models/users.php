@@ -50,6 +50,9 @@ class PFusersModelUsers extends UsersModelUsers
         $model  = $this->getInstance('Form', 'PFprojectsModel', array('ignore_request' => true));
         $groups = array();
 
+        // Filter - State
+        $this->setState('filter.state', 0);
+
         // Filter - Project
         $pid = PFApplicationHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $pid);
