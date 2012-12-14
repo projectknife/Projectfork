@@ -42,7 +42,7 @@
             asset="com_pfforum.topic"
         />
         <field name="rules" type="groupaccess"
-            component="com_pfforum" section="topic" inheritonly="true" filter="ProjectforkHelperForm::filterRules" validate="groupaccess"
+            component="com_pfforum" section="topic" inheritonly="true" filter="PFFormHelper::filterRules" validate="groupaccess"
         />
         <field name="id" type="hidden" readonly="true"/>
         <field name="access" type="inheritaccess" hidden="true" readonly="true"/>

@@ -29,7 +29,7 @@
             label="COM_PROJECTFORK_FIELD_ATTACHMENT_LABEL" description="COM_PROJECTFORK_FIELD_ATTACHMENT_DESC"
         />
         <field name="rules" type="groupaccess"
-            component="com_pfforum" section="reply" inheritonly="true" filter="ProjectforkHelperForm::filterRules" validate="groupaccess"
+            component="com_pfforum" section="reply" inheritonly="true" filter="PFFormHelper::filterRules" validate="groupaccess"
         />
         <field name="id" type="hidden" readonly="true"/>
         <field name="project_id" type="hidden" readonly="true"/>
