@@ -156,24 +156,20 @@ jQuery(document).ready(function() {
                         ?>
                         <div class="cat-list-row<?php echo $k;?>">
                         	<?php if ($item->list_title) : ?>
-	                            <div class="list-title btn-toolbar">
-	                            	<div class="btn-group">
-		                                <h3>
-		                                    <a href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->project_slug, $item->milestone_slug, $item->list_slug));?>">
-		                                        <?php echo $this->escape($item->list_title);?>
-		                                    </a>
-		                                    <small><?php echo $this->escape($item->list_description);?></small>
-		                                </h3>
-	                            	</div>
-                                    <?php
-                                        $this->menu->start(array('class' => 'btn-mini'));
-                                        $this->menu->itemEdit('tasklistform', $item->list_id, ($can_edit || $can_edit_own));
-                                        $this->menu->itemTrash('tasklists', $x, ($can_edit || $can_edit_own));
-                                        $this->menu->end();
-                                        echo $this->menu->render(array('class' => 'btn-mini'));
-                                    ?>
-	                                <div class="clearfix"></div>
-	                            </div>
+                               <?php
+                                    $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
+                                    $this->menu->itemEdit('tasklistform', $item->list_id, ($can_edit || $can_edit_own));
+                                    $this->menu->itemTrash('tasklists', $x, ($can_edit || $can_edit_own));
+                                    $this->menu->end();
+                                    echo $this->menu->render(array('class' => 'btn-mini', 'pull' => 'right'));
+                               ?>
+                               <h3>
+		                          <a href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->project_slug, $item->milestone_slug, $item->list_slug));?>">
+		                              <?php echo $this->escape($item->list_title);?>
+		                          </a>
+	                           </h3>
+                               <small><?php echo $this->escape($item->list_description);?></small>
+                               <div class="clearfix clr"></div>
                             <?php endif; ?>
                             <ul class="list-tasks list-striped list-condensed unstyled" id="tasklist_<?php echo $i;?>">
                         <?php
@@ -267,17 +263,15 @@ jQuery(document).ready(function() {
                                     </a>
                                 </h5>
                             </div>
-                            <div class="btn-group">
-                                <small><?php echo $this->escape(JHtml::_('pf.html.truncate', $item->description));?></small>
-                                <?php echo JHtml::_('pftasks.assignedLabel', $item->id, $x, $item->users); ?>
-                                <?php echo JHtml::_('pftasks.priorityLabel', $item->id, $x, $item->priority); ?>
-                                <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date); ?>
-                                <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
-                                <?php if ($cmnts_enabled) : echo JHtml::_('pfcomments.label', $item->comments); endif; ?>
-                                <?php if ($repo_enabled) : echo JHtml::_('pfrepo.attachmentsLabel', $item->attachments); endif; ?>
-                                <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
-                            </div>
                             <?php echo $watch; ?>
+                            <small><?php echo $this->escape(JHtml::_('pf.html.truncate', $item->description));?></small>
+                            <?php echo JHtml::_('pftasks.assignedLabel', $item->id, $x, $item->users); ?>
+                            <?php echo JHtml::_('pftasks.priorityLabel', $item->id, $x, $item->priority); ?>
+                            <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date); ?>
+                            <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
+                            <?php if ($cmnts_enabled) : echo JHtml::_('pfcomments.label', $item->comments); endif; ?>
+                            <?php if ($repo_enabled) : echo JHtml::_('pfrepo.attachmentsLabel', $item->attachments); endif; ?>
+                            <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
                         </div>
                     </li>
                 <?php
