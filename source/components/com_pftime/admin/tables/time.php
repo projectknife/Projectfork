@@ -90,6 +90,7 @@ class PFtableTime extends PFTable
         $query = $db->getQuery(true);
 
         $project = (int) $this->project_id;
+        $access  = 0;
 
         if ($project > 0) {
             $query->select('access')
@@ -100,7 +101,7 @@ class PFtableTime extends PFTable
             $access = (int) $db->loadResult();
         }
 
-        if (!$access) $access = 1;
+        if (!$access) $access = (int) JFactory::getConfig()->get('access');
 
         return $access;
     }

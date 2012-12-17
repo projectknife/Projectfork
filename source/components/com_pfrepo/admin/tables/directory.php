@@ -125,20 +125,17 @@ class PFTableDirectory extends JTableNested
             $query->select('access')
                   ->from('#__pf_repo_dirs')
                   ->where('id = ' . $db->quote($dir));
-
-            $db->setQuery($query);
-            $access = (int) $db->loadResult();
         }
         elseif ($project > 0) {
             $query->select('access')
                   ->from('#__pf_projects')
                   ->where('id = ' . $db->quote($project));
-
-            $db->setQuery($query);
-            $access = (int) $db->loadResult();
         }
 
-        if (!$access) $access = 1;
+        $db->setQuery($query);
+        $access = (int) $db->loadResult();
+
+        if (!$access) $access = (int) JFactory::getConfig()->get('access');
 
         return $access;
     }

@@ -238,9 +238,11 @@ class PFmilestonesModelMilestone extends JModelAdmin
             }
             else {
                 if ($is_new) {
-                    $data['access'] = (int) JFactory::getConfig()->get('access');
+                    // Let the table class find the correct access level
+                    $data['access'] = 0;
                 }
                 else {
+                    // Keep the existing access in the table
                     if (isset($data['access'])) {
                         unset($data['access']);
                     }
