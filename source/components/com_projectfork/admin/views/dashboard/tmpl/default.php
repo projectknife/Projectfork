@@ -22,11 +22,11 @@ $jv      = new JVersion();
             <?php foreach ($this->buttons AS $component => $buttons) : ?>
                 <?php if (PFApplicationHelper::enabled($component)) : ?>
                     <?php foreach ($buttons AS $button) : ?>
-                        <div class="icon-wrapper span2">
+                        <div class="icon-wrapper span2" style="height: 75px; margin: 0 10px 10px 0;">
                             <div class="icon">
                                 <a href="<?php echo $button['link']; ?>" class="thumbnail btn">
                                     <?php echo $button['icon']; ?>
-                                    <span><?php echo JText::_($button['title']);?></span>
+                                    <span class="small"><?php echo JText::_($button['title']);?></span>
                                 </a>
                             </div>
                         </div>
@@ -35,12 +35,12 @@ $jv      = new JVersion();
             <?php endforeach; ?>
 
             <?php if ($this->user->authorise('core.admin')) : ?>
-            <div class="icon-wrapper span2">
+            <div class="icon-wrapper span2" style="height: 75px; margin: 0 10px 10px 0;">
                 <div class="icon">
                     <?php if (version_compare(JVERSION, '3.0.0', 'ge')) : ?>
                         <a class="thumbnail btn" href="<?php echo JRoute::_('index.php?option=com_config&view=component&component=com_projectfork');?>">
                             <?php echo JHtml::image('com_projectfork/projectfork/header/icon-48-config.png', JText::_('COM_PROJECTFORK_DASHBOARD_CONFIG'), null, true); ?>
-                            <span><?php echo JText::_('COM_PROJECTFORK_DASHBOARD_CONFIG');?></span>
+                            <span class="small"><?php echo JText::_('COM_PROJECTFORK_DASHBOARD_CONFIG');?></span>
                         </a>
                     <?php else : ?>
                         <a class="modal thumbnail btn" rel="{handler: 'iframe', size: {x: 875, y: 550}, onClose: function() {}}" href="<?php echo JRoute::_('index.php?option=com_config&view=component&component=com_projectfork&tmpl=component');?>">
