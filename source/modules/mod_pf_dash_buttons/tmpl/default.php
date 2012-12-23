@@ -16,7 +16,7 @@ if (count($buttons) == 0) return '';
     <?php foreach($buttons AS $component => $btns) : ?>
         <?php if (PFApplicationHelper::enabled($component)) : ?>
             <?php foreach ($btns AS $btn) : ?>
-                <div class="span3">
+                <div class="span3" style="margin: 0 10px 10px 0;">
                     <a href="<?php echo JRoute::_($btn['link']);?>" class="thumbnail btn">
                         <p><?php echo $btn['icon']; ?></p>
                         <?php echo JText::_($btn['title']);?>
