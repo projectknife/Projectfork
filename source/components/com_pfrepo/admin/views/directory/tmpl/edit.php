@@ -32,10 +32,10 @@ Joomla.submitbutton = function(task)
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_pfrepo&view=directory&id=' . (int) $this->item->id . '&layout=edit'); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 
-    <div class="width-60 fltlft">
+    <div class="width-60 fltlft span7">
         <fieldset class="adminform">
 			<legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_DIRECTORY') : JText::_('COM_PROJECTFORK_EDIT_DIRECTORY'); ?></legend>
-			<ul class="adminformlist">
+			<ul class="adminformlist unstyled">
 				<li><?php echo $this->form->getLabel('parent_id').$this->form->getInput('parent_id'); ?></li>
 				<li><?php echo $this->form->getLabel('title').$this->form->getInput('title'); ?></li>
 				<li><?php echo $this->form->getLabel('description').$this->form->getInput('description'); ?></li>
@@ -44,12 +44,12 @@ Joomla.submitbutton = function(task)
 		</fieldset>
     </div>
 
-    <div class="width-40 fltrt">
+    <div class="width-40 fltrt span4">
         <?php echo JHtml::_('sliders.start','directory-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
 
             <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
             <fieldset class="panelform">
-				<ul class="adminformlist">
+				<ul class="adminformlist unstyled">
                     <li><?php echo $this->form->getLabel('created_by').$this->form->getInput('created_by'); ?></li>
                     <?php if ($this->item->modified_by) : ?>
 						<li><?php echo $this->form->getLabel('modified_by').$this->form->getInput('modified_by'); ?></li>
@@ -78,7 +78,7 @@ Joomla.submitbutton = function(task)
     					<p class="tip"><?php echo $this->escape(JText::_($fieldSet->description));?></p>
     				<?php endif; ?>
     				<fieldset class="panelform">
-    					<ul class="adminformlist">
+    					<ul class="adminformlist unstyled">
     					    <?php foreach ($this->form->getFieldset($name) as $field) : ?>
     						    <li><?php echo $field->label . $field->input; ?></li>
     					    <?php endforeach; ?>
@@ -96,7 +96,7 @@ Joomla.submitbutton = function(task)
     <div class="clr"></div>
 
     <?php if ($user->authorise('core.admin', 'com_pfrepo')) : ?>
-        <div class="width-100 fltlft">
+        <div class="width-100 fltlft span12">
     		<?php echo JHtml::_('sliders.start', 'permissions-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
 
     			<?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'access-rules'); ?>
