@@ -5476,43 +5476,43 @@ hr.hr-condensed {
   border-top: 1px solid #dddddd;
   margin-left: 0;
 }
-.list-striped li,
-.list-striped dd,
-.row-striped .row,
-.row-striped .row-fluid {
+.list-striped > li,
+.list-striped > dd,
+.row-striped > .row,
+.row-striped > .row-fluid {
   border-bottom: 1px solid #dddddd;
   padding: 8px;
 }
-.list-striped li:nth-child(odd),
-.list-striped dd:nth-child(odd),
-.row-striped .row:nth-child(odd),
-.row-striped .row-fluid:nth-child(odd) {
+.list-striped > li:nth-child(odd),
+.list-striped > dd:nth-child(odd),
+.row-striped > .row:nth-child(odd),
+.row-striped > .row-fluid:nth-child(odd) {
   background-color: #f9f9f9;
 }
-.list-striped li:hover,
-.list-striped dd:hover,
-.row-striped .row:hover,
-.row-striped .row-fluid:hover {
+.list-striped > li:hover,
+.list-striped > dd:hover,
+.row-striped > .row:hover,
+.row-striped > .row-fluid:hover {
   background-color: #f5f5f5;
 }
-.row-striped .row-fluid {
+.row-striped > .row-fluid {
   width: 97%;
 }
-.row-striped .row-fluid [class*="span"] {
+.row-striped > .row-fluid [class*="span"] {
   min-height: 10px;
 }
-.row-striped .row-fluid [class*="span"] {
+.row-striped > .row-fluid [class*="span"] {
   margin-left: 8px;
 }
-.row-striped .row-fluid [class*="span"]:first-child {
+.row-striped > .row-fluid [class*="span"]:first-child {
   margin-left: 0;
 }
 /* Condensed */
-.list-condensed li {
+.list-condensed > li {
   padding: 4px 5px;
 }
-.row-condensed .row,
-.row-condensed .row-fluid {
+.row-condensed > .row,
+.row-condensed > .row-fluid {
   padding: 4px 5px;
 }
 /* Bordered */
@@ -6459,11 +6459,6 @@ div.tip {
 /* Wells */
 .well .page-header {
   margin: 0px 0px 5px 0px;
-}
-/* Button Group Font Sizes */
-#list-reorder .btn-toolbar,
-#list-reorder .btn-group {
-  font-size: inherit;
 }
 .btn .caret {
   margin-bottom: 0;
