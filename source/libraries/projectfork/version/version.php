@@ -39,7 +39,7 @@ final class PFVersion
     public $RELDATE = '14-January-2013';
 
     /** @var  string  Release time. */
-    public $RELTIME = '00:00';
+    public $RELTIME = '20:00';
 
     /** @var  string  Release timezone. */
     public $RELTZ = 'CET';
