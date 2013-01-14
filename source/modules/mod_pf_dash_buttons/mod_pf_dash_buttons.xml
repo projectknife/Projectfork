@@ -2,12 +2,12 @@
 <extension type="module" version="2.5" client="site" method="upgrade">
 	<name>mod_pf_dash_buttons</name>
 	<author>Tobias Kuhn</author>
-	<creationDate>December 2012</creationDate>
-	<copyright>Copyright (C) 2012 Tobias Kuhn. All rights reserved.</copyright>
+	<creationDate>January 2013</creationDate>
+	<copyright>Copyright (C) 2012-2013 Tobias Kuhn. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>support@projectfork.net</authorEmail>
 	<authorUrl>www.projectfork.net</authorUrl>
-	<version>4.0.0b2</version>
+	<version>4.0.0</version>
 	<description>MOD_PF_DASH_BUTTONS_XML_DESCRIPTION</description>
     <position>pf-dashboard-top</position>
     <published>1</published>

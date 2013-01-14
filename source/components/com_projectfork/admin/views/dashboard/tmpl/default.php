@@ -42,9 +42,11 @@ $jv      = new JVersion();
     <div class="span4" style="margin-left: 0;">
         <div class="well well-small">
         	<div class="module-title nav-header">Projectfork <?php echo PFVERSION; ?></div>
-            <div class="well-small">
-            	Consider this a preview-only version of Projectfork. We highly recommend against using in a production environment as there may be many bugs.
-            </div>
+            <p>
+                <a href="http://projectfork.net" class="btn btn-success btn-wide btn-small" target="_blank">
+                    <span aria-hidden="true" class="icon-home"></span> Visit the website
+                </a>
+            </p>
             <p>
                 <a href="https://github.com/projectfork/Projectfork/issues" class="btn btn-primary btn-wide btn-small" target="_blank">
                     <span aria-hidden="true" class="icon-warning"></span> Report an Issue
