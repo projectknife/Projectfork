@@ -40,6 +40,10 @@
             <language tag="en-GB">language/en-GB/en-GB.com_pftasks.sys.ini</language>
             <language tag="fr-FR">language/fr-FR/fr-FR.com_pftasks.ini</language>
             <language tag="fr-FR">language/fr-FR/fr-FR.com_pftasks.sys.ini</language>
+            <language tag="it-IT">language/it-IT/it-IT.com_pftasks.ini</language>
+            <language tag="it-IT">language/it-IT/it-IT.com_pftasks.sys.ini</language>
+            <language tag="tr-TR">language/tr-TR/tr-TR.com_pftasks.ini</language>
+            <language tag="tr-TR">language/tr-TR/tr-TR.com_pftasks.sys.ini</language>
         </languages>
     </administration>
 </extension>

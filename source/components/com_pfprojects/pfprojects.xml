@@ -40,6 +40,10 @@
             <language tag="en-GB">language/en-GB/en-GB.com_pfprojects.sys.ini</language>
             <language tag="fr-FR">language/fr-FR/fr-FR.com_pfprojects.ini</language>
             <language tag="fr-FR">language/fr-FR/fr-FR.com_pfprojects.sys.ini</language>
+            <language tag="it-IT">language/it-IT/it-IT.com_pfprojects.ini</language>
+            <language tag="it-IT">language/it-IT/it-IT.com_pfprojects.sys.ini</language>
+            <language tag="tr-TR">language/tr-TR/tr-TR.com_pfprojects.ini</language>
+            <language tag="tr-TR">language/tr-TR/tr-TR.com_pfprojects.sys.ini</language>
         </languages>
     </administration>
 </extension>

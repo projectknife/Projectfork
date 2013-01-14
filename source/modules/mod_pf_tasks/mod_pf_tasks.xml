@@ -25,6 +25,12 @@
 	<languages>
 		<language tag="en-GB">language/en-GB/en-GB.mod_pf_tasks.ini</language>
 		<language tag="en-GB">language/en-GB/en-GB.mod_pf_tasks.sys.ini</language>
+        <language tag="fr-FR">language/fr-FR/fr-FR.mod_pf_tasks.ini</language>
+		<language tag="fr-FR">language/fr-FR/fr-FR.mod_pf_tasks.sys.ini</language>
+        <language tag="it-IT">language/it-IT/it-IT.mod_pf_tasks.ini</language>
+		<language tag="it-IT">language/it-IT/it-IT.mod_pf_tasks.sys.ini</language>
+        <language tag="tr-TR">language/tr-TR/tr-TR.mod_pf_tasks.ini</language>
+		<language tag="tr-TR">language/tr-TR/tr-TR.mod_pf_tasks.sys.ini</language>
 	</languages>
     <config>
         <fields name="params">
