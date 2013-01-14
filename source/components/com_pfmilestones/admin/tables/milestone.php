@@ -110,9 +110,9 @@ class PFtableMilestone extends PFTable
      *
      * @return    integer
      */
-    protected function _getAccessProjectId()
+    protected function _getParentAccess()
     {
-        if ((int) $this->project_id == 0) return 1;
+        if ((int) $this->project_id == 0) return (int) JFactory::getConfig()->get('access');
 
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
@@ -124,7 +124,7 @@ class PFtableMilestone extends PFTable
         $db->setQuery($query);
         $access = (int) $db->loadResult();
 
-        if (!$access) $access = 1;
+        if (!$access) $access = (int) JFactory::getConfig()->get('access');
 
         return $access;
     }
@@ -215,7 +215,7 @@ class PFtableMilestone extends PFTable
 
         // Check for selected access level
         if ($this->access <= 0) {
-            $this->access = $this->_getAccessProjectId();
+            $this->access = $this->_getParentAccess();
         }
 
         // Get the project start and end date for comparison

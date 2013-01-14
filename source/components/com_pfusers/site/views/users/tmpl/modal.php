@@ -13,10 +13,11 @@ defined('_JEXEC') or die();
 
 JHtml::_('behavior.tooltip');
 
-$field		= JRequest::getCmd('field');
-$function	= 'jSelectUser_'.$field;
-$listOrder	= $this->escape($this->state->get('list.ordering'));
-$listDirn	= $this->escape($this->state->get('list.direction'));
+$field	   = JRequest::getCmd('field');
+$function  = 'jSelectUser_'.$field;
+$listOrder = $this->escape($this->state->get('list.ordering'));
+$listDirn  = $this->escape($this->state->get('list.direction'));
+$is_admin  = JFactory::getUser()->authorise('core.admin', 'com_users');
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_pfusers&view=users&layout=modal&tmpl=component&groups=' . JRequest::getVar('groups', '', 'default', 'BASE64').'&excluded='.JRequest::getVar('excluded', '', 'default', 'BASE64'));?>" method="post" name="adminForm" id="adminForm">
 
@@ -36,9 +37,11 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				<th id="tableOrdering1" class="list-username" width="25%">
 					<?php echo JHtml::_('grid.sort', 'JGLOBAL_USERNAME', 'a.username', $listDirn, $listOrder); ?>
 				</th>
-				<th id="tableOrdering1" class="list-groups" width="25%">
-					<?php echo JHtml::_('grid.sort', 'COM_USERS_HEADING_GROUPS', 'group_names', $listDirn, $listOrder); ?>
-				</th>
+                <?php if ($is_admin) : ?>
+    				<th id="tableOrdering1" class="list-groups" width="25%">
+    					<?php echo JHtml::_('grid.sort', 'COM_USERS_HEADING_GROUPS', 'group_names', $listDirn, $listOrder); ?>
+    				</th>
+                <?php endif; ?>
 			</tr>
 		</thead>
 		<tbody>
@@ -53,9 +56,11 @@ $listDirn	= $this->escape($this->state->get('list.direction'));
 				<td class="list-username" align="center">
 					<?php echo $item->username; ?>
 				</td>
-				<td class="list-groups" align="left">
-					<?php echo nl2br($item->group_names); ?>
-				</td>
+                <?php if ($is_admin) : ?>
+    				<td class="list-groups" align="left">
+    					<?php echo nl2br($item->group_names); ?>
+    				</td>
+                <?php endif; ?>
 			</tr>
 		<?php endforeach; ?>
 		</tbody>

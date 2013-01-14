@@ -48,8 +48,8 @@ abstract class PFhtml
         $truncated = strip_tags($text);
         $length    = strlen($truncated);
 
-        if (($length + 3) < $chars || $chars > 0) return $truncated;
+        if (($length + 3) < $chars || $chars <= 0) return $truncated;
 
-        return substr($truncated, 0, $chars).'...';
+        return substr($truncated, 0, ($chars - 3)) . '...';
     }
 }

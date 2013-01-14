@@ -23,7 +23,7 @@ abstract class modPFdashButtonsHelper
      */
     public static function getButtons()
     {
-        $components = PFapplicationHelper::getComponents();
+        $components = PFApplicationHelper::getComponents();
         $buttons    = array();
 
         foreach ($components AS $component)
@@ -32,6 +32,15 @@ abstract class modPFdashButtonsHelper
                 continue;
             }
 
+            // Register component route helper if exists
+            $router = JPATH_SITE . '/components/' . $component->element . '/helpers/route.php';
+            $class  = str_replace('com_pf', 'PF', $component->element) . 'HelperRoute';
+
+            if (JFile::exists($router)) {
+                JLoader::register($class, $router);
+            }
+
+            // Register component dashboard helper if exists
             $helper = JPATH_ADMINISTRATOR . '/components/' . $component->element . '/helpers/dashboard.php';
             $class  = str_replace('com_pf', 'PF', $component->element) . 'HelperDashboard';
 
@@ -41,6 +50,7 @@ abstract class modPFdashButtonsHelper
 
             JLoader::register($class, $helper);
 
+            // Get the dashboard button
             if (class_exists($class)) {
                 if (in_array('getSiteButtons', get_class_methods($class))) {
                     $com_buttons = (array) call_user_func(array($class, 'getSiteButtons'));

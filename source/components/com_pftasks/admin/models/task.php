@@ -241,8 +241,15 @@ class PFtasksModelTask extends JModelAdmin
         $condition = array();
 
         $condition[] = 'project_id = ' . (int) $table->project_id;
-        $condition[] = 'milestone_id = ' . (int) $table->milestone_id;
-        $condition[] = 'list_id = ' . (int) $table->list_id;
+
+        if ($table->list_id) {
+            $condition[] = 'list_id = ' . (int) $table->list_id;
+        }
+        elseif($table->milestone_id) {
+            $condition[] = 'milestone_id = ' . (int) $table->milestone_id;
+        }
+
+
 
         return array(implode(' AND ', $condition));
     }
@@ -260,8 +267,13 @@ class PFtasksModelTask extends JModelAdmin
         $condition = array();
 
         $condition[] = 'project_id = ' . (int) $table->project_id;
-        $condition[] = 'milestone_id = ' . (int) $table->milestone_id;
-        $condition[] = 'list_id = ' . (int) $table->list_id;
+
+        if ($table->list_id) {
+            $condition[] = 'list_id = ' . (int) $table->list_id;
+        }
+        elseif($table->milestone_id) {
+            $condition[] = 'milestone_id = ' . (int) $table->milestone_id;
+        }
 
         $condition = implode(' AND ', $condition);
 
@@ -344,9 +356,11 @@ class PFtasksModelTask extends JModelAdmin
             }
             else {
                 if ($is_new) {
-                    $data['access'] = 1;
+                    // Let the table class find the correct access level
+                    $data['access'] = 0;
                 }
                 else {
+                    // Keep the existing access in the table
                     if (isset($data['access'])) {
                         unset($data['access']);
                     }

@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<extension type="package" version="2.5">
+<extension type="package" version="2.5" method="upgrade">
     <name>Projectfork Project Management System</name>
     <packagename>projectfork</packagename>
-    <version>4.0.0b2</version>
+    <version>4.0.0</version>
     <url>http://www.projectfork.net</url>
-    <creationDate>December 2012</creationDate>
-    <copyright>(C) 2006 - 2012 Tobias Kuhn. All rights reserved.</copyright>
+    <creationDate>January 2013</creationDate>
+    <copyright>(C) 2006 - 2013 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>support@projectfork.net</authorEmail>
     <authorUrl>www.projectfork.net</authorUrl>
@@ -36,8 +36,8 @@
         <!-- Install modules -->
         <file type="module" id="mod_pf_dash_buttons" client="site">modules/mod_pf_dash_buttons</file>
         <file type="module" id="mod_pf_tasks" client="site">modules/mod_pf_tasks</file>
-
-        <!-- Install templates -->
-        <file type="template" id="goggles" client="site">templates/goggles</file>
     </files>
+    <updateservers>
+        <server type="extension" priority="1" name="Projectfork 4 Update"><![CDATA[http://projectfork.net/index.php?option=com_ars&view=update&task=stream&format=xml&id=1&dummy=extension.xml]]></server>
+    </updateservers>
 </extension>

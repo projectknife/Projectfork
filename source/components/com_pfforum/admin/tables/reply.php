@@ -127,19 +127,24 @@ class PFtableReply extends PFTable
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
 
-        $topic  = (int) $this->topic_id;
+        $topic   = (int) $this->topic_id;
         $project = (int) $this->project_id;
 
         if ($topic > 0) {
             $query->select('access')
                   ->from('#__pf_topics')
                   ->where('id = ' . $db->quote($topic));
-
-            $db->setQuery($query);
-            $access = (int) $db->loadResult();
+        }
+        elseif ($project > 0) {
+            $query->select('access')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . $db->quote($project));
         }
 
-        if (!$access) $access = 1;
+        $db->setQuery($query);
+        $access = (int) $db->loadResult();
+
+        if (!$access) $access = (int) JFactory::getConfig()->get('access');
 
         return $access;
     }

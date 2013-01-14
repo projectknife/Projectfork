@@ -32,7 +32,19 @@ abstract class PFhtmlProject
         $active_id    = (int) PFApplicationHelper::getActiveProjectId();
         $active_title = PFApplicationHelper::getActiveProjectTitle();
 
-        if (!$active_title) $active_title = JText::_('COM_PROJECTFORK_SELECT_PROJECT');
+        $tt_class = '';
+        $tt_title = ' title="::' . JText::_('JSELECT') . '"';
+
+        if (!$active_title) {
+            $active_title = JText::_('COM_PROJECTFORK_SELECT_PROJECT');
+        }
+        else {
+            if (strlen($active_title) > 30) {
+                $tt_class     = ' hasTip';
+                $tt_title     = ' title="' . JText::_('JSELECT') . '::' . htmlspecialchars($active_title, ENT_COMPAT, 'UTF-8') . '"';
+                $active_title = JHtml::_('pf.html.truncate', $active_title, 30);
+            }
+        }
 
         // Set the JS functions
         $link = 'index.php?option=com_pfprojects&amp;view=projects&amp;layout=modal&amp;tmpl=component&amp;function=pfSelectActiveProject';
@@ -61,7 +73,9 @@ abstract class PFhtmlProject
 
         $btn_select = '';
         if ($can_change) {
-            $btn_select = '<button type="button" class="btn" onclick="' . $js_select.'" title="'.JText::_('JSELECT').'"><i class="icon-briefcase"></i> ' . $active_title.'</button>';
+            $btn_select  = '<button type="button" class="btn' . $tt_class . '" onclick="' . $js_select . '"' . $tt_title . '> ';
+            $btn_select .= '<i class="icon-briefcase"></i>' . $active_title;
+            $btn_select .= '</button>';
         }
 
         // HTML output
