@@ -105,9 +105,13 @@ $jv      = new JVersion();
     <div class="cpanel-right width-40">
         <div class="well well-small">
         	<h3>Projectfork <?php echo PFVERSION; ?></h3>
-            <p>
-            	Consider this a preview-only version of Projectfork. We highly recommend against using in a production environment as there may be many bugs.
-            </p>
+            <div class="button2-left">
+              <div class="blank">
+            		<a href="http://projectfork.net" class="button" target="_blank">
+            		    Visit the Website
+            		</a>
+              </div>
+            </div>
             <div class="button2-left">
               <div class="blank">
             		<a href="https://github.com/projectfork/Projectfork/issues" class="button" target="_blank">
