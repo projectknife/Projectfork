@@ -263,7 +263,7 @@ class PFtasksControllerTaskForm extends JControllerForm
         $return = JRequest::getVar('return', null, 'default', 'base64');
 
         if (empty($return) || !JUri::isInternal(base64_decode($return))) {
-            return JRoute::_('index.php?option=com_pftasks&view=' . $this->view_list, false);
+            return JRoute::_(PFtasksHelperRoute::getTasksRoute());
         }
         else {
             return base64_decode($return);
