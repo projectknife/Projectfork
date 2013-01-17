@@ -61,7 +61,7 @@ $uid        = $user->get('id');
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_MILESTONES', 'milestones', $list_dir, $list_order); ?>
                         </th>
                         <th id="tableOrdering3" class="list-tasks">
-                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_TASKLISTS_AND_TASKS', 'tasks', $list_dir, $list_order); ?>
+                            <?php echo JHtml::_('grid.sort', JText::sprintf('JGRID_HEADING_TASKLISTS_AND_TASKS', '', ''), 'tasks', $list_dir, $list_order); ?>
                         </th>
                     </tr>
                </thead>
