@@ -35,6 +35,7 @@ abstract class JHtmlPFrepo
 
         $user   = JFactory::getUser();
         $levels = $user->getAuthorisedViewLevels();
+        $admin  = $user->authorise('core.admin', 'com_pfrepo');
         $html[] = '<ul class="unstyled">';
 
         foreach($items AS $item)
@@ -49,8 +50,10 @@ abstract class JHtmlPFrepo
 
             $data = &$item->repo_data;
 
-            if (!in_array($data->access, $levels)) {
-                continue;
+            if (!$admin) {
+                if (!in_array($data->access, $levels)) {
+                    continue;
+                }
             }
 
             list($asset, $id) = explode('.', $item->attachment, 2);
