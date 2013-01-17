@@ -91,7 +91,7 @@ class ProjectforkViewDashboard extends JViewLegacy
 			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
 		}
 		else {
-			$this->params->def('page_heading', JText::_('COM_PROJECTFORK_DASHBOARD'));
+			$this->params->def('page_heading', JText::_('COM_PROJECTFORK_DASHBOARD_TITLE'));
 		}
 
 
