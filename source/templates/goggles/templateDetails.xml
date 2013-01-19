@@ -2,8 +2,8 @@
 <!DOCTYPE install PUBLIC "-//Joomla! 2.5//DTD template 1.0//EN" "http://www.joomla.org/xml/dtd/2.5/template-install.dtd">
 <extension version="2.5" type="template" client="site" method="upgrade">
   <name>goggles</name>
-  <version>4.0.0b2</version>
-  <creationDate>10/08/2012</creationDate>
+  <version>4.0.0</version>
+  <creationDate>01/23/2013</creationDate>
   <author>Kyle Ledbetter</author>
   <authorEmail>support@projectfork.net</authorEmail>
   <description>Default Projectfork UI Template based off Bootstrap from Twitter</description>
@@ -66,4 +66,7 @@
 		</fieldset>
 	  </fields>
   </config>
+  <updateservers>
+        <server type="extension" priority="1" name="Goggles Update"><![CDATA[http://projectfork.net/index.php?option=com_ars&view=update&task=stream&format=xml&id=3&dummy=extension.xml]]></server>
+    </updateservers>
 </extension>
