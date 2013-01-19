@@ -39,7 +39,7 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
             <div class="clearfix"></div>
 
             <div class="<?php echo $filter_in;?>collapse" id="filters">
-                <div class="well btn-toolbar">
+                <div class="btn-toolbar clearfix">
                     <div class="filter-search btn-group pull-left">
                         <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_SEARCH'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>"/>
                     </div>
@@ -51,25 +51,30 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
                             <i class="icon-remove"></i>
                         </button>
                     </div>
-
-                    <div class="clearfix"> </div>
-                    <hr />
-
-                    <div class="filter-category btn-group">
-                        <select name="filter_category" class="inputbox input-medium" onchange="this.form.submit()">
+                    <div class="filter-order btn-group pull-left">
+                        <select name="filter_order" class="inputbox input-small" onchange="this.form.submit()">
+                            <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
+                        </select>
+                    </div>
+                    <div class="folder-order-dir btn-group pull-left">
+                        <select name="filter_order_Dir" class="inputbox input-small" onchange="this.form.submit()">
+                            <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
+                        </select>
+                    </div>
+                    <div class="filter-category btn-group pull-left">
+                        <select name="filter_category" class="inputbox input-small" onchange="this.form.submit()">
                             <option value=""><?php echo JText::_('JOPTION_SELECT_CATEGORY');?></option>
                             <?php echo JHtml::_('select.options', JHtml::_('category.options', 'com_pfprojects'), 'value', 'text', $this->state->get('filter.category'));?>
                         </select>
                     </div>
                     <?php if ($this->access->get('core.edit.state') || $this->access->get('core.edit')) : ?>
-                        <div class="filter-author btn-group">
-                            <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
+                        <div class="filter-author btn-group pull-left">
+                            <select name="filter_published" class="inputbox input-small" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
                                 <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
                             </select>
                         </div>
                     <?php endif; ?>
-                    <div class="clearfix"> </div>
                 </div>
             </div>
 
@@ -167,26 +172,17 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
                 ?>
             </ul>
 
-            <div class="filters btn-toolbar">
-                <div class="btn-group filter-order">
-                    <select name="filter_order" class="inputbox input-medium" onchange="this.form.submit()">
-                        <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
-                    </select>
-                </div>
-                <div class="btn-group folder-order-dir">
-                    <select name="filter_order_Dir" class="inputbox input-medium" onchange="this.form.submit()">
-                        <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
-                    </select>
-                </div>
-                <div class="btn-group display-limit">
-                    <?php echo $this->pagination->getLimitBox(); ?>
-                </div>
-                <?php if ($this->pagination->get('pages.total') > 1) : ?>
-                    <div class="btn-group pagination">
-                        <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
-                        <?php echo $this->pagination->getPagesLinks(); ?>
-                    </div>
-                <?php endif; ?>
+            
+        	<?php if ($this->pagination->get('pages.total') > 1) : ?>
+        	    <div class="pagination center">
+        	        <?php echo $this->pagination->getPagesLinks(); ?>
+        	    </div>
+        	    <p class="counter center"><?php echo $this->pagination->getPagesCounter(); ?></p>
+        	<?php endif; ?>
+            <div class="filters center">
+            	<span class="display-limit">
+            	    <?php echo $this->pagination->getLimitBox(); ?>
+            	</span>
             </div>
 
             <input type="hidden" id="boxchecked" name="boxchecked" value="0" />

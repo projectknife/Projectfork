@@ -295,18 +295,21 @@ jQuery(document).ready(function() {
                     <div class="alert alert-success"><?php echo JText::_('COM_PROJECTFORK_REORDER_ENABLED'); ?></div>
                 <?php endif; ?>
             <?php endif; ?>
+            
+            <?php if ($this->pagination->get('pages.total') > 1) : ?>
+                <div class="pagination center">
+                    <?php echo $this->pagination->getPagesLinks(); ?>
+                </div>
+                <p class="counter center">
+                	<?php echo $this->pagination->getPagesCounter(); ?>
+                </p>
+            <?php endif; ?>
 
             <?php if (!$this->state->get('filter.project')) : ?>
-                <div class="filters btn-toolbar">
-                    <div class="btn-group display-limit">
+                <div class="filters center">
+                    <span class="display-limit">
                         <?php echo $this->pagination->getLimitBox(); ?>
-                    </div>
-                    <?php if ($this->pagination->get('pages.total') > 1) : ?>
-                        <div class="btn-group pagination">
-                            <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
-                            <?php echo $this->pagination->getPagesLinks(); ?>
-                        </div>
-                    <?php endif; ?>
+                    </span>
                 </div>
             <?php endif; ?>
 

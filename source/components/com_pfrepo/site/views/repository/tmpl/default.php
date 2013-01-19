@@ -38,10 +38,8 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                 </div>
             </div>
 
-            <div class="clearfix"> </div>
-
             <div class="<?php echo $filter_in;?>collapse" id="filters">
-                <div class="well btn-toolbar">
+                <div class="btn-toolbar clearfix">
                     <div class="filter-search btn-group pull-left">
                         <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
                     </div>
@@ -49,21 +47,23 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                         <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
                         <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
                     </div>
-                    <div class="clearfix"> </div>
-
                     <?php if ($this->state->get('filter.project')) : ?>
-                        <hr />
-                        <div class="filter-labels">
+                        <div class="filter-labels btn-group pull-left">
                             <?php echo JHtml::_('pfhtml.label.filter', 'com_pfrepo', $this->state->get('filter.project'), $this->state->get('filter.labels'));?>
                         </div>
-                        <div class="clearfix"> </div>
                     <?php endif; ?>
+                    <div class="btn-group filter-order pull-left">
+                        <select name="filter_order" class="inputbox input-small" onchange="this.form.submit()">
+                            <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
+                        </select>
+                    </div>
+                    <div class="btn-group folder-order-dir pull-left">
+                        <select name="filter_order_Dir" class="inputbox input-small" onchange="this.form.submit()">
+                            <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
+                        </select>
+                    </div>
                 </div>
             </div>
-
-            <div class="clearfix"> </div>
-
-            <hr />
 
             <table class="adminlist table table-striped">
                 <thead>
@@ -100,31 +100,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                     </tr>
                 </tfoot>
             </table>
-
-            <div class="filters btn-toolbar">
-                <div class="btn-group filter-order">
-                    <select name="filter_order" class="inputbox input-medium" onchange="this.form.submit()">
-                        <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
-                    </select>
-                </div>
-                <div class="btn-group folder-order-dir">
-                    <select name="filter_order_Dir" class="inputbox input-medium" onchange="this.form.submit()">
-                        <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
-                    </select>
-                </div>
-                <?php /*if (!$this->state->get('filter.project')) :*/ ?>
-                    <div class="btn-group display-limit">
-                        <?php /*echo $this->pagination->getLimitBox();*/ ?>
-                    </div>
-                    <?php /*if ($this->pagination->get('pages.total') > 1) :*/ ?>
-                        <div class="btn-group pagination">
-                            <p class="counter"><?php /*echo $this->pagination->getPagesCounter();*/ ?></p>
-                            <?php /*echo $this->pagination->getPagesLinks();*/ ?>
-                        </div>
-                    <?php /*endif;*/ ?>
-                <?php /*endif;*/ ?>
-            </div>
-
+            
             <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
             <input type="hidden" name="task" value="" />
             <?php echo JHtml::_('form.token'); ?>

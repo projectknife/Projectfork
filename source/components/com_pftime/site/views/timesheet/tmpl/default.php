@@ -45,10 +45,8 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
                 </div>
             </div>
 
-            <div class="clearfix"> </div>
-
             <div class="<?php echo $filter_in;?>collapse" id="filters">
-                <div class="well btn-toolbar">
+                <div class="btn-toolbar clearfix">
                     <div class="filter-search btn-group pull-left">
                         <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
                     </div>
@@ -56,33 +54,38 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
                         <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
                         <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
                     </div>
-
-                    <div class="clearfix"> </div>
-                    <hr />
-
                     <?php if ($this->access->get('time.edit.state') || $this->access->get('time.edit')) : ?>
-                        <div class="filter-published btn-group">
-                            <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
+                        <div class="filter-published btn-group pull-left">
+                            <select name="filter_published" class="inputbox input-small" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
                                 <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
                             </select>
                         </div>
                     <?php endif; ?>
                     <?php if (intval($this->state->get('filter.project')) > 0) : ?>
-                        <div class="filter-author btn-group">
-                            <select id="filter_author" name="filter_author" class="inputbox input-medium" onchange="this.form.submit()">
+                        <div class="filter-author btn-group pull-left">
+                            <select id="filter_author" name="filter_author" class="inputbox input-small" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
                                 <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'), true);?>
                             </select>
                         </div>
-                        <div class="filter-task btn-group">
-                            <select id="filter_task" name="filter_task" class="inputbox input-medium" onchange="this.form.submit()">
+                        <div class="filter-task btn-group pull-left">
+                            <select id="filter_task" name="filter_task" class="inputbox input-small" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('COM_PROJECTFORK_OPTION_SELECT_TASK');?></option>
                                 <?php echo JHtml::_('select.options', $this->tasks, 'value', 'text', $this->state->get('filter.task'), true);?>
                             </select>
                         </div>
                     <?php endif; ?>
-                    <div class="clearfix"> </div>
+                    <div class="btn-group filter-order pull-left">
+                        <select name="filter_order" class="inputbox input-small" onchange="this.form.submit()">
+                            <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
+                        </select>
+                    </div>
+                    <div class="btn-group folder-order-dir pull-left">
+                        <select name="filter_order_Dir" class="inputbox input-small" onchange="this.form.submit()">
+                            <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
+                        </select>
+                    </div>
                 </div>
             </div>
 
@@ -244,27 +247,18 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
             		</tr>
             	</tfoot>
             </table>
+            
+            <?php if ($this->pagination->get('pages.total') > 1) : ?>
+                <div class="pagination center">
+                    <?php echo $this->pagination->getPagesLinks(); ?>
+                </div>
+                <p class="counter center"><?php echo $this->pagination->getPagesCounter(); ?></p>
+            <?php endif; ?>
 
-            <div class="filters btn-toolbar">
-                <div class="btn-group filter-order">
-                    <select name="filter_order" class="inputbox input-medium" onchange="this.form.submit()">
-                        <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
-                    </select>
-                </div>
-                <div class="btn-group folder-order-dir">
-                    <select name="filter_order_Dir" class="inputbox input-medium" onchange="this.form.submit()">
-                        <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
-                    </select>
-                </div>
-                <div class="btn-group display-limit">
+            <div class="filters center">
+                <span class="display-limit">
                     <?php echo $this->pagination->getLimitBox(); ?>
-                </div>
-                <?php if ($this->pagination->get('pages.total') > 1) : ?>
-                    <div class="btn-group pagination">
-                        <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
-                        <?php echo $this->pagination->getPagesLinks(); ?>
-                    </div>
-                <?php endif; ?>
+                </span>
             </div>
 
             <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
