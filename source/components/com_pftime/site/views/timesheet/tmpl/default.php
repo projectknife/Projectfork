@@ -90,58 +90,65 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
             </div>
 
             <?php if (intval($this->state->get('filter.project')) > 0) : ?>
-                <h3><?php echo PFApplicationHelper::getActiveProjectTitle();?></h3>
-
-                <div class="row-fluid">
+                <div class="row-fluid row-hours">
                 	<div class="span3">
-                		<div class="thumbnail thumbnail-timesheet">
-                			<h6><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTAL_HOURS');?></h6>
-                			<h1><?php echo JHtml::_('time.format', $this->total_time, 'decimal');?></h1>
-                			<h5><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (<?php echo JHtml::_('time.format', $this->total_estimated_time, 'decimal');?>)</h5>
-                		</div>
+                		<fieldset>
+                			<legend><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTAL_HOURS');?></legend>
+                			<p>
+                				<span class="label label-info">
+                					<?php echo JHtml::_('time.format', $this->total_time, 'decimal');?> <?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTAL_HOURS');?>
+                				</span>
+                			</p>
+                			<div>
+                				<?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (<?php echo JHtml::_('time.format', $this->total_estimated_time, 'decimal');?>)
+                			</div>
+                		</fieldset>
                 	</div>
                 	<div class="span6">
-                		<div class="thumbnail thumbnail-timesheet">
-                			<h6><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTAL_HOURS');?></h6>
-                			<div class="row-fluid">
-                				<div class="span6">
-                					<div class="progress progress-success">
-    									<div class="bar" style="width: <?php echo $billable_percent;?>%;"></div>
-    								</div>
-    								<div class="progress">
-    									<div class="bar" style="width: <?php echo $unbillable_percent;?>%;"></div>
-    								</div>
-                				</div>
-                				<div class="span6">
-                					<h2>
-                                        <?php echo JHtml::_('time.format', $this->total_time_billable, 'decimal');?>
-                                        <span class="label label-success"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE');?></span>
-                                    </h2>
-                					<h2>
-                                        <?php echo JHtml::_('time.format', $this->total_time_unbillable, 'decimal');?>
-                                        <span class="label label-info"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_UNBILLABLE');?></span>
-                                    </h2>
-                				</div>
-                			</div>
-                		</div>
+            			<fieldset>
+            				<legend><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTAL_HOURS');?>: <?php echo PFApplicationHelper::getActiveProjectTitle();?></legend>
+        					<div class="progress progress-success">
+								<div class="bar" style="width: <?php echo $billable_percent;?>%;">
+									<?php if ($billable_percent) : ?>
+										<?php echo JHtml::_('time.format', $this->total_time_billable, 'decimal');?> 
+										<?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE');?>
+									<?php endif; ?>
+								</div>
+							</div>
+							<div class="progress progress-info">
+								<div class="bar" style="width: <?php echo $unbillable_percent;?>%;">
+									<?php if ($unbillable_percent) : ?>
+										<?php echo JHtml::_('time.format', $this->total_time_unbillable, 'decimal');?> 
+										<?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_UNBILLABLE');?>
+									<?php endif; ?>
+								</div>
+							</div>
+            			</fieldset>
                 	</div>
                 	<div class="span3">
-                		<div class="thumbnail thumbnail-timesheet">
-                			<h6><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE_TOTAL');?></h6>
-                			<h2><?php echo JHtml::_('pfhtml.format.money', $this->total_billable);?></h2>
-                			<h5><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (<?php echo JHtml::_('pfhtml.format.money', $this->total_estimated_cost);?>)</h5>
-                		</div>
+                		<fieldset>
+                			<legend><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE_TOTAL');?></legend>
+                			<p>
+                				<span class="label label-success">
+                					<?php echo JHtml::_('pfhtml.format.money', $this->total_billable);?> <?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE_TOTAL');?>
+                				</span>
+                			</p>
+                			<div>
+                				<?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (<?php echo JHtml::_('pfhtml.format.money', $this->total_estimated_cost);?>)
+                			</div>
+                		</fieldset>
                 	</div>
                 </div>
             <?php endif; ?>
 
             <hr />
 
-            <table class="table table-striped">
+            <table class="table table-striped table-condensed">
             	<thead>
             		<tr>
             			<th width="1%"></th>
                         <th><?php echo JText::_('JGRID_HEADING_TASK');?></th>
+                        <th width="1%"></th>
             			<th width="10%"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TIME');?></th>
             			<th width="10%"></th>
             			<th width="10%"><?php echo JText::_('JGRID_HEADING_AUTHOR');?></th>
@@ -185,14 +192,6 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
 			        <tr>
                         <td>
                             <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
-			        		<?php
-                            $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
-                            $this->menu->itemEdit('form', $item->id, ($can_edit || $can_edit_own));
-                            $this->menu->itemTrash('timesheet', $i, $can_change);
-                            $this->menu->end();
-
-                            echo $this->menu->render(array('class' => 'btn-mini'));
-	                        ?>
 			        	</td>
 			        	<td>
                             <?php if ($exists) : ?>
@@ -208,10 +207,20 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
                             <?php endif; ?>
 			        	</td>
 			        	<td>
+			        		<?php
+	                        $this->menu->start(array('class' => 'btn-mini'));
+	                        $this->menu->itemEdit('form', $item->id, ($can_edit || $can_edit_own));
+	                        $this->menu->itemTrash('timesheet', $i, $can_change);
+	                        $this->menu->end();
+	
+	                        echo $this->menu->render(array('class' => 'btn-mini'));
+	                        ?>
+			        	</td>
+			        	<td>
 			        		<?php echo JHtml::_('time.format', $item->log_time); ?>
 			        	</td>
 			        	<td>
-							<div class="<?php echo $percentage_class;?>">
+							<div class="<?php echo $percentage_class;?>" style="margin: 0;">
 								<div class="bar" style="width: <?php echo $percentage;?>%;"></div>
 							</div>
 			        	</td>
@@ -237,6 +246,7 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
             	<tfoot>
             		<tr>
             			<th><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTALS');?></th>
+            			<th></th>
             			<th></th>
             			<th><?php echo JHtml::_('time.format', $list_total_time); ?></th>
             			<th></th>
