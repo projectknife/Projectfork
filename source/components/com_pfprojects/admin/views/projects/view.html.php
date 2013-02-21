@@ -70,7 +70,6 @@ class PFprojectsViewProjects extends JViewLegacy
      */
     public function display($tpl = null)
     {
-        if (JDEBUG) JProfiler::getInstance('Application')->mark('beforeOutput');
         // Get data from model
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');
@@ -185,14 +184,15 @@ class PFprojectsViewProjects extends JViewLegacy
      */
     protected function getSortFields()
     {
-        return array('a.state' => JText::_('JSTATUS'),
-            'a.title'          => JText::_('JGLOBAL_TITLE'),
-            'category_title'   => JText::_('JCATEGORY'),
-            'a.end_date'       => JText::_('JGRID_HEADING_DEADLINE'),
-            'access_level'     => JText::_('JGRID_HEADING_ACCESS'),
-            'a.created_by'     => JText::_('JAUTHOR'),
-            'a.created'        => JText::_('JDATE'),
-            'a.id'             => JText::_('JGRID_HEADING_ID')
+        return array(
+            'a.state'        => JText::_('JSTATUS'),
+            'a.title'        => JText::_('JGLOBAL_TITLE'),
+            'category_title' => JText::_('JCATEGORY'),
+            'a.end_date'     => JText::_('JGRID_HEADING_DEADLINE'),
+            'access_level'   => JText::_('JGRID_HEADING_ACCESS'),
+            'a.created_by'   => JText::_('JAUTHOR'),
+            'a.created'      => JText::_('JDATE'),
+            'a.id'           => JText::_('JGRID_HEADING_ID')
         );
     }
 }
