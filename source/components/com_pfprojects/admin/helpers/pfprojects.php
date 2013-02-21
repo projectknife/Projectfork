@@ -4,7 +4,7 @@
  * @subpackage   Projects
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -33,38 +33,44 @@ class PFprojectsHelper
      */
     public static function addSubmenu($view)
     {
-        if ($view == 'project' && version_compare(JVERSION, '3.0.0', 'ge')) {
-            return;
-        }
+        $is_j3 = version_compare(JVERSION, '3.0.0', 'ge');
+        $forms = array('design', 'revision');
+
+        if (in_array($view, $forms) && $is_j3) return;
 
         $components = PFApplicationHelper::getComponents();
         $option     = JFactory::getApplication()->input->get('option');
 
         foreach ($components AS $component)
         {
-            if ($component->enabled == '0') {
-                continue;
-            }
+            if ($component->enabled == '0') continue;
 
             $title = JText::_($component->element);
             $parts = explode('-', $title, 2);
 
-            if (count($parts) == 2) {
-                $title = trim($parts[1]);
+            if (count($parts) == 2) $title = trim($parts[1]);
+
+            if ($is_j3) {
+                JHtmlSidebar::addEntry($title, 'index.php?option=' . $component->element, ($option == $component->element));
+
+                if ($component->element == self::$extension && ($view == 'projects' || $view == 'categories')) {
+                    JHtmlSidebar::addEntry(
+                        JText::_('COM_PROJECTFORK_SUBMENU_CATEGORIES'),
+                        'index.php?option=com_categories&extension=' . $component->element,
+                        ($view == 'categories')
+                    );
+                }
             }
+            else {
+                JSubMenuHelper::addEntry($title, 'index.php?option=' . $component->element, ($option == $component->element));
 
-            JSubMenuHelper::addEntry(
-                $title,
-                'index.php?option=' . $component->element,
-                ($option == $component->element)
-            );
-
-            if ($component->element == self::$extension && ($view == 'projects' || $view == 'categories')) {
-                JSubMenuHelper::addEntry(
-                    JText::_('COM_PROJECTFORK_SUBMENU_CATEGORIES'),
-                    'index.php?option=com_categories&extension=' . $component->element,
-                    ($view == 'categories')
-                );
+                if ($component->element == self::$extension && ($view == 'projects' || $view == 'categories')) {
+                    JSubMenuHelper::addEntry(
+                        JText::_('COM_PROJECTFORK_SUBMENU_CATEGORIES'),
+                        'index.php?option=com_categories&extension=' . $component->element,
+                        ($view == 'categories')
+                    );
+                }
             }
         }
     }
