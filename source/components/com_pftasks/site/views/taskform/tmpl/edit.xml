@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
-	<layout title="COM_PFTASKS_TASK_FORM_VIEW_DEFAULT_TITLE" option="COM_PFTASKS_TASK_FORM_VIEW_DEFAULT_OPTION">
-		<message><![CDATA[COM_PFTASKS_TASK_FORM_VIEW_DEFAULT_DESC]]></message>
+	<layout title="COM_PFTASKS_TASKFORM_VIEW_DEFAULT_TITLE" option="COM_PFTASKS_TASKFORM_VIEW_DEFAULT_OPTION">
+		<message><![CDATA[COM_PFTASKS_TASKFORM_VIEW_DEFAULT_DESC]]></message>
 	</layout>
 </metadata>
