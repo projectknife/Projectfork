@@ -34,12 +34,13 @@ class PFprojectsHelper
     public static function addSubmenu($view)
     {
         $is_j3 = version_compare(JVERSION, '3.0.0', 'ge');
-        $forms = array('design', 'revision');
+        $forms = array('project', 'category');
 
         if (in_array($view, $forms) && $is_j3) return;
 
         $components = PFApplicationHelper::getComponents();
         $option     = JFactory::getApplication()->input->get('option');
+        $class      = ($is_j3 ? 'JHtmlSidebar' : 'JSubMenuHelper');
 
         foreach ($components AS $component)
         {
@@ -50,27 +51,18 @@ class PFprojectsHelper
 
             if (count($parts) == 2) $title = trim($parts[1]);
 
-            if ($is_j3) {
-                JHtmlSidebar::addEntry($title, 'index.php?option=' . $component->element, ($option == $component->element));
+            $class::addEntry(
+                $title,
+                'index.php?option=' . $component->element,
+                ($option == $component->element)
+            );
 
-                if ($component->element == self::$extension && ($view == 'projects' || $view == 'categories')) {
-                    JHtmlSidebar::addEntry(
-                        JText::_('COM_PROJECTFORK_SUBMENU_CATEGORIES'),
-                        'index.php?option=com_categories&extension=' . $component->element,
-                        ($view == 'categories')
-                    );
-                }
-            }
-            else {
-                JSubMenuHelper::addEntry($title, 'index.php?option=' . $component->element, ($option == $component->element));
-
-                if ($component->element == self::$extension && ($view == 'projects' || $view == 'categories')) {
-                    JSubMenuHelper::addEntry(
-                        JText::_('COM_PROJECTFORK_SUBMENU_CATEGORIES'),
-                        'index.php?option=com_categories&extension=' . $component->element,
-                        ($view == 'categories')
-                    );
-                }
+            if ($component->element == self::$extension && ($view == 'projects' || $view == 'categories')) {
+                $class::addEntry(
+                    JText::_('COM_PROJECTFORK_SUBMENU_CATEGORIES'),
+                    'index.php?option=com_categories&extension=' . $component->element,
+                    ($view == 'categories')
+                );
             }
         }
     }

@@ -85,7 +85,7 @@ endif;
                     <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DEADLINE', 'a.end_date', $list_dir, $list_order); ?>
                 </th>
                 <th width="10%" class="nowrap hidden-phone">
-                    <?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'a.access', $list_dir, $list_order); ?>
+                    <?php echo JHtml::_('grid.sort',  'JGRID_HEADING_ACCESS', 'access_level', $list_dir, $list_order); ?>
                 </th>
                 <th width="15%" class="nowrap hidden-phone">
                     <?php echo JHtml::_('grid.sort', 'JAUTHOR', 'a.created_by', $list_dir, $list_order); ?>

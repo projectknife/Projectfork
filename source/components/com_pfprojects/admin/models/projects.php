@@ -62,7 +62,7 @@ class PFprojectsModelProjects extends JModelList
               ->from('#__users AS u')
               ->join('INNER', '#__pf_projects AS a ON a.created_by = u.id')
               ->group('u.id')
-              ->order('u.name');
+              ->order('u.name ASC');
 
         // Return the result
         $this->_db->setQuery($query, 0, 50);
@@ -77,7 +77,7 @@ class PFprojectsModelProjects extends JModelList
      * @param     string    $ordering     Default field to sort the items by
      * @param     string    $direction    Default list sorting direction
      *
-     * @return    void                    
+     * @return    void
      */
     protected function populateState($ordering = 'a.title', $direction = 'asc')
     {
@@ -139,7 +139,7 @@ class PFprojectsModelProjects extends JModelList
     /**
      * Build an SQL query to load the list data.
      *
-     * @return    jdatabasequery    
+     * @return    jdatabasequery
      */
     protected function getListQuery()
     {

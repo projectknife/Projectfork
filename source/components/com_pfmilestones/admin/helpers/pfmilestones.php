@@ -4,7 +4,7 @@
  * @subpackage   Milestones
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -30,27 +30,24 @@ class PFmilestonesHelper
      */
     public static function addSubmenu($view)
     {
-        if ($view == 'milestone' && version_compare(JVERSION, '3.0.0', 'ge')) {
-            return;
-        }
+        $is_j3 = version_compare(JVERSION, '3.0.0', 'ge');
+
+        if ($view == 'milestone' && $is_j3) return;
 
         $components = PFApplicationHelper::getComponents();
         $option     = JFactory::getApplication()->input->get('option');
+        $class      = ($is_j3 ? 'JHtmlSidebar' : 'JSubMenuHelper');
 
         foreach ($components AS $component)
         {
-            if ($component->enabled == '0') {
-                continue;
-            }
+            if ($component->enabled == '0') continue;
 
             $title = JText::_($component->element);
             $parts = explode('-', $title, 2);
 
-            if (count($parts) == 2) {
-                $title = trim($parts[1]);
-            }
+            if (count($parts) == 2) $title = trim($parts[1]);
 
-            JSubMenuHelper::addEntry(
+            $class::addEntry(
                 $title,
                 'index.php?option=' . $component->element,
                 ($option == $component->element)
