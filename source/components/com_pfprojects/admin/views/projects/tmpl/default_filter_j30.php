@@ -22,7 +22,7 @@ $sort_fields = $this->getSortFields();
             <?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>
         </label>
         <input type="text" id="filter_search" name="filter_search"
-            data-toggle="tooltip" data-placement="bottom" placeholder="<?php echo JText::_('JSEARCH_FILTER_LABEL'); ?>"
+            data-toggle="tooltip" data-placement="bottom" placeholder="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"
             value="<?php echo $this->escape($this->state->get('filter.search')); ?>"
             title="<?php echo $this->escape(JText::_('COM_PROJECTFORK_SEARCH_FILTER_TOOLTIP')); ?>"
         />
