@@ -92,11 +92,14 @@ $access = PFusersHelper::getActions();
         </form>
 
         <!-- Begin Dashboard Modules -->
+        <?php if(count(JModuleHelper::getModules('pf-user-top'))) : ?>
         <div class="row-fluid">
         	<div class="span12">
         		<?php echo $this->modules->render('pf-user-top', array('style' => 'xhtml'), null); ?>
         	</div>
         </div>
+        <?php endif; ?>
+        <?php if(count(JModuleHelper::getModules('pf-user-left')) || count(JModuleHelper::getModules('pf-user-right'))) : ?>
         <div class="row-fluid">
         	<div class="span6">
         		<?php echo $this->modules->render('pf-user-left', array('style' => 'xhtml'), null); ?>
@@ -105,11 +108,14 @@ $access = PFusersHelper::getActions();
         		<?php echo $this->modules->render('pf-user-right', array('style' => 'xhtml'), null); ?>
         	</div>
         </div>
+        <?php endif; ?>
+        <?php if(count(JModuleHelper::getModules('pf-user-bottom'))) : ?>
         <div class="row-fluid">
         	<div class="span12">
         		<?php echo $this->modules->render('pf-user-bottom', array('style' => 'xhtml'), null); ?>
         	</div>
         </div>
+        <?php endif; ?>
         <!-- End Dashboard Modules -->
 
         <?php if($item) echo $item->event->afterDisplayContent;?>
