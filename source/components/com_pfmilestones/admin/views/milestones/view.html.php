@@ -185,7 +185,7 @@ class PFmilestonesViewMilestones extends JViewLegacy
             'project_title' => JText::_('JGRID_HEADING_PROJECT'),
             'a.end_date'    => JText::_('JGRID_HEADING_DEADLINE'),
             'access_level'  => JText::_('JGRID_HEADING_ACCESS'),
-            'a.created_by'  => JText::_('JAUTHOR'),
+            'author_name'   => JText::_('JAUTHOR'),
             'a.created'     => JText::_('JDATE'),
             'a.id'          => JText::_('JGRID_HEADING_ID')
         );
