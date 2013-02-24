@@ -238,8 +238,7 @@ class PFtasksModelTask extends JModelAdmin
      */
     protected function getReorderConditions($table)
     {
-        $condition = array();
-
+        $condition   = array();
         $condition[] = 'project_id = ' . (int) $table->project_id;
 
         if ($table->list_id) {
@@ -248,8 +247,6 @@ class PFtasksModelTask extends JModelAdmin
         elseif($table->milestone_id) {
             $condition[] = 'milestone_id = ' . (int) $table->milestone_id;
         }
-
-
 
         return array(implode(' AND ', $condition));
     }

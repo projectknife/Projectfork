@@ -21,19 +21,17 @@ jimport('joomla.application.component.controlleradmin');
 class PFmilestonesControllerMilestones extends JControllerAdmin
 {
     /**
-	 * The prefix to use with controller messages.
-	 *
-	 * @var    string
-	 */
+     * The prefix to use with controller messages.
+     *
+     * @var    string    
+     */
     protected $text_prefix = "COM_PROJECTFORK_MILESTONES";
 
 
     /**
      * Constructor.
      *
-     * @param     array                              $config    An optional associative array of configuration settings
-     * @return    projectforkcontrollermilestones
-     * @see       jcontroller
+     * @param    array    $config    An optional associative array of configuration settings
      */
     public function __construct($config = array())
     {
@@ -46,7 +44,7 @@ class PFmilestonesControllerMilestones extends JControllerAdmin
      *
      * @param     string    $name      The name of the model.
      * @param     string    $prefix    The prefix for the PHP class name.
-     * @return    jmodel
+     * @return    jmodel               
      */
     public function getModel($name = 'Milestone', $prefix = 'PFmilestonesModel', $config = array('ignore_request' => true))
     {
