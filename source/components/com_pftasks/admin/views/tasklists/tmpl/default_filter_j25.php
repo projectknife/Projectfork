@@ -45,21 +45,9 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                 </select>
             </div>
             <div class="fltrt">
-                <select name="filter_assigned_id" class="inputbox input-medium" onchange="this.form.submit()">
-                    <option value=""><?php echo JText::_('JOPTION_SELECT_ASSIGNED_USER');?></option>
-                    <?php echo JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned_id'));?>
-                </select>
-            </div>
-            <div class="fltrt">
                 <select name="filter_milestone" class="inputbox input-medium" onchange="this.form.submit()">
                     <option value=""><?php echo JText::_('JOPTION_SELECT_MILESTONE');?></option>
                     <?php echo JHtml::_('select.options', $this->milestones, 'value', 'text', $this->state->get('filter.milestone'));?>
-                </select>
-            </div>
-            <div class="fltrt">
-                <select name="filter_tasklist" class="inputbox input-medium" onchange="this.form.submit()">
-                    <option value=""><?php echo JText::_('JOPTION_SELECT_TASKLIST');?></option>
-                    <?php echo JHtml::_('select.options', $this->tasklists, 'value', 'text', $this->state->get('filter.tasklist'));?>
                 </select>
             </div>
         <?php endif; ?>

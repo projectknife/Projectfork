@@ -91,14 +91,11 @@ class PFtasksModelTasks extends JModelList
      */
     public function getMilestones()
     {
-        // Load only if project filter is set
         $project = (int) $this->getState('filter.project');
+        $query   = $this->_db->getQuery(true);
 
-        if ($project <= 0) {
-            return array();
-        }
-
-        $query = $this->_db->getQuery(true);
+        // Load only if project filter is set
+        if ($project <= 0) return array();
 
         // Construct the query
         $query->select('m.id AS value, m.title AS text')

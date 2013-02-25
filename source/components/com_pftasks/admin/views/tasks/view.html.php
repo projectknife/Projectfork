@@ -172,7 +172,7 @@ class PFtasksViewTasks extends JViewLegacy
      */
     protected function addSidebar()
     {
-        JHtmlSidebar::setAction('index.php?option=com_pfprojects&view=projects');
+        JHtmlSidebar::setAction('index.php?option=com_pftasks&view=tasks');
 
         JHtmlSidebar::addFilter(
             JText::_('JOPTION_SELECT_PUBLISHED'),
