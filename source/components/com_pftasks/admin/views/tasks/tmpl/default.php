@@ -16,6 +16,8 @@ $uid        = $user->get('id');
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $save_order = ($list_order == 'a.ordering');
+$archived   = $this->state->get('filter.published') == 2 ? true : false;
+$trashed    = $this->state->get('filter.published') == -2 ? true : false;
 
 $filter_project = (int) $this->state->get('filter.project');
 $filter_ms      = (int) $this->state->get('filter.milestone');
@@ -220,21 +222,60 @@ endif;
                 <td class="center">
                     <?php echo JHtml::_('jgrid.published', $item->state, $i, 'tasks.', $can_change, 'cb'); ?>
                 </td>
-                <td>
-                    <?php if ($item->checked_out) : ?>
-                        <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'tasks.', $can_checkin); ?>
-                    <?php endif; ?>
+                <td class="has-context">
+                    <div class="pull-left">
+                        <?php if ($item->checked_out) : ?>
+                            <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'tasks.', $can_checkin); ?>
+                        <?php endif; ?>
 
-                    <?php if ($can_edit || $can_edit_own) : ?>
-                        <a href="<?php echo JRoute::_('index.php?option=com_pftasks&task=task.edit&id=' . $item->id);?>">
-                            <?php echo $this->escape($item->title); ?></a>
-                    <?php else : ?>
-                        <?php echo $this->escape($item->title); ?>
-                    <?php endif; ?>
+                        <?php if ($can_edit || $can_edit_own) : ?>
+                            <a href="<?php echo JRoute::_('index.php?option=com_pftasks&task=task.edit&id=' . $item->id);?>">
+                                <?php echo $this->escape($item->title); ?></a>
+                        <?php else : ?>
+                            <?php echo $this->escape($item->title); ?>
+                        <?php endif; ?>
 
-                    <div class="small">
-                        <?php echo $subtitles; ?>
+                        <div class="small">
+                            <?php echo $subtitles; ?>
+                        </div>
                     </div>
+
+                    <?php if (!$this->is_j25) : ?>
+                        <div class="pull-left">
+                            <?php
+                                // Create dropdown items
+                                JHtml::_('dropdown.edit', $item->id, 'task.');
+                                JHtml::_('dropdown.divider');
+
+                                if ($item->state) :
+                                    JHtml::_('dropdown.unpublish', 'cb' . $i, 'tasks.');
+                                else :
+                                    JHtml::_('dropdown.publish', 'cb' . $i, 'tasks.');
+                                endif;
+
+                                JHtml::_('dropdown.divider');
+
+                                if ($archived) :
+                                    JHtml::_('dropdown.unarchive', 'cb' . $i, 'tasks.');
+                                else :
+                                    JHtml::_('dropdown.archive', 'cb' . $i, 'tasks.');
+                                endif;
+
+                                if ($item->checked_out) :
+                                    JHtml::_('dropdown.checkin', 'cb' . $i, 'tasks.');
+                                endif;
+
+                                if ($trashed) :
+                                    JHtml::_('dropdown.untrash', 'cb' . $i, 'tasks.');
+                                else :
+                                    JHtml::_('dropdown.trash', 'cb' . $i, 'tasks.');
+                                endif;
+
+                                // Render dropdown list
+                                echo JHtml::_('dropdown.render');
+                            ?>
+                        </div>
+                    <?php endif; ?>
                 </td>
                 <?php if ($this->is_j25) : ?>
                     <td class="order">

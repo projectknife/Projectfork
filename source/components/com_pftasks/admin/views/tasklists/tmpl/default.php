@@ -15,6 +15,8 @@ $user       = JFactory::getUser();
 $uid        = $user->get('id');
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
+$archived   = $this->state->get('filter.published') == 2 ? true : false;
+$trashed    = $this->state->get('filter.published') == -2 ? true : false;
 
 $filter_project = (int) $this->state->get('filter.project');
 $filter_ms      = (int) $this->state->get('filter.milestone');
@@ -127,21 +129,60 @@ endif;
                 <td class="center">
                     <?php echo JHtml::_('jgrid.published', $item->state, $i, 'tasklists.', $can_change, 'cb'); ?>
                 </td>
-                <td>
-                    <?php if ($item->checked_out) : ?>
-                        <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'tasklists.', $can_checkin); ?>
-                    <?php endif; ?>
+                <td class="has-context">
+                    <div class="pull-left">
+                        <?php if ($item->checked_out) : ?>
+                            <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'tasklists.', $can_checkin); ?>
+                        <?php endif; ?>
 
-                    <?php if ($can_edit || $can_edit_own) : ?>
-                        <a href="<?php echo JRoute::_('index.php?option=com_pftasks&task=tasklist.edit&id=' . $item->id);?>">
-                            <?php echo $this->escape($item->title); ?></a>
-                    <?php else : ?>
-                        <?php echo $this->escape($item->title); ?>
-                    <?php endif; ?>
+                        <?php if ($can_edit || $can_edit_own) : ?>
+                            <a href="<?php echo JRoute::_('index.php?option=com_pftasks&task=tasklist.edit&id=' . $item->id);?>">
+                                <?php echo $this->escape($item->title); ?></a>
+                        <?php else : ?>
+                            <?php echo $this->escape($item->title); ?>
+                        <?php endif; ?>
 
-                    <div class="small">
-                        <?php echo $subtitles; ?>
+                        <div class="small">
+                            <?php echo $subtitles; ?>
+                        </div>
                     </div>
+
+                    <?php if (!$this->is_j25) : ?>
+                        <div class="pull-left">
+                            <?php
+                                // Create dropdown items
+                                JHtml::_('dropdown.edit', $item->id, 'tasklist.');
+                                JHtml::_('dropdown.divider');
+
+                                if ($item->state) :
+                                    JHtml::_('dropdown.unpublish', 'cb' . $i, 'tasklists.');
+                                else :
+                                    JHtml::_('dropdown.publish', 'cb' . $i, 'tasklists.');
+                                endif;
+
+                                JHtml::_('dropdown.divider');
+
+                                if ($archived) :
+                                    JHtml::_('dropdown.unarchive', 'cb' . $i, 'tasklists.');
+                                else :
+                                    JHtml::_('dropdown.archive', 'cb' . $i, 'tasklists.');
+                                endif;
+
+                                if ($item->checked_out) :
+                                    JHtml::_('dropdown.checkin', 'cb' . $i, 'tasklists.');
+                                endif;
+
+                                if ($trashed) :
+                                    JHtml::_('dropdown.untrash', 'cb' . $i, 'tasklists.');
+                                else :
+                                    JHtml::_('dropdown.trash', 'cb' . $i, 'tasklists.');
+                                endif;
+
+                                // Render dropdown list
+                                echo JHtml::_('dropdown.render');
+                            ?>
+                        </div>
+                    <?php endif; ?>
                 </td>
                 <td class="center">
                     <?php echo $this->escape($item->task_count); ?>

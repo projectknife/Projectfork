@@ -114,23 +114,25 @@ endif;
                 <td class="center">
                     <?php echo JHtml::_('jgrid.published', $item->state, $i, 'milestones.', $can_change, 'cb'); ?>
                 </td>
-                <td>
-                    <?php if ($item->checked_out) : ?>
-                        <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'milestones.', $can_checkin); ?>
-                    <?php endif; ?>
+                <td class="has-context">
+                    <div class="pull-left">
+                        <?php if ($item->checked_out) : ?>
+                            <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'milestones.', $can_checkin); ?>
+                        <?php endif; ?>
 
-                    <?php if ($can_edit || $can_edit_own) : ?>
-                        <a href="<?php echo JRoute::_('index.php?option=com_pfmilestones&task=milestone.edit&id=' . $item->id);?>">
-                            <?php echo $this->escape($item->title); ?></a>
-                    <?php else : ?>
-                        <?php echo $this->escape($item->title); ?>
-                    <?php endif; ?>
+                        <?php if ($can_edit || $can_edit_own) : ?>
+                            <a href="<?php echo JRoute::_('index.php?option=com_pfmilestones&task=milestone.edit&id=' . $item->id);?>">
+                                <?php echo $this->escape($item->title); ?></a>
+                        <?php else : ?>
+                            <?php echo $this->escape($item->title); ?>
+                        <?php endif; ?>
 
-                    <?php if (!$filter_project) : ?>
-                        <div class="small">
-                            <?php echo $txt_project . ': ' . $this->escape($item->project_title); ?>
-                        </div>
-                    <?php endif; ?>
+                        <?php if (!$filter_project) : ?>
+                            <div class="small">
+                                <?php echo $txt_project . ': ' . $this->escape($item->project_title); ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
 
                     <?php if (!$this->is_j25) : ?>
                         <div class="pull-left">
