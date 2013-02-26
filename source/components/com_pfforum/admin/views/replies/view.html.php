@@ -4,7 +4,7 @@
  * @subpackage   Forum
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -45,10 +45,18 @@ class PFforumViewReplies extends JViewLegacy
     protected $authors;
 
     /**
+     * Sql "null" date (0000-00-00 00:00:00)
      *
      * @var    string
      */
     protected $nulldate;
+
+    /**
+     * Indicates whether the site is running Joomla 2.5 or not
+     *
+     * @var    boolean
+     */
+    protected $is_j25;
 
 
     /**
@@ -65,9 +73,8 @@ class PFforumViewReplies extends JViewLegacy
         $this->pagination = $this->get('Pagination');
         $this->state      = $this->get('State');
         $this->authors    = $this->get('Authors');
-
-        // Get database null date
-        $this->nulldate = JFactory::getDbo()->getNullDate();
+        $this->nulldate   = JFactory::getDbo()->getNullDate();
+        $this->is_j25     = version_compare(JVERSION, '3', 'lt');
 
         // Check for errors
         if (count($errors = $this->get('Errors'))) {
@@ -75,7 +82,15 @@ class PFforumViewReplies extends JViewLegacy
             return false;
         }
 
-        if ($this->getLayout() !== 'modal') $this->addToolbar();
+        if ($this->getLayout() !== 'modal') {
+            $this->addToolbar();
+
+            // Add the sidebar (Joomla 3 and up)
+            if (!$this->is_j25) {
+                $this->addSidebar();
+                $this->sidebar = JHtmlSidebar::render();
+            }
+        }
 
         parent::display($tpl);
     }
@@ -89,7 +104,6 @@ class PFforumViewReplies extends JViewLegacy
     protected function addToolbar()
     {
         $access = PFforumHelper::getReplyActions(null, (int) $this->state->get('filter.topic'));
-        $user   = JFactory::getUser();
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_REPLIES_TITLE'), 'article.png');
 
@@ -118,5 +132,54 @@ class PFforumViewReplies extends JViewLegacy
             JToolBarHelper::trash('replies.trash');
             JToolBarHelper::divider();
         }
+    }
+
+
+    /**
+     * Adds the page side bar for Joomla 3.0 and higher
+     *
+     * @return    void
+     */
+    protected function addSidebar()
+    {
+        JHtmlSidebar::setAction('index.php?option=com_pfforum&view=topics');
+
+        JHtmlSidebar::addFilter(
+            JText::_('JOPTION_SELECT_PUBLISHED'),
+            'filter_published',
+            JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true)
+        );
+
+        JHtmlSidebar::addFilter(
+            JText::_('JOPTION_SELECT_ACCESS'),
+            'filter_access',
+            JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'))
+        );
+
+        if ($this->state->get('filter.project')) {
+            JHtmlSidebar::addFilter(
+                JText::_('JOPTION_SELECT_AUTHOR'),
+                'filter_author_id',
+                JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'))
+            );
+        }
+    }
+
+
+    /**
+     * Returns an array of fields the table can be sorted by.
+     * Requires Joomla 3.0 or higher
+     *
+     * @return    array    Array containing the field name to sort by as the key and display text as value
+     */
+    protected function getSortFields()
+    {
+        return array(
+            'a.state'       => JText::_('JSTATUS'),
+            'author_name'   => JText::_('JAUTHOR'),
+            'a.created'     => JText::_('JDATE'),
+            'access_level'  => JText::_('JGRID_HEADING_ACCESS'),
+            'a.id'          => JText::_('JGRID_HEADING_ID')
+        );
     }
 }

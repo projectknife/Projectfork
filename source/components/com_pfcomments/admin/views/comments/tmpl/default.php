@@ -81,7 +81,7 @@ endif;
                 <th>
                     <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                 </th>
-                <th width="15%" class="nowrap hidden-phone">
+                <th width="15%" class="nowrap">
                     <?php echo JHtml::_('grid.sort', 'JAUTHOR', 'author_name', $list_dir, $list_order); ?>
                 </th>
                 <th width="10%" class="nowrap hidden-phone">
@@ -181,13 +181,13 @@ endif;
                         </div>
                     <?php endif; ?>
                 </td>
-                <td class="hidden-phone nowrap">
+                <td class="nowrap">
                     <?php echo $this->escape($item->author_name); ?>
                 </td>
-                <td class="nowrap hidden-phone">
+                <td class="nowrap hidden-phone small">
                     <?php echo JHtml::_('date', $item->created, $date_format); ?>
                 </td>
-                <td class="hidden-phone">
+                <td class="hidden-phone small">
                     <?php echo (int) $item->id; ?>
                 </td>
             </tr>

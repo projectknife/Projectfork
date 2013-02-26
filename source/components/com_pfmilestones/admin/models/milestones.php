@@ -131,6 +131,7 @@ class PFmilestonesModelMilestones extends JModelList
      * ordering requirements.
      *
      * @param     string    $id    A prefix for the store id.
+     *
      * @return    string           A store id.
      */
     protected function getStoreId($id = '')

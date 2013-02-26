@@ -45,10 +45,18 @@ class PFforumViewTopics extends JViewLegacy
     protected $authors;
 
     /**
+     * Sql "null" date (0000-00-00 00:00:00)
      *
      * @var    string
      */
     protected $nulldate;
+
+    /**
+     * Indicates whether the site is running Joomla 2.5 or not
+     *
+     * @var    boolean
+     */
+    protected $is_j25;
 
 
     /**
@@ -64,9 +72,8 @@ class PFforumViewTopics extends JViewLegacy
         $this->pagination = $this->get('Pagination');
         $this->state      = $this->get('State');
         $this->authors    = $this->get('Authors');
-
-        // Get database null date
-        $this->nulldate = JFactory::getDbo()->getNullDate();
+        $this->nulldate   = JFactory::getDbo()->getNullDate();
+        $this->is_j25     = version_compare(JVERSION, '3', 'lt');
 
         // Check for errors
         if (count($errors = $this->get('Errors'))) {
@@ -74,7 +81,15 @@ class PFforumViewTopics extends JViewLegacy
             return false;
         }
 
-        if ($this->getLayout() !== 'modal') $this->addToolbar();
+        if ($this->getLayout() !== 'modal') {
+            $this->addToolbar();
+
+            // Add the sidebar (Joomla 3 and up)
+            if (!$this->is_j25) {
+                $this->addSidebar();
+                $this->sidebar = JHtmlSidebar::render();
+            }
+        }
 
         parent::display($tpl);
     }
@@ -87,20 +102,19 @@ class PFforumViewTopics extends JViewLegacy
      */
     protected function addToolbar()
     {
-        $access = PFforumHelper::getActions(null, $this->state->get('filter.project'));
+        $user = JFactory::getUser();
 
         JToolBarHelper::title(JText::_('COM_PROJECTFORK_DISCUSSIONS_TITLE'), 'article.png');
 
-
-        if ($access->get('core.create')) {
+        if ($user->authorise('core.create', 'com_pfforum')) {
             JToolBarHelper::addNew('topic.add');
         }
 
-        if ($access->get('core.edit') || $access->get('core.edit.own')) {
+        if ($user->authorise('core.edit', 'com_pfforum') || $user->authorise('core.edit.own', 'com_pfforum')) {
             JToolBarHelper::editList('topic.edit');
         }
 
-        if ($access->get('core.edit.state')) {
+        if ($user->authorise('core.edit.state', 'com_pfforum')) {
             JToolBarHelper::divider();
             JToolBarHelper::publish('topics.publish', 'JTOOLBAR_PUBLISH', true);
             JToolBarHelper::unpublish('topics.unpublish', 'JTOOLBAR_UNPUBLISH', true);
@@ -109,17 +123,69 @@ class PFforumViewTopics extends JViewLegacy
             JToolBarHelper::checkin('topics.checkin');
         }
 
-        if ($this->state->get('filter.published') == -2 && $access->get('core.delete')) {
+        if ($this->state->get('filter.published') == -2 && $user->authorise('core.delete', 'com_pfforum')) {
             JToolBarHelper::deleteList('', 'topics.delete','JTOOLBAR_EMPTY_TRASH');
             JToolBarHelper::divider();
         }
-        elseif ($access->get('core.edit.state')) {
+        elseif ($user->authorise('core.edit.state', 'com_pfforum')) {
             JToolBarHelper::trash('topics.trash');
             JToolBarHelper::divider();
         }
 
-        if (JFactory::getUser()->authorise('core.admin')) {
+        if ($user->authorise('core.admin')) {
             JToolBarHelper::preferences('com_pfforum');
         }
+    }
+
+
+    /**
+     * Adds the page side bar for Joomla 3.0 and higher
+     *
+     * @return    void
+     */
+    protected function addSidebar()
+    {
+        JHtmlSidebar::setAction('index.php?option=com_pfforum&view=topics');
+
+        JHtmlSidebar::addFilter(
+            JText::_('JOPTION_SELECT_PUBLISHED'),
+            'filter_published',
+            JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true)
+        );
+
+        JHtmlSidebar::addFilter(
+            JText::_('JOPTION_SELECT_ACCESS'),
+            'filter_access',
+            JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'))
+        );
+
+        if ($this->state->get('filter.project')) {
+            JHtmlSidebar::addFilter(
+                JText::_('JOPTION_SELECT_AUTHOR'),
+                'filter_author_id',
+                JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'))
+            );
+        }
+    }
+
+
+    /**
+     * Returns an array of fields the table can be sorted by.
+     * Requires Joomla 3.0 or higher
+     *
+     * @return    array    Array containing the field name to sort by as the key and display text as value
+     */
+    protected function getSortFields()
+    {
+        return array(
+            'a.state'       => JText::_('JSTATUS'),
+            'a.title'       => JText::_('JGLOBAL_TITLE'),
+            'project_title' => JText::_('JGRID_HEADING_PROJECT'),
+            'replies'       => JText::_('COM_PROJECTFORK_REPLIES'),
+            'access_level'  => JText::_('JGRID_HEADING_ACCESS'),
+            'author_name'   => JText::_('JAUTHOR'),
+            'a.created'     => JText::_('JDATE'),
+            'a.id'          => JText::_('JGRID_HEADING_ID')
+        );
     }
 }
