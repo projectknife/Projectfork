@@ -180,7 +180,7 @@ endif;
         <?php if ($this->is_j25) : ?>
             <tfoot>
                 <tr>
-                    <td colspan="6">
+                    <td colspan="7">
                         <?php echo $this->pagination->getListFooter(); ?>
                     </td>
                 </tr>
