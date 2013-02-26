@@ -32,7 +32,7 @@ class PFtimeHelper
     {
         $is_j3 = version_compare(JVERSION, '3.0.0', 'ge');
 
-        if ($view == 'milestone' && $is_j3) return;
+        if ($view == 'time' && $is_j3) return;
 
         $components = PFApplicationHelper::getComponents();
         $option     = JFactory::getApplication()->input->get('option');

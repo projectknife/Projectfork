@@ -4,94 +4,87 @@
  * @subpackage   Comments
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
 defined('_JEXEC') or die();
 
 
-JHtml::_('behavior.tooltip');
-JHtml::_('behavior.multiselect');
-
 $user       = JFactory::getUser();
 $uid        = $user->get('id');
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
+$archived   = $this->state->get('filter.published') == 2 ? true : false;
+$trashed    = $this->state->get('filter.published') == -2 ? true : false;
+
+$filter_project = (int) $this->state->get('filter.project');
+$filter_context = (int) $this->state->get('filter.context');
+
+$txt_context = JText::_('JGRID_HEADING_CONTEXT');
+$txt_title   = JText::_('JGLOBAL_TITLE');
+$date_format = JText::_('DATE_FORMAT_LC4');
+
+JHtml::_('behavior.tooltip');
+JHtml::_('behavior.multiselect');
+
+if (!$this->is_j25) :
+    JHtml::_('dropdown.init');
+    JHtml::_('formbehavior.chosen', 'select');
+    ?>
+    <script type="text/javascript">
+    Joomla.orderTable = function()
+    {
+        table     = document.getElementById("sortTable");
+        direction = document.getElementById("directionTable");
+        order     = table.options[table.selectedIndex].value;
+
+        if (order != '<?php echo $list_order; ?>') {
+            dirn = 'asc';
+        }
+        else {
+            dirn = direction.options[direction.selectedIndex].value;
+        }
+
+        Joomla.tableOrdering(order, dirn, '');
+    }
+    </script>
+    <?php
+endif;
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_pfcomments&view=comments'); ?>" method="post" name="adminForm" id="adminForm">
+    <?php
+    if (!$this->is_j25) :
+        if (!empty($this->sidebar)) :
+            ?>
+            <div id="j-sidebar-container" class="span2">
+                <?php echo $this->sidebar; ?>
+            </div>
+            <div id="j-main-container" class="span10">
+        <?php else : ?>
+                <div id="j-main-container">
+            <?php
+        endif;
+    endif;
 
-    <fieldset id="filter-bar">
-        <div class="filter-search fltlft btn-toolbar pull-left">
-        	<div class="fltlft btn-group pull-left">
-	            <label class="filter-search-lbl element-invisible" for="filter_search"><?php echo JText::_('JSEARCH_FILTER_LABEL'); ?></label>
-	            <input type="text" name="filter_search" id="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
-        	</div>
-        	<div class="fltlft btn-group pull-left hidden-phone">
-	            <button type="submit" class="btn hasTooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><span class="element-invisible"><?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?></span><span aria-hidden="true" class="icon-search"></span></button>
-	            	<button type="button" class="btn hasTooltip" onclick="document.id('filter_search').value='';this.form.submit();" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>"><span class="element-invisible"><?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?></span><span aria-hidden="true" class="icon-cancel-2"></span></button>
-        	</div>
-        	<div class="fltrt btn-group pull-left">
-           		<?php echo JHtml::_('pfhtml.project.filter');?>
-        	</div>
-        </div>
-        <div class="filter-select fltrt btn-toolbar pull-right hidden-phone">
-        	<div class="fltrt btn-group">
-	            <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
-	                <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
-	                <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
-	            </select>
-        	</div>
-        	<div class="fltrt btn-group">
-	            <select name="filter_context" class="inputbox input-medium" onchange="this.form.submit()">
-	                <option value=""><?php echo JText::_('JOPTION_SELECT_CONTEXT');?></option>
-	                <?php echo JHtml::_('select.options', $this->contexts, 'value', 'text', $this->state->get('filter.context'), true);?>
-	            </select>
-        	</div>
-            <?php if ((int) $this->state->get('filter.project') > 0 && $this->state->get('filter.context') != '') : ?>
-            	<div class="fltrt btn-group">
-	                <select name="filter_item_id" class="inputbox input-medium" onchange="this.form.submit()">
-	                    <option value=""><?php echo JText::_('JOPTION_SELECT_CONTEXT_ITEM');?></option>
-	                    <?php echo JHtml::_('select.options', $this->cntxt_items, 'value', 'text', $this->state->get('filter.item_id'));?>
-	                </select>
-            	</div>
-            <?php endif; ?>
-            <?php if ((int) $this->state->get('filter.project') > 0) : ?>
-            	<div class="fltrt btn-group">
-	                <select name="filter_author_id" class="inputbox input-medium" onchange="this.form.submit()">
-	                    <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-	                    <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
-	                </select>
-            	</div>
-            <?php endif; ?>
-        </div>
-    </fieldset>
-    <div class="clr clearfix"></div>
+    echo $this->loadTemplate('filter_' . ($this->is_j25 ? 'j25' : 'j30'));
+    ?>
     <table class="adminlist table table-striped">
         <thead>
             <tr>
                 <th width="1%" class="hidden-phone">
                     <input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
                 </th>
-                <th width="5%">
+                <th width="5%" class="center">
                     <?php echo JHtml::_('grid.sort', 'JSTATUS', 'a.state', $list_dir, $list_order); ?>
                 </th>
                 <th>
-                    <?php echo JText::_('JGRID_HEADING_COMMENT');?>
-                </th>
-                <th width="12%" class="hidden-phone">
-                    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_PROJECT', 'project_title', $list_dir, $list_order); ?>
-                </th>
-                <th width="5%" class="hidden-phone">
-                    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CONTEXT', 'a.context', $list_dir, $list_order); ?>
-                </th>
-                <th width="12%" class="hidden-phone">
                     <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                 </th>
-                <th width="10%" class="hidden-phone">
-                    <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
+                <th width="15%" class="nowrap hidden-phone">
+                    <?php echo JHtml::_('grid.sort', 'JAUTHOR', 'author_name', $list_dir, $list_order); ?>
                 </th>
-                <th width="5%" class="hidden-phone">
+                <th width="10%" class="nowrap hidden-phone">
                     <?php echo JHtml::_('grid.sort', 'JDATE', 'a.created', $list_dir, $list_order); ?>
                 </th>
                 <th width="1%" class="nowrap hidden-phone">
@@ -111,60 +104,115 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
             $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
             $can_edit_own = ($access->get('core.edit.own') && $item->created_by == $uid);
             $can_change   = ($access->get('core.edit.state') && $can_checkin);
+
+            // Prepare subtitles
+            $subtitles = array();
+
+            if (!$filter_context) {
+                $subtitles[] = $txt_context . ': ' . JText::_($context);
+            }
+
+            $subtitles[] = $txt_title . ': ' . $this->escape($item->title);
+            $subtitles   = implode(', ', $subtitles);
             ?>
             <tr class="row<?php echo $i % 2; ?>">
-                <td class="center hidden-phone">
+                <td class="hidden-phone">
                     <?php echo JHtml::_('grid.id', $i, $item->id); ?>
                 </td>
                 <td class="center">
                     <?php echo JHtml::_('jgrid.published', $item->state, $i, 'comments.', $can_change, 'cb'); ?>
                 </td>
-                <td>
-                    <?php echo str_repeat('<span class="gi">|&mdash;</span>', $item->level - 1) ?>
-                    <?php if ($item->checked_out) : ?>
-                        <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'comments.', $can_checkin); ?>
+                <td class="has-context">
+                    <div class="pull-left">
+                        <?php echo str_repeat('<span class="gi">|&mdash;</span>', $item->level - 1) ?>
+
+                        <?php if ($item->checked_out) : ?>
+                            <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'comments.', $can_checkin); ?>
+                        <?php endif; ?>
+
+                        <?php if ($can_edit || $can_edit_own) : ?>
+                            <a href="<?php echo JRoute::_('index.php?option=com_pfcomments&task=comment.edit&id=' . $item->id);?>">
+                                <?php echo JHtml::_('string.truncate', $item->description, 80, true, false); ?>
+                            </a>
+                        <?php else : ?>
+                            <?php echo JHtml::_('string.truncate', $item->description, 80, true, false); ?>
+                        <?php endif; ?>
+
+                        <div class="small">
+                            <?php echo $subtitles; ?>
+
+                        </div>
+                    </div>
+
+                    <?php if (!$this->is_j25) : ?>
+                        <div class="pull-left">
+                            <?php
+                                // Create dropdown items
+                                JHtml::_('dropdown.edit', $item->id, 'comment.');
+                                JHtml::_('dropdown.divider');
+
+                                if ($item->state) :
+                                    JHtml::_('dropdown.unpublish', 'cb' . $i, 'comments.');
+                                else :
+                                    JHtml::_('dropdown.publish', 'cb' . $i, 'comments.');
+                                endif;
+
+                                JHtml::_('dropdown.divider');
+
+                                if ($archived) :
+                                    JHtml::_('dropdown.unarchive', 'cb' . $i, 'comments.');
+                                else :
+                                    JHtml::_('dropdown.archive', 'cb' . $i, 'comments.');
+                                endif;
+
+                                if ($item->checked_out) :
+                                    JHtml::_('dropdown.checkin', 'cb' . $i, 'comments.');
+                                endif;
+
+                                if ($trashed) :
+                                    JHtml::_('dropdown.untrash', 'cb' . $i, 'comments.');
+                                else :
+                                    JHtml::_('dropdown.trash', 'cb' . $i, 'comments.');
+                                endif;
+
+                                // Render dropdown list
+                                echo JHtml::_('dropdown.render');
+                            ?>
+                        </div>
                     <?php endif; ?>
-                    <?php if ($can_edit || $can_edit_own) : ?>
-                        <a href="<?php echo JRoute::_('index.php?option=com_pfcomments&task=comment.edit&id=' . $item->id);?>">
-                            <?php echo JHtml::_('string.truncate', $item->description, 40, true, false); ?>
-                        </a>
-                    <?php else : ?>
-                        <?php echo JHtml::_('string.truncate', $item->description, 40, true, false); ?>
-                    <?php endif; ?>
                 </td>
-                <td class="hidden-phone">
-                    <?php echo $this->escape($item->project_title); ?>
-                </td>
-                <td class="hidden-phone">
-                    <?php echo $this->escape(JText::_($context)); ?>
-                </td>
-                <td class="hidden-phone">
-                    <?php echo $this->escape($item->title); ?>
-                </td>
-                <td class="center hidden-phone">
+                <td class="hidden-phone nowrap">
                     <?php echo $this->escape($item->author_name); ?>
                 </td>
-                <td class="center nowrap hidden-phone">
-                    <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
+                <td class="nowrap hidden-phone">
+                    <?php echo JHtml::_('date', $item->created, $date_format); ?>
                 </td>
-                <td class="center hidden-phone">
+                <td class="hidden-phone">
                     <?php echo (int) $item->id; ?>
                 </td>
             </tr>
             <?php endforeach; ?>
         </tbody>
-        <tfoot>
-            <tr>
-                <td colspan="9">
-                    <?php echo $this->pagination->getListFooter(); ?>
-                </td>
-            </tr>
-        </tfoot>
+        <?php if ($this->is_j25) : ?>
+            <tfoot>
+                <tr>
+                    <td colspan="8">
+                        <?php echo $this->pagination->getListFooter(); ?>
+                    </td>
+                </tr>
+            </tfoot>
+        <?php endif; ?>
     </table>
+
+    <?php if (!$this->is_j25) : echo $this->pagination->getListFooter(); endif; ?>
 
     <input type="hidden" name="boxchecked" value="0" />
     <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
     <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
     <input type="hidden" name="task" value="" />
     <?php echo JHtml::_('form.token'); ?>
+
+    <?php if (!$this->is_j25) : ?>
+        </div>
+    <?php endif; ?>
 </form>
