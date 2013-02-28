@@ -4,7 +4,7 @@
  * @subpackage   Tasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -26,14 +26,25 @@ $can_order    = $user->authorise('core.edit.state', 'com_pftasks');
 
 $repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
 $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
+$time_enabled  = PFApplicationHelper::enabled('com_pftime');
+$can_track     = ($user->authorise('core.create', 'com_pftime') && $time_enabled);
 ?>
-<?php if ($uid && $this->state->get('filter.project') && $can_order) : ?>
 <script type="text/javascript">
 jQuery(document).ready(function() {
-    PFlist.sortable('.list-tasks', 'tasks');
+    <?php if ($can_track) : ?>
+        var turl  = '<?php echo JRoute::_('index.php?option=com_pftime&task=recorder.add&tmpl=component', false); ?>';
+        var topts = 'width=500,height=600,resizable=yes,'
+                  + 'scrollbars=yes,toolbar=no,location=no,'
+                  + 'directories=no,status=no,menubar=no';
+
+        PFtask.setTimeTracker(turl, topts);
+    <?php endif; ?>
+
+    <?php if ($uid && $this->state->get('filter.project') && $can_order) : ?>
+        PFlist.sortable('.list-tasks', 'tasks');
+    <?php endif; ?>
 });
 </script>
-<?php endif; ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-tasks">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -229,21 +240,26 @@ jQuery(document).ready(function() {
 	                                $this->menu->start(array('class' => 'btn-mini'));
 	                                $this->menu->itemEdit('taskform', $item->id, ($can_edit || $can_edit_own));
 	                                $this->menu->itemTrash('tasks', $x, ($can_edit || $can_edit_own));
-	
+
+                                    if ($can_track) {
+                                        $this->menu->itemDivider();
+                                        $this->menu->itemJavaScript('icon-clock ', 'COM_PROJECTFORK_TASKS_TRACK_TIME', 'PFtask.trackItem(' . $item->id . ');');
+                                    }
+
 	                                if (($can_edit || $can_edit_own)) {
 	                                    $itm_icon = 'icon-plus';
 	                                    $itm_txt  = 'COM_PROJECTFORK_ASSIGN_TO_USER';
 	                                    $itm_link = PFusersHelperRoute::getUsersRoute() . '&amp;layout=modal&amp;tmpl=component&amp;field=PFtaskAssignUser';
-	
+
 	                                    $this->menu->itemDivider();
 	                                    $this->menu->itemModal($itm_icon, $itm_txt, $itm_link, "PFlist.setTarget(" . $x . ");");
 	                                }
-	
+
 	                                if ($can_change) {
 	                                    $itm_icon = 'icon-warning';
 	                                    $itm_pfx  = 'COM_PROJECTFORK_PRIORITY';
 	                                    $itm_ac   = 'PFtask.priority(' . $x . ',';
-	
+
 	                                    $this->menu->itemDivider();
 	                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_VERY_LOW', $itm_ac . ' 1, \'' . addslashes(JText::_($itm_pfx. '_VERY_LOW')) . '\')');
 	                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_LOW', $itm_ac . ' 2, \'' . addslashes(JText::_($itm_pfx. '_LOW')) . '\')');
@@ -251,9 +267,9 @@ jQuery(document).ready(function() {
 	                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_HIGH', $itm_ac . ' 4, \'' . addslashes(JText::_($itm_pfx. '_HIGH')) . '\')');
 	                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_VERY_HIGH', $itm_ac . ' 5, \'' . addslashes(JText::_($itm_pfx. '_VERY_HIGH')) . '\')');
 	                                }
-	
+
 	                                $this->menu->end();
-	
+
 	                                echo $this->menu->render(array('class' => 'btn-mini'));
 	                            ?>
                             </div>
@@ -270,7 +286,7 @@ jQuery(document).ready(function() {
                         <?php echo JHtml::_('pftasks.priorityLabel', $item->id, $x, $item->priority); ?>
                         <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date); ?>
                         <?php if ($item->access != 1) {
-                        	echo JHtml::_('pfhtml.label.access', $item->access); 
+                        	echo JHtml::_('pfhtml.label.access', $item->access);
                         	}
                         ?>
                         <?php if ($cmnts_enabled) : echo JHtml::_('pfcomments.label', $item->comments); endif; ?>
@@ -295,7 +311,7 @@ jQuery(document).ready(function() {
                     <div class="alert alert-success"><?php echo JText::_('COM_PROJECTFORK_REORDER_ENABLED'); ?></div>
                 <?php endif; ?>
             <?php endif; ?>
-            
+
             <?php if ($this->pagination->get('pages.total') > 1) : ?>
                 <div class="pagination center">
                     <?php echo $this->pagination->getPagesLinks(); ?>

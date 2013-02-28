@@ -50,21 +50,19 @@ var PFlist =
     {
         var cb = jQuery('#' + cid);
 
-        if (typeof cb == 'undefined') {
-            return false;
-        }
-
-        if (cb.is(':checked') == false) {
-            cb.trigger('click');
-        }
+        if (typeof cb == 'undefined') return false;
+        if (cb.is(':checked') == false) cb.trigger('click');
 
         var rq = PFlist.submitform(act, fi, nomsg);
 
         rq.done(function(resp)
         {
-            if (cb.is(':checked')) {
-                cb.trigger('click');
-            }
+            if (cb.is(':checked')) cb.trigger('click');
+        });
+
+        rq.error(function(resp, e, msg)
+        {
+            if (cb.is(':checked')) cb.trigger('click');
         });
 
         return rq;

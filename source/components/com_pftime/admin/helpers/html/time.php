@@ -63,6 +63,10 @@ abstract class JHtmlTime
                     if ($hours) $format .= ' ';
                     $format .= $minutes . ' ' . ($minutes > 1 ? JText::_('COM_PROJECTFORK_TIME_MINUTES') : JText::_('COM_PROJECTFORK_TIME_MINUTE'));
                 }
+
+                if (!$minutes && !$hours) {
+                    $format .= '0 ' . JText::_('COM_PROJECTFORK_TIME_MINUTES');
+                }
                 break;
         }
 
