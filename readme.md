@@ -8,7 +8,7 @@ Download the latest version from our [website](http://projectfork.net)
 
 ## Long Description, Instructions
 You'll find useful informations for
-* developers on our github [Wiki Pages](wiki/)
+* developers on our github [wiki](wiki/)
 * customer on our [website](http://projectfork.net)
 
 ## Bugs, feature requests
