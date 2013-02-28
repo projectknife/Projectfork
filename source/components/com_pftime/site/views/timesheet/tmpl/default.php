@@ -27,6 +27,21 @@ $unbillable_percent = ($this->total_time == 0) ? 0 : round($this->total_time_unb
 
 $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
 ?>
+<script type="text/javascript">
+Joomla.submitbutton = function(task)
+{
+    if (task == 'recorder') {
+        var win_attr = 'width=500,height=600,resizable=yes,'
+                     + 'scrollbars=yes,toolbar=no,location=no,'
+                     + 'directories=no,status=no,menubar=no';
+
+        window.open('<?php echo JRoute::_('index.php?option=com_pftime&view=recorder&tmpl=component'); ?>', 'winPFtimerec', win_attr);
+    }
+    else {
+        Joomla.submitform(task, document.getElementById('adminForm'));
+    }
+}
+</script>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-timesheet">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -110,7 +125,7 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
         					<div class="progress progress-success">
 								<div class="bar" style="width: <?php echo $billable_percent;?>%;">
 									<?php if ($billable_percent) : ?>
-										<?php echo JHtml::_('time.format', $this->total_time_billable, 'decimal');?> 
+										<?php echo JHtml::_('time.format', $this->total_time_billable, 'decimal');?>
 										<?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE');?>
 									<?php endif; ?>
 								</div>
@@ -118,7 +133,7 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
 							<div class="progress progress-info">
 								<div class="bar" style="width: <?php echo $unbillable_percent;?>%;">
 									<?php if ($unbillable_percent) : ?>
-										<?php echo JHtml::_('time.format', $this->total_time_unbillable, 'decimal');?> 
+										<?php echo JHtml::_('time.format', $this->total_time_unbillable, 'decimal');?>
 										<?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_UNBILLABLE');?>
 									<?php endif; ?>
 								</div>
@@ -212,7 +227,7 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
 	                        $this->menu->itemEdit('form', $item->id, ($can_edit || $can_edit_own));
 	                        $this->menu->itemTrash('timesheet', $i, $can_change);
 	                        $this->menu->end();
-	
+
 	                        echo $this->menu->render(array('class' => 'btn-mini'));
 	                        ?>
 			        	</td>
@@ -257,7 +272,7 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
             		</tr>
             	</tfoot>
             </table>
-            
+
             <?php if ($this->pagination->get('pages.total') > 1) : ?>
                 <div class="pagination center">
                     <?php echo $this->pagination->getPagesLinks(); ?>

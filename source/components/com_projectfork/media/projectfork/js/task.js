@@ -13,6 +13,20 @@
  */
 var PFtask =
 {
+    track_url: null,
+    track_win_opts: null,
+
+    setTimeTracker: function(turl, topts)
+    {
+        PFtask.track_url = turl;
+        PFtask.track_win_opts = topts;
+    },
+
+    trackItem: function(tid)
+    {
+        window.open(PFtask.track_url + '&cid[]=' + tid, 'winPFtimerec', PFtask.track_win_opts);
+    },
+
     /**
      * Function to mark a task as complete/incomplete
      *

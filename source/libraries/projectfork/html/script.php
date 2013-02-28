@@ -294,6 +294,37 @@ abstract class PFhtmlScript
 
 
     /**
+     * Method to load Projectfork time recording JS
+     *
+     * @return    void
+     */
+    public static function timerec()
+    {
+        // Only load once
+        if (!empty(self::$loaded[__METHOD__])) {
+            return;
+        }
+
+        // Load dependencies
+        if (empty(self::$loaded['jQuery'])) {
+            self::jQuery();
+        }
+
+        if (empty(self::$loaded['projectfork'])) {
+            self::projectfork();
+        }
+
+        // Load only of doc type is HTML
+        if (JFactory::getDocument()->getType() == 'html') {
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptTimerec');
+        }
+
+        self::$loaded[__METHOD__] = true;
+    }
+
+
+    /**
      * Method to load Projectfork base JS
      *
      * @return    void
@@ -465,6 +496,17 @@ function triggerProjectforkScriptListForm()
 function triggerProjectforkScriptTask()
 {
     JHtml::_('script', 'com_projectfork/projectfork/task.js', false, true, false, false, false);
+}
+
+
+/**
+ * Stupid but necessary way of adding PF time rec JS to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that the tasks JS is loaded after jQuery
+ *
+ */
+function triggerProjectforkScriptTimerec()
+{
+    JHtml::_('script', 'com_projectfork/projectfork/recorder.js', false, true, false, false, false);
 }
 
 
