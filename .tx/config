@@ -1,6 +1,6 @@
 [main]
 host = https://www.transifex.com
-lang_map = en_GB: en-GB, ca_ES: ca-ES, nl_NL: nl-NL, fr_FR: fr-FR, de_DE: de-DE, es: es-ES, th_TH: th-TH, tr_TR: tr-TR, it_IT: it-IT, hu: xx-HU, ru: xx-RU, nl: xx-NL, pt_BR: xx-pt-BR, pt_PT: xx-pt-PT, sv_SE: xx-sv-SE, fa_IR: xx-fa-IR, cs_CZ: xx-cs-CZ, fi: xx-FI
+lang_map = en_GB: en-GB, ca_ES: ca-ES, nl_NL: nl-NL, fr_FR: fr-FR, de_DE: de-DE, es: es-ES, th_TH: th-TH, tr_TR: tr-TR, it_IT: it-IT, hu: hu-HU, ru: xx-RU, nl: xx-NL, pt_BR: xx-pt-BR, pt_PT: xx-pt-PT, sv_SE: xx-sv-SE, fa_IR: xx-fa-IR, cs_CZ: xx-cs-CZ, fi: xx-FI
 type = INI
 
 [projectfork-languages.admin-com_pfcomments]

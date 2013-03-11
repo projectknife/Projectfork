@@ -38,6 +38,7 @@
         <language tag="de-DE">language/de-DE/de-DE.com_projectfork.ini</language>
         <language tag="es-ES">language/es-ES/es-ES.com_projectfork.ini</language>
         <language tag="fr-FR">language/fr-FR/fr-FR.com_projectfork.ini</language>
+        <language tag="hu-HU">language/hu-HU/hu-HU.com_projectfork.ini</language>
         <language tag="it-IT">language/it-IT/it-IT.com_projectfork.ini</language>
         <language tag="nl-NL">language/nl-NL/nl-NL.com_projectfork.ini</language>
         <language tag="th-TH">language/th-TH/th-TH.com_projectfork.ini</language>
@@ -66,6 +67,8 @@
             <language tag="es-ES">language/es-ES/es-ES.com_projectfork.sys.ini</language>
             <language tag="fr-FR">language/fr-FR/fr-FR.com_projectfork.ini</language>
             <language tag="fr-FR">language/fr-FR/fr-FR.com_projectfork.sys.ini</language>
+            <language tag="hu-HU">language/hu-HU/hu-HU.com_projectfork.ini</language>
+            <language tag="hu-HU">language/hu-HU/hu-HU.com_projectfork.sys.ini</language>
             <language tag="it-IT">language/it-IT/it-IT.com_projectfork.ini</language>
             <language tag="it-IT">language/it-IT/it-IT.com_projectfork.sys.ini</language>
             <language tag="nl-NL">language/nl-NL/nl-NL.com_projectfork.ini</language>
