@@ -48,6 +48,24 @@
   <languages folder="language">
       <language tag="en-GB">en-GB/en-GB.tpl_goggles.ini</language>
       <language tag="en-GB">en-GB/en-GB.tpl_goggles.sys.ini</language>
+      <language tag="ca-ES">ca-ES/ca-ES.tpl_goggles.ini</language>
+      <language tag="ca-ES">ca-ES/ca-ES.tpl_goggles.sys.ini</language>
+      <language tag="de-DE">de-DE/de-DE.tpl_goggles.ini</language>
+      <language tag="de-DE">de-DE/de-DE.tpl_goggles.sys.ini</language>
+      <language tag="es-ES">es-ES/es-ES.tpl_goggles.ini</language>
+      <language tag="es-ES">es-ES/es-ES.tpl_goggles.sys.ini</language>
+      <language tag="fr-FR">fr-FR/fr-FR.tpl_goggles.ini</language>
+      <language tag="fr-FR">fr-FR/fr-FR.tpl_goggles.sys.ini</language>
+      <language tag="hu-HU">hu-HU/hu-HU.tpl_goggles.ini</language>
+      <language tag="hu-HU">hu-HU/hu-HU.tpl_goggles.sys.ini</language>
+      <language tag="it-IT">it-IT/it-IT.tpl_goggles.ini</language>
+      <language tag="it-IT">it-IT/it-IT.tpl_goggles.sys.ini</language>
+      <language tag="nl-NL">nl-NL/nl-NL.tpl_goggles.ini</language>
+      <language tag="nl-NL">nl-NL/nl-NL.tpl_goggles.sys.ini</language>
+      <language tag="th-TH">th-TH/th-TH.tpl_goggles.ini</language>
+      <language tag="th-TH">th-TH/th-TH.tpl_goggles.sys.ini</language>
+      <language tag="tr-TR">tr-TR/tr-TR.tpl_goggles.ini</language>
+      <language tag="tr-TR">tr-TR/tr-TR.tpl_goggles.sys.ini</language>
   </languages>
   <config>
 	  <fields name="params">

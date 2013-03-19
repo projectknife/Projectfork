@@ -23,14 +23,26 @@
 		<filename>mod_pf_dash_buttons.xml</filename>
 	</files>
 	<languages>
-		<language tag="en-GB">language/en-GB/en-GB.mod_pf_dash_buttons.ini</language>
-		<language tag="en-GB">language/en-GB/en-GB.mod_pf_dash_buttons.sys.ini</language>
-        <language tag="fr-FR">language/fr-FR/fr-FR.mod_pf_dash_buttons.ini</language>
-		<language tag="fr-FR">language/fr-FR/fr-FR.mod_pf_dash_buttons.sys.ini</language>
-        <language tag="it-IT">language/it-IT/it-IT.mod_pf_dash_buttons.ini</language>
-		<language tag="it-IT">language/it-IT/it-IT.mod_pf_dash_buttons.sys.ini</language>
-        <language tag="tr-TR">language/tr-TR/tr-TR.mod_pf_dash_buttons.ini</language>
-		<language tag="tr-TR">language/tr-TR/tr-TR.mod_pf_dash_buttons.sys.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.mod_pf_dash_buttons.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.mod_pf_dash_buttons.sys.ini</language>
+            <language tag="ca-ES">language/ca-ES/ca-ES.mod_pf_dash_buttons.ini</language>
+            <language tag="ca-ES">language/ca-ES/ca-ES.mod_pf_dash_buttons.sys.ini</language>
+            <language tag="de-DE">language/de-DE/de-DE.mod_pf_dash_buttons.ini</language>
+            <language tag="de-DE">language/de-DE/de-DE.mod_pf_dash_buttons.sys.ini</language>
+            <language tag="es-ES">language/es-ES/es-ES.mod_pf_dash_buttons.ini</language>
+            <language tag="es-ES">language/es-ES/es-ES.mod_pf_dash_buttons.sys.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.mod_pf_dash_buttons.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.mod_pf_dash_buttons.sys.ini</language>
+            <language tag="hu-HU">language/hu-HU/hu-HU.mod_pf_dash_buttons.ini</language>
+            <language tag="hu-HU">language/hu-HU/hu-HU.mod_pf_dash_buttons.sys.ini</language>
+            <language tag="it-IT">language/it-IT/it-IT.mod_pf_dash_buttons.ini</language>
+            <language tag="it-IT">language/it-IT/it-IT.mod_pf_dash_buttons.sys.ini</language>
+            <language tag="nl-NL">language/nl-NL/nl-NL.mod_pf_dash_buttons.ini</language>
+            <language tag="nl-NL">language/nl-NL/nl-NL.mod_pf_dash_buttons.sys.ini</language>
+            <language tag="th-TH">language/th-TH/th-TH.mod_pf_dash_buttons.ini</language>
+            <language tag="th-TH">language/th-TH/th-TH.mod_pf_dash_buttons.sys.ini</language>
+            <language tag="tr-TR">language/tr-TR/tr-TR.mod_pf_dash_buttons.ini</language>
+            <language tag="tr-TR">language/tr-TR/tr-TR.mod_pf_dash_buttons.sys.ini</language>
 	</languages>
     <config>
         <fields name="params">
