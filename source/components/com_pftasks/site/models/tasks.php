@@ -67,7 +67,7 @@ class PFtasksModelTasks extends JModelList
                 'a.id, a.project_id, a.list_id, a.milestone_id, a.title, '
                 . 'a.description, a.alias, a.checked_out, a.attribs, a.priority, '
                 . 'a.checked_out_time, a.state, a.access, a.created, a.created_by, '
-                . 'a.start_date, a.end_date, a.ordering, a.complete'
+                . 'a.start_date, a.end_date, a.ordering, a.complete, a.completed, a.completed_by'
             )
         );
 
