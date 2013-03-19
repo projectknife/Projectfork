@@ -374,11 +374,10 @@ class PFtimeModelRecorder extends JModelList
      */
     protected function populateState($ordering = 'a.id', $direction = 'asc')
     {
-        $app    = JFactory::getApplication();
-        $access = PFtimeHelper::getActions();
+        $app = JFactory::getApplication();
 
         // Get Recorder data
-        $items = $app->getUserState('com_pftime.recorder.data');
+        $items = (array) $app->getUserState('com_pftime.recorder.data');
         $this->setState('list.items', array_reverse($items));
 
         // Params
