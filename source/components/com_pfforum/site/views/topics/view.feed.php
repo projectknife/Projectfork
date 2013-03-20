@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Forum
+ * @package      pkg_projectfork
+ * @subpackage   com_pfforum
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 
 
 /**
- * Feed list view class.
+ * Topic Feed list view class.
  *
  */
 class PFforumViewTopics extends JViewLegacy
@@ -33,7 +33,7 @@ class PFforumViewTopics extends JViewLegacy
 
         $doc->link  = htmlspecialchars(JFactory::getURI()->toString());
         $feed_email = (($app->getCfg('feed_email') == '') ? 'site' : $app->getCfg('feed_email'));
-        $site_email = $app->get('mailfrom');
+        $site_email = $app->getCfg('mailfrom');
 
         // Set the query limit to the feed setting
         JRequest::setVar('limit', (int) $app->getCfg('feed_limit', 20));
@@ -43,34 +43,25 @@ class PFforumViewTopics extends JViewLegacy
 
         foreach($rows as $row)
         {
-            // URL link to item
-            $link = JRoute::_(PFforumHelperRoute::getTopicRoute($row->slug, $row->project_slug));
-
-            // Strip html from feed item title
-            $title = $this->escape($row->title);
-            $title = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
-
-            $author = $row->author_name;
-            $desc   = $row->description;
-            $date   = ($row->created ? date('r', strtotime($row->created)) : '');
-
             // Load individual item creator class
             $item = new JFeedItem();
 
-            $item->title       = $title;
-            $item->link        = $link;
-            $item->description = $desc;
-            $item->date        = $date;
-            $item->author      = $author;
+            $item->title       = html_entity_decode($this->escape($row->title), ENT_COMPAT, 'UTF-8');
+            $item->link        = JRoute::_(PFforumHelperRoute::getTopicRoute($row->slug, $row->project_slug));
+            $item->description = $row->description;
+            $item->date        = ($row->created ? date('r', strtotime($row->created)) : '');
+            $item->author      = $row->author_name;
             $item->authorEmail = ($feed_email == 'site') ? $site_email : $row->author_email;
 
             // Categorize the item
-            if ($row->project_id > 0) {
-                // Strip html from feed item title
-                $category = $this->escape($row->project_title);
-                $category = html_entity_decode($category, ENT_COMPAT, 'UTF-8');
-
-                $item->category = array($category);
+            if (!empty($row->project_title)) {
+                $item->category = array(
+                    html_entity_decode(
+                        $this->escape($row->project_title),
+                        ENT_COMPAT,
+                        'UTF-8'
+                    )
+                );
             }
 
             // Loads item info into the RSS array
