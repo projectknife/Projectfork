@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Timetracking
+ * @package      pkg_projectfork
+ * @subpackage   com_pftime
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -177,12 +177,12 @@ Joomla.submitbutton = function(task)
 
     <?php
         echo $this->form->getInput('created');
-        echo $this->form->getInput('id');
         echo $this->form->getInput('asset_id');
         echo $this->form->getInput('elements');
     ?>
 
     <input type="hidden" name="task" value="" />
+    <input type="hidden" name="id" value="<?php echo (int) $this->item->id; ?>" />
     <input type="hidden" name="return" value="<?php echo $this->return_page;?>" />
     <input type="hidden" name="view" value="<?php echo htmlspecialchars($this->get('Name'), ENT_COMPAT, 'UTF-8');?>" />
     <?php echo JHtml::_( 'form.token' ); ?>
