@@ -198,4 +198,15 @@ abstract class JHtmlPFtasks
 
         return $options;
     }
+
+
+    static public function completeOptions()
+    {
+        $options   = array();
+
+        $options[] =  JHtml::_('select.option', '0', JText::_('JNO'));
+        $options[] =  JHtml::_('select.option', '1', JText::_('JYES'));
+
+        return $options;
+    }
 }
