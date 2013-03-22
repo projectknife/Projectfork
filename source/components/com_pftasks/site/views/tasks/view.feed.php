@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Tasks
+ * @package      pkg_projectfork
+ * @subpackage   com_pftasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -15,7 +15,7 @@ jimport('joomla.application.component.view');
 
 
 /**
- * Feed list view class.
+ * Task Feed list view class.
  *
  */
 class PFtasksViewTasks extends JViewLegacy
@@ -33,7 +33,7 @@ class PFtasksViewTasks extends JViewLegacy
 
         $doc->link  = htmlspecialchars(JFactory::getURI()->toString());
         $feed_email = (($app->getCfg('feed_email') == '') ? 'site' : $app->getCfg('feed_email'));
-        $site_email = $app->get('mailfrom');
+        $site_email = $app->getCfg('mailfrom');
 
         // Set the query limit to the feed setting
         JRequest::setVar('limit', (int) $app->getCfg('feed_limit', 20));
@@ -43,52 +43,44 @@ class PFtasksViewTasks extends JViewLegacy
 
         foreach($rows as $row)
         {
-            // URL link to item
-            $link = JRoute::_(PFtasksHelperRoute::getTaskRoute($row->slug, $row->project_slug, $row->milestone_slug, $row->list_slug));
-
-            // Strip html from feed item title
-            $title = $this->escape($row->title);
-            $title = html_entity_decode($title, ENT_COMPAT, 'UTF-8');
-
-            $author = $row->author_name;
-            $desc   = $row->description;
-            $date   = ($row->created ? date('r', strtotime($row->created)) : '');
-
             // Load individual item creator class
             $item = new JFeedItem();
 
-            $item->title       = $title;
-            $item->link        = $link;
-            $item->description = $desc;
-            $item->date        = $date;
-            $item->author      = $author;
+            $item->title       = html_entity_decode($this->escape($row->title), ENT_COMPAT, 'UTF-8');
+            $item->link        = JRoute::_(PFtasksHelperRoute::getTaskRoute($row->slug, $row->project_slug, $row->milestone_slug, $row->list_slug));
+            $item->description = $row->description;
+            $item->date        = ($row->created ? date('r', strtotime($row->created)) : '');
+            $item->author      = $row->author_name;
             $item->authorEmail = ($feed_email == 'site') ? $site_email : $row->author_email;
 
             // Categorize the item
             $item->category = array();
 
-            if ($row->project_id > 0) {
-                // Strip html from feed item title
-                $category = $this->escape($row->project_title);
-                $category = html_entity_decode($category, ENT_COMPAT, 'UTF-8');
-
-                $item->category[] = $category;
+            // Project
+            if (!empty($row->project_title)) {
+                $item->category[] = html_entity_decode(
+                    $this->escape($row->project_title),
+                    ENT_COMPAT,
+                    'UTF-8'
+                );
             }
 
-            if ($row->milestone_id > 0) {
-                // Strip html from feed item title
-                $category = $this->escape($row->milestone_title);
-                $category = html_entity_decode($category, ENT_COMPAT, 'UTF-8');
-
-                $item->category[] = $category;
+            // Milestone
+            if (!empty($row->milestone_title)) {
+                $item->category[] = html_entity_decode(
+                    $this->escape($row->milestone_title),
+                    ENT_COMPAT,
+                    'UTF-8'
+                );
             }
 
-            if ($row->list_id > 0) {
-                // Strip html from feed item title
-                $category = $this->escape($row->list_title);
-                $category = html_entity_decode($category, ENT_COMPAT, 'UTF-8');
-
-                $item->category[] = $category;
+            // List
+            if (!empty($row->list_title)) {
+                $item->category[] = html_entity_decode(
+                    $this->escape($row->list_title),
+                    ENT_COMPAT,
+                    'UTF-8'
+                );
             }
 
             // Loads item info into the RSS array

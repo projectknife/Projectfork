@@ -222,6 +222,14 @@ jQuery(document).ready(function() {
                             $options = array('a-class' => 'btn-mini', 'div-class' => 'pull-right');
                             $watch = JHtml::_('pfhtml.button.watch', 'tasks', $x, $item->watching, $options);
                         }
+
+                        // Deadline and completition date
+                        $task_date = JHtml::_(
+                            'pfhtml.label.datetime',
+                            ($item->complete ? $item->completed : $item->end_date),
+                            false,
+                            ($item->complete ? array('past-class' => 'label-success', 'past-icon' => 'calendar') : array())
+                        );
                     ?>
                     <li id="list-item-<?php echo $x; ?>" class="<?php echo $class;?>">
                         <input type="hidden" name="order[]" value="<?php echo (int) $item->ordering;?>"/>
@@ -284,7 +292,7 @@ jQuery(document).ready(function() {
                         <small class="task-description"><?php echo $this->escape(JHtml::_('pf.html.truncate', $item->description));?></small>
                         <?php echo JHtml::_('pftasks.assignedLabel', $item->id, $x, $item->users); ?>
                         <?php echo JHtml::_('pftasks.priorityLabel', $item->id, $x, $item->priority); ?>
-                        <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date); ?>
+                        <?php echo $task_date; ?>
                         <?php if ($item->access != 1) {
                         	echo JHtml::_('pfhtml.label.access', $item->access);
                         	}

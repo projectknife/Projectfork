@@ -12,19 +12,31 @@
     <published>1</published>
     <scriptfile>script.php</scriptfile>
 	<files>
-		<filename plugin="pfcomments">pfcomments.php</filename>
-        <filename>index.html</filename>
-        <filename>LICENSE.txt</filename>
-        <filename>script.php</filename>
+         <filename plugin="pfcomments">pfcomments.php</filename>
+         <filename>index.html</filename>
+         <filename>LICENSE.txt</filename>
+         <filename>script.php</filename>
 	</files>
     <languages>
-	    <language tag="en-GB">language/en-GB/en-GB.plg_content_pfcomments.ini</language>
-	    <language tag="en-GB">language/en-GB/en-GB.plg_content_pfcomments.sys.ini</language>
-        <language tag="fr-FR">language/fr-FR/fr-FR.plg_content_pfcomments.ini</language>
-		<language tag="fr-FR">language/fr-FR/fr-FR.plg_content_pfcomments.sys.ini</language>
-        <language tag="it-IT">language/it-IT/it-IT.plg_content_pfcomments.ini</language>
-		<language tag="it-IT">language/it-IT/it-IT.plg_content_pfcomments.sys.ini</language>
-        <language tag="tr-TR">language/tr-TR/tr-TR.plg_content_pfcomments.ini</language>
-		<language tag="tr-TR">language/tr-TR/tr-TR.plg_content_pfcomments.sys.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.plg_content_pfcomments.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.plg_content_pfcomments.sys.ini</language>
+            <language tag="ca-ES">language/ca-ES/ca-ES.plg_content_pfcomments.ini</language>
+            <language tag="ca-ES">language/ca-ES/ca-ES.plg_content_pfcomments.sys.ini</language>
+            <language tag="de-DE">language/de-DE/de-DE.plg_content_pfcomments.ini</language>
+            <language tag="de-DE">language/de-DE/de-DE.plg_content_pfcomments.sys.ini</language>
+            <language tag="es-ES">language/es-ES/es-ES.plg_content_pfcomments.ini</language>
+            <language tag="es-ES">language/es-ES/es-ES.plg_content_pfcomments.sys.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.plg_content_pfcomments.ini</language>
+            <language tag="fr-FR">language/fr-FR/fr-FR.plg_content_pfcomments.sys.ini</language>
+            <language tag="hu-HU">language/hu-HU/hu-HU.plg_content_pfcomments.ini</language>
+            <language tag="hu-HU">language/hu-HU/hu-HU.plg_content_pfcomments.sys.ini</language>
+            <language tag="it-IT">language/it-IT/it-IT.plg_content_pfcomments.ini</language>
+            <language tag="it-IT">language/it-IT/it-IT.plg_content_pfcomments.sys.ini</language>
+            <language tag="nl-NL">language/nl-NL/nl-NL.plg_content_pfcomments.ini</language>
+            <language tag="nl-NL">language/nl-NL/nl-NL.plg_content_pfcomments.sys.ini</language>
+            <language tag="th-TH">language/th-TH/th-TH.plg_content_pfcomments.ini</language>
+            <language tag="th-TH">language/th-TH/th-TH.plg_content_pfcomments.sys.ini</language>
+            <language tag="tr-TR">language/tr-TR/tr-TR.plg_content_pfcomments.ini</language>
+            <language tag="tr-TR">language/tr-TR/tr-TR.plg_content_pfcomments.sys.ini</language>
 	</languages>
 </extension>

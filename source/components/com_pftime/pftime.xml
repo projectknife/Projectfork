@@ -38,10 +38,22 @@
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_pftime.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pftime.sys.ini</language>
+            <language tag="ca-ES">language/ca-ES/ca-ES.com_pftime.ini</language>
+            <language tag="ca-ES">language/ca-ES/ca-ES.com_pftime.sys.ini</language>
+            <language tag="de-DE">language/de-DE/de-DE.com_pftime.ini</language>
+            <language tag="de-DE">language/de-DE/de-DE.com_pftime.sys.ini</language>
+            <language tag="es-ES">language/es-ES/es-ES.com_pftime.ini</language>
+            <language tag="es-ES">language/es-ES/es-ES.com_pftime.sys.ini</language>
             <language tag="fr-FR">language/fr-FR/fr-FR.com_pftime.ini</language>
             <language tag="fr-FR">language/fr-FR/fr-FR.com_pftime.sys.ini</language>
+            <language tag="hu-HU">language/hu-HU/hu-HU.com_pftime.ini</language>
+            <language tag="hu-HU">language/hu-HU/hu-HU.com_pftime.sys.ini</language>
             <language tag="it-IT">language/it-IT/it-IT.com_pftime.ini</language>
             <language tag="it-IT">language/it-IT/it-IT.com_pftime.sys.ini</language>
+            <language tag="nl-NL">language/nl-NL/nl-NL.com_pftime.ini</language>
+            <language tag="nl-NL">language/nl-NL/nl-NL.com_pftime.sys.ini</language>
+            <language tag="th-TH">language/th-TH/th-TH.com_pftime.ini</language>
+            <language tag="th-TH">language/th-TH/th-TH.com_pftime.sys.ini</language>
             <language tag="tr-TR">language/tr-TR/tr-TR.com_pftime.ini</language>
             <language tag="tr-TR">language/tr-TR/tr-TR.com_pftime.sys.ini</language>
         </languages>
