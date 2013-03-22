@@ -163,6 +163,7 @@ abstract class JHtmlPFtasks
         }
         else {
             $class = ($complete ? ' label-success' : '');
+            $icon  = ($complete ? 'icon-ok' : 'icon-ok');
             $title = '';
 
             if ($p_tooltip || $u_tooltip || $s_tooltip) {
@@ -175,7 +176,7 @@ abstract class JHtmlPFtasks
 
             $html[] = '<div class="btn-group">';
             $html[] = '<a id="complete-btn-' . $i . '" class="btn btn-mini disabled' . $class . '"' . $title . '>';
-            $html[] = '<i class="icon-lock"></i>';
+            $html[] = '<i class="' . $icon . '"></i>';
             $html[] = '</a>';
             $html[] = '</div>';
             $html[] = '<input type="hidden" id="complete' . $i . '" value="' . (int) $complete . '"/>';
