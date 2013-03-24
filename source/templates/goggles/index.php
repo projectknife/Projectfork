@@ -29,13 +29,15 @@
 	        if (!$isset_bsjs) {
 	            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/bootstrap.min.js');
 	        }
-
-	        $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/application.js');
+	        
 	    }
+	    
 	    // Add 2.5 System Stylesheets
 		$doc->addStyleSheet('templates/system/css/general.css');
 		$doc->addStyleSheet('templates/system/css/system.css');
 	}
+	
+	$doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/application.js');
 
 	// Add Template Stylesheet
 	$doc->addStyleSheet('templates/'.$this->template.'/css/template.css');
