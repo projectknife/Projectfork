@@ -60,8 +60,14 @@
       <language tag="hu-HU">hu-HU/hu-HU.tpl_goggles.sys.ini</language>
       <language tag="it-IT">it-IT/it-IT.tpl_goggles.ini</language>
       <language tag="it-IT">it-IT/it-IT.tpl_goggles.sys.ini</language>
+      <language tag="nb-NO">nb-NO/nb-NO.tpl_goggles.ini</language>
+      <language tag="nb-NO">nb-NO/nb-NO.tpl_goggles.sys.ini</language>
       <language tag="nl-NL">nl-NL/nl-NL.tpl_goggles.ini</language>
       <language tag="nl-NL">nl-NL/nl-NL.tpl_goggles.sys.ini</language>
+      <language tag="pt-BR">pt-BR/pt-BR.tpl_goggles.ini</language>
+      <language tag="pt-BR">pt-BR/pt-BR.tpl_goggles.sys.ini</language>
+      <language tag="sv-SE">sv-SE/sv-SE.tpl_goggles.ini</language>
+      <language tag="sv-SE">sv-SE/sv-SE.tpl_goggles.sys.ini</language>
       <language tag="th-TH">th-TH/th-TH.tpl_goggles.ini</language>
       <language tag="th-TH">th-TH/th-TH.tpl_goggles.sys.ini</language>
       <language tag="tr-TR">tr-TR/tr-TR.tpl_goggles.ini</language>

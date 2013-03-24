@@ -37,8 +37,14 @@
             <language tag="hu-HU">language/hu-HU/hu-HU.mod_pf_tasks.sys.ini</language>
             <language tag="it-IT">language/it-IT/it-IT.mod_pf_tasks.ini</language>
             <language tag="it-IT">language/it-IT/it-IT.mod_pf_tasks.sys.ini</language>
+            <language tag="nb-NO">language/nb-NO/nb-NO.mod_pf_tasks.ini</language>
+            <language tag="nb-NO">language/nb-NO/nb-NO.mod_pf_tasks.sys.ini</language>
             <language tag="nl-NL">language/nl-NL/nl-NL.mod_pf_tasks.ini</language>
             <language tag="nl-NL">language/nl-NL/nl-NL.mod_pf_tasks.sys.ini</language>
+            <language tag="pt-BR">language/pt-BR/pt-BR.mod_pf_tasks.ini</language>
+            <language tag="pt-BR">language/pt-BR/pt-BR.mod_pf_tasks.sys.ini</language>
+            <language tag="sv-SE">language/sv-SE/sv-SE.mod_pf_tasks.ini</language>
+            <language tag="sv-SE">language/sv-SE/sv-SE.mod_pf_tasks.sys.ini</language>
             <language tag="th-TH">language/th-TH/th-TH.mod_pf_tasks.ini</language>
             <language tag="th-TH">language/th-TH/th-TH.mod_pf_tasks.sys.ini</language>
             <language tag="tr-TR">language/tr-TR/tr-TR.mod_pf_tasks.ini</language>

@@ -40,7 +40,10 @@
         <language tag="fr-FR">language/fr-FR/fr-FR.com_projectfork.ini</language>
         <language tag="hu-HU">language/hu-HU/hu-HU.com_projectfork.ini</language>
         <language tag="it-IT">language/it-IT/it-IT.com_projectfork.ini</language>
+        <language tag="nb-NO">language/nb-NO/nb-NO.com_projectfork.ini</language>
         <language tag="nl-NL">language/nl-NL/nl-NL.com_projectfork.ini</language>
+        <language tag="pt-BR">language/pt-BR/pt-BR.com_projectfork.ini</language>
+        <language tag="sv-SE">language/sv-SE/sv-SE.com_projectfork.ini</language>
         <language tag="th-TH">language/th-TH/th-TH.com_projectfork.ini</language>
         <language tag="tr-TR">language/tr-TR/tr-TR.com_projectfork.ini</language>
     </languages>
@@ -71,8 +74,14 @@
             <language tag="hu-HU">language/hu-HU/hu-HU.com_projectfork.sys.ini</language>
             <language tag="it-IT">language/it-IT/it-IT.com_projectfork.ini</language>
             <language tag="it-IT">language/it-IT/it-IT.com_projectfork.sys.ini</language>
+            <language tag="nb-NO">language/nb-NO/nb-NO.com_projectfork.ini</language>
+            <language tag="nb-NO">language/nb-NO/nb-NO.com_projectfork.sys.ini</language>
             <language tag="nl-NL">language/nl-NL/nl-NL.com_projectfork.ini</language>
             <language tag="nl-NL">language/nl-NL/nl-NL.com_projectfork.sys.ini</language>
+            <language tag="pt-BR">language/pt-BR/pt-BR.com_projectfork.ini</language>
+            <language tag="pt-BR">language/pt-BR/pt-BR.com_projectfork.sys.ini</language>
+            <language tag="sv-SE">language/sv-SE/sv-SE.com_projectfork.ini</language>
+            <language tag="sv-SE">language/sv-SE/sv-SE.com_projectfork.sys.ini</language>
             <language tag="th-TH">language/th-TH/th-TH.com_projectfork.ini</language>
             <language tag="th-TH">language/th-TH/th-TH.com_projectfork.sys.ini</language>
             <language tag="tr-TR">language/tr-TR/tr-TR.com_projectfork.ini</language>
