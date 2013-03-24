@@ -52,10 +52,10 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
                     </div>
                     <div class="filter-search-buttons btn-group pull-left">
                         <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>">
-                            <i class="icon-search"></i>
+                            <span aria-hidden="true" class="icon-search"></span>
                         </button>
                         <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();">
-                            <i class="icon-remove"></i>
+                            <span aria-hidden="true" class="icon-remove"></span>
                         </button>
                     </div>
                     <div class="filter-order btn-group pull-left">
