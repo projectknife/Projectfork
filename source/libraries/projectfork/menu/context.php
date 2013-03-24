@@ -105,7 +105,20 @@ class PFMenuContext
         $html = array();
 
         $html[] = '        <li>';
-        $html[] = '            <a href="' . $action . '"><i class="' . $icon . '"></i> ' . JText::_($title) . '</a>';
+        $html[] = '            <a href="' . $action . '"><span aria-hidden="true" class="' . $icon . '"></span> ' . JText::_($title) . '</a>';
+        $html[] = '        </li>';
+
+        if ($return) return implode("\n", $html);
+
+        $this->addItem(implode("\n", $html));
+    }
+    
+    public function itemCollapse($icon, $title, $action, $return = false)
+    {
+        $html = array();
+
+        $html[] = '        <li>';
+        $html[] = '            <a href="' . $action . '" data-toggle="collapse"><span aria-hidden="true" class="' . $icon . '"></span> ' . JText::_($title) . '</a>';
         $html[] = '        </li>';
 
         if ($return) return implode("\n", $html);
@@ -119,7 +132,7 @@ class PFMenuContext
         $html = array();
 
         $html[] = '        <li>';
-        $html[] = '            <i class="' . $icon . '"></i> ' . JText::_($title);
+        $html[] = '            <span aria-hidden="true" class="' . $icon . '"></span> ' . JText::_($title);
         $html[] = '        </li>';
 
         if ($return) return implode("\n", $html);
@@ -140,7 +153,7 @@ class PFMenuContext
 
         $html[] = '        <li>';
         $html[] = '            <a class="modal_item" href="' . $action . '" rel="{handler: \'iframe\', size: {x: ' . $size_x . ', y: ' . $size_y.'}}" ' . $onclick . '>';
-        $html[] = '                <i class="' . $icon.'"></i> ' . JText::_($title);
+        $html[] = '                <span aria-hidden="true" class="' . $icon.'"></span> ' . JText::_($title);
         $html[] = '            </a>';
         $html[] = '        </li>';
 
@@ -155,7 +168,7 @@ class PFMenuContext
         $html = array();
 
         $html[] = '        <li>';
-        $html[] = '            <a onclick="' . $action . '" href="javascript:void(0);"><i class="' . $icon . '"></i> ' . JText::_($title) . '</a>';
+        $html[] = '            <a onclick="' . $action . '" href="javascript:void(0);"><span aria-hidden="true" class="' . $icon . '"></span> ' . JText::_($title) . '</a>';
         $html[] = '        </li>';
 
         if ($return) return implode("\n", $html);

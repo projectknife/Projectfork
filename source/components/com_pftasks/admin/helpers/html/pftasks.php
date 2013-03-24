@@ -25,7 +25,7 @@ abstract class JHtmlPFtasks
 
         if ($count == 1) {
             $html[] = '<span id="assigned_' . $i . '_label" class="label user">';
-            $html[] = '<i class="icon-user icon-white"></i> ';
+            $html[] = '<span aria-hidden="true" class="icon-user icon-white"></span> ';
             $html[] = htmlspecialchars($users[0]->name, ENT_COMPAT, 'UTF-8');
             $html[] = '</span>';
         }
@@ -42,7 +42,7 @@ abstract class JHtmlPFtasks
             $tooltip = '::' . htmlspecialchars(implode('<br/>', $names), ENT_COMPAT, 'UTF-8');
 
             $html[] = '<span id="assigned_' . $i . '_label" class="label user hasTip" title="' . $tooltip . '" style="cursor: help">';
-            $html[] = '<i class="icon-user icon-white"></i> ';
+            $html[] = '<span aria-hidden="true" class="icon-user icon-white"></span> ';
             $html[] = htmlspecialchars($first->name, ENT_COMPAT, 'UTF-8') . ' +' . $count;
             $html[] = '</span>';
         }
@@ -84,7 +84,7 @@ abstract class JHtmlPFtasks
                 break;
         }
 
-        $html = '<span id="priority_' . $i . '_label" class="label ' . $class . '"><i class="icon-warning icon-white"></i> ' . $text . '</span>'
+        $html = '<span id="priority_' . $i . '_label" class="label ' . $class . '"><span aria-hidden="true" class="icon-warning icon-white"></span> ' . $text . '</span>'
               . '<input type="hidden" name="priority[' . $id . ']" id="priority' . $i . '" value="' . (int) $value . '"/>';
 
         return $html;
@@ -153,10 +153,12 @@ abstract class JHtmlPFtasks
 
         if ($can_change) {
             $class = ($complete ? ' btn-success active' : '');
+            $title = ($complete ? '' : JText::_('COM_PROJECTFORK_FIELD_COMPLETE_LABEL'));
+            $icon = ($complete ? 'checkbox-unchecked' : 'checkbox-unchecked');
 
             $html[] = '<div class="btn-group">';
-            $html[] = '<a id="complete-btn-' . $i . '" class="btn btn-mini' . $class . '" href="javascript:void(0);" onclick="PFtask.complete(' . $i . ');">';
-            $html[] = '<i class="icon-ok"></i>';
+            $html[] = '<a id="complete-btn-' . $i . '" class="btn btn-mini' . $class . ' hasTooltip" rel="tooltip" title="' . $title . '" href="javascript:void(0);" onclick="PFtask.complete(' . $i . ');">';
+            $html[] = '<span aria-hidden="true" class="icon-ok"></span>';
             $html[] = '</a>';
             $html[] = '</div>';
             $html[] = '<input type="hidden" id="complete' . $i . '" value="' . (int) $complete . '"/>';
@@ -176,7 +178,7 @@ abstract class JHtmlPFtasks
 
             $html[] = '<div class="btn-group">';
             $html[] = '<a id="complete-btn-' . $i . '" class="btn btn-mini disabled' . $class . '"' . $title . '>';
-            $html[] = '<i class="' . $icon . '"></i>';
+            $html[] = '<span aria-hidden="true" class="' . $icon . '"></span>';
             $html[] = '</a>';
             $html[] = '</div>';
             $html[] = '<input type="hidden" id="complete' . $i . '" value="' . (int) $complete . '"/>';

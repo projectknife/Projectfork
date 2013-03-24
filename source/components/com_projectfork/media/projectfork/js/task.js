@@ -38,6 +38,7 @@ var PFtask =
         var cid  = 'cb' + i;
         var btn  = jQuery('#complete-btn-' + i);
         var c    = jQuery('#complete' + i);
+        var item = jQuery('#list-item-' + i);
 
         btn.addClass('disabled');
         var rq = PFlist.listItemTask(cid, 'tasks.complete', fi, true);
@@ -55,11 +56,13 @@ var PFtask =
                     c.val('1');
                     btn.addClass('btn-success');
                     btn.addClass('active');
+                    item.addClass('complete');
                 }
                 else {
                     c.val('0');
                     btn.removeClass('btn-success');
                     btn.removeClass('active');
+                    item.removeClass('complete');
                 }
             }
             else {
@@ -80,38 +83,32 @@ var PFtask =
         rq.done(function(resp)
         {
             if (resp != false) {
-                var l = jQuery('#priority_' + i + '_label');
+                var l = jQuery('#list-item-' + i);
 
                 if (l.length) {
-                    if (!l.hasClass('label')) {
-                        l.addClass('label');
+
+                    l.removeClass('priority-1');
+                    l.removeClass('priority-2');
+                    l.removeClass('priority-3');
+                    l.removeClass('priority-4');
+                    l.removeClass('priority-5');
+                    
+                    if (v == 1) {
+                        l.addClass('priority-1');
+                    }
+                    if (v == 2) {
+                        l.addClass('priority-2');
+                    }
+                    if (v == 3) {
+                        l.addClass('priority-3');
+                    }
+                    if (v == 4) {
+                        l.addClass('priority-4');
+                    }
+                    if (v == 5) {
+                        l.addClass('priority-5');
                     }
 
-                    l.removeClass('label-success');
-                    l.removeClass('label-info');
-                    l.removeClass('label-warning');
-                    l.removeClass('label-important');
-
-                    if (v > 1) {
-                        if (v == 2) {
-                            l.addClass('label-success');
-                        }
-                        if (v == 3) {
-                            l.addClass('label-info');
-                        }
-                        if (v == 4) {
-                            l.addClass('label-warning');
-                        }
-                        if (v == 5) {
-                            l.addClass('label-important');
-                        }
-
-                        l.html('<i class="icon-warning"></i> ' + t);
-                    }
-                    else {
-                        l.removeClass('label');
-                        l.html('');
-                    }
                 }
             }
         });

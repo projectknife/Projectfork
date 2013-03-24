@@ -91,8 +91,8 @@ abstract class PFhtmlButton
 			$btn['text']  = JText::_('LIVEUPDATE_ICON_CURRENT');
 		}
 
-        $html[] = '<a class="btn btn-small ' . $btn['class'] . '" href="index.php?option=com_projectfork&view=liveupdate">';
-        $html[] = '<i class="' . $btn['icon'] . '"></i> ';
+        $html[] = '<a class="btn btn-small hasTooltip ' . $btn['class'] . '" rel="tooltip" title="Complete Task" href="index.php?option=com_projectfork&view=liveupdate">';
+        $html[] = '<span aria-hidden="true" class="' . $btn['icon'] . '"></span> ';
         $html[] = $btn['text'];
         $html[] = '</a>';
 
