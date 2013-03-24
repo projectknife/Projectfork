@@ -146,7 +146,7 @@ abstract class PFhtmlLabel
         $now       = time();
         $remaining = $timestamp - $now;
         $is_past   = ($remaining < 0) ? true : false;
-        $tooltip   = $string . '::' . JHtml::_('date', $date, $format);
+        $tooltip   = JHtml::_('date', $date, $format);
 
         if ($compact) {
             $string = ($is_past ? '' : '+') . round($remaining / 86400);
@@ -160,8 +160,8 @@ abstract class PFhtmlLabel
 
         $html = array();
         $html[] = '<span class="label ' . ($is_past ? $past_class : $future_class);
-        $html[] = ' hasTip" title="' . $tooltip . '" style="cursor: help">';
-        $html[] = '<i class="icon-' . ($is_past ? $past_icon : $future_icon) . '"></i> ';
+        $html[] = ' hasTooltip" rel="tooltip" title="' . $tooltip . '" style="cursor: help">';
+        $html[] = '<span aria-hidden="true" class="icon-' . ($is_past ? $past_icon : $future_icon) . '"></span> ';
         $html[] = $string;
         $html[] = '</span>';
 
