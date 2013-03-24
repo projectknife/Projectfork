@@ -52,12 +52,14 @@ abstract class PFToolbar
 
     public static function filterButton($isset = false, $target = '#filters')
     {
-        $class = ($isset ? ' btn-success' : '');
+        $class = ($isset ? ' active' : '');
 
         $html = array();
+        $html[] = '<div class="btn-group pull-right">';
         $html[] = '<a data-toggle="collapse" data-target="' . $target . '" class="btn' . $class . '">';
-        $html[] = '    <i class="icon-search"></i>';
+        $html[] = '<span aria-hidden="true" class="icon-filter"></span> ' . JText::_('JSEARCH_FILTER');
         $html[] = '</a>';
+        $html[] = '</div>';
 
         self::$html[] = implode("", $html);
     }
