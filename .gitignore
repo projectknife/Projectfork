@@ -17,3 +17,16 @@ $RECYCLE.BIN/
 
 # Win transifex client
 tx.exe
+
+#############
+## Uncomplete translations
+#############
+ru-RU/
+pt-PT/
+fa-IR/
+sk-SK/
+cs-CZ/
+zh-TW/
+fi-FI/
+jp-JP/
+uk-UA/
