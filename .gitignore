@@ -17,3 +17,6 @@ $RECYCLE.BIN/
 
 # Win transifex client
 tx.exe
+
+# Media
+source/components/com_projectfork/media/repo
