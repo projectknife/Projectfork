@@ -36,12 +36,12 @@ abstract class PFhtmlButton
         $class     = ($state == 1 ? ' btn-success active' : '');
         $new_state = ($state == 1 ? 0 : 1);
         $aid       = 'watch-btn-' . $type . '-' . $i;
-        $title     = addslashes(JText::_('COM_PROJECTFORK_ACTION_WATCH')) . '::' . addslashes(JText::_('COM_PROJECTFORK_ACTION_WATCH_DESC'));
+        $title     = addslashes(JText::_('COM_PROJECTFORK_ACTION_WATCH_DESC'));
 
         $html[] = '<div class="btn-group' . $div_class . '">';
-        $html[] = '<a id="' . $aid . '" class="btn hasTip' . $class . $a_class . '" title="' . $title . '" href="javascript:void(0);" ';
+        $html[] = '<a id="' . $aid . '" rel="tooltip" class="btn hasTooltip' . $class . $a_class . '" title="' . $title . '" href="javascript:void(0);" ';
         $html[] = 'onclick="Projectfork.watchItem(' . $i . ', \'' . $type . '\')">';
-        $html[] = '<i class="icon-envelope"></i>';
+        $html[] = '<span aria-hidden="true" class="icon-envelope"></span>';
         $html[] = '</a>';
         $html[] = '</div>';
         $html[] = '<div class="btn-group' . $div_class . '">';
