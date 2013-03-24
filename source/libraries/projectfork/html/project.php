@@ -74,7 +74,7 @@ abstract class PFhtmlProject
         $btn_select = '';
         if ($can_change) {
             $btn_select  = '<button type="button" class="btn' . $tt_class . '" onclick="' . $js_select . '"' . $tt_title . '> ';
-            $btn_select .= '<i class="icon-briefcase"></i>' . $active_title;
+            $btn_select .= '<span aria-hidden="true" class="icon-briefcase"></span> ' . $active_title;
             $btn_select .= '</button>';
         }
 
