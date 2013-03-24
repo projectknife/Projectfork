@@ -117,10 +117,18 @@ jQuery(document).ready(function() {
                             </select>
                         </div>
                     <?php endif; ?>
+
                     <div class="filter-priority btn-group">
                         <select onchange="this.form.submit()" class="inputbox input-medium" name="filter_priority" id="filter_priority">
                             <option selected="selected" value=""><?php echo JText::_('JOPTION_SELECT_PRIORITY');?></option>
                             <?php echo JHtml::_('select.options', JHtml::_('pftasks.priorityOptions'), 'value', 'text', $this->state->get('filter.priority'), true);?>
+                        </select>
+                    </div>
+
+                    <div class="filter-complete btn-group">
+                        <select onchange="this.form.submit()" class="inputbox input-medium" name="filter_complete" id="filter_complete">
+                            <option selected="selected" value=""><?php echo JText::_('JOPTION_SELECT_COMPLETITION');?></option>
+                            <?php echo JHtml::_('select.options', JHtml::_('pftasks.completeOptions'), 'value', 'text', $this->state->get('filter.complete'), true);?>
                         </select>
                     </div>
 

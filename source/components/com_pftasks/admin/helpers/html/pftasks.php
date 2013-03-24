@@ -163,6 +163,7 @@ abstract class JHtmlPFtasks
         }
         else {
             $class = ($complete ? ' label-success' : '');
+            $icon  = ($complete ? 'icon-ok' : 'icon-ok');
             $title = '';
 
             if ($p_tooltip || $u_tooltip || $s_tooltip) {
@@ -175,7 +176,7 @@ abstract class JHtmlPFtasks
 
             $html[] = '<div class="btn-group">';
             $html[] = '<a id="complete-btn-' . $i . '" class="btn btn-mini disabled' . $class . '"' . $title . '>';
-            $html[] = '<i class="icon-lock"></i>';
+            $html[] = '<i class="' . $icon . '"></i>';
             $html[] = '</a>';
             $html[] = '</div>';
             $html[] = '<input type="hidden" id="complete' . $i . '" value="' . (int) $complete . '"/>';
@@ -194,6 +195,17 @@ abstract class JHtmlPFtasks
         $options[] =  JHtml::_('select.option', '3', JText::_('COM_PROJECTFORK_PRIORITY_MEDIUM'));
         $options[] =  JHtml::_('select.option', '4', JText::_('COM_PROJECTFORK_PRIORITY_HIGH'));
         $options[] =  JHtml::_('select.option', '5', JText::_('COM_PROJECTFORK_PRIORITY_VERY_HIGH'));
+
+        return $options;
+    }
+
+
+    static public function completeOptions()
+    {
+        $options   = array();
+
+        $options[] =  JHtml::_('select.option', '0', JText::_('JNO'));
+        $options[] =  JHtml::_('select.option', '1', JText::_('JYES'));
 
         return $options;
     }

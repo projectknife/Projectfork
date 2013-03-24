@@ -238,6 +238,14 @@ class PFtasksModelTasks extends JModelList
         $milestone = $app->getUserStateFromRequest($this->context . '.filter.milestone', 'filter_milestone', '');
         $this->setState('filter.milestone', $milestone);
 
+        // Filter - Priority
+        $priority = $app->getUserStateFromRequest($this->context . '.filter.priority', 'filter_priority', '');
+        $this->setState('filter.priority', $priority);
+
+        // Filter - Complete
+        $complete = $app->getUserStateFromRequest($this->context . '.filter.complete', 'filter_complete', '');
+        $this->setState('filter.complete', $complete);
+
         // Do not allow these filters if no project is selected
         if (!$project) {
             $this->setState('filter.author_id', '');
@@ -272,6 +280,8 @@ class PFtasksModelTasks extends JModelList
         $id .= ':' . $this->getState('filter.project');
         $id .= ':' . $this->getState('filter.tasklist');
         $id .= ':' . $this->getState('filter.milestone');
+        $id .= ':' . $this->getState('filter.priority');
+        $id .= ':' . $this->getState('filter.complete');
 
         return parent::getStoreId($id);
     }
@@ -289,14 +299,16 @@ class PFtasksModelTasks extends JModelList
         $user  = JFactory::getUser();
 
         // Get possible filters
-        $filter_state   = $this->getState('filter.published');
-        $filter_project = $this->getState('filter.project');
-        $filter_ms      = $this->getState('filter.milestone');
-        $filter_list    = $this->getState('filter.tasklist');
-        $filter_access  = $this->getState('filter.access');
-        $filter_author  = $this->getState('filter.author_id');
-        $filter_assign  = $this->getState('filter.assigned_id');
-        $filter_search  = $this->getState('filter.search');
+        $filter_state    = $this->getState('filter.published');
+        $filter_project  = $this->getState('filter.project');
+        $filter_ms       = $this->getState('filter.milestone');
+        $filter_list     = $this->getState('filter.tasklist');
+        $filter_access   = $this->getState('filter.access');
+        $filter_author   = $this->getState('filter.author_id');
+        $filter_assign   = $this->getState('filter.assigned_id');
+        $filter_search   = $this->getState('filter.search');
+        $filter_priority = $this->getState('filter.priority');
+        $filter_complete = $this->getState('filter.complete');
 
         // Select the required fields from the table.
         $query->select(
@@ -367,6 +379,16 @@ class PFtasksModelTasks extends JModelList
         // Filter by task list
         if (is_numeric($filter_list)) {
             $query->where('a.list_id = ' . (int) $filter_list);
+        }
+
+        // Filter by priority
+        if (is_numeric($filter_priority)) {
+            $query->where('a.priority = ' . (int) $filter_priority);
+        }
+
+        // Filter by completition
+        if (is_numeric($filter_complete)) {
+            $query->where('a.complete = ' . (int) $filter_complete);
         }
 
         // Filter by author

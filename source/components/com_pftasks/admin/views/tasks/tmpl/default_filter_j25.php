@@ -75,6 +75,18 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
                 <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
             </select>
         </div>
+        <div class="fltrt">
+            <select name="filter_priority" class="inputbox" onchange="this.form.submit()">
+                <option value=""><?php echo JText::_('JOPTION_SELECT_PRIORITY');?></option>
+                <?php echo JHtml::_('select.options', JHtml::_('pftasks.priorityOptions'), 'value', 'text', $this->state->get('filter.priority'), true);?>
+            </select>
+        </div>
+        <div class="fltrt">
+            <select name="filter_complete" class="inputbox" onchange="this.form.submit()">
+                <option value=""><?php echo JText::_('JOPTION_SELECT_COMPLETITION');?></option>
+                <?php echo JHtml::_('select.options', JHtml::_('pftasks.completeOptions'), 'value', 'text', $this->state->get('filter.complete'), true);?>
+            </select>
+        </div>
     </div>
 
     <div class="clr"></div>

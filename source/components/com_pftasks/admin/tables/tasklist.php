@@ -60,7 +60,7 @@ class PFtableTasklist extends PFTable
     protected function _getAssetName()
     {
         $k = $this->_tbl_key;
-        return 'com_pftasklists.tasklist.' . (int) $this->$k;
+        return 'com_pftasks.tasklist.' . (int) $this->$k;
     }
 
 

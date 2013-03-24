@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Tasks
+ * @package      pkg_projectfork
+ * @subpackage   com_pftasks
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
@@ -12,6 +12,7 @@ defined('_JEXEC') or die();
 
 
 jimport('joomla.application.component.view');
+JHtml::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_pftasks/helpers/html');
 
 
 /**
@@ -184,6 +185,18 @@ class PFtasksViewTasks extends JViewLegacy
             JText::_('JOPTION_SELECT_ACCESS'),
             'filter_access',
             JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'))
+        );
+
+        JHtmlSidebar::addFilter(
+            JText::_('JOPTION_SELECT_PRIORITY'),
+            'filter_priority',
+            JHtml::_('select.options', JHtml::_('pftasks.priorityOptions'), 'value', 'text', $this->state->get('filter.priority'))
+        );
+
+        JHtmlSidebar::addFilter(
+            JText::_('JOPTION_SELECT_COMPLETITION'),
+            'filter_complete',
+            JHtml::_('select.options', JHtml::_('pftasks.completeOptions'), 'value', 'text', $this->state->get('filter.complete'))
         );
 
         if ($this->state->get('filter.project')) {
