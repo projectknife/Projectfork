@@ -138,6 +138,14 @@
     else :
     	$span = "span12";
     endif;
+    
+    // Logo file or site title param
+	if ($this->params->get('logoFile'))
+	{
+		$logo = '<img src="'. JURI::root() . $this->params->get('logoFile') .'" alt="'. $sitename .'" />';
+	} else {
+		$logo = '<img src="'. JURI::root() . '/templates/' . $this->template . '/img/logo.png' .'" alt="'. $sitename .'" />';
+	}
 	?>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -157,7 +165,7 @@
 	<!-- Top Navigation -->
 	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
-			<div class="container-fluid"> <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a> <a class="brand" href="<?php echo $this->baseurl; ?>"><?php echo $sitename; ?></a>
+			<div class="container-fluid"> <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a> <a class="brand" href="<?php echo $this->baseurl; ?>"><?php echo $sitename;?></a>
 				<div class="nav-collapse">
 					<jdoc:include type="modules" name="position-1" style="none" />
 					<ul class="nav pull-right">
@@ -187,7 +195,7 @@
 		<div class="container-fluid">
 			<div class="row-fluid">
 				<div class="span2">
-					<a class="logo" href="<?php echo $this->baseurl; ?>"></a>
+					<a href="<?php echo $this->baseurl; ?>"><?php echo $logo;?></a>
 				</div>
 				<div class="span10 navbar-search">
 					<jdoc:include type="modules" name="searchload" style="none" />

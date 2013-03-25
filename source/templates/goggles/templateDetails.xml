@@ -73,11 +73,14 @@
   			<field name="color"  class="" type="color" default="#4B761D"
   				label="TPL_GOGGLES_COLOR_LABEL"
   				description="TPL_GOGGLES_COLOR_DESC" />
-  			<field name="bootstrap_javascript" type="radio" default="1" label="TPL_GOGGLES_BOOTSTRAP_JS_LABEL" description="TPL_GOGGLES_BOOTSTRAP_JS_DESC">
+  			<field name="logoFile" class="" type="media" default=""
+					label="TPL_GOGGLES_LOGO_LABEL"
+					description="TPL_GOGGLES_LOGO_DESC" />
+  			<field name="bootstrap_javascript" type="radio" class="btn-group" default="1" label="TPL_GOGGLES_BOOTSTRAP_JS_LABEL" description="TPL_GOGGLES_BOOTSTRAP_JS_DESC">
   			  <option value="0">JNO</option>
   			  <option value="1">JYES</option>
   			</field>
-  			<field name="bootstrap_css" type="radio" default="1" label="TPL_GOGGLES_BOOTSTRAP_CSS_LABEL" description="TPL_GOGGLES_BOOTSTRAP_CSS_DESC">
+  			<field name="bootstrap_css" type="radio" class="btn-group" default="1" label="TPL_GOGGLES_BOOTSTRAP_CSS_LABEL" description="TPL_GOGGLES_BOOTSTRAP_CSS_DESC">
   			  <option value="0">JNO</option>
   			  <option value="1">JYES</option>
   			</field>
