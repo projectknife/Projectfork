@@ -211,7 +211,7 @@
 			<div id="sidebar" class="span2">
 				<jdoc:include type="modules" name="create" style="xhtml" />
 				<!-- Begin Sidebar -->
-				<?php if ($user->id) : ?>
+				<?php if ($user->id && $this->params->get('createButton')) : ?>
 				<div class="hidden-phone">
 	                <div class="btn-group">
 					  <a href="#" class="btn btn-large btn-info btn-wide dropdown-toggle" data-toggle="dropdown">
@@ -262,7 +262,7 @@
 				</div>
                 <?php endif; ?>
                 
-                <?php if ($user->id) : ?>
+                <?php if ($user->id && $this->params->get('createButton')) : ?>
                 <div class="visible-phone">
                   <a href="#" data-target=".create-collapse" class="btn btn-large btn-info btn-wide dropdown-toggle" data-toggle="collapse">
                     <?php echo JText::_('TPL_GOGGLES_CREATE');?>
