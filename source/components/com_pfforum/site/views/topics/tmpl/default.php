@@ -20,6 +20,21 @@ $uid        = $user->get('id');
 
 $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
 $repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
+
+$doc =& JFactory::getDocument();
+$style = '.row-topics .well,.row-topics .btn-toolbar {'
+        . 'margin-bottom: 0;'
+        . '}' 
+        . '.list-comments img,.collapse-comments img {'
+        . 'margin-right: 10px;'
+        . '}'
+        . '.collapse-comments blockquote {'
+        . 'margin-left: 50px;'
+        . '}'
+        . '.collapse-comments .btn-toolbar {'
+        . 'margin: 0 0 0 50px;'
+        . '}';
+$doc->addStyleDeclaration( $style );
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-topics">
 
@@ -83,7 +98,7 @@ $repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
                     </div>
                 </div>
             </div>
-            <div class="row-striped row-discussions">
+            <div class="row-striped row-discussions row-topics">
             <?php
             $k = 0;
             foreach($this->items AS $i => $item) :
@@ -98,45 +113,65 @@ $repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
                 $watch = '';
 
                 if ($uid) {
-                    $options = array('div-class' => 'pull-right', 'a-class' => 'btn-mini');
+                    $options = array('div-class' => '', 'a-class' => 'btn-mini');
                     $watch = JHtml::_('pfhtml.button.watch', 'topics', $i, $item->watching, $options);
                 }
             ?>
-                <div class="row-fluid row-<?php echo $k;?>">
-                    <?php if ($can_change || $uid) : ?>
-                        <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
-                            <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
-                        </label>
-                    <?php endif; ?>
-                    <?php
-                        $this->menu->start(array('class' => 'btn-mini', 'pull' => 'left'));
-                        $this->menu->itemEdit('topicform', $item->id, ($can_edit || $can_edit_own));
-                        $this->menu->itemTrash('topics', $i, $can_change);
-                        $this->menu->end();
-
-                        echo $this->menu->render(array('class' => 'btn-mini'));
-                    ?>
-
-                    <?php echo $watch; ?>
-
-                    <h3 class="topic-title">
-                        <a href="<?php echo JRoute::_(PFforumHelperRoute::getTopicRoute($item->slug, $item->project_slug));?>">
-                            <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
-                            <?php echo $this->escape($item->title);?>
-                        </a>
-                        &nbsp;
-                        <?php echo JHtml::_('pfforum.repliesLabel', $item->replies, $item->last_activity); ?>
-                    </h3>
-
-                    <blockquote class="item-description" id="topic-<?php echo $item->id;?>">
-                        <?php echo JHtml::_('pf.html.truncate', $item->description, 300); ?>
-                    </blockquote>
-                    <hr />
-                    <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
-                    <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
-                    <?php if ($repo_enabled) : echo JHtml::_('pfrepo.attachmentsLabel', $item->attachments); endif; ?>
-                    <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
-                </div>
+            	<!-- Begin Topic -->
+    			<div class="row-fluid row-<?php echo $k;?>">
+    				<div class="span1">
+    					<a href="<?php echo JRoute::_(PFforumHelperRoute::getTopicRoute($item->slug, $item->project_slug));?>">
+                        <img title="<?php echo $this->escape($item->author_name);?>"
+                             src="<?php echo JHtml::_('projectfork.avatar.path', $item->created_by);?>"
+                             class="img-circle hasTooltip"
+                             rel="tooltip"
+                        />
+    					</a>
+    				</div>
+    				<div class="span11">
+    					<div class="well well-small">
+    						<span class="small muted pull-right"><?php echo JHtml::_('date', $item->created, $this->params->get('date_format', JText::_('DATE_FORMAT_LC2'))); ?></span>
+    						<?php if ($can_change || $uid) : ?>
+		                        <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
+		                            <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
+		                        </label>
+		                    <?php endif; ?>
+    						<h4>
+	    						<a href="<?php echo JRoute::_(PFforumHelperRoute::getTopicRoute($item->slug, $item->project_slug));?>">
+		                            <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
+		                            <?php echo $this->escape($item->title);?>
+		                        </a>
+    						</h4>
+    						<div class="well-description">
+    							<?php echo JHtml::_('pf.html.truncate', $item->description, 300); ?> 
+    						</div>
+    					</div>
+    					<div class="btn-toolbar margin-none">
+                			<?php if ($can_edit || $can_edit_own) : ?>
+    	    	    			<div class="btn-group">
+    	    	    			    <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_pfforum&task=topicform.edit&id=' . $item->id);?>">
+    	    	    			        <span aria-hidden="true" class="icon-pencil"></span> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT'); ?>
+    	    	    			    </a>
+    	    	    			</div>
+	    	    			<?php endif; ?>
+    	    				<div class="btn-group">
+    	    					<a class="btn btn-mini" href="<?php echo JRoute::_(PFforumHelperRoute::getTopicRoute($item->slug, $item->project_slug));?>">
+    	    			       	 <span aria-hidden="true" class="icon-comment"></span> <?php echo JText::plural('COM_PROJECTFORK_N_REPLIES', (int) $item->replies); ?>
+    	    			        </a>
+    	    			    </div>
+	    	    			<?php if ($repo_enabled) : ?>
+	    	    				<div class="btn-group">
+	    	    			        <a href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($item->project_slug, $repo_dir));?>" class="btn btn-mini">
+	    	    			            <span aria-hidden="true" class="icon-flag-2"></span> <?php echo JText::plural('COM_PROJECTFORK_N_ATTACHMENTS', (int) $item->attachments); ?>
+	    	    			        </a>
+	    	    				</div>
+	    	    			<?php endif; ?>
+	    	    			
+                			<?php echo $watch; ?>
+                		</div>
+    				</div>
+    			</div>
+    			<!-- End Topic -->
             <?php
             $k = 1 - $k;
             endforeach;
