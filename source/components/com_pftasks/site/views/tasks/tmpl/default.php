@@ -203,17 +203,18 @@ jQuery(document).ready(function() {
                         ?>
                         <div class="cat-list-row<?php echo $k;?>">
                         	<?php if ($item->list_title) : ?>
-                               <?php
+                               
+                               <h3>
+		                          <a class="pull-left" href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->project_slug, $item->milestone_slug, $item->list_slug));?>">
+		                              <?php echo $this->escape($item->list_title);?>
+		                          </a>
+		                          <?php
                                     $this->menu->start(array('class' => 'btn-mini btn-link', 'pull' => 'left'));
                                     $this->menu->itemEdit('tasklistform', $item->list_id, ($can_edit || $can_edit_own));
                                     $this->menu->itemTrash('tasklists', $x, ($can_edit || $can_edit_own));
                                     $this->menu->end();
                                     echo $this->menu->render(array('class' => 'btn-mini btn-link', 'pull' => 'left'));
-                               ?>
-                               <h3>
-		                          <a href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->project_slug, $item->milestone_slug, $item->list_slug));?>">
-		                              <?php echo $this->escape($item->list_title);?>
-		                          </a>
+	                              ?>
 		                           <small><?php echo $this->escape($item->list_description);?></small>
 	                           </h3>
                                
