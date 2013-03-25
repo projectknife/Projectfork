@@ -15,6 +15,23 @@ $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
 $uid        = $user->get('id');
+
+$doc =& JFactory::getDocument();
+$style = '.text-large {'
+        . 'font-size: 16px;'
+        . 'display: block;'
+        . '}' 
+        . '.row-fluid .thumbnails.thumbnails-users > li[class*="span"]:first-child,.thumbnails.thumbnails-users > li[class*="span"] {'
+        . 'margin-left: 0.7em;'
+        . 'margin-bottom: 0.7em;'
+        . '}'
+        . '.thumbnails-users .img-circle {'
+        . 'margin: 5px auto;'
+        . '}'
+        . '.thumbnails-users .img-polaroid {'
+        . 'height: 197px;'
+        . '}';
+$doc->addStyleDeclaration( $style );
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-users">
 
@@ -55,29 +72,30 @@ $uid        = $user->get('id');
                 </div>
             </div>
 
-            <ul class="thumbnails">
+            <ul class="thumbnails thumbnails-users">
                 <?php
                 $k = 0;
                 foreach($this->items AS $i => $item) :
                 $asset_name = 'com_users&task=profile.edit&user_id=.' . $item->id;
                 $slug       = $item->id.':'.JFilterOutput::stringURLSafe($item->username);
                 ?>
-                <li class="span2">
-                    <div class="thumbnail">
-                        <a href="<?php echo PFusersHelperRoute::getUserRoute($slug);?>">
-                            <?php echo JHtml::_('projectfork.avatar.image', $item->id, $item->name);?>
-                        </a>
-                        <div class="caption">
-                            <h4>
-                                <a href="<?php echo PFusersHelperRoute::getUserRoute($slug);?>">
+                <li class="span3">
+                    	<div class="img-polaroid center">
+			    			<a href="<?php echo PFusersHelperRoute::getUserRoute($slug);?>">
+			    				<img title="<?php echo $this->escape($item->name);?>"
+		                             src="<?php echo JHtml::_('projectfork.avatar.path', $item->id);?>"
+		                             class="img-circle hasTooltip"
+		                             style="height:128px;width:auto;"
+		                        />
+			    			</a>
+			    			<div class="text-large">
+				    			<a href="<?php echo PFusersHelperRoute::getUserRoute($slug);?>">
                                     <?php echo $this->escape($item->name);?>
                                 </a>
-                            </h4>
-                            <h5>
-                                <?php echo $this->escape($item->username);?>
-                            </h5>
-                        </div>
-                    </div>
+			    			</div>
+			    			<div class="small"><?php echo $this->escape($item->username);?></div>
+			    			<div class="small"><a href="mailto:<?php echo $this->escape($item->email);?>"><?php echo $this->escape($item->email);?></a></div>
+			    		</div>
                 </li>
                 <?php
                 $k = 1 - $k;
