@@ -24,7 +24,7 @@ class PFrepoModelRepository extends JModelList
      * Constructor
      *
      * @param    array          An optional associative array of configuration settings.
-     * @see      jcontroller
+     * @see      jcontroller    
      */
     public function __construct($config = array())
     {
@@ -70,19 +70,19 @@ class PFrepoModelRepository extends JModelList
 
         if ($parent == 1) {
             // Load the list items.
-    		$query = $this->_getListQuery();
+            $query = $this->_getListQuery();
             $dir   = $this->getInstance('Directory', 'PFrepoModel', $config = array('ignore_request' => true));
 
-    		try {
-    		    $items['directory']   = $dir->getItem($parent);
-    			$items['directories'] = $this->_getList($query, $this->getStart(), $this->getState('list.limit'));
+            try {
+                $items['directory']   = $dir->getItem($parent);
+                $items['directories'] = $this->_getList($query, $this->getStart(), $this->getState('list.limit'));
                 $items['notes']       = array();
                 $items['files']       = array();
-    		}
-    		catch (RuntimeException $e) {
-    			$this->setError($e->getMessage());
-    			return false;
-    		}
+            }
+            catch (RuntimeException $e) {
+                $this->setError($e->getMessage());
+                return false;
+            }
         }
         else {
             // Get the models
@@ -125,7 +125,7 @@ class PFrepoModelRepository extends JModelList
     /**
      * Build a list of authors
      *
-     * @return    array
+     * @return    array    
      */
     public function getAuthors()
     {
@@ -157,7 +157,7 @@ class PFrepoModelRepository extends JModelList
      * Build an SQL query to load the list data.
      * This query loads the project repo list only!
      *
-     * @return    jdatabasequery
+     * @return    jdatabasequery    
      */
     protected function getListQuery()
     {
@@ -240,7 +240,7 @@ class PFrepoModelRepository extends JModelList
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
-     * @return    void
+     * @return    void    
      */
     protected function populateState($ordering = 'a.title', $direction = 'asc')
     {

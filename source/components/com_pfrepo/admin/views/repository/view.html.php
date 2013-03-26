@@ -170,11 +170,11 @@ class PFrepoViewRepository extends JViewLegacy
     protected function getSortFields()
     {
         return array(
-            'a.title'       => JText::_('JGLOBAL_TITLE'),
-            'project_title' => JText::_('JGRID_HEADING_PROJECT'),
-            'author_name'   => JText::_('JAUTHOR'),
-            'a.created'     => JText::_('JDATE'),
-            'a.id'          => JText::_('JGRID_HEADING_ID')
+            'a.title'      => JText::_('JGLOBAL_TITLE'),
+            'access_level' => JText::_('JGRID_HEADING_ACCESS'),
+            'author_name'  => JText::_('JAUTHOR'),
+            'a.created'    => JText::_('JDATE'),
+            'a.id'         => JText::_('JGRID_HEADING_ID')
         );
     }
 }
