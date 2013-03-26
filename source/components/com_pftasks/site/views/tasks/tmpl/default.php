@@ -54,6 +54,15 @@ $style = '.complete {'
         . '}'
         . '.priority-5 {'
         . 'border-left:2px solid #b94a48;'
+        . '}'
+        . '.list-striped .dropdown-menu li {'
+        . 'background-color:transparent;'
+        . 'padding: 0;'
+        . 'border-bottom-width: 0;'
+        . '}'
+        . '.list-striped .dropdown-menu li.divider {'
+        . 'background-color: rgba(0, 0, 0, 0.1);'
+        . 'margin: 2px 0;'
         . '}';
 $doc->addStyleDeclaration( $style );
 ?>
