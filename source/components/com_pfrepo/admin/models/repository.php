@@ -24,7 +24,7 @@ class PFrepoModelRepository extends JModelList
      * Constructor
      *
      * @param    array          An optional associative array of configuration settings.
-     * @see      jcontroller    
+     * @see      jcontroller
      */
     public function __construct($config = array())
     {
@@ -125,7 +125,7 @@ class PFrepoModelRepository extends JModelList
     /**
      * Build a list of authors
      *
-     * @return    array    
+     * @return    array
      */
     public function getAuthors()
     {
@@ -157,7 +157,7 @@ class PFrepoModelRepository extends JModelList
      * Build an SQL query to load the list data.
      * This query loads the project repo list only!
      *
-     * @return    jdatabasequery    
+     * @return    jdatabasequery
      */
     protected function getListQuery()
     {
@@ -240,7 +240,7 @@ class PFrepoModelRepository extends JModelList
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
-     * @return    void    
+     * @return    void
      */
     protected function populateState($ordering = 'a.title', $direction = 'asc')
     {
@@ -295,6 +295,11 @@ class PFrepoModelRepository extends JModelList
             }
         }
         elseif ($project <= 0 && empty($parent_id)) {
+            $parent_id = 1;
+            $project   = 0;
+        }
+
+        if (JRequest::getVar('filter_project', null, 'post') === '0') {
             $parent_id = 1;
             $project   = 0;
         }
