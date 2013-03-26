@@ -28,17 +28,33 @@ foreach ($this->items['notes'] as $i => $item) :
         <td class="center hidden-phone">
             <?php echo JHtml::_('grid.id', $i, $item->id, false, 'nid'); ?>
         </td>
-        <td>
-            <?php if ($item->checked_out) : ?>
-                <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'repository.', $can_change); ?>
-            <?php endif; ?>
-            <i class="icon-file hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_NOTE_TITLE');?>"></i>
-            <?php if ($can_edit || $can_edit_own) : ?>
-                <a href="<?php echo JRoute::_('index.php?option=com_pfrepo&' . $edit_link);?>">
+        <td class="has-context">
+            <div class="pull-left">
+                <?php if ($item->checked_out) : ?>
+                    <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'repository.', $can_change); ?>
+                <?php endif; ?>
+
+                <i class="icon-file hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_NOTE_TITLE');?>"></i>
+
+                <?php if ($can_edit || $can_edit_own) : ?>
+                    <a href="<?php echo JRoute::_('index.php?option=com_pfrepo&' . $edit_link);?>">
+                        <?php echo JText::_($this->escape($item->title)); ?>
+                    </a>
+                <?php else : ?>
                     <?php echo JText::_($this->escape($item->title)); ?>
-                </a>
-            <?php else : ?>
-                <?php echo JText::_($this->escape($item->title)); ?>
+                <?php endif; ?>
+            </div>
+
+            <?php if (!$this->is_j25) : ?>
+                <div class="pull-left">
+                    <?php
+                        // Create dropdown items
+                        JHtml::_('dropdown.edit', $item->id, 'note.');
+
+                        // Render dropdown list
+                        echo JHtml::_('dropdown.render');
+                    ?>
+                </div>
             <?php endif; ?>
         </td>
         <td>
