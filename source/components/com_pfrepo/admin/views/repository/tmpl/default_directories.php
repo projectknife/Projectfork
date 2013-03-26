@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -24,8 +24,9 @@ if ($this_dir->parent_id > 1) : ?>
             </a>
         </td>
     </tr>
-<?php endif; ?>
 <?php
+endif;
+
 foreach ($this->items['directories'] as $i => $item) :
     $edit_link = 'task=directory.edit&filter_project=' . $item->project_id . 'filter_parent_id=' . $item->parent_id . '&id=' . $item->id;
     $access    = PFrepoHelper::getActions('directory', $item->id);
@@ -54,18 +55,18 @@ foreach ($this->items['directories'] as $i => $item) :
             <?php endif; ?>
         </td>
         <td>
-            <?php echo $this->escape($item->description); ?>
+            <?php echo JHtml::_('pf.html.truncate', $item->description); ?>
         </td>
-        <td class="center hidden-phone">
-            <?php echo $this->escape($item->author_name); ?>
-        </td>
-        <td class="center nowrap hidden-phone">
-            <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
-        </td>
-        <td class="center hidden-phone">
+        <td class="hidden-phone small">
             <?php echo $this->escape($item->access_level); ?>
         </td>
-        <td class="center hidden-phone">
+        <td class="hidden-phone small">
+            <?php echo $this->escape($item->author_name); ?>
+        </td>
+        <td class="nowrap hidden-phone small">
+            <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
+        </td>
+        <td class="hidden-phone small">
             <?php echo (int) $item->id; ?>
         </td>
     </tr>

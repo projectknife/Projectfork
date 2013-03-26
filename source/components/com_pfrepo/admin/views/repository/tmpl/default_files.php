@@ -1,18 +1,18 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
 defined('_JEXEC') or die();
 
 
-$user     = JFactory::getUser();
-$uid      = $user->get('id');
+$user = JFactory::getUser();
+$uid  = $user->get('id');
 
 foreach ($this->items['files'] as $i => $item) :
     $edit_link = 'task=file.edit&filter_project=' . $item->project_id . 'filter_parent_id=' . $item->dir_id . '&id=' . $item->id;
@@ -44,16 +44,16 @@ foreach ($this->items['files'] as $i => $item) :
         <td>
             <?php echo JHtml::_('pf.html.truncate', $item->description); ?>
         </td>
-        <td class="center hidden-phone">
-            <?php echo $this->escape($item->author_name); ?>
-        </td>
-        <td class="center nowrap hidden-phone">
-            <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
-        </td>
-        <td class="center hidden-phone">
+        <td class="hidden-phone small">
             <?php echo $this->escape($item->access_level); ?>
         </td>
-        <td class="center hidden-phone">
+        <td class="hidden-phone small">
+            <?php echo $this->escape($item->author_name); ?>
+        </td>
+        <td class="nowrap hidden-phone small">
+            <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
+        </td>
+        <td class="hidden-phone small">
             <?php echo (int) $item->id; ?>
         </td>
     </tr>
