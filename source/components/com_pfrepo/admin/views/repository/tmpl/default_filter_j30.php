@@ -13,6 +13,7 @@ defined('_JEXEC') or die();
 
 $list_order  = $this->escape($this->state->get('list.ordering'));
 $list_dir    = $this->escape($this->state->get('list.direction'));
+$project     = (int) $this->state->get('filter.project');
 $sort_fields = $this->getSortFields();
 ?>
 <div id="filter-bar" class="btn-toolbar">
@@ -76,6 +77,15 @@ $sort_fields = $this->getSortFields();
             <?php echo JHtml::_('select.options', $sort_fields, 'value', 'text', $list_order); ?>
         </select>
     </div>
+
+    <?php if ($project) : ?>
+        <div class="btn-group pull-right">
+            <select name="filter_parent_id" id="filter_parent_id" class="input-medium" onchange="this.form.submit();">
+                <option value=""><?php echo JText::_('JOPTION_SELECT_DIRECTORY');?></option>
+                <?php echo JHtml::_('select.options', JHtml::_('pfrepo.pathOptions', $project), 'value', 'text', $this->state->get('filter.parent_id'));?>
+            </select>
+        </div>
+    <?php endif; ?>
 
 </div>
 <div class="clr clearfix"></div>
