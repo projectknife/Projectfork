@@ -12,7 +12,7 @@ defined('_JEXEC') or die();
 
 
 jimport('joomla.application.component.modellist');
-
+jimport('joomla.application.component.helper');
 
 /**
  * Methods supporting a list of directories.
@@ -123,6 +123,20 @@ class PFrepoModelDirectories extends JModelList
         $query->select('p.title AS project_title, p.alias AS project_alias')
               ->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
 
+        if ($this->getState('list.count_elements')) {
+            // Join over the directories for folder count
+            $query->select('COUNT(d.id) AS dir_count')
+                  ->join('LEFT', '#__pf_repo_dirs AS d ON d.parent_id = a.id');
+
+            // Join over the files for file count
+            $query->select('COUNT(f.id) AS file_count')
+                  ->join('LEFT', '#__pf_repo_files AS f ON f.dir_id = a.id');
+
+            // Join over the notes for note count
+            $query->select('COUNT(n.id) AS note_count')
+                  ->join('LEFT', '#__pf_repo_notes AS n ON n.dir_id = a.id');
+        }
+
         // Filter by access level.
         if ($filter_access) {
             $query->where('a.access = ' . (int) $filter_access);
@@ -206,10 +220,14 @@ class PFrepoModelDirectories extends JModelList
     protected function populateState($ordering = 'a.title', $direction = 'asc')
     {
         // Initialise variables.
-        $app = JFactory::getApplication();
+        $params = JComponentHelper::getParams('com_pfrepo');
+        $app    = JFactory::getApplication();
 
         // Adjust the context to support modal layouts.
         if ($layout = JRequest::getVar('layout')) $this->context .= '.' . $layout;
+
+        // Config - Count elements
+        $this->setState('list.count_elements', (int) $params->get('show_element_count'));
 
         // Filter - Search
         $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
