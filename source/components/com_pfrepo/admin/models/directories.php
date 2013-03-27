@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -15,7 +15,7 @@ jimport('joomla.application.component.modellist');
 
 
 /**
- * Methods supporting a list of comments.
+ * Methods supporting a list of directories.
  *
  */
 class PFrepoModelDirectories extends JModelList
@@ -31,13 +31,17 @@ class PFrepoModelDirectories extends JModelList
     {
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
-                'a.id', 'a.project_id', 'project_title',
-                'a.title', 'a.description', 'a.created',
-                'a.created_by', 'a.modified',
-                'a.modified_by', 'a.checked_out',
-                'a.checked_out_time', 'a.attribs',
-                'a.access', 'access_level',
-                'a.context, a.lft'
+                'a.id',
+                'a.project_id', 'project_title',
+                'a.title',
+                'a.created',
+                'a.created_by', 'author_name',
+                'a.modified',
+                'a.parent_id',
+                'a.modified_by', 'editor',
+                'a.checked_out',
+                'a.checked_out_time',
+                'a.access', 'access_level'
             );
         }
 
@@ -46,31 +50,31 @@ class PFrepoModelDirectories extends JModelList
 
 
     /**
-     * Build a list of project authors
+     * Build a list of authors
      *
-     * @return    jdatabasequery
+     * @return    array
      */
     public function getAuthors()
     {
-        $db    = $this->getDbo();
-        $query = $db->getQuery(true);
+        $project = (int) $this->getState('filter.project');
+        $query   = $this->_db->getQuery(true);
 
-        if ((int) $this->getState('filter.project') <= 0) {
-            return array();
-        }
+        // Return empty array if no project filter is set
+        if ($project <= 0) return array();
 
         // Construct the query
         $query->select('u.id AS value, u.name AS text')
               ->from('#__users AS u')
               ->join('INNER', '#__pf_repo_dirs AS a ON a.created_by = u.id')
+              ->where('a.project_id = ' . $project)
               ->group('u.id')
               ->order('u.name');
 
         // Setup the query
-        $db->setQuery((string) $query);
+        $this->_db->setQuery($query, 0, 50);
 
         // Return the result
-        return $db->loadObjectList();
+        return $this->_db->loadObjectList();
     }
 
 
@@ -81,10 +85,15 @@ class PFrepoModelDirectories extends JModelList
      */
     protected function getListQuery()
     {
-        // Create a new query object.
-        $db    = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $this->_db->getQuery(true);
         $user  = JFactory::getUser();
+
+        // Get possible filters
+        $filter_project = $this->getState('filter.project');
+        $filter_access  = $this->getState('filter.access');
+        $filter_author  = $this->getState('filter.author_id');
+        $filter_search  = $this->getState('filter.search');
+        $filter_parent  = $this->getState('filter.parent_id');
 
         // Select the required fields from the table.
         $query->select(
@@ -95,83 +104,93 @@ class PFrepoModelDirectories extends JModelList
                 . 'a.lft, a.rgt, a.level, a.path'
             )
         );
+
         $query->from('#__pf_repo_dirs AS a');
 
-        // Do not include the root node
-        $query->where('a.alias != ' . $db->quote('root'));
-
         // Join over the users for the checked out user.
-        $query->select('uc.name AS editor');
-        $query->join('LEFT', '#__users AS uc ON uc.id = a.checked_out');
+        $query->select('uc.name AS editor')
+              ->join('LEFT', '#__users AS uc ON uc.id = a.checked_out');
 
         // Join over the asset groups.
         $query->select('ag.title AS access_level')
               ->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
 
         // Join over the users for the author.
-        $query->select('ua.name AS author_name');
-        $query->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
+        $query->select('ua.name AS author_name')
+              ->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
         // Join over the projects for the project title.
-        $query->select('p.title AS project_title, p.alias AS project_alias');
-        $query->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
+        $query->select('p.title AS project_title, p.alias AS project_alias')
+              ->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
+
+        // Filter by access level.
+        if ($filter_access) {
+            $query->where('a.access = ' . (int) $filter_access);
+        }
 
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
-            $groups = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('a.access IN (' . $groups . ')');
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('a.access IN (' . $levels . ')');
         }
 
         // Filter by project
-        $project = $this->getState('filter.project');
-        if (is_numeric($project) && $project != 0) {
-            $query->where('a.project_id = ' . (int) $project);
+        if (is_numeric($filter_project) && $filter_project > 0) {
+            $query->where('a.project_id = ' . (int) $filter_project);
         }
 
         // Filter by author
-        $author_id = $this->getState('filter.author_id');
-        if (is_numeric($author_id)) {
+        if (is_numeric($filter_author)) {
             $type = $this->getState('filter.author_id.include', true) ? '= ' : '<>';
-            $query->where('a.created_by ' . $type . (int) $author_id);
+            $query->where('a.created_by ' . $type . (int) $filter_author);
         }
 
-        // Filter by parent_id
-        $parent_id = $this->getState('filter.parent_id');
+        // Filter by parent directory
+        if (is_numeric($filter_parent)) {
+            if (!empty($filter_search)) {
+                $query2 = $this->_db->getQuery(true);
 
-        if ((!is_numeric($parent_id) && empty($search)) || !is_numeric($project)) {
-            $this->setState('filter.parent_id', '1');
-            $parent_id = '1';
-        }
+                $query2->select('lft, rgt')
+                       ->from('#__pf_repo_dirs')
+                       ->where('id = ' . (int) $filter_parent);
 
-        if (is_numeric($parent_id)) {
-            $query->where('a.parent_id = ' . $db->quote($parent_id));
+                $this->_db->setQuery($query2);
+                $dir = $this->_db->loadObject();
+
+                if (!empty($dir)) {
+                    $query->where('a.lft > ' . (int) $dir->lft)
+                          ->where('a.rgt < ' . (int) $dir->rgt);
+                }
+            }
+            else {
+                $query->where('a.parent_id = ' . (int) $filter_parent);
+            }
         }
 
         // Filter by search in title.
-        $search = $this->getState('filter.search');
-        if (!empty($search)) {
-            if (stripos($search, 'id:') === 0) {
-                $query->where('a.id = '.(int) substr($search, 3));
+        if (!empty($filter_search)) {
+            if (stripos($filter_search, 'id:') === 0) {
+                $query->where('a.id = '. (int) substr($filter_search, 3));
             }
-            elseif (stripos($search, 'author:') === 0) {
-                $search = $db->Quote('%' . $db->escape(substr($search, 7), true).'%');
+            elseif (stripos($filter_search, 'author:') === 0) {
+                $search = $this->_db->quote($this->_db->escape(substr($filter_search, 7), true) . '%');
                 $query->where('(ua.name LIKE ' . $search . ' OR ua.username LIKE ' . $search . ')');
             }
             else {
-                $search = $db->Quote('%' . $db->escape($search, true).'%');
+                $search = $this->_db->quote('%' . $this->_db->escape($filter_search, true) . '%');
                 $query->where('(a.title LIKE ' . $search . ' OR a.alias LIKE ' . $search . ')');
             }
         }
 
         // Add the list ordering clause.
         $order_col = $this->state->get('list.ordering', 'a.title');
-        $order_dir = $this->state->get('list.direction', 'desc');
+        $order_dir = $this->state->get('list.direction', 'asc');
 
         if ($order_col != 'a.lft') {
             $order_col = $order_col .  ' ' . $order_dir . ', a.lft';
         }
 
-        $query->order($db->escape($order_col . ' ' . $order_dir))
+        $query->order($this->_db->escape($order_col . ' ' . $order_dir))
               ->group('a.id');
 
         return $query;
@@ -184,7 +203,7 @@ class PFrepoModelDirectories extends JModelList
      *
      * @return    void
      */
-    protected function populateState($ordering = 'a.title', $direction = 'desc')
+    protected function populateState($ordering = 'a.title', $direction = 'asc')
     {
         // Initialise variables.
         $app = JFactory::getApplication();
@@ -192,16 +211,24 @@ class PFrepoModelDirectories extends JModelList
         // Adjust the context to support modal layouts.
         if ($layout = JRequest::getVar('layout')) $this->context .= '.' . $layout;
 
+        // Filter - Search
         $search = $this->getUserStateFromRequest($this->context . '.filter.search', 'filter_search');
         $this->setState('filter.search', $search);
 
+        // Filter - Author
         $author_id = $app->getUserStateFromRequest($this->context . '.filter.author_id', 'filter_author_id');
         $this->setState('filter.author_id', $author_id);
 
+        // Filter - Access
+        $access = $this->getUserStateFromRequest($this->context . '.filter.access', 'filter_access', '');
+        $this->setState('filter.access', $access);
+
+        // Filter - Project
         $project = PFApplicationHelper::getActiveProjectId('filter_project');
         $this->setState('filter.project', $project);
 
-        $parent_id = JRequest::getCmd('filter_parent_id', '');
+        // Filter - Directory
+        $parent_id = JRequest::getUint('filter_parent_id', 1);
         $this->setState('filter.parent_id', $parent_id);
 
         // List state information.

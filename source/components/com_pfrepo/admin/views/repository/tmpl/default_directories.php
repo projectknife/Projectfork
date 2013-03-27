@@ -11,9 +11,14 @@
 defined('_JEXEC') or die();
 
 
-$user     = JFactory::getUser();
-$uid      = $user->get('id');
-$this_dir = $this->items['directory'];
+$user      = JFactory::getUser();
+$uid       = $user->get('id');
+$this_dir  = $this->items['directory'];
+$this_path = (empty($this_dir) ? '' : $this_dir->path);
+
+$filter_search  = $this->state->get('filter.search');
+$filter_project = (int) $this->state->get('filter.project');
+$is_search      = empty($filter_search) ? false : true;
 
 if ($this_dir->parent_id > 1) : ?>
     <tr class="row1">
@@ -51,6 +56,12 @@ foreach ($this->items['directories'] as $i => $item) :
                 <a href="<?php echo JRoute::_('index.php?option=com_pfrepo&view=repository&filter_parent_id=' . $item->id);?>">
                     <?php echo JText::_($this->escape($item->title)); ?>
                 </a>
+
+                <?php if ($filter_project && $is_search): ?>
+                    <div class="small">
+                        <?php echo str_replace($this_path, '.', $item->path) . '/'; ?>
+                    </div>
+                <?php endif; ?>
             </div>
 
             <?php if (!$this->is_j25) : ?>

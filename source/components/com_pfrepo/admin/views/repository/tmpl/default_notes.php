@@ -14,6 +14,13 @@ defined('_JEXEC') or die();
 $user = JFactory::getUser();
 $uid  = $user->get('id');
 
+$this_dir  = $this->items['directory'];
+$this_path = (empty($this_dir) ? '' : $this_dir->path);
+
+$filter_search  = $this->state->get('filter.search');
+$filter_project = (int) $this->state->get('filter.project');
+$is_search      = empty($filter_search) ? false : true;
+
 foreach ($this->items['notes'] as $i => $item) :
     $edit_link = 'task=note.edit&filter_project=' . $item->project_id . 'filter_parent_id=' . $item->dir_id . '&id=' . $item->id;
     $access    = PFrepoHelper::getActions('note', $item->id);
@@ -42,6 +49,12 @@ foreach ($this->items['notes'] as $i => $item) :
                     </a>
                 <?php else : ?>
                     <?php echo JText::_($this->escape($item->title)); ?>
+                <?php endif; ?>
+
+                <?php if ($filter_project && $is_search): ?>
+                    <div class="small">
+                        <?php echo str_replace($this_path, '.', $item->path) . '/'; ?>
+                    </div>
                 <?php endif; ?>
             </div>
 
