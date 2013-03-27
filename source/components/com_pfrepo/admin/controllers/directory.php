@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -19,21 +19,9 @@ class PFrepoControllerDirectory extends JControllerForm
     /**
      * The URL view list variable.
      *
-     * @var    string
+     * @var    string    
      */
     protected $view_list = 'repository';
-
-
-    /**
-     * Class constructor.
-     *
-     * @param     array              $config    A named array of configuration variables
-     * @return    jcontrollerform
-     */
-    public function __construct($config = array())
-    {
-        parent::__construct($config);
-    }
 
 
     /**
@@ -42,7 +30,7 @@ class PFrepoControllerDirectory extends JControllerForm
      *
      * @param     array      $data    An array of input data.
      *
-     * @return    boolean
+     * @return    boolean             
      */
     protected function allowAdd($data = array())
     {
@@ -50,7 +38,7 @@ class PFrepoControllerDirectory extends JControllerForm
            $parent  = JRequest::getUint('filter_parent_id');
            $project = JRequest::getUint('filter_project');
 
-           if ($parent == 0 || $project == 0) {
+           if ($parent <= 0 || $project <= 0) {
                 return false;
            }
         }
@@ -76,29 +64,11 @@ class PFrepoControllerDirectory extends JControllerForm
         $append  = '';
 
         // Setup redirect info.
-        if ($tmpl) {
-            $append .= '&tmpl=' . $tmpl;
-        }
-
-        if ($layout) {
-            $append .= '&layout=' . $layout;
-        }
-
-        if ($id) {
-            $append .= '&' . $url_var . '=' . $id;
-        }
-
-        if ($project) {
-            $append .= '&filter_project=' . $project;
-        }
-
-        if ($parent) {
-            $append .= '&filter_parent_id=' . $parent;
-        }
-
-        if ($item_id) {
-            $append .= '&filter_item_id=' . $item_id;
-        }
+        if ($id)      $append .= '&' . $url_var . '=' . $id;
+        if ($project) $append .= '&filter_project=' . $project;
+        if ($parent)  $append .= '&filter_parent_id=' . $parent;
+        if ($tmpl)    $append .= '&tmpl=' . $tmpl;
+        if ($layout)  $append .= '&layout=' . $layout;
 
         return $append;
     }
@@ -117,17 +87,9 @@ class PFrepoControllerDirectory extends JControllerForm
         $append  = '';
 
         // Setup redirect info.
-        if ($project) {
-            $append .= '&filter_project=' . $project;
-        }
-
-        if ($parent) {
-            $append .= '&filter_parent_id=' . $parent;
-        }
-
-        if ($tmpl) {
-            $append .= '&tmpl=' . $tmpl;
-        }
+        if ($project) $append .= '&filter_project=' . $project;
+        if ($parent)  $append .= '&filter_parent_id=' . $parent;
+        if ($tmpl)    $append .= '&tmpl=' . $tmpl;
 
         return $append;
     }
