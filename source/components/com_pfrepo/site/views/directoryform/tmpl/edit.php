@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -43,7 +43,7 @@ Joomla.submitbutton = function(task)
 </h1>
 <?php endif; ?>
 
-<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="item-form" class="form-validate form-inline">
+<form action="<?php echo JRoute::_('index.php?option=com_pfrepo&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate form-inline">
     <fieldset>
         <div class="formelm-buttons btn-toolbar">
             <?php echo $this->toolbar; ?>
