@@ -225,15 +225,15 @@ class PFrepoModelRepository extends JModelList
 
         if ($this->getState('list.count_elements')) {
             // Join over the directories for folder count
-            $query->select('COUNT(d.id) AS dir_count')
+            $query->select('COUNT(DISTINCT d.id) AS dir_count')
                   ->join('LEFT', '#__pf_repo_dirs AS d ON d.parent_id = a.id');
 
             // Join over the files for file count
-            $query->select('COUNT(f.id) AS file_count')
+            $query->select('COUNT(DISTINCT f.id) AS file_count')
                   ->join('LEFT', '#__pf_repo_files AS f ON f.dir_id = a.id');
 
             // Join over the notes for note count
-            $query->select('COUNT(n.id) AS note_count')
+            $query->select('COUNT(DISTINCT n.id) AS note_count')
                   ->join('LEFT', '#__pf_repo_notes AS n ON n.dir_id = a.id');
         }
 

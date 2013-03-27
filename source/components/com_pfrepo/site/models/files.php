@@ -161,6 +161,21 @@ class PFrepoModelFiles extends JModelList
             }
         }
 
+        // Filter by search in title.
+        if (!empty($filter_search)) {
+            if (stripos($filter_search, 'id:') === 0) {
+                $query->where('a.id = '. (int) substr($filter_search, 3));
+            }
+            elseif (stripos($filter_search, 'author:') === 0) {
+                $search = $this->_db->quote($this->_db->escape(substr($filter_search, 7), true) . '%');
+                $query->where('(ua.name LIKE ' . $search . ' OR ua.username LIKE ' . $search . ')');
+            }
+            else {
+                $search = $this->_db->quote('%' . $this->_db->escape($filter_search, true) . '%');
+                $query->where('(a.title LIKE ' . $search . ' OR a.alias LIKE ' . $search . ')');
+            }
+        }
+
         // Add the list ordering clause.
         $order_col = $this->state->get('list.ordering', 'a.title');
         $order_dir = $this->state->get('list.direction', 'desc');
