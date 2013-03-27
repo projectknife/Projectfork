@@ -378,6 +378,8 @@ class PFrepoModelRepository extends JModelList
         JRequest::setVar('filter_parent_id', $parent_id);
         JRequest::setVar('filter_project',   $project);
 
+        if ($project) JRequest::setVar('limit', 0);
+
         // Do not allow to filter by author if no project is selected
         if ($project <= 0) {
             $this->setState('filter.labels', array());
