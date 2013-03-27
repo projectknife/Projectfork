@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -561,7 +561,7 @@ class PFrepoModelDirectory extends JModelAdmin
         $data['alias'] = $alias;
 
         if (!$this->getState('create_repo')) {
-            if (intval($data['parent_id']) <= 1 && ($isNew == false && $table->parent_id > 1)) {
+            if (intval($data['parent_id']) <= 1 && ($is_new == false && $table->parent_id > 1)) {
                 $this->setError(JText::_('COM_PROJECTFORK_ERROR_REPO_SAVE_ROOT_DIR') . 'yarr 0');
                 return false;
             }
@@ -573,7 +573,13 @@ class PFrepoModelDirectory extends JModelAdmin
 
         // Set the new parent id if parent id not matched OR while New/Save as Copy.
         if ($table->parent_id != $data['parent_id'] || $is_new) {
-            $table->setLocation($data['parent_id'], 'last-child');
+            // Fix: Folder cannot be parent of self
+            if ($data['parent_id'] != $table->id) {
+                $table->setLocation($data['parent_id'], 'last-child');
+            }
+            else {
+                $data['parent_id'] = $table->parent_id;
+            }
         }
 
         // Handle permissions and access level
