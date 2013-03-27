@@ -245,7 +245,8 @@ class PFrepoModelRepository extends JModelList
         $order_col = $this->state->get('list.ordering', 'a.ordering');
         $order_dir = $this->state->get('list.direction', 'asc');
 
-        $query->order($this->_db->escape($order_col . ' ' . $order_dir));
+        $query->order($this->_db->escape($order_col . ' ' . $order_dir))
+              ->group('a.id');
 
         return $query;
     }
