@@ -1,24 +1,30 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
 defined('_JEXEC') or die();
 
 
-$user     = JFactory::getUser();
-$uid      = $user->get('id');
-$this_dir = $this->items['directory'];
+$user      = JFactory::getUser();
+$uid       = $user->get('id');
+$this_dir  = $this->items['directory'];
+$this_path = (empty($this_dir) ? '' : $this_dir->path);
+
+$filter_search  = $this->state->get('filter.search');
+$filter_project = (int) $this->state->get('filter.project');
+$count_elements = (int) $this->state->get('list.count_elements');
+$is_search      = empty($filter_search) ? false : true;
 
 if ($this_dir->parent_id > 1) : ?>
     <tr class="row1">
         <td class="center"></td>
-        <td colspan="6">
+        <td colspan="5">
             <i class="icon-arrow-up"></i>
             <a href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($this_dir->project_id, $this_dir->parent_id, $this_dir->path));?>">
                 ..
@@ -31,9 +37,9 @@ foreach ($this->items['directories'] as $i => $item) :
     $access = PFrepoHelper::getActions('directory', $item->id);
     $icon   = ($item->protected == '1' ? 'icon-warning' : 'icon-folder');
 
-    if ($item->parent_id == '1') {
-        $icon = 'icon-folder-2';
-    }
+    if ($item->parent_id == '1') $icon = 'icon-folder-2';
+
+    $elements = ($count_elements ? ($item->dir_count + $item->note_count + $item->file_count) : 0 );
 
     $can_create   = $access->get('core.create');
     $can_edit     = $access->get('core.edit');
@@ -56,6 +62,15 @@ foreach ($this->items['directories'] as $i => $item) :
             <a href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($item->project_slug, $item->slug, $item->path));?>">
                 <?php echo JText::_($this->escape($item->title)); ?>
             </a>
+            <?php if ($count_elements && $elements) : ?>
+                <span class="small">[<?php echo $elements; ?>]</span>
+            <?php endif; ?>
+
+            <?php if ($filter_project && $is_search): ?>
+                <div class="small">
+                    <?php echo str_replace($this_path, '.', $item->path) . '/'; ?>
+                </div>
+            <?php endif; ?>
         </td>
         <td>
             <?php

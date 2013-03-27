@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -15,6 +15,7 @@ JHtml::_('pfhtml.script.listform');
 
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
+$project    = (int) $this->state->get('filter.project');
 $user       = JFactory::getUser();
 $uid        = $user->get('id');
 $dir        = $this->items['directory'];
@@ -47,7 +48,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                         <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
                         <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
                     </div>
-                    <?php if ($this->state->get('filter.project')) : ?>
+                    <?php if ($project) : ?>
                         <div class="filter-labels btn-group pull-left">
                             <?php echo JHtml::_('pfhtml.label.filter', 'com_pfrepo', $this->state->get('filter.project'), $this->state->get('filter.labels'));?>
                         </div>
@@ -83,7 +84,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_ON', 'a.created', $list_dir, $list_order); ?>
                         </th>
                         <th>
-                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_DESCRIPTION', 'a.description', $list_dir, $list_order); ?>
+                            <?php echo JText::_('JGRID_HEADING_DESCRIPTION'); ?>
                         </th>
                     </tr>
                 </thead>
@@ -92,15 +93,23 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                     <?php echo $this->loadTemplate('notes'); ?>
                     <?php echo $this->loadTemplate('files'); ?>
                 </tbody>
-                <tfoot>
-                    <tr>
-                        <td colspan="10">
-
-                        </td>
-                    </tr>
-                </tfoot>
             </table>
-            
+
+            <?php if ($this->pagination) : ?>
+                <?php if ($this->pagination->get('pages.total') > 1) : ?>
+                    <div class="pagination center">
+                        <?php echo $this->pagination->getPagesLinks(); ?>
+                    </div>
+                    <p class="counter center"><?php echo $this->pagination->getPagesCounter(); ?></p>
+                <?php endif; ?>
+
+                <div class="filters center">
+                    <span class="display-limit">
+                        <?php echo $this->pagination->getLimitBox(); ?>
+                    </span>
+                </div>
+            <?php endif; ?>
+
             <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
             <input type="hidden" name="task" value="" />
             <?php echo JHtml::_('form.token'); ?>

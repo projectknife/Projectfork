@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -20,34 +20,100 @@ jimport('joomla.application.component.view');
  */
 class PFrepoViewRepository extends JViewLegacy
 {
+    /**
+     * CSS page class suffix
+     *
+     * @var    string    
+     */
     protected $pageclass_sfx;
+
+    /**
+     * List of items to display
+     *
+     * @var    array    
+     */
     protected $items;
+
+    /**
+     * Sql "null" date (0000-00-00 00:00:00)
+     *
+     * @var    string    
+     */
     protected $nulldate;
+
+    /**
+     * Model parameters
+     *
+     * @var    object    
+     */
     protected $params;
+
+    /**
+     * Model state object
+     *
+     * @var    object    
+     */
     protected $state;
+
+    /**
+     * Toolbar html code
+     *
+     * @var    string    
+     */
     protected $toolbar;
+
+    /**
+     * Object holding user permissions
+     *
+     * @var    object    
+     */
     protected $access;
+
+    /**
+     * Context menu instance
+     *
+     * @var    object    
+     */
     protected $menu;
+
+    /**
+     * JPagination instance object
+     *
+     * @var    object    
+     */
+    protected $pagination;
+
+    /**
+     * Select list sorting options
+     *
+     * @var    array    
+     */
     protected $sort_options;
+
+    /**
+     * Select list ordering options
+     *
+     * @var    array    
+     */
     protected $order_options;
 
 
     /**
      * Display the view
      *
-     * @return void
+     * @return    void    
      */
     public function display($tpl = null)
     {
         $app    = JFactory::getApplication();
         $active = $app->getMenu()->getActive();
 
-        $this->items      = $this->get('Items');
-        $this->state      = $this->get('State');
-        $this->params     = $this->state->params;
-        $this->access     = PFrepoHelper::getActions();
-        $this->nulldate   = JFactory::getDbo()->getNullDate();
-        $this->menu       = new PFMenuContext();
+        $this->items    = $this->get('Items');
+        $this->state    = $this->get('State');
+        $this->params   = $this->state->params;
+        $this->access   = PFrepoHelper::getActions();
+        $this->nulldate = JFactory::getDbo()->getNullDate();
+        $this->menu     = new PFMenuContext();
 
         $this->toolbar       = $this->getToolbar();
         $this->sort_options  = $this->getSortOptions();
@@ -55,6 +121,14 @@ class PFrepoViewRepository extends JViewLegacy
 
         // Escape strings for HTML output
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
+
+        // Set the pagination object
+        if ($this->items['directory']->id == '1') {
+            $this->pagination = $this->get('Pagination');
+        }
+        else {
+            $this->pagination = null;
+        }
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {

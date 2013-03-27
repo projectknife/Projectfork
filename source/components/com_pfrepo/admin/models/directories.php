@@ -50,35 +50,6 @@ class PFrepoModelDirectories extends JModelList
 
 
     /**
-     * Build a list of authors
-     *
-     * @return    array
-     */
-    public function getAuthors()
-    {
-        $project = (int) $this->getState('filter.project');
-        $query   = $this->_db->getQuery(true);
-
-        // Return empty array if no project filter is set
-        if ($project <= 0) return array();
-
-        // Construct the query
-        $query->select('u.id AS value, u.name AS text')
-              ->from('#__users AS u')
-              ->join('INNER', '#__pf_repo_dirs AS a ON a.created_by = u.id')
-              ->where('a.project_id = ' . $project)
-              ->group('u.id')
-              ->order('u.name');
-
-        // Setup the query
-        $this->_db->setQuery($query, 0, 50);
-
-        // Return the result
-        return $this->_db->loadObjectList();
-    }
-
-
-    /**
      * Build an SQL query to load the list data.
      *
      * @return    jdatabasequery
