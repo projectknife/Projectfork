@@ -332,7 +332,15 @@ class PFrepoModelRepository extends JModelList
         JRequest::setVar('filter_parent_id', $parent_id);
         JRequest::setVar('filter_project',   $project);
 
-        if ($project) JRequest::setVar('limit', 0);
+        // Handle list limit
+        if ($project) {
+            JRequest::setVar('limit', 0);
+        }
+        else {
+            if (JRequest::getVar('limit') === null) {
+                JRequest::setVar('limit', $app->getCfg('list_limit'));
+            }
+        }
 
         // List state information.
         parent::populateState($ordering, $direction);
