@@ -1224,7 +1224,6 @@ class PFrepoModelDirectory extends JModelAdmin
 
             if ($project) {
                 $this->setState($this->getName() . '.project', $project);
-                PFApplicationHelper::setActiveProject($project);
             }
         }
 

@@ -68,11 +68,11 @@ class PFrepoModelRepository extends JModelList
         // Load the items
         $items  = array();
         $parent = (int) $this->getState('filter.parent_id', 1);
+        $dir    = $this->getInstance('Directory', 'PFrepoModel', $config = array('ignore_request' => true));
 
         if ($parent == 1) {
             // Load the list items.
             $query = $this->_getListQuery();
-            $dir   = $this->getInstance('Directory', 'PFrepoModel', $config = array('ignore_request' => true));
 
             try {
                 $items['directory']   = $dir->getItem($parent);
@@ -87,32 +87,20 @@ class PFrepoModelRepository extends JModelList
         }
         else {
             // Get the models
-            $dir    = $this->getInstance('Directory', 'PFrepoModel', $config = array('ignore_request' => true));
-            $dirs   = $this->getInstance('Directories', 'PFrepoModel', $config = array());
-            $notes  = $this->getInstance('Notes', 'PFrepoModel', $config = array());
-            $files  = $this->getInstance('Files', 'PFrepoModel', $config = array());
+            $dirs  = $this->getInstance('Directories', 'PFrepoModel', $config = array());
+            $notes = $this->getInstance('Notes', 'PFrepoModel', $config = array());
+            $files = $this->getInstance('Files', 'PFrepoModel', $config = array());
 
             // Get the data
-            $items['directory']   = $dir->getItem($parent);
-            $items['directories'] = $dirs->getItems();
-            $items['notes']       = $notes->getItems();
-            $items['files']       = $files->getItems();
-
-            // Check for errors
-            if ($dir->getError()) {
-                $this->setError($dir->getError());
+            try {
+                $items['directory']   = $dir->getItem($parent);
+                $items['directories'] = $dirs->getItems();
+                $items['notes']       = $notes->getItems();
+                $items['files']       = $files->getItems();
             }
-
-            if ($dirs->getError()) {
-                $this->setError($dirs->getError());
-            }
-
-            if ($notes->getError()) {
-                $this->setError($notes->getError());
-            }
-
-            if ($files->getError()) {
-                $this->setError($files->getError());
+            catch (RuntimeException $e) {
+                $this->setError($e->getMessage());
+                return false;
             }
         }
 
@@ -288,33 +276,28 @@ class PFrepoModelRepository extends JModelList
         // Filter - Directory
         $parent_id = JRequest::getVar('filter_parent_id');
 
-        // If no parent folder is given, find the repo dir of the project
-        if (empty($parent_id) && $project > 0) {
+        // If no parent folder is given (or in root), find the repo dir of the project
+        if ($parent_id <= 1 && $project) {
             $params = PFApplicationHelper::getProjectParams();
             $repo   = (int) $params->get('repo_dir');
 
             if ($repo) $parent_id = (int) $repo;
         }
-        elseif (is_numeric($parent_id) && $project <= 0) {
-            // If a folder is selected, but no project, find the project id of the folder
-            $dir  = $this->getInstance('Directory', 'PFrepoModel', $config = array('ignore_request' => true));
-            $item = $dir->getItem((int) $parent_id);
+        elseif ($parent_id > 1 && !$project) {
+            // If a folder is selected, but no project active, find the project id of the folder
+            $query = $this->_db->getQuery(true);
 
-            if ($item->id > 0) {
-                if ($item->parent_id == '1') {
-                    $project = $item->project_id;
-                }
-                else {
-                    $parent_id = 1;
-                    $project   = 0;
-                }
-            }
-            else {
-                $parent_id = 1;
-                $project   = 0;
-            }
+            $query->select('project_id')
+                  ->from('#__pf_repo_dirs')
+                  ->where('id = ' . (int) $parent_id);
+
+            $this->_db->setQuery($query);
+            $project = (int) $this->_db->loadResult();
+
+            // If no project was found, return to the repo root
+            if (!$project) $parent_id = 1;
         }
-        elseif ($project <= 0 && empty($parent_id)) {
+        elseif (empty($parent_id) && !$project) {
             $parent_id = 1;
             $project   = 0;
         }
