@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -12,28 +12,15 @@ defined('_JEXEC') or die();
 
 
 // Base this model on the backend version.
-JLoader::register('PFrepoModelDirectory', JPATH_ADMINISTRATOR . '/components/com_pfrepo/models/directory.php');
+require_once JPATH_ADMINISTRATOR . '/components/com_pfrepo/models/directory.php';
 
 
 /**
- * Projectfork Component Directory Form Model
+ * Repository Directory Form Model
  *
  */
 class PFrepoModelDirectoryForm extends PFrepoModelDirectory
 {
-    /**
-     * Constructor.
-     *
-     * @param    array          $config    An optional associative array of configuration settings.
-     *
-     * @see      jcontroller
-     */
-    public function __construct($config = array())
-    {
-       parent::__construct($config);
-    }
-
-
     /**
      * Method to get item data.
      *
@@ -43,60 +30,24 @@ class PFrepoModelDirectoryForm extends PFrepoModelDirectory
      */
     public function getItem($id = null)
     {
-        // Initialise variables.
-        $id = (int) (!empty($id)) ? $id : $this->getState($this->getName() . '.id');
+        $item = parent::getItem($id);
 
-        // Get a row instance.
-        $table = $this->getTable();
-
-        // Attempt to load the row.
-        $return = $table->load($id);
-
-        // Check for a table object error.
-        if ($return === false && $table->getError()) {
-            $this->setError($table->getError());
-            return false;
-        }
-
-        $properties = $table->getProperties(1);
-        $value = JArrayHelper::toObject($properties, 'JObject');
-
-        // Convert attrib field to Registry.
-        $value->params = new JRegistry;
-        $value->params->loadString($value->attribs);
-
-        // Get the labels
-        $labels = $this->getInstance('Labels', 'PFModel');
-        $value->labels = $labels->getConnections('com_pfrepo.directory', $value->id);
+        if ($item === false) return false;
 
         // Compute selected asset permissions.
-        $uid    = JFactory::getUser()->get('id');
-        $access = PFrepoHelper::getActions('directory', $value->id);
+        $asset = 'com_pfrepo.directory' . ($item->id > 0 ? '.' . (int) $item->id : '');
+        $user  = JFactory::getUser();
+        $uid   = (int) $user->get('id');
 
-        // Check general edit permission first.
-        if ($access->get('core.edit')) {
-            $value->params->set('access-edit', true);
-        }
-        elseif (!empty($uid) && $access->get('core.edit.own')) {
-            // Now check if edit.own is available.
-            // Check for a valid user and that they are the owner.
-            if ($uid == $value->created_by) {
-                $value->params->set('access-edit', true);
-            }
-        }
+        $can_edit       = $user->authorise('core.edit', $asset);
+        $can_edit_own   = $user->authorise('core.edit.own', $asset);
+        $can_edit_own   = ($can_edit_own && $uid == $item->created_by && $uid > 0);
+        $can_edit_state = $user->authorise('core.edit.state', $asset);
 
-        // Check edit state permission.
-        if ($id) {
-            // Existing item
-            $value->params->set('access-change', $access->get('core.edit.state'));
-        }
-        else {
-            // New item
-            $access = PFrepoHelper::getActions();
-            $value->params->set('access-change', $access->get('core.edit.state'));
-        }
+        $item->params->set('access-edit',   ($can_edit || $can_edit_own));
+        $item->params->set('access-change', $can_edit_state);
 
-        return $value;
+        return $item;
     }
 
 
@@ -115,49 +66,34 @@ class PFrepoModelDirectoryForm extends PFrepoModelDirectory
      * Method to auto-populate the model state.
      * Note. Calling getState in this method will result in recursion.
      *
-     * @return    void
+     * @return    void    
      */
     protected function populateState()
     {
-        $app = JFactory::getApplication();
+        $app     = JFactory::getApplication();
+        $pk      = JRequest::getUInt('id');
+        $parent  = JRequest::getUInt('filter_parent_id');
+        $option  = JRequest::getVar('option');
+        $return  = JRequest::getVar('return', null, 'default', 'base64');
+        $project = PFApplicationHelper::getActiveProjectId();
 
-        // Load state from the request.
-        $pk     = JRequest::getInt('id');
-        $option = JRequest::getVar('option');
-
+        // Set primary key
         $this->setState($this->getName() . '.id', $pk);
 
-        $return = JRequest::getVar('return', null, 'default', 'base64');
+        // Set return page
         $this->setState('return_page', base64_decode($return));
 
-        if ($pk && $option == $this->option) {
-            $table = $this->getTable();
-
-            if ($table->load($pk)) {
-                $project = (int) $table->project_id;
-                $this->setState($this->getName() . '.project', $project);
-                PFApplicationHelper::setActiveProject($project);
-
-                $parent_id = (int) $table->parent_id;
-                $this->setState($this->getName() . '.parent_id', $parent_id);
-            }
-        }
-        else {
-            $parent_id = JRequest::getUInt('filter_parent_id', 0);
-            $this->setState($this->getName() . '.parent_id', $parent_id);
-
-            $project = (int) $app->getUserStateFromRequest('com_projectfork.project.active.id', 'filter_project', '');
-
-            if ($project) {
-                $this->setState($this->getName() . '.project', $project);
-                PFApplicationHelper::setActiveProject($project);
-            }
-        }
-
-        // Load the parameters.
+        // Set params
         $params = $app->getParams();
         $this->setState('params', $params);
 
+        // Set layout
         $this->setState('layout', JRequest::getCmd('layout'));
+
+        // Set parent id
+        $this->setState($this->getName() . '.parent_id', $parent);
+
+        // Set project
+        $this->setState($this->getName() . '.project', $project);
     }
 }
