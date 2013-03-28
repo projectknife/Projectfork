@@ -99,6 +99,9 @@ class PFrepoModelRepository extends JModelList
                 $item->slug         = $item->alias ? ($item->id . ':' . $item->alias) : $item->id;
                 $item->project_slug = $item->project_alias ? ($item->project_id . ':' . $item->project_alias) : $item->project_id;
 
+                // Set orphaned status
+                $item->orphaned = $item->project_exists ? false : true;
+
                 // Get the labels
                 if ($item->label_count > 0) {
                     $item->labels = $labels->getConnections('com_pfrepo.directory', $item->id);
@@ -215,7 +218,7 @@ class PFrepoModelRepository extends JModelList
               ->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
         // Join over the projects for the project title.
-        $query->select('p.title AS project_title, p.alias AS project_alias')
+        $query->select('p.title AS project_title, p.alias AS project_alias, p.id AS project_exists')
               ->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
 
         // Join over the label refs for label count

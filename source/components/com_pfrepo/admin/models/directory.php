@@ -66,15 +66,31 @@ class PFrepoModelDirectory extends JModelAdmin
      */
     public function getItem($pk = null)
     {
-        if ($item = parent::getItem($pk)) {
-            // Convert the params field to an array.
-            $registry = new JRegistry;
-            $registry->loadString($item->attribs);
-            $item->attribs = $registry->toArray();
+        $item = parent::getItem($pk);
 
-            // Get the labels
+        if ($item == false) return false;
+
+        if (property_exists($item, 'attribs')) {
+            // Convert the params field to an array.
+            $registry = new JRegistry();
+
+            $registry->loadString($item->attribs);
+
+            $item->params  = $registry;
+            $item->attribs = $registry->toArray();
+        }
+
+        if ($item->id > 0) {
+            // Existing record
             $labels = $this->getInstance('Labels', 'PFModel');
-            $item->labels = $labels->getConnections('com_pfrepo.directory', $item->id);
+
+            $item->labels   = $labels->getConnections('com_pfrepo.directory', $item->id);
+            $item->orphaned = $this->isOrphaned($item->project_id);
+        }
+        else {
+            // New record
+            $item->labels   = array();
+            $item->orphaned = false;
         }
 
         return $item;
@@ -483,7 +499,7 @@ class PFrepoModelDirectory extends JModelAdmin
         $id     = (int) $jinput->get('id', 0);
 
         // Always disable these fields while saving
-		$form->setFieldAttribute('alias', 'filter', 'unset');
+        $form->setFieldAttribute('alias', 'filter', 'unset');
 
         // Disable these fields if not an admin
         if (!$user->authorise('core.admin', 'com_pfrepo')) {
@@ -967,6 +983,34 @@ class PFrepoModelDirectory extends JModelAdmin
 
 
     /**
+     * Method to check if a project still exists
+     *
+     * @param     integer    $project    The project id to check
+     *
+     * @return    boolean                True if not found, False if found.
+     */
+    protected function isOrphaned($project)
+    {
+        static $cache = array();
+
+        // Check the cache
+        if (isset($cache[$project])) return $cache[$project];
+
+
+        $query = $this->_db->getQuery(true);
+
+        $query->select('id')
+              ->from('#__pf_projects')
+              ->where('id = ' . (int) $project);
+
+        $this->_db->setQuery($query);
+        $cache[$project] = ($this->_db->loadResult() > 0 ? false : true);
+
+        return $cache[$project];
+    }
+
+
+    /**
      * Method to change the title.
      *
      * @param     integer    $parent_id    The parent directory
@@ -1077,18 +1121,18 @@ class PFrepoModelDirectory extends JModelAdmin
     {
         $user = JFactory::getUser();
 
-		// Check for existing item.
-		if (!empty($record->id)) {
-			return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->id);
-		}
-		elseif (!empty($record->parent_id)) {
-		    // New item, so check against the parent dir.
-			return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->parent_id);
-		}
-		else {
-		    // Default to component settings.
-			return parent::canEditState('com_pfrepo');
-		}
+        // Check for existing item.
+        if (!empty($record->id)) {
+            return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->id);
+        }
+        elseif (!empty($record->parent_id)) {
+            // New item, so check against the parent dir.
+            return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->parent_id);
+        }
+        else {
+            // Default to component settings.
+            return parent::canEditState('com_pfrepo');
+        }
     }
 
 
@@ -1126,7 +1170,7 @@ class PFrepoModelDirectory extends JModelAdmin
         $data = JFactory::getApplication()->getUserState('com_pfrepo.edit.' . $this->getName() . '.data', array());
 
         if (empty($data)) {
-			$data = $this->getItem();
+            $data = $this->getItem();
 
             // Set default values
             if ($this->getState($this->getName() . '.id') == 0) {

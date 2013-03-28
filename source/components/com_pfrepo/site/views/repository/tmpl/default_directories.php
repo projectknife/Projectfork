@@ -37,7 +37,16 @@ foreach ($this->items['directories'] as $i => $item) :
     $access = PFrepoHelper::getActions('directory', $item->id);
     $icon   = ($item->protected == '1' ? 'icon-warning' : 'icon-folder');
 
-    if ($item->parent_id == '1') $icon = 'icon-folder-2';
+    $exists = true;
+
+    if ($item->parent_id == 1) {
+        $icon = 'icon-folder-2';
+
+        if (!$item->project_exists) {
+            $exists = false;
+            $icon   = 'icon-warning';
+        }
+    }
 
     $elements = ($count_elements ? ($item->dir_count + $item->note_count + $item->file_count) : 0 );
 
@@ -59,9 +68,17 @@ foreach ($this->items['directories'] as $i => $item) :
         <td>
             <i class="<?php echo $icon;?>"></i>
             <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
-            <a href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($item->project_slug, $item->slug, $item->path));?>">
-                <?php echo JText::_($this->escape($item->title)); ?>
-            </a>
+
+            <?php if ($exists) : ?>
+                <a href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($item->project_slug, $item->slug, $item->path));?>">
+                    <?php echo JText::_($this->escape($item->title)); ?>
+                </a>
+            <?php else : ?>
+                <span class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_ORPHANED_REPO'); ?>" style="cursor: help;">
+                    <?php echo JText::_($this->escape($item->title)); ?>
+                </span>
+            <?php endif; ?>
+
             <?php if ($count_elements && $elements) : ?>
                 <span class="small">[<?php echo $elements; ?>]</span>
             <?php endif; ?>
@@ -76,7 +93,11 @@ foreach ($this->items['directories'] as $i => $item) :
             <?php
                 $this->menu->start(array('class' => 'btn-mini'));
                 $this->menu->itemEdit('directoryform', $item->id, ($can_edit || $can_edit_own));
-                $this->menu->itemDelete('repository', $i, ($can_edit || $can_edit_own));
+
+                if (($item->parent_id == 1 && !$item->project_exists) || $this_dir->id > 1) {
+                    $this->menu->itemDelete('repository', $i, ($can_edit || $can_edit_own));
+                }
+
                 $this->menu->end();
 
                 echo $this->menu->render(array('class' => 'btn-mini'));
