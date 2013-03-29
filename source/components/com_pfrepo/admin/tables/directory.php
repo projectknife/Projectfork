@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -72,10 +72,10 @@ class PFTableDirectory extends JTableNested
 
         // This is a directory under another directory.
         if ($this->parent_id > 1) {
-            // Build the query to get the asset id for the parent comment.
+            // Build the query to get the asset id for the parent dir.
             $query->select($this->_db->quoteName('asset_id'))
                   ->from($this->_db->quoteName('#__pf_repo_dirs'))
-                  ->where($this->_db->quoteName('id') . ' = ' . $this->parent_id);
+                  ->where($this->_db->quoteName('id') . ' = ' . (int) $this->parent_id);
 
             // Get the asset id from the database.
             $this->_db->setQuery($query);
@@ -115,8 +115,7 @@ class PFTableDirectory extends JTableNested
      */
     protected function _getParentAccess()
     {
-        $db    = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $this->_db->getQuery(true);
 
         $dir     = (int) $this->parent_id;
         $project = (int) $this->project_id;
@@ -124,16 +123,16 @@ class PFTableDirectory extends JTableNested
         if ($dir > 1) {
             $query->select('access')
                   ->from('#__pf_repo_dirs')
-                  ->where('id = ' . $db->quote($dir));
+                  ->where('id = ' . $dir);
         }
         elseif ($project > 0) {
             $query->select('access')
                   ->from('#__pf_projects')
-                  ->where('id = ' . $db->quote($project));
+                  ->where('id = ' . $project);
         }
 
-        $db->setQuery($query);
-        $access = (int) $db->loadResult();
+        $this->_db->setQuery($query);
+        $access = (int) $this->_db->loadResult();
 
         if (!$access) $access = (int) JFactory::getConfig()->get('access');
 
@@ -156,13 +155,12 @@ class PFTableDirectory extends JTableNested
 
         // Get the project assets
         if ($component == 'com_pfprojects' && $item == 'project') {
-            $db    = $this->getDbo();
-            $query = $db->getQuery(true);
+            $query = $this->_db->getQuery(true);
 
             $query->select('c.*')
                   ->from('#__assets AS c')
                   ->join('INNER', $this->_tbl . ' AS a ON (a.asset_id = c.id)')
-                  ->where('a.project_id = ' . $db->quote((int) $id))
+                  ->where('a.project_id = ' . (int) $id)
                   ->group('c.id');
 
             $db->setQuery($query);
@@ -245,28 +243,21 @@ class PFTableDirectory extends JTableNested
      */
     public function store($updateNulls = false)
     {
-        $date = JFactory::getDate();
-        $user = JFactory::getUser();
+        $date = JFactory::getDate()->toSql();
+        $user = JFactory::getUser()->get('id');
 
         if ($this->id) {
             // Existing item
-            $this->modified    = $date->toSql();
-            $this->modified_by = $user->get('id');
+            $this->modified    = $date;
+            $this->modified_by = $user;
         }
         else {
             // New item
-            $this->created    = $date->toSql();
-            $this->created_by = $user->get('id');
+            $this->created    = $date;
+            $this->created_by = $user;
         }
-        //return false;
 
         return parent::store($updateNulls);
-    }
-
-
-    public function publish($pks = null, $state = 1, $userId = 0)
-    {
-        return $this->setState($pks, $state, $userId);
     }
 
 
