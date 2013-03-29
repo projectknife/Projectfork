@@ -24,7 +24,7 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string
+     * @var    string    
      */
     protected $text_prefix = 'COM_PROJECTFORK_DIRECTORY';
 
@@ -123,10 +123,11 @@ class PFrepoModelDirectory extends JModelAdmin
      *
      * @param     array      $commands    An array of commands to perform.
      * @param     array      $pks         An array of item ids.
+     * @param     array      $contexts    An array of item contexts.
      *
      * @return    boolean                 Returns true on success, false on failure.
      */
-    public function batch($commands, $pks)
+    public function batch($commands, $pks, $contexts)
     {
         // Sanitize user ids.
         $pks = array_unique($pks);
@@ -149,7 +150,7 @@ class PFrepoModelDirectory extends JModelAdmin
             $cmd = JArrayHelper::getValue($commands, 'move_copy', 'c');
 
             if ($cmd == 'c') {
-                $result = $this->batchCopy($commands['parent_id'], $pks);
+                $result = $this->batchCopy($commands['parent_id'], $pks, $contexts);
 
                 if (is_array($result)) {
                     $pks = $result;
@@ -158,9 +159,10 @@ class PFrepoModelDirectory extends JModelAdmin
                     return false;
                 }
             }
-            elseif ($cmd == 'm' && !$this->batchMove($commands['parent_id'], $pks)) {
+            elseif ($cmd == 'm' && !$this->batchMove($commands['parent_id'], $pks, $contexts)) {
                 return false;
             }
+
             $done = true;
         }
 
@@ -187,7 +189,6 @@ class PFrepoModelDirectory extends JModelAdmin
     protected function batchMove($value, $pks)
     {
         $dest = (int) $value;
-
         $table = $this->getTable();
 
         // Check that the destination exists
@@ -266,63 +267,60 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Batch copy directories to a new directory.
      *
-     * @param     integer    $value    The destination dir.
-     * @param     array      $pks      An array of row IDs.
+     * @param     integer    $value       The destination dir.
+     * @param     array      $pks         An array of row IDs.
+     * @param     array      $contexts    An array of item contexts.
      *
-     * @return    mixed                An array of new IDs on success, boolean false on failure.
+     * @return    mixed                   An array of new IDs on success, boolean false on failure.
      */
-    protected function batchCopy($value, $pks)
+    protected function batchCopy($value, $pks, $contexts)
     {
-        $dest = (int) $value;
-        $rbid = null;
-
+        $dest  = (int) $value;
         $table = $this->getTable();
-        $db    = $this->getDbo();
+        $query = $this->_db->getQuery(true);
         $user  = JFactory::getUser();
 
-        $i = 0;
+        $is_admin = $user->authorise('core.admin', 'com_pfrepo');
+        $levels   = $user->getAuthorisedViewLevels();
 
         // Check that the parent exists
-        if ($dest) {
-            if (!$table->load($dest)) {
-                if ($error = $table->getError()) {
-                    $this->setError($error);
-                    return false;
-                }
-                else {
-                    $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_COPY_DIRECTORY_NOT_FOUND'));
-                    return false;
-                }
-            }
-            // Check that user has create permission for parent directory
-            $access = PFrepoHelper::getActions('directory', $dest);
+        if (!$dest) {
+            $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_COPY_DIRECTORY_NOT_FOUND'));
+            return false;
+        }
 
-            if (!$access->get('core.create')) {
-                // Error since user cannot create in parent dir
-                $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_CANNOT_CREATE_DIRECTORY'));
+        if (!$table->load($dest)) {
+            if ($error = $table->getError()) {
+                $this->setError($error);
+                return false;
+            }
+            else {
+                $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_COPY_DIRECTORY_NOT_FOUND'));
                 return false;
             }
         }
 
-        // We need to log the parent ID
-        $rbid    = $table->parent_id;
-        $parents = array();
-
-        // Calculate the emergency stop count as a precaution against a runaway loop bug
-        $query = $db->getQuery(true);
-        $query->select('COUNT(id)')
-              ->from($db->quoteName('#__pf_repo_dirs'))
-              ->where('project_id = ' . $db->quote($table->project_id));
-
-        $db->setQuery($query);
-        $count = (int) $db->loadResult();
-
-        if ($error = $db->getErrorMsg()) {
-            $this->setError($error);
+        // Check that user has create permission for parent directory
+        if (!$user->authorise('core.create', 'com_pfrepo.directory.' . $dest)) {
+            $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_CANNOT_CREATE_DIRECTORY'));
             return false;
         }
 
-        // Parent exists so we let's proceed
+        // Calculate the emergency stop count as a precaution against a runaway loop bug
+        $query->select('COUNT(id)')
+              ->from('#__pf_repo_dirs')
+              ->where('project_id = ' . (int) $table->project_id);
+
+        $this->_db->setQuery($query);
+        $count = (int) $this->_db->loadResult();
+
+        // We need to log the parent ID
+        $rbid    = (int) $table->parent_id;
+        $parents = array();
+        $new_ids = array();
+        $i       = 0;
+
+        // Process each item
         while (!empty($pks) && $count > 0)
         {
             // Pop the first id off the stack
@@ -344,46 +342,48 @@ class PFrepoModelDirectory extends JModelAdmin
                 }
             }
 
-            // Copy is a bit tricky, because we also need to copy the children
-            $query->clear();
-            $query->select('id')
-                  ->from($db->quoteName('#__pf_repo_dirs'))
+            // Copy is a bit tricky, because we also need to copy the children too
+            $query->clear()
+                  ->select('id, access')
+                  ->from('#__pf_repo_dirs')
                   ->where('lft > ' . (int) $table->lft)
                   ->where('rgt < ' . (int) $table->rgt);
 
-            $db->setQuery($query);
-            $childIds = $db->loadColumn();
+            $this->_db->setQuery($query);
+            $sub_dirs = (array) $this->_db->loadObjectList();
 
-            // Add child ID's to the array only if they aren't already there.
-            foreach ($childIds as $childId)
+            // Add sub dirs to the array only if they aren't already there.
+            foreach ($sub_dirs as $dir)
             {
-                if (!in_array($childId, $pks)) {
-                    array_push($pks, $childId);
+                if (!in_array($dir->id, $pks)) {
+                    // Check viewing access
+                    if ($is_admin || in_array($dir->access, $levels)) {
+                        array_push($pks, $dir->id);
+                    }
                 }
             }
 
             // Make a copy of the old ID and Parent ID
-            $oldId       = $table->id;
-            $oldParentId = $table->parent_id;
+            $old_id     = $table->id;
+            $old_parent = $table->parent_id;
 
             // Reset the id because we are making a copy.
             $table->id = 0;
 
-            // If we a copying children, the Old ID will turn up in the parents list
+            // If we are copying children, the Old ID will turn up in the parents list
             // otherwise it's a new top level item
-            $table->parent_id = isset($parents[$oldParentId]) ? $parents[$oldParentId] : $dest;
+            $table->parent_id = isset($parents[$old_parent]) ? $parents[$old_parent] : $dest;
 
             // Set the new location in the tree for the node.
             $table->setLocation($table->parent_id, 'last-child');
 
-            $table->level = null;
+            $table->level    = null;
             $table->asset_id = null;
-            $table->lft = null;
-            $table->rgt = null;
-            $table->protected = 0;
+            $table->lft      = null;
+            $table->rgt      = null;
 
             // Alter the title & alias
-            list($title, $alias) = $this->generateNewTitle($table->parent_id, $table->title, $table->alias);
+            list($title, $alias) = $this->generateNewTitle($table->parent_id, $table->title, '');
             $table->title = $title;
             $table->alias = $alias;
 
@@ -394,14 +394,14 @@ class PFrepoModelDirectory extends JModelAdmin
             }
 
             // Get the new item ID
-            $newId = $table->get('id');
+            $new_id = $table->get('id');
 
             // Add the new ID to the array
-            $newIds[$i] = $newId;
+            $new_ids[$i] = $new_id;
             $i++;
 
             // Now we log the old 'parent' to the new 'parent'
-            $parents[$oldId] = $table->id;
+            $parents[$old_id] = $table->id;
             $count--;
         }
 
@@ -419,43 +419,72 @@ class PFrepoModelDirectory extends JModelAdmin
 
         // Copy the notes and files in the directories
         if (count($parents)) {
+            $config     = array('ignore_request' => true);
             $suffix     = ((JFactory::getApplication()->isSite()) ? 'Form' : '');
-            $note_model = $this->getInstance('Note' . $suffix, 'PFrepoModel', array('ignore_request' => true));
-            $file_model = $this->getInstance('File' . $suffix, 'PFrepoModel', array('ignore_request' => true));
+            $note_model = $this->getInstance('Note' . $suffix, 'PFrepoModel', $config);
+            $file_model = $this->getInstance('File' . $suffix, 'PFrepoModel', $config);
 
             foreach($parents AS $old => $new)
             {
-                $query->clear();
-                $query->select('id')
-                      ->from($db->quoteName('#__pf_repo_notes'))
+                // Get notes
+                $query->clear()
+                      ->select('id, access')
+                      ->from('#__pf_repo_notes')
                       ->where('dir_id = ' . (int) $old);
 
-                $db->setQuery($query);
-                $notes = (array) $db->loadColumn();
+                $this->_db->setQuery($query);
+                $notes = (array) $this->_db->loadObjectList();
 
-                $query->clear();
-                $query->select('id')
-                      ->from($db->quoteName('#__pf_repo_files'))
+                // Get files
+                $query->clear()
+                      ->select('id, access')
+                      ->from('#__pf_repo_files')
                       ->where('dir_id = ' . (int) $old);
 
-                $db->setQuery($query);
-                $files = (array) $db->loadColumn();
+                $this->_db->setQuery($query);
+                $files = (array) $db->loadObjectList();
 
-                if (count($notes)) {
-                    if (!$note_model->batchCopy($new, $notes)) {
-                        $this->setError($note_model->getError());
+                // Check notes access
+                $pks = array();
+                foreach ($notes AS $item)
+                {
+                    if ($is_admin || in_array($item->access, $levels)) {
+                        $pks[] = $item->id;
                     }
                 }
 
+                $notes = $pks;
+
+                // Check files access
+                $pks = array();
+                foreach ($files AS $item)
+                {
+                    if ($is_admin || in_array($item->access, $levels)) {
+                        $pks[] = $item->id;
+                    }
+                }
+
+                $files = $pks;
+
+                // Process notes
+                if (count($notes)) {
+                    if (!$note_model->batchCopy($new, $notes, $contexts)) {
+                        $this->setError($note_model->getError());
+                        return false;
+                    }
+                }
+
+                // Process files
                 if (count($files)) {
-                    if (!$file_model->batchCopy($new, $files)) {
+                    if (!$file_model->batchCopy($new, $files, $contexts)) {
                         $this->setError($file_model->getError());
+                        return false;
                     }
                 }
             }
         }
 
-        return $newIds;
+        return $new_ids;
     }
 
 
@@ -876,7 +905,6 @@ class PFrepoModelDirectory extends JModelAdmin
         // Check the cache
         if (isset($cache[$project])) return $cache[$project];
 
-
         $query = $this->_db->getQuery(true);
 
         $query->select('id')
@@ -902,7 +930,6 @@ class PFrepoModelDirectory extends JModelAdmin
      */
     protected function generateNewTitle($parent_id, $title, $alias = '', $id = 0)
     {
-        // Alter the title & alias
         $table = $this->getTable();
         $query = $this->_db->getQuery(true);
 
@@ -954,6 +981,7 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Custom clean the cache of com_projectfork and projectfork modules
      *
+     * @return    void    
      */
     protected function cleanCache($group = 'com_pfrepo', $client_id = 0)
     {
@@ -963,7 +991,6 @@ class PFrepoModelDirectory extends JModelAdmin
 
     /**
      * Method to test whether a record can be deleted.
-     * Defaults to the permission set in the component.
      *
      * @param     object     A record object.
      *
@@ -1130,7 +1157,7 @@ class PFrepoModelDirectory extends JModelAdmin
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
-     * @return    void
+     * @return    void    
      */
     protected function populateState()
     {

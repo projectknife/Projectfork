@@ -113,14 +113,17 @@ class PFrepoControllerRepository extends JControllerAdmin
     /**
      * Method to run batch operations.
      *
-     * @return    void
+     * @param     object     $model    The model of the component being processed.
+     *
+     * @return    boolean              True if successful, false otherwise and internal error is set.
      */
-    public function batch()
+    public function batch($model = null)
     {
         // Check for request forgeries
         JSession::checkToken() or die(JText::_('JINVALID_TOKEN'));
 
         $parent_id = (int) JRequest::getUInt('filter_parent_id', 0);
+        $return    = true;
 
         $vars = JRequest::getVar('batch', array(), 'post', 'array');
         $did  = JRequest::getVar('did', array(), 'post', 'array');
@@ -129,6 +132,7 @@ class PFrepoControllerRepository extends JControllerAdmin
 
         if (count($did) < 1 && count($nid) < 1 && count($fid) < 1) {
             JError::raiseWarning(500, JText::_($this->text_prefix . '_NO_ITEM_SELECTED'));
+            $return = false;
         }
         else {
             jimport('joomla.utilities.arrayhelper');
@@ -136,43 +140,70 @@ class PFrepoControllerRepository extends JControllerAdmin
 
             // Batch directories
             if (count($did) > 0) {
-                $model = $this->getModel('Directory');
+                $model    = $this->getModel('Directory');
+                $contexts = array();
 
                 JArrayHelper::toInteger($did);
 
-                if ($model->batch($vars, $did)) {
+                // Build an array of item contexts to check
+                foreach ($cid as $id)
+                {
+                    $contexts[$id] = $this->option . '.directory.' . $id;
+                }
+
+                // Process
+                if ($model->batch($vars, $did, $contexts)) {
                     $app->enqueueMessage(JText::_('COM_PROJECTFORK_SUCCESS_BATCH_DIRECTORIES'));
                 }
                 else {
                     $app->enqueueMessage($model->getError(), 'error');
+                    $return = false;
                 }
             }
 
             // Batch notes
             if (count($nid) > 0) {
-                $model = $this->getModel('Note');
+                $model    = $this->getModel('Note');
+                $contexts = array();
 
                 JArrayHelper::toInteger($nid);
 
-                if ($model->batch($vars, $nid)) {
+                // Build an array of item contexts to check
+                foreach ($nid as $id)
+                {
+                    $contexts[$id] = $this->option . '.note.' . $id;
+                }
+
+                // Process
+                if ($model->batch($vars, $nid, $contexts)) {
                     $app->enqueueMessage(JText::_('COM_PROJECTFORK_SUCCESS_BATCH_NOTES'));
                 }
                 else {
                     $app->enqueueMessage($model->getError(), 'error');
+                    $return = false;
                 }
             }
 
             // Batch files
             if (count($fid) > 0) {
-                $model = $this->getModel('File');
+                $model    = $this->getModel('File');
+                $contexts = array();
 
                 JArrayHelper::toInteger($fid);
 
-                if ($model->batch($vars, $fid)) {
+                // Build an array of item contexts to check
+                foreach ($fid as $id)
+                {
+                    $contexts[$id] = $this->option . '.file.' . $id;
+                }
+
+                // Process
+                if ($model->batch($vars, $fid, $contexts)) {
                     $app->enqueueMessage(JText::_('COM_PROJECTFORK_SUCCESS_BATCH_FILES'));
                 }
                 else {
                     $app->enqueueMessage($model->getError(), 'error');
+                    $return = false;
                 }
             }
         }
@@ -181,5 +212,7 @@ class PFrepoControllerRepository extends JControllerAdmin
               . ($parent_id > 1 ? '&filter_parent_id=' . $parent_id : '');
 
         $this->setRedirect(JRoute::_($link, false));
+
+        return $return;
     }
 }
