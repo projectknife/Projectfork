@@ -462,10 +462,10 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Method to get the record form.
      *
-     * @param     array $data     Data for the form.
-     * @param     boolean $loadData    True if the form is to load its own data (default case), false if not.
+     * @param     array      $data        Data for the form.
+     * @param     boolean    $loadData    True if the form is to load its own data (default case), false if not.
      *
-     * @return    mixed      A JForm object on success, false on failure
+     * @return    mixed                   A JForm object on success, false on failure
      */
     public function getForm($data = array(), $loadData = true)
     {
@@ -530,7 +530,7 @@ class PFrepoModelDirectory extends JModelAdmin
         $old_path = null;
 
         // Include the content plugins for the on save events.
-		JPluginHelper::importPlugin('content');
+        JPluginHelper::importPlugin('content');
 
         // Load the row if saving an existing item.
         if ($pk > 0) {
@@ -603,12 +603,12 @@ class PFrepoModelDirectory extends JModelAdmin
         }
 
         // Trigger the onContentBeforeSave event.
-		$result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, $is_new));
+        $result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, $is_new));
 
-		if (in_array(false, $result, true)) {
-			$this->setError($table->getError());
-			return false;
-		}
+        if (in_array(false, $result, true)) {
+            $this->setError($table->getError());
+            return false;
+        }
 
         // Store the data.
         if (!$table->store()) {
@@ -617,7 +617,7 @@ class PFrepoModelDirectory extends JModelAdmin
         }
 
         // Trigger the onContentAfterSave event.
-		$dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $is_new));
+        $dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $is_new));
 
         // Store the labels
         if (isset($data['labels'])) {
@@ -718,236 +718,141 @@ class PFrepoModelDirectory extends JModelAdmin
         $dispatcher = JDispatcher::getInstance();
 
         $pks   = (array) $pks;
-        $table = $this->getTable();
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $moved = array();
-        $dest  = 0;
+        $query = $this->_db->getQuery(true);
 
         // Include the content plugins for the on delete events.
         JPluginHelper::importPlugin('content');
 
-        // Move the sub folders up which we are not allowed to delete
+        // Get model instances
+        $config     = array('ignore_request' => true);
+        $suffix     = (JFactory::getApplication()->isSite() ? 'Form' : '');
+        $note_model = $this->getInstance('Note' . $suffix, 'PFrepoModel', $config);
+        $file_model = $this->getInstance('File' . $suffix, 'PFrepoModel', $config);
+        $sub_table  = $this->getTable();
+        $table      = $this->getTable();
+
+        // Iterate over the items to delete each one.
         foreach ($pks as $i => $pk)
         {
-            // Get the parent id of the current directory
-            $query->clear();
-            $query->select('parent_id')
-                  ->from($table->getTableName())
-                  ->where($table->getKeyName() . ' = ' . (int) $pk);
-
-            $db->setQuery((string) $query);
-            $dest = (int) $db->loadResult();
-
-            if ($dest > 1) {
-                // Get the children
-                $tree = (array) $table->getTree($pk);
-
-                foreach($tree AS $x => $item)
-                {
-                    $is_included = false;
-                    foreach ($moved AS $p)
-                    {
-                        if ($item->lft > $p[0] && $item->rgt < $p[1]) {
-                            $is_included = true;
-                        }
-                    }
-
-                    if ($is_included) continue;
-
-                    if (intval($item->id) != $pk) {
-                        if (!$this->canDelete($item)) {
-                            $table->load($item->id);
-                            $table->setLocation($dest, 'last-child');
-
-                            if (!$table->store()) {
-                                $this->setError($table->getError());
-                                return false;
-                            }
-
-                            if (!$table->rebuildPath($table->id)) {
-                                $this->setError($table->getError());
-                                return false;
-                            }
-
-                            if (!$table->rebuild($table->id, $table->lft, $table->level, $table->path)) {
-                                $this->setError($table->getError());
-                                return false;
-                            }
-
-                            $moved[] = array($item->lft, $item->rgt);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Iterate the items to delete each one.
-        $suffix     = ((JFactory::getApplication()->isSite()) ? 'Form' : '');
-        $note_model = $this->getInstance('Note' . $suffix, 'PFrepoModel', array('ignore_request' => true));
-        $file_model = $this->getInstance('File' . $suffix, 'PFrepoModel', array('ignore_request' => true));
-        $note_table = $this->getTable('Note');
-        $file_table = $this->getTable('File');
-
-        foreach ($pks as $i => $pk)
-        {
-            if ($table->load($pk)) {
-                if ($this->canDelete($table)) {
-                    $context  = $this->option . '.' . $this->name;
-                    $tree     = $table->getTree($pk, true);
-                    $dir_list = array();
-
-                    $dir_project = (int) $table->project_id;
-                    $dir_path    = $table->path;
-
-                    if (is_array($tree) && count($tree) > 0) {
-                        foreach($tree AS $dir)
-                        {
-                            $dir_list[] = (int) $dir->id;
-                        }
-                    }
-
-                    // Trigger the onContentBeforeDelete event.
-                    $result = $dispatcher->trigger($this->event_before_delete, array($context, $table));
-
-                    if (in_array(false, $result, true)) {
-                        $this->setError($table->getError());
-                        return false;
-                    }
-
-                    if (!$table->delete($pk)) {
-                        $this->setError($table->getError());
-                        return false;
-                    }
-
-                    if (is_array($dir_list) && count($dir_list) > 0) {
-                        $move_notes = array();
-                        $del_notes  = array();
-                        $move_files = array();
-                        $del_files  = array();
-
-                        // Get the notes for deletion
-                        $query->clear();
-                        $query->select('id, asset_id, access')
-                              ->from('#__pf_repo_notes')
-                              ->where('dir_id IN(' . implode(', ', $dir_list) . ')');
-
-                        $db->setQuery($query);
-                        $notes = (array) $db->loadObjectList();
-
-                        foreach($notes AS $note)
-                        {
-                            if (!$note_model->canDelete($note)) {
-                                $move_notes[] = $note->id;
-                            }
-                            else {
-                                $del_notes[] = $note->id;
-                            }
-                        }
-
-                        // Get the files for deletion
-                        $query->clear();
-                        $query->select('id, asset_id, access')
-                              ->from('#__pf_repo_files')
-                              ->where('dir_id IN(' . implode(', ', $dir_list) . ')');
-
-                        $db->setQuery($query);
-                        $files = (array) $db->loadObjectList();
-
-                        foreach($files AS $file)
-                        {
-                            if (!$file_model->canDelete($file)) {
-                                $move_files[] = $file->id;
-                            }
-                            else {
-                                $del_files[] = $file->id;
-                            }
-                        }
-
-                        // Delete notes
-                        if (count($del_notes)) {
-                            $query->clear();
-                            $query->delete('#__pf_repo_notes')
-                                  ->where('id IN(' . implode(', ', $del_notes) . ')');
-
-                            $db->setQuery((string) $query);
-                            $db->execute();
-
-                            if ($db->getErrorMsg()) {
-                                $this->setError($db->getErrorMsg());
-                            }
-                        }
-
-                        // Move notes you cant delete
-                        foreach($move_notes AS $note)
-                        {
-                            if ($note_table->load($note)) {
-                                $note_table->dir_id = $table->parent_id;
-
-                                if (!$note_table->store()) {
-                                    $this->setError($note_table->getError());
-                                }
-                            }
-                        }
-
-                        // Delete files
-                        if (count($del_files)) {
-                            $query->clear();
-                            $query->delete('#__pf_repo_files')
-                                  ->where('id IN(' . implode(', ', $del_files) . ')');
-
-                            $db->setQuery((string) $query);
-                            $db->execute();
-
-                            if ($db->getErrorMsg()) {
-                                $this->setError($db->getErrorMsg());
-                            }
-                        }
-
-                        // Move files you cant delete
-                        foreach($move_files AS $file)
-                        {
-                            if ($file_table->load($file)) {
-                                $file_table->dir_id = $table->parent_id;
-
-                                if (!$file_table->store()) {
-                                    $this->setError($file_table->getError());
-                                }
-                            }
-                        }
-                    }
-
-                    // Delete the physical directory if it exists
-                    if ($dir_project) {
-                        $basepath = PFrepoHelper::getBasePath($dir_project);
-                        $fullpath = JPath::clean($basepath . '/' . $dir_path);
-
-                        if (JFolder::exists($fullpath)) {
-                            JFolder::delete($fullpath);
-                        }
-                    }
-
-                    // Trigger the onContentAfterDelete event.
-                    $dispatcher->trigger($this->event_after_delete, array($context, $table));
-                }
-                else {
-                    // Prune items that you can't change.
-                    unset($pks[$i]);
-                    $error = $this->getError();
-                    if ($error) {
-                        JError::raiseWarning(500, $error);
-                        return false;
-                    }
-                    else {
-                        JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'));
-                        return false;
-                    }
-                }
-            }
-            else {
+            // Try to load the item from the db
+            if (!$table->load($pk)) {
                 $this->setError($table->getError());
                 return false;
             }
+
+            // Check delete permission (includes check on sub-dirs, notes and files)
+            if (!$this->canDelete($table)) {
+                // Prune items that you can't change.
+                unset($pks[$i]);
+
+                $error = $this->getError();
+
+                if ($error) {
+                    JError::raiseWarning(500, $error);
+                }
+                else {
+                    JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'));
+                }
+
+                return false;
+            }
+
+            // Trigger the onContentBeforeDelete event.
+            $context = $this->option . '.' . $this->name;
+            $result  = $dispatcher->trigger($this->event_before_delete, array($context, $table));
+
+            if (in_array(false, $result, true)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Get all sub-directories
+            $query->clear()
+                  ->select('id')
+                  ->from('#__pf_repo_dirs')
+                  ->where('a.lft > ' . (int) $table->lft)
+                  ->where('a.rgt < ' . (int) $table->rgt)
+                  ->order('level DESC');
+
+            $this->_db->setQuery($query);
+            $sub_dirs = (array) $this->_db->loadColumn();
+
+            $dirs   = $sub_dirs;
+            $dirs[] = (int) $table->id;
+
+            $where = 'dir_id ' . (count($sub_dirs) == 1 ? '= ' . $dirs[0] : 'IN(' . implode(', ', $dirs) . ')');
+
+            // Get all notes
+            $query->clear()
+                  ->select('id')
+                  ->from('#__pf_repo_notes')
+                  ->where($where);
+
+            $this->_db->setQuery($query);
+            $notes = (array) $this->_db->loadColumn();
+
+            // Get all files
+            $query->clear()
+                  ->select('id')
+                  ->from('#__pf_repo_files')
+                  ->where($where);
+
+            $this->_db->setQuery($query);
+            $files = (array) $this->_db->loadColumn();
+
+            // Delete all notes
+            if (count($notes)) {
+                if (!$note_model->delete($notes)) {
+                    $this->setError($note_model->getError());
+                    return false;
+                }
+            }
+
+            // Delete all files
+            if (count($files)) {
+                if (!$file_model->delete($files)) {
+                    $this->setError($file_model->getError());
+                    return false;
+                }
+            }
+
+            // Delete all sub-dirs
+            if (count($sub_dirs)) {
+                foreach ($sub_dirs AS $sub_dir)
+                {
+                    // Try to load the item from the db
+                    if (!$sub_table->load($sub_dir)) {
+                        $this->setError($sub_table->getError());
+                        return false;
+                    }
+
+                    if (!$sub_table->delete((int) $sub_dir)) {
+                        $this->setError($sub_table->getError());
+                        return false;
+                    }
+
+                    // Delete physical path if exists
+                    $basepath = PFrepoHelper::getBasePath($sub_table->project_id);
+                    $fullpath = JPath::clean($basepath . '/' . $sub_table->path);
+
+                    if (JFolder::exists($fullpath)) JFolder::delete($fullpath);
+                }
+            }
+
+            // And finally, delete this dir
+            if (!$table->delete($pk)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Delete physical path if exists
+            $basepath = PFrepoHelper::getBasePath($table->project_id);
+            $fullpath = JPath::clean($basepath . '/' . $table->path);
+
+            if (JFolder::exists($fullpath)) JFolder::delete($fullpath);
+
+            // Trigger the onContentAfterDelete event.
+            $dispatcher->trigger($this->event_after_delete, array($context, $table));
         }
 
         // Clear the component's cache
@@ -1066,14 +971,82 @@ class PFrepoModelDirectory extends JModelAdmin
      */
     protected function canDelete($record)
     {
-        if (!empty($record->id)) {
-            $user  = JFactory::getUser();
-            $asset = 'com_pfrepo.directory.' . (int) $record->id;
+        if (empty($record->id) || $record->protected == '1') return false;
 
-            return $user->authorise('core.delete', $asset);
+        $user   = JFactory::getUser();
+        $levels = $user->getAuthorisedViewLevels();
+
+        // Check if admin first
+        if ($user->authorise('core.admin', 'com_pfrepo')) {
+            return true;
         }
 
-        return parent::canDelete($record);
+        // Check delete permission on the folder
+        if (!$user->authorise('core.delete', 'com_pfrepo.directory.' . (int) $record->id)) {
+            return false;
+        }
+
+        // Check delete permissions for sub-folders
+        $query = $this->_db->getQuery(true);
+
+        $query->select('id, access')
+              ->from('#__pf_repo_dirs')
+              ->where('a.lft > ' . (int) $record->lft)
+              ->where('a.rgt < ' . (int) $record->rgt);
+
+        $this->_db->setQuery($query);
+
+        $items = (array) $this->_db->loadObjectList();
+        $dirs  = array((int) $record->id);
+
+        foreach ($items AS $i => $item)
+        {
+            $can_access = in_array($item->access, $levels);
+            $can_delete = $user->authorise('core.delete', 'com_pfrepo.directory.' . (int) $item->id);
+
+            if (!$can_access || !$can_delete) return false;
+
+            $dirs[] = (int) $item->id;
+        }
+
+        $count = count($dirs);
+        $where = 'dir_id ' . ($count == 1 ? '= ' . $dirs[0] : 'IN(' . implode(', ', $dirs) . ')');
+
+        // Check all notes
+        $query->clear()
+              ->select('id, access')
+              ->from('#__pf_repo_notes')
+              ->where($where);
+
+        $this->_db->setQuery($query);
+        $items = (array) $this->_db->loadObjectList();
+
+        foreach ($items AS $i => $item)
+        {
+            $can_access = in_array($item->access, $levels);
+            $can_delete = $user->authorise('core.delete', 'com_pfrepo.note.' . (int) $item->id);
+
+            if (!$can_access || !$can_delete) return false;
+        }
+
+        // Check all files
+        $query->clear()
+              ->select('id, access')
+              ->from('#__pf_repo_files')
+              ->where($where);
+
+        $this->_db->setQuery($query);
+        $items = (array) $this->_db->loadObjectList();
+
+        foreach ($items AS $i => $item)
+        {
+            $can_access = in_array($item->access, $levels);
+            $can_delete = $user->authorise('core.delete', 'com_pfrepo.file.' . (int) $item->id);
+
+            if (!$can_access || !$can_delete) return false;
+        }
+
+        return true;
     }
 
 

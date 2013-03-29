@@ -11,6 +11,9 @@
 defined('_JEXEC') or die();
 
 
+jimport('joomla.filesystem.path');
+
+
 class PFrepoHelper
 {
     /**
@@ -100,33 +103,30 @@ class PFrepoHelper
      *
      * @return    string    $basepath    The upload directory
      */
-    public static function getBasePath($project = NULL)
+    public static function getBasePath($project = null)
     {
-        jimport('joomla.filesystem.path');
+        static $cache = array();
+
+        $project = (int) $project;
+
+        // Check the cache
+        if (isset($cache[$project])) return $cache[$project];
 
         $params = JComponentHelper::GetParams('com_pfrepo');
-
-        $base = JPATH_SITE . '/';
-        $dest = $params->get('repo_basepath', '/media/com_projectfork/repo/');
+        $dest   = $params->get('repo_basepath', '/media/com_projectfork/repo/');
+        $base   = JPATH_SITE . '/';
 
         $fchar = substr($dest, 0, 1);
         $lchar = substr($dest, -1, 1);
 
-        if ($fchar == '/' || $fchar == '\\') {
-            $dest = substr($dest, 1);
-        }
+        if ($fchar == '/' || $fchar == '\\') $dest = substr($dest, 1);
+        if ($lchar == '/' || $lchar == '\\') $dest = substr($dest, 0, -1);
 
-        if ($lchar == '/' || $lchar == '\\') {
-            $dest = substr($dest, 0, -1);
-        }
+        if ($project) $dest .= '/' . (int) $project;
 
-        if (is_numeric($project)) {
-            $dest .= '/' . (int) $project;
-        }
+        $cache[$project] = JPath::clean($base . $dest);
 
-        $basepath = JPath::clean($base . $dest);
-
-        return $basepath;
+        return $cache[$project];
     }
 
 
