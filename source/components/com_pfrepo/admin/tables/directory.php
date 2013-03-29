@@ -163,8 +163,8 @@ class PFTableDirectory extends JTableNested
                   ->where('a.project_id = ' . (int) $id)
                   ->group('c.id');
 
-            $db->setQuery($query);
-            $assets = (array) $db->loadObjectList();
+            $this->_db->setQuery($query);
+            $assets = (array) $this->_db->loadObjectList();
         }
 
         return $assets;

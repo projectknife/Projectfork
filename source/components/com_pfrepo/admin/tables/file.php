@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -110,25 +110,23 @@ class PFtableFile extends PFTable
      */
     protected function _getParentAccess()
     {
-        $db    = $this->getDbo();
-        $query = $db->getQuery(true);
-
+        $query   = $this->_db->getQuery(true);
         $dir     = (int) $this->dir_id;
         $project = (int) $this->project_id;
 
         if ($dir > 1) {
             $query->select('access')
                   ->from('#__pf_repo_dirs')
-                  ->where('id = ' . $db->quote($dir));
+                  ->where('id = ' . $dir);
         }
         elseif ($project > 0) {
             $query->select('access')
                   ->from('#__pf_projects')
-                  ->where('id = ' . $db->quote($project));
+                  ->where('id = ' . $project);
         }
 
-        $db->setQuery($query);
-        $access = (int) $db->loadResult();
+        $this->_db->setQuery($query);
+        $access = (int) $this->_db->loadResult();
 
         if (!$access) $access = (int) JFactory::getConfig()->get('access');
 
@@ -151,17 +149,16 @@ class PFtableFile extends PFTable
 
         // Get the project assets
         if ($component == 'com_pfprojects' && $item == 'project') {
-            $db    = $this->getDbo();
-            $query = $db->getQuery(true);
+            $query = $this->_db->getQuery(true);
 
             $query->select('c.*')
                   ->from('#__assets AS c')
                   ->join('INNER', $this->_tbl . ' AS a ON (a.asset_id = c.id)')
-                  ->where('a.project_id = ' . $db->quote((int) $id))
+                  ->where('a.project_id = ' . (int) $id)
                   ->group('c.id');
 
-            $db->setQuery($query);
-            $assets = (array) $db->loadObjectList();
+            $this->_db->setQuery($query);
+            $assets = (array) $this->_db->loadObjectList();
         }
 
         return $assets;
@@ -240,18 +237,18 @@ class PFtableFile extends PFTable
      */
     public function store($updateNulls = false)
     {
-        $date = JFactory::getDate();
-        $user = JFactory::getUser();
+        $date = JFactory::getDate()->toSql();
+        $user = JFactory::getUser()->get('id');
 
         if ($this->id) {
             // Existing item
-            $this->modified    = $date->toSql();
-            $this->modified_by = $user->get('id');
+            $this->modified    = $date;
+            $this->modified_by = $user;
         }
         else {
             // New item
-            $this->created = $date->toSql();
-            if (empty($this->created_by)) $this->created_by = $user->get('id');
+            $this->created = $date;
+            if (empty($this->created_by)) $this->created_by = $user;
         }
 
         // Store the main record
