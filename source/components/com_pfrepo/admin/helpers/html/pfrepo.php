@@ -22,7 +22,7 @@ abstract class JHtmlPFrepo
      *
      * @param     integer    $count    The attachment count
      *
-     * @return    string               
+     * @return    string
      */
     public static function attachmentsLabel($count = 0)
     {
@@ -37,7 +37,7 @@ abstract class JHtmlPFrepo
      *
      * @param     array     $items    The attachment objects
      *
-     * @return    string              
+     * @return    string
      */
     public static function attachments($items = array())
     {
@@ -119,7 +119,7 @@ abstract class JHtmlPFrepo
             '<fieldset id="batch-choose-action" class="combo">',
             '<select name="batch[parent_id]" class="inputbox" id="batch-parent-id">',
             '<option value="">' . JText::_('JSELECT') . '</option>',
-            JHtml::_('select.options', $paths),
+            JHtml::_('select.options', $paths, 'value', 'text', (int) $dir),
             '</select>',
             JHtml::_('select.radiolist', $options, 'batch[move_copy]', '', 'value', 'text', 'm'),
             '</fieldset>'
