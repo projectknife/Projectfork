@@ -278,6 +278,7 @@ class PFrepoViewRepository extends JViewLegacy
         $options[] = JHtml::_('select.option', 'a.title', JText::_('COM_PROJECTFORK_ORDER_TITLE'));
         $options[] = JHtml::_('select.option', 'a.created', JText::_('COM_PROJECTFORK_ORDER_CREATE_DATE'));
         $options[] = JHtml::_('select.option', 'a.modified', JText::_('COM_PROJECTFORK_ORDER_EDIT_DATE'));
+        $options[] = JHtml::_('select.option', 'a.created_by', JText::_('COM_PROJECTFORK_ORDER_AUTHOR'));
 
         return $options;
     }
