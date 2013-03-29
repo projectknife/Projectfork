@@ -42,11 +42,24 @@ foreach ($this->items['notes'] as $i => $item) :
         </td>
         <?php endif; ?>
         <td>
-            <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
-            <i class="icon-file"></i>
-            <a href="<?php echo JRoute::_($link);?>">
-                <?php echo JText::_($this->escape($item->title)); ?>
-            </a>
+        	<span class="item-title pull-left">
+	            <?php if ($item->checked_out) : ?><span aria-hidden="true" class="icon-lock"></span> <?php endif; ?>
+	            <a href="<?php echo JRoute::_($link);?>"  class="hasPopover" rel="popover" title="<?php echo JText::_($this->escape($item->title)); ?>" data-content="<?php echo $this->escape($item->description); ?>" data-placement="right">
+	            	<span aria-hidden="true" class="icon-pencil-2 text-warning"></span> 
+	                <?php echo JText::_($this->escape($item->title)); ?>
+	            </a>
+        	</span>
+        	
+        	<span class="dropdown pull-left">
+	        	<?php
+	                $this->menu->start(array('class' => 'btn-mini btn-link'));
+	                $this->menu->itemEdit('noteform', $item->id, ($can_edit || $can_edit_own));
+	                $this->menu->itemDelete('repository', $x, ($can_edit || $can_edit_own));
+	                $this->menu->end();
+	
+	                echo $this->menu->render(array('class' => 'btn-mini'));
+	            ?>
+        	</span>
 
             <?php if ($filter_project && $is_search): ?>
                 <div class="small">
@@ -55,23 +68,13 @@ foreach ($this->items['notes'] as $i => $item) :
             <?php endif; ?>
         </td>
         <td>
-            <?php
-                $this->menu->start(array('class' => 'btn-mini'));
-                $this->menu->itemEdit('noteform', $item->id, ($can_edit || $can_edit_own));
-                $this->menu->itemDelete('repository', $x, ($can_edit || $can_edit_own));
-                $this->menu->end();
-
-                echo $this->menu->render(array('class' => 'btn-mini'));
-            ?>
+        	<?php echo JText::_('JGRID_HEADING_NOTE'); ?>
         </td>
         <td>
-            <?php echo JHtml::_('pfhtml.label.datetime', $item->created, false, $date_opts); ?>
+            <?php echo $item->author_name; ?>
         </td>
         <td>
-            <?php echo JHtml::_('pf.html.truncate', $item->description); ?>
-            <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
-            <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
-            <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
+            <?php echo JHtml::_('date', $item->created, JText::_('M d')); ?>
         </td>
     </tr>
 <?php $x++; endforeach; ?>
