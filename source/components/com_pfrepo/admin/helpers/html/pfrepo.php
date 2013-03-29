@@ -1,37 +1,47 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
 defined('_JEXEC') or die();
 
 
+/**
+ * Repository HTML helper class
+ *
+ */
 abstract class JHtmlPFrepo
 {
+    /**
+     * Returns a label for an item attachment count
+     *
+     * @param     integer    $count    The attachment count
+     *
+     * @return    string               
+     */
     public static function attachmentsLabel($count = 0)
     {
-        if (!$count) {
-            return '';
-        }
+        if (!$count) return '';
 
-        return '<span class="label"><i class="icon-flag-2 icon-white"></i> ' . intval($count) . '</span>';
+        return ' <span class="label"><i class="icon-flag-2 icon-white"></i> ' . (int) $count . '</span> ';
     }
 
 
+    /**
+     * Returns a list with attachments
+     *
+     * @param     array     $items    The attachment objects
+     *
+     * @return    string              
+     */
     public static function attachments($items = array())
     {
-        if (!is_array($items)) {
-            return '';
-        }
-
-        if (!count($items)) {
-            return '';
-        }
+        if (!is_array($items) || !count($items)) return '';
 
         $user   = JFactory::getUser();
         $levels = $user->getAuthorisedViewLevels();
@@ -40,20 +50,14 @@ abstract class JHtmlPFrepo
 
         foreach($items AS $item)
         {
-            if (!isset($item->repo_data)) {
-                continue;
-            }
-
-            if (empty($item->repo_data)) {
+            if (!isset($item->repo_data) || empty($item->repo_data)) {
                 continue;
             }
 
             $data = &$item->repo_data;
 
-            if (!$admin) {
-                if (!in_array($data->access, $levels)) {
-                    continue;
-                }
+            if (!$admin && !in_array($data->access, $levels)) {
+                continue;
             }
 
             list($asset, $id) = explode('.', $item->attachment, 2);
@@ -165,9 +169,9 @@ abstract class JHtmlPFrepo
         }
 
         $query->order('a.path');
-        $db->setQuery((string) $query);
 
-        // Get the result
+        $db->setQuery($query);
+
         $list    = (array) $db->loadObjectList();
         $options = array();
 

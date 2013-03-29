@@ -21,6 +21,9 @@ $filter_search  = $this->state->get('filter.search');
 $filter_project = (int) $this->state->get('filter.project');
 $is_search      = empty($filter_search) ? false : true;
 
+$txt_icon    = JText::_('COM_PROJECTFORK_FIELD_FILE_LABEL');
+$date_format = JText::_('DATE_FORMAT_LC4');
+
 foreach ($this->items['files'] as $i => $item) :
     $edit_link = 'task=file.edit&filter_project=' . $item->project_id . 'filter_parent_id=' . $item->dir_id . '&id=' . $item->id;
     $access    = PFrepoHelper::getActions('file', $item->id);
@@ -41,7 +44,7 @@ foreach ($this->items['files'] as $i => $item) :
                     <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'repository.', $can_change); ?>
                 <?php endif; ?>
 
-                <i class="icon-flag-2 hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_FILE_LABEL');?>"></i>
+                <i class="icon-flag-2 hasTip" title="<?php echo $txt_icon;?>"></i>
 
                 <?php if ($can_edit || $can_edit_own) : ?>
                     <a href="<?php echo JRoute::_('index.php?option=com_pfrepo&' . $edit_link);?>">
@@ -80,7 +83,7 @@ foreach ($this->items['files'] as $i => $item) :
             <?php echo $this->escape($item->author_name); ?>
         </td>
         <td class="nowrap hidden-phone small">
-            <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
+            <?php echo JHtml::_('date', $item->created, $date_format); ?>
         </td>
         <td class="hidden-phone small">
             <?php echo (int) $item->id; ?>

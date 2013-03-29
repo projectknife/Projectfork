@@ -230,7 +230,7 @@ class PFrepoModelRepository extends JModelList
         }
 
         // Add the list ordering clause.
-        $order_col = $this->state->get('list.ordering', 'a.ordering');
+        $order_col = $this->state->get('list.ordering', 'a.title');
         $order_dir = $this->state->get('list.direction', 'asc');
 
         $query->order($this->_db->escape($order_col . ' ' . $order_dir))

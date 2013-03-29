@@ -21,6 +21,10 @@ $filter_project = (int) $this->state->get('filter.project');
 $count_elements = (int) $this->state->get('list.count_elements');
 $is_search      = empty($filter_search) ? false : true;
 
+$txt_icon    = JText::_('COM_PROJECTFORK_FIELD_DIRECTORY_TITLE');
+$txt_edit    = JText::_('JACTION_EDIT');
+$date_format = JText::_('DATE_FORMAT_LC4');
+
 if ($this_dir->parent_id > 1) : ?>
     <tr class="row1">
         <td class="center"></td>
@@ -55,7 +59,7 @@ foreach ($this->items['directories'] as $i => $item) :
                     <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'repository.', $can_change); ?>
                 <?php endif; ?>
 
-                <i class="icon-folder hasTip" title="<?php echo JText::_('COM_PROJECTFORK_FIELD_DIRECTORY_TITLE');?>"></i>
+                <i class="icon-folder hasTip" title="<?php echo $txt_icon;?>"></i>
                 <a href="<?php echo JRoute::_('index.php?option=com_pfrepo&view=repository&filter_parent_id=' . $item->id);?>">
                     <?php echo JText::_($this->escape($item->title)); ?>
                 </a>
@@ -85,7 +89,7 @@ foreach ($this->items['directories'] as $i => $item) :
                 <?php if ($can_edit || $can_edit_own) : ?>
                     <div class="fltrt">
                         <a href="<?php echo JRoute::_('index.php?option=com_pfrepo&' . $edit_link);?>">
-                            <?php echo JText::_('JACTION_EDIT'); ?>
+                            <?php echo $txt_edit; ?>
                         </a>
                     </div>
                 <?php endif; ?>
@@ -101,7 +105,7 @@ foreach ($this->items['directories'] as $i => $item) :
             <?php echo $this->escape($item->author_name); ?>
         </td>
         <td class="nowrap hidden-phone small">
-            <?php echo JHtml::_('date', $item->created, JText::_('DATE_FORMAT_LC4')); ?>
+            <?php echo JHtml::_('date', $item->created, $date_format); ?>
         </td>
         <td class="hidden-phone small">
             <?php echo (int) $item->id; ?>

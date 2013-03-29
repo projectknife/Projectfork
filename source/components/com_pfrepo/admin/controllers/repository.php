@@ -26,7 +26,7 @@ class PFrepoControllerRepository extends JControllerAdmin
      * @param     string    $name      The name of the model.
      * @param     string    $prefix    The prefix for the PHP class name.
      *
-     * @return    jmodel
+     * @return    jmodel               
      */
     public function getModel($name = 'Repository', $prefix = 'PFrepoModel', $config = array('ignore_request' => true))
     {
@@ -37,9 +37,69 @@ class PFrepoControllerRepository extends JControllerAdmin
 
 
     /**
+     * Check in of one or more records.
+     *
+     * @return    boolean    True on success
+     */
+    public function checkin()
+    {
+        // Check for request forgeries.
+        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+        $parent_id = (int) JRequest::getUInt('filter_parent_id', 0);
+
+        $link = 'index.php?option=' . $this->option . '&view=' . $this->view_list
+              . ($parent_id > 1 ? '&filter_parent_id=' . $parent_id : '');
+
+        // Get items to check in from the request.
+        $did = JRequest::getVar('did', array(), 'post', 'array');
+        $nid = JRequest::getVar('nid', array(), 'post', 'array');
+        $fid = JRequest::getVar('fid', array(), 'post', 'array');
+
+        // Check-in directories
+        if (count($did)) {
+            $model = $this->getModel('Directory');
+
+            if (!$model->checkin($did)) {
+                $message = JText::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError());
+                $this->setRedirect(JRoute::_($link, false), $message, 'error');
+                return false;
+            }
+        }
+
+        // Check-in notes
+        if (count($nid)) {
+            $model = $this->getModel('Note');
+
+            if (!$model->checkin($nid)) {
+                $message = JText::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError());
+                $this->setRedirect(JRoute::_($link, false), $message, 'error');
+                return false;
+            }
+        }
+
+        // Check-in files
+        if (count($fid)) {
+            $model = $this->getModel('File');
+
+            if (!$model->checkin($fid)) {
+                $message = JText::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError());
+                $this->setRedirect(JRoute::_($link, false), $message, 'error');
+                return false;
+            }
+        }
+
+        $message = JText::plural($this->text_prefix . '_N_ITEMS_CHECKED_IN', (count($did) + count($nid) + count($fid)));
+        $this->setRedirect(JRoute::_($link, false), $message);
+
+        return true;
+    }
+
+
+    /**
      * Removes an item.
      *
-     * @return    void
+     * @return    void    
      */
     public function delete()
     {
