@@ -739,68 +739,83 @@ class PFprojectsModelProject extends JModelAdmin
      */
     protected function createRepository($item)
     {
-        if (!is_object($item) || empty($item)) {
-            return false;
-        }
+        if (empty($item)) return false;
 
+        // Get Repo dir model
+        $suffix    = (JFactory::getApplication()->isSite() ? 'Form' : '');
+        $config    = array('ignore_request' => true);
+        $dir_class = $this->getInstance('Directory' . $suffix, 'PFrepoModel', $config);
+
+        // Indicate to the model that we possibly want to create a new repo
+        $dir_class->setState('create_repo', true);
+
+        // Load attributes into JRegistry
         $registry = new JRegistry;
         $registry->loadString($item->attribs);
 
-        $repo_dir = ($registry->get('repo_dir') ? (int) $registry->get('repo_dir') : 0 );
-        $suffix   = (JFactory::getApplication()->isSite() ? 'Form' : '');
+        // Get the repo dir pk
+        $repo_dir = (int) $registry->get('repo_dir');
 
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
+        // Check if the dir exists
         if ($repo_dir) {
-            // A repo dir reference is set. See if the dir actually exists
-            $dir = $this->getInstance('Directory' . $suffix, 'PFrepoModel', array('ignore_request'));
+            $record = $dir_class->getItem($repo_dir);
 
-            if (!$dir->getState('create_repo')) {
-                $dir->setState('create_repo', true);
-            }
-
-            $record = $dir->getItem($repo_dir);
-
-            if ($record === false || $record->id == 0) {
+            if ($record === false || empty($record->id)) {
+                // Record not found
                 $repo_dir = 0;
+            }
+            else {
+                // Record found, update it
+                $data = array();
+                $data['id']         = $record->id;
+                $data['title']      = $item->title;
+                $data['project_id'] = $item->id;
+                $data['parent_id']  = $record->id;
+
+                if (!$dir_class->save($data)) {
+                    $this->setError($dir_class->getError());
+                    return false;
+                }
+
+                return true;
             }
         }
 
-        // Create repo dir if it does not exist
-        if (!$repo_dir) {
-            $dir = $this->getInstance('Directory' . $suffix, 'PFrepoModel', array('ignore_request'));
+        // Create repo dir
+        $query = $this->_db->getQuery(true);
+        $data  = array();
 
-            if (!$dir->getState('create_repo')) {
-                $dir->setState('create_repo', true);
-            }
+        $data['id']         = 0;
+        $data['protected']  = 1;
+        $data['title']      = $item->title;
+        $data['project_id'] = $item->id;
+        $data['created']    = $item->created;
+        $data['created_by'] = $item->created_by;
+        $data['access']     = $item->access;
+        $data['parent_id']  = 1;
 
-            $data = array();
-            $data['id']         = 0;
-            $data['protected']  = 1;
-            $data['title']      = $item->title;
-            $data['project_id'] = $item->id;
-            $data['created']    = $item->created;
-            $data['created_by'] = $item->created_by;
-            $data['access']     = $item->access;
-            $data['parent_id']  = 1;
+        if (!$dir_class->save($data)) {
+            $this->setError($dir_class->getError());
+            return false;
+        }
 
-            if (!$dir->save($data)) {
-                $this->setError($dir->getError());
-                return false;
-            }
+        $repo_dir = $dir_class->getState($dir_class->getName() . '.id');
+        $registry->set('repo_dir', $repo_dir);
 
-            $repo_dir = $dir->getState($dir->getName() . '.id');
-            $registry->set('repo_dir', $repo_dir);
+        if (!$repo_dir) return false;
 
-            // Update the project attribs
-            $query->clear();
-            $query->update('#__pf_projects')
-                  ->set('attribs = ' . $db->quote((string) $registry))
-                  ->where('id = ' . $db->quote($item->id));
+        // Update the project attribs
+        $query->clear();
+        $query->update('#__pf_projects')
+              ->set('attribs = ' . $this->_db->quote((string) $registry))
+              ->where('id = ' . (int) $item->id);
 
-            $db->setQuery((string) $query);
-            $db->execute();
+        $this->_db->setQuery($query);
+        $this->_db->execute();
+
+        if ($this->_db->getError()) {
+            $this->setError($this->_db->getError());
+            return false;
         }
 
         return true;
