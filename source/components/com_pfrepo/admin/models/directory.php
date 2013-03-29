@@ -30,19 +30,6 @@ class PFrepoModelDirectory extends JModelAdmin
 
 
     /**
-     * Constructor.
-     *
-     * @param    array          $config    An optional associative array of configuration settings.
-     *
-     * @see      jcontroller
-     */
-    public function __construct($config = array())
-    {
-        parent::__construct($config);
-    }
-
-
-    /**
      * Returns a Table object, always creating it.
      *
      * @param     string    The table type to instantiate
@@ -99,41 +86,33 @@ class PFrepoModelDirectory extends JModelAdmin
 
     public function getItemFromProjectPath($project, $path)
     {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
-        if (substr($path, -1) == '/') {
-            $path = substr($path, 0, -1);
-        }
-
         $params   = PFApplicationHelper::getProjectParams((int) $project);
         $repo_dir = (int) $params->get('repo_dir');
+        $query    = $this->_db->getQuery(true);
 
-        if (!$repo_dir) {
-            return false;
-        }
+        // Remove trailing slash
+        if (substr($path, -1) == '/') $path = substr($path, 0, -1);
+
+        // Can't get a path without project repo dir
+        if (!$repo_dir) return false;
 
         $query->select('alias')
               ->from('#__pf_repo_dirs')
-              ->where('id = ' . $db->quote($repo_dir));
+              ->where('id = ' . (int) $repo_dir);
 
-        $db->setQuery($query);
-        $alias = $db->loadResult();
-
-        $path = $db->escape($alias . '/' . $path);
+        $this->_db->setQuery($query);
+        $alias = $this->_db->loadResult();
 
         $query->clear();
         $query->select('id')
               ->from('#__pf_repo_dirs')
-              ->where('project_id = ' . $db->quote((int) $project))
-              ->where('path = ' . $db->quote($path));
+              ->where('project_id = ' . (int) $project)
+              ->where('path = ' . $this->_db->quote($alias . '/' . $path));
 
-        $db->setQuery($query);
-        $id = (int) $db->loadResult();
+        $this->_db->setQuery($query);
+        $id = (int) $this->_db->loadResult();
 
-        if ($id) {
-            return $this->getItem($id);
-        }
+        if ($id) return $this->getItem($id);
 
         return false;
     }
@@ -483,8 +462,8 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Method to get the record form.
      *
-     * @param     array      Data for the form.
-     * @param     boolean    True if the form is to load its own data (default case), false if not.
+     * @param     array $data     Data for the form.
+     * @param     boolean $loadData    True if the form is to load its own data (default case), false if not.
      *
      * @return    mixed      A JForm object on success, false on failure
      */
@@ -518,15 +497,14 @@ class PFrepoModelDirectory extends JModelAdmin
 
             // We still need to inject the project id when reloading the form
             if (!isset($data['project_id'])) {
-                $db    = JFactory::getDbo();
-                $query = $db->getQuery(true);
+                $query = $this->_db->getQuery(true);
 
                 $query->select('project_id')
                       ->from('#__pf_repo_dirs')
-                      ->where('id = ' . $db->quote($id));
+                      ->where('id = ' . $id);
 
-                $db->setQuery($query);
-                $form->setValue('project_id', null, (int) $db->loadResult());
+                $this->_db->setQuery($query);
+                $form->setValue('project_id', null, (int) $this->_db->loadResult());
             }
         }
 
@@ -543,48 +521,45 @@ class PFrepoModelDirectory extends JModelAdmin
      */
     public function save($data)
     {
-        // Initialise variables;
-        $table  = $this->getTable();
-        $pk     = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
-        $date   = JFactory::getDate();
-        $is_new = true;
+        $dispatcher = JEventDispatcher::getInstance();
+        $date       = JFactory::getDate();
 
+        $table    = $this->getTable();
+        $pk       = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
+        $is_new   = true;
         $old_path = null;
+
+        // Include the content plugins for the on save events.
+		JPluginHelper::importPlugin('content');
 
         // Load the row if saving an existing item.
         if ($pk > 0) {
             if ($table->load($pk)) {
                 $is_new = false;
 
-                if (!empty($table->path)) {
-                    $old_path = $table->path;
-                }
-            }
-            else {
-                $pk = 0;
+                if (!empty($table->path)) $old_path = $table->path;
             }
         }
 
-        if (!$is_new) {
-            $data['project_id'] = $table->project_id;
-        }
+        // Prevent project id override for existing items
+        if (!$is_new) $data['project_id'] = $table->project_id;
 
         // Make sure the title and alias are always unique
-        $data['alias'] = '';
-        list($title, $alias) = $this->generateNewTitle($data['parent_id'], $data['title'], $data['alias'], $pk);
+        list($title, $alias) = $this->generateNewTitle($data['parent_id'], $data['title'], '', $pk);
 
         $data['title'] = $title;
         $data['alias'] = $alias;
 
+        // If we're not creating a new project repo...
         if (!$this->getState('create_repo')) {
-            if (intval($data['parent_id']) <= 1 && ($is_new == false && $table->parent_id > 1)) {
-                $this->setError(JText::_('COM_PROJECTFORK_ERROR_REPO_SAVE_ROOT_DIR') . 'yarr 0');
+            // Don't allow the creation of new folders in root
+            if ($data['parent_id'] <= 1 && $is_new) {
+                $this->setError(JText::_('COM_PROJECTFORK_ERROR_REPO_SAVE_ROOT_DIR'));
                 return false;
             }
 
-            if (isset($data['protected'])) {
-                $data['protected'] = 0;
-            }
+            // Don't allow new folders to be protected
+            if (isset($data['protected'])) $data['protected'] = 0;
         }
 
         // Set the new parent id if parent id not matched OR while New/Save as Copy.
@@ -602,20 +577,16 @@ class PFrepoModelDirectory extends JModelAdmin
         if (isset($data['rules'])) {
             $access = PFAccessHelper::getViewLevelFromRules($data['rules'], intval($data['access']));
 
-            if ($access) {
-                $data['access'] = $access;
-            }
+            if ($access) $data['access'] = $access;
         }
         else {
             if ($is_new) {
                 // Let the table class find the correct access level
                 $data['access'] = 0;
             }
-            else {
+            elseif (isset($data['access'])) {
                 // Keep the existing access in the table
-                if (isset($data['access'])) {
-                    unset($data['access']);
-                }
+                unset($data['access']);
             }
         }
 
@@ -631,10 +602,32 @@ class PFrepoModelDirectory extends JModelAdmin
             return false;
         }
 
+        // Trigger the onContentBeforeSave event.
+		$result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, $is_new));
+
+		if (in_array(false, $result, true)) {
+			$this->setError($table->getError());
+			return false;
+		}
+
         // Store the data.
         if (!$table->store()) {
             $this->setError($table->getError());
             return false;
+        }
+
+        // Trigger the onContentAfterSave event.
+		$dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $is_new));
+
+        // Store the labels
+        if (isset($data['labels'])) {
+            $labels = $this->getInstance('Labels', 'PFModel', $config = array());
+
+            $labels->setState('item.project', $table->project_id);
+            $labels->setState('item.type', 'com_pfrepo.directory');
+            $labels->setState('item.id', $table->id);
+
+            $labels->saveRefs($data['labels']);
         }
 
         // Rebuild the path for the directory
@@ -649,26 +642,8 @@ class PFrepoModelDirectory extends JModelAdmin
             return false;
         }
 
+        // Set id state
         $this->setState($this->getName() . '.id', $table->id);
-
-        $updated = $this->getTable();
-        if ($updated->load($table->id) === false) return false;
-
-        // Store the labels
-        if (isset($data['labels'])) {
-            $labels = $this->getInstance('Labels', 'PFModel');
-
-            if ((int) $labels->getState('item.project') == 0) {
-                $labels->setState('item.project', $updated->project_id);
-            }
-
-            $labels->setState('item.type', 'com_pfrepo.directory');
-            $labels->setState('item.id', $updated->id);
-
-            if (!$labels->saveRefs($data['labels'])) {
-                return false;
-            }
-        }
 
         // Clear the cache
         $this->cleanCache();
@@ -1024,8 +999,7 @@ class PFrepoModelDirectory extends JModelAdmin
     {
         // Alter the title & alias
         $table = $this->getTable();
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $this->_db->getQuery(true);
 
         if (empty($alias)) {
             $alias = JApplication::stringURLSafe($title);
@@ -1037,40 +1011,34 @@ class PFrepoModelDirectory extends JModelAdmin
 
         $query->select('COUNT(id)')
               ->from($table->getTableName())
-              ->where('alias = ' . $db->quote($alias))
-              ->where('parent_id = ' . $db->quote($parent_id));
+              ->where('alias = ' . $this->_db->quote($alias))
+              ->where('parent_id = ' . (int) $parent_id);
 
-        if ($id) {
-            $query->where('id != ' . intval($id));
-        }
+        if ($id) $query->where('id != ' . intval($id));
 
-        $db->setQuery((string) $query);
-        $count = (int) $db->loadResult();
+        $this->_db->setQuery($query);
+        $count = (int) $this->_db->loadResult();
 
-        if ($id > 0 && $count == 0) {
-            return array($title, $alias);
-        }
-        elseif ($id == 0 && $count == 0) {
-            return array($title, $alias);
-        }
-        else {
-            while ($table->load(array('alias' => $alias, 'parent_id' => $parent_id)))
-            {
-                $m = null;
+        // No duplicates found?
+        if (!$count) return array($title, $alias);
 
-                if (preg_match('#-(\d+)$#', $alias, $m)) {
-                    $alias = preg_replace('#-(\d+)$#', '-'.($m[1] + 1).'', $alias);
-                }
-                else {
-                    $alias .= '-2';
-                }
+        // Generate new title
+        while ($table->load(array('alias' => $alias, 'parent_id' => $parent_id)))
+        {
+            $m = null;
 
-                if (preg_match('#\((\d+)\)$#', $title, $m)) {
-                    $title = preg_replace('#\(\d+\)$#', '('.($m[1] + 1).')', $title);
-                }
-                else {
-                    $title .= ' (2)';
-                }
+            if (preg_match('#-(\d+)$#', $alias, $m)) {
+                $alias = preg_replace('#-(\d+)$#', '-'.($m[1] + 1).'', $alias);
+            }
+            else {
+                $alias .= '-2';
+            }
+
+            if (preg_match('#\((\d+)\)$#', $title, $m)) {
+                $title = preg_replace('#\(\d+\)$#', '('.($m[1] + 1).')', $title);
+            }
+            else {
+                $title .= ' (2)';
             }
         }
 
@@ -1082,9 +1050,9 @@ class PFrepoModelDirectory extends JModelAdmin
      * Custom clean the cache of com_projectfork and projectfork modules
      *
      */
-    protected function cleanCache()
+    protected function cleanCache($group = 'com_pfrepo', $client_id = 0)
     {
-        parent::cleanCache('com_pfrepo');
+        parent::cleanCache($group, $client_id);
     }
 
 
