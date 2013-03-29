@@ -45,7 +45,7 @@ class PFMenuContext
 
             $html = array();
             $html[] = '<div class="btn-group">';
-            $html[] = '    <a class="btn disabled' . $class . '" href="javascript: void(0);"><span class="caret"></span></a>';
+            $html[] = '    <a class="btn btn-link disabled' . $class . '" href="javascript: void(0);"><span class="caret"></span></a>';
             $html[] = '</div>';
 
             return implode("\n", $html);
