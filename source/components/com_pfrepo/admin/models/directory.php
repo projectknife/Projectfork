@@ -24,7 +24,7 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string    
+     * @var    string
      */
     protected $text_prefix = 'COM_PROJECTFORK_DIRECTORY';
 
@@ -183,15 +183,22 @@ class PFrepoModelDirectory extends JModelAdmin
      *
      * @param     integer    $value    The new parent ID.
      * @param     array      $pks      An array of row IDs.
+     * @param     array      $contexts    An array of item contexts.
      *
      * @return    boolean              True if successful, false otherwise and internal error is set.
      */
-    protected function batchMove($value, $pks)
+    protected function batchMove($value, $pks, $contexts)
     {
-        $dest = (int) $value;
+        $dest  = (int) $value;
         $table = $this->getTable();
+        $user  = JFactory::getUser();
 
         // Check that the destination exists
+        if (empty($dest)) {
+            $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_MOVE_DIRECTORY_NOT_FOUND'));
+            return false;
+        }
+
         if ($dest) {
             if (!$table->load($dest)) {
                 if ($error = $dest->getError()) {
@@ -206,19 +213,22 @@ class PFrepoModelDirectory extends JModelAdmin
             }
         }
 
-        if (empty($dest)) {
-            $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_MOVE_DIRECTORY_NOT_FOUND'));
-            return false;
-        }
-
-        // Check that user has create and edit permission
-        $access = PFrepoHelper::getActions();
-        if (!$access->get('core.create')) {
+        // Check that the user can create in the destination
+        if (!$user->authorise('core.create', 'com_pfrepo.directory.' . $dest)) {
             $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_CANNOT_CREATE_DIRECTORY'));
             return false;
         }
 
-        // Parent exists so we let's proceed
+        // Check that the user can edit the all selected items
+        foreach ($pks as $pk)
+		{
+			if (!$user->authorise('core.edit', 'com_pfrepo.directory.' . (int) $pk)) {
+				$this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_CANNOT_EDIT_DIRECTORY'));
+				return false;
+			}
+		}
+
+        // Move each item
         foreach ($pks as $pk)
         {
             // Check that the row actually exists
@@ -981,7 +991,7 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Custom clean the cache of com_projectfork and projectfork modules
      *
-     * @return    void    
+     * @return    void
      */
     protected function cleanCache($group = 'com_pfrepo', $client_id = 0)
     {
@@ -1157,7 +1167,7 @@ class PFrepoModelDirectory extends JModelAdmin
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
-     * @return    void    
+     * @return    void
      */
     protected function populateState()
     {
