@@ -51,10 +51,8 @@ class PFrepoController extends JControllerLegacy
             return false;
         }
 
-        // Add the sub-menu for Joomla 2.5
-        if (version_compare(JVERSION, '3', 'lt')) {
-            PFrepoHelper::addSubmenu($view);
-        }
+        // Add the sub-menu
+        PFrepoHelper::addSubmenu($view);
 
         // Display the view
         parent::display($cachable, $urlparams);
