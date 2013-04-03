@@ -640,7 +640,6 @@ class PFprojectsModelProject extends JModelAdmin
      */
     public function delete(&$pks)
     {
-        // Initialise variables.
         $dispatcher = JDispatcher::getInstance();
         $pks   = (array) $pks;
         $table = $this->getTable();
@@ -654,63 +653,59 @@ class PFprojectsModelProject extends JModelAdmin
         // Iterate the items to delete each one.
         foreach ($pks as $i => $pk)
         {
-            if ($table->load($pk)) {
-                if ($this->canDelete($table)) {
-                    $context = $this->option . '.' . $this->name;
-                    // Trigger the onContentBeforeDelete event.
-                    $result = $dispatcher->trigger($this->event_before_delete, array($context, $table));
-
-                    if (in_array(false, $result, true)) {
-                        $this->setError($table->getError());
-                        return false;
-                    }
-
-                    if (!$table->delete($pk)) {
-                        $this->setError($table->getError());
-                        return false;
-                    }
-
-                    // Try to delete the repo
-                    if ($repo_exists) {
-                        $repo = PFrepoHelper::getBasePath($pk);
-
-                        if (JFolder::exists($repo)) {
-                            JFolder::delete($repo);
-                        }
-                    }
-
-                    // Try to delete the logo
-                    $this->deleteLogo($pk);
-
-                    // Check if the currently active project is being deleted.
-                    // If so, clear it from the session
-                    if ($active_id == $pk) {
-                        $this->setActive(array('id' => 0));
-                    }
-
-                    // Trigger the onContentAfterDelete event.
-                    $dispatcher->trigger($this->event_after_delete, array($context, $table));
-                }
-                else {
-                    // Prune items that you can't change.
-                    unset($pks[$i]);
-
-                    $error = $this->getError();
-
-                    if ($error) {
-                        JError::raiseWarning(500, $error);
-                        return false;
-                    }
-                    else {
-                        JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'));
-                        return false;
-                    }
-                }
-            }
-            else {
+            // Try to load from the db
+            if ($table->load($pk) === false) {
                 $this->setError($table->getError());
                 return false;
             }
+
+            // Check delete permission
+            if (!$this->canDelete($table)) {
+                unset($pks[$i]);
+
+                $error = $this->getError();
+
+                if ($error) {
+                    JError::raiseWarning(500, $error);
+                }
+                else {
+                    JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'));
+                }
+
+                return false;
+            }
+
+            // Trigger the onContentBeforeDelete event.
+            $context = $this->option . '.' . $this->name;
+            $result  = $dispatcher->trigger($this->event_before_delete, array($context, $table));
+
+            if (in_array(false, $result, true)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Delete the item
+            if (!$table->delete($pk)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Delete the repo directory
+            if ($repo_exists) {
+                $repo = PFrepoHelper::getBasePath($pk);
+
+                if (JFolder::exists($repo)) JFolder::delete($repo);
+            }
+
+            // Delete the logo
+            $this->deleteLogo($pk);
+
+            // Check if the currently active project is being deleted.
+            // If so, clear it from the session
+            if ($active_id == $pk) $this->setActive(array('id' => 0));
+
+            // Trigger the onContentAfterDelete event.
+            $dispatcher->trigger($this->event_after_delete, array($context, $table));
         }
 
         // Clear the component's cache

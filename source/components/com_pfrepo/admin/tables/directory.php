@@ -18,7 +18,7 @@ jimport('joomla.database.tablenested');
  * Directory table
  *
  */
-class PFTableDirectory extends JTableNested
+class PFTableDirectory extends PFTableNested
 {
     /**
      * Constructor
@@ -32,120 +32,11 @@ class PFTableDirectory extends JTableNested
 
 
     /**
-     * Method to compute the default name of the asset.
-     * The default name is in the form table_name.id
-     * where id is the value of the primary key of the table.
-     *
-     * @return    string
-     */
-    protected function _getAssetName()
-    {
-        $k = $this->_tbl_key;
-        return 'com_pfrepo.directory.' . (int) $this->$k;
-    }
-
-
-    /**
-     * Method to return the title to use for the asset table.
-     *
-     * @return    string
-     */
-    protected function _getAssetTitle()
-    {
-        return $this->title;
-    }
-
-
-    /**
-     * Get the parent asset id for the record
-     *
-     * @param     jtable     $table    A JTable object for the asset parent.
-     * @param     integer    $id       The id for the asset
-     *
-     * @return    integer              The id of the asset's parent
-     */
-    protected function _getAssetParentId($table = null, $id = null)
-    {
-        $asset_id = null;
-        $result   = null;
-        $query    = $this->_db->getQuery(true);
-
-        // This is a directory under another directory.
-        if ($this->parent_id > 1) {
-            // Build the query to get the asset id for the parent dir.
-            $query->select($this->_db->quoteName('asset_id'))
-                  ->from($this->_db->quoteName('#__pf_repo_dirs'))
-                  ->where($this->_db->quoteName('id') . ' = ' . (int) $this->parent_id);
-
-            // Get the asset id from the database.
-            $this->_db->setQuery($query);
-            $result = $this->_db->loadResult();
-        }
-
-        if (!$result) {
-            // Build the query to get the asset id for the parent component.
-            $query->clear();
-            $query->select($this->_db->quoteName('id'))
-                  ->from($this->_db->quoteName('#__assets'))
-                  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pfrepo"));
-
-            // Get the asset id from the database.
-            $this->_db->setQuery($query);
-            $result = $this->_db->loadResult();
-        }
-
-        if (!empty($result)) {
-            $asset_id = $result;
-        }
-
-        // Return the asset id.
-        if ($asset_id) {
-            return $asset_id;
-        }
-        else {
-            return parent::_getAssetParentId($table, $id);
-        }
-    }
-
-
-    /**
-     * Method to get the access level of the parent asset
-     *
-     * @return    integer
-     */
-    protected function _getParentAccess()
-    {
-        $query = $this->_db->getQuery(true);
-
-        $dir     = (int) $this->parent_id;
-        $project = (int) $this->project_id;
-
-        if ($dir > 1) {
-            $query->select('access')
-                  ->from('#__pf_repo_dirs')
-                  ->where('id = ' . $dir);
-        }
-        elseif ($project > 0) {
-            $query->select('access')
-                  ->from('#__pf_projects')
-                  ->where('id = ' . $project);
-        }
-
-        $this->_db->setQuery($query);
-        $access = (int) $this->_db->loadResult();
-
-        if (!$access) $access = (int) JFactory::getConfig()->get('access');
-
-        return $access;
-    }
-
-
-    /**
      * Method to get the children on an asset (which are not directly connected in the assets table)
      *
-     * @param    string    $name    The name of the parent asset
+     * @param     string    $name    The name of the parent asset
      *
-     * @return    array    The names of the child assets
+     * @return    array              The names of the child assets
      */
     public function getAssetChildren($name)
     {
@@ -161,7 +52,8 @@ class PFTableDirectory extends JTableNested
                   ->from('#__assets AS c')
                   ->join('INNER', $this->_tbl . ' AS a ON (a.asset_id = c.id)')
                   ->where('a.project_id = ' . (int) $id)
-                  ->group('c.id');
+                  ->group('c.id')
+                  ->order('a.level DESC');
 
             $this->_db->setQuery($query);
             $assets = (array) $this->_db->loadObjectList();
@@ -281,5 +173,114 @@ class PFTableDirectory extends JTableNested
         }
 
         return parent::toXML($mapKeysToText);
+    }
+
+
+    /**
+     * Method to compute the default name of the asset.
+     * The default name is in the form table_name.id
+     * where id is the value of the primary key of the table.
+     *
+     * @return    string
+     */
+    protected function _getAssetName()
+    {
+        $k = $this->_tbl_key;
+        return 'com_pfrepo.directory.' . (int) $this->$k;
+    }
+
+
+    /**
+     * Method to return the title to use for the asset table.
+     *
+     * @return    string
+     */
+    protected function _getAssetTitle()
+    {
+        return $this->title;
+    }
+
+
+    /**
+     * Get the parent asset id for the record
+     *
+     * @param     jtable     $table    A JTable object for the asset parent.
+     * @param     integer    $id       The id for the asset
+     *
+     * @return    integer              The id of the asset's parent
+     */
+    protected function _getAssetParentId($table = null, $id = null)
+    {
+        $asset_id = null;
+        $result   = null;
+        $query    = $this->_db->getQuery(true);
+
+        // This is a directory under another directory.
+        if ($this->parent_id > 1) {
+            // Build the query to get the asset id for the parent dir.
+            $query->select($this->_db->quoteName('asset_id'))
+                  ->from($this->_db->quoteName('#__pf_repo_dirs'))
+                  ->where($this->_db->quoteName('id') . ' = ' . (int) $this->parent_id);
+
+            // Get the asset id from the database.
+            $this->_db->setQuery($query);
+            $result = $this->_db->loadResult();
+        }
+
+        if (!$result) {
+            // Build the query to get the asset id for the parent component.
+            $query->clear();
+            $query->select($this->_db->quoteName('id'))
+                  ->from($this->_db->quoteName('#__assets'))
+                  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pfrepo"));
+
+            // Get the asset id from the database.
+            $this->_db->setQuery($query);
+            $result = $this->_db->loadResult();
+        }
+
+        if (!empty($result)) {
+            $asset_id = $result;
+        }
+
+        // Return the asset id.
+        if ($asset_id) {
+            return $asset_id;
+        }
+        else {
+            return parent::_getAssetParentId($table, $id);
+        }
+    }
+
+
+    /**
+     * Method to get the access level of the parent asset
+     *
+     * @return    integer
+     */
+    protected function _getParentAccess()
+    {
+        $query = $this->_db->getQuery(true);
+
+        $dir     = (int) $this->parent_id;
+        $project = (int) $this->project_id;
+
+        if ($dir > 1) {
+            $query->select('access')
+                  ->from('#__pf_repo_dirs')
+                  ->where('id = ' . $dir);
+        }
+        elseif ($project > 0) {
+            $query->select('access')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . $project);
+        }
+
+        $this->_db->setQuery($query);
+        $access = (int) $this->_db->loadResult();
+
+        if (!$access) $access = (int) JFactory::getConfig()->get('access');
+
+        return $access;
     }
 }

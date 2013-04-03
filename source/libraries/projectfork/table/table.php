@@ -1,14 +1,17 @@
 <?php
 /**
- * @package      Projectfork.Library
- * @subpackage   Table
+ * @package      pkg_projectfork
+ * @subpackage   lib_projectfork
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
 defined('_JEXEC') or die();
+
+
+require_once dirname(__FILE__) . '/helper.php';
 
 
 class PFTable extends JTable
@@ -49,57 +52,11 @@ class PFTable extends JTable
 
 
     /**
-     * Method to find all foreign component table classes and their child assets
-     *
-     * @param     string    $name    The name of the parent asset
-     *
-     * @return    array              The names of the child assets
-     */
-    protected function _findAssetChildren($name)
-    {
-        $components = PFApplicationHelper::getComponents();
-        $assets     = array();
-
-        foreach ($components AS $component)
-        {
-            $tables_path = JPath::clean(JPATH_ADMINISTRATOR . '/components/' . $component->element . '/tables');
-
-            if (JFolder::exists($tables_path)) {
-                JLoader::discover('PFtable', $tables_path, false);
-
-                $tables = (array) JFolder::files($tables_path, '.php$');
-
-                foreach ($tables AS $table_file)
-                {
-                    $table_name = JFile::stripExt($table_file);
-                    $class      = 'PFtable' . ucfirst($table_name);
-
-                    if (class_exists($class)) {
-                        $instance     = self::getInstance(ucfirst($table_name), 'PFtable');
-                        $methods      = get_class_methods($instance);
-
-                        if (in_array('getAssetChildren', $methods)) {
-                            $table_assets = (array) $instance->getAssetChildren($name);
-
-                            if (count($table_assets)) {
-                                $assets = array_merge($assets, $table_assets);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        return $assets;
-    }
-
-
-    /**
      * Method to delete a row from the database table by primary key value.
      * This method is derived from JTable, with the difference that it will also
-     * try to properly delete any record in foreign tables, based on asset children
+     * try to delete foreign, associated assets and items.
      *
-     * @param     mixed      $pk    An optional primary key value to delete. If not set the instance property value is used.
+     * @param     mixed      $pk    An optional primary key value to delete.
      *
      * @return    boolean           True on success.
      */
@@ -108,8 +65,6 @@ class PFTable extends JTable
         // Initialise variables.
         $k  = $this->_tbl_key;
         $pk = (is_null($pk)) ? $this->$k : $pk;
-
-        $tables = array();
 
         // If no primary key is given, return false.
         if ($pk === null) {
@@ -125,70 +80,73 @@ class PFTable extends JTable
 
             $name  = $this->_getAssetName();
             $asset = JTable::getInstance('Asset');
+            $query = $this->_db->getQuery(true);
 
-            if ($asset->loadByName($name)) {
-                if ($this->_delete_children) {
-                    // Here is where things are different from the parent method
-                    // Get child assets
-                    $query = $this->_db->getQuery(true);
-                    $query->select('*')
-                          ->from('#__assets')
-                          ->where('parent_id = ' . $this->_db->quote($asset->id));
+            // Try to load the asset by its name
+            if (!$asset->loadByName($name)) {
+                $this->setError($asset->getError());
+                return false;
+            }
 
-                    $this->_db->setQuery($query);
-                    $direct_children   = (array) $this->_db->loadObjectList();
-                    $indirect_children = (array) $this->_findAssetChildren($name);
+            if ($this->_delete_children) {
+                // Get all children of this asset
+                $query->clear()
+                      ->select('*')
+                      ->from('#__assets')
+                      ->where('parent_id = ' . (int) $asset->id)
+                      ->order('level DESC');
 
-                    $children = array_merge($direct_children, $indirect_children);
+                $this->_db->setQuery($query);
 
-                    foreach ($children AS $child)
-                    {
-                        if ($child->id == $asset->id) {
-                            // Skip self
-                            continue;
+                $children   = (array) $this->_db->loadObjectList();
+                $foreign    = (array) $this->getForeignAssets($name);
+                $all_assets = array_merge($children, $foreign);
+
+                unset($children, $foreign);
+
+                foreach ($all_assets AS $item)
+                {
+                    // Skip self
+                    if ($item->id == $asset->id) continue;
+
+                    // Extract component, name and id
+                    list($component, $asset_name, $id) = explode('.', $item->name, 3);
+
+                    $context = $component . '.' . $asset_name;
+                    $methods = PFTableHelper::getMethods($context);
+
+                    if (!in_array('deletechild', $methods) && !in_array('deletebycontext', $methods)) {
+                        continue;
+                    }
+
+                    $table = PFTableHelper::getInstance($context);
+
+                    if (empty($table)) continue;
+
+                    // Delete item by context
+                    $table->reset();
+
+                    if (!$table->load($id)) {
+                        $this->setError($table->getError());
+                        return false;
+                    }
+
+                    if (in_array('deletebycontext', $methods)) {
+                        if (!$table->deleteByContext($id, $name)) {
+                            $this->setError($table->getError());
+                            return false;
                         }
-
-                        list($component, $asset_name, $asset_id) = explode('.', $child->name, 3);
-
-                        $table_prefix = 'PFtable';
-                        $table_name   = ucfirst($asset_name);
-                        $cache_key    = $table_prefix . '.' . $table_name;
-                        $asset_id     = (int) $asset_id;
-
-                        // Try to get an instance of the asset
-                        if (!array_key_exists($cache_key, $tables)) {
-                            $tables[$cache_key] = JTable::getInstance($table_name, $table_prefix);
-
-                            if ($tables[$cache_key]) {
-                                // We have an instance. now check if the "deleteByParentAsset" method is available
-                                $methods = get_class_methods($tables[$cache_key]);
-
-                                if (!in_array('deleteChild', $methods)) {
-                                    $tables[$cache_key] = false;
-                                }
-                            }
-                        }
-
-                        $child_table = $tables[$cache_key];
-
-                        if (!$child_table) {
-                            // Not a valid table instance, go to the next record
-                            continue;
-                        }
-
-                        // Delete child
-                        $child_table->reset();
-                        $child_table->deleteChild($asset_id);
+                    }
+                    elseif (in_array('deletechild', $methods)) {
+                        $table->deleteChild($id);
                     }
                 }
 
-                // Delete this asset
-                if (!$asset->delete()) {
-                    $this->setError($asset->getError());
-                    return false;
-                }
+                unset($item);
             }
-            else {
+
+            // Delete this asset
+            if (!$asset->delete()) {
                 $this->setError($asset->getError());
                 return false;
             }
@@ -202,7 +160,7 @@ class PFTable extends JTable
 
         $query->delete()
               ->from($this->_tbl)
-              ->where($this->_tbl_key . ' = ' . $this->_db->quote($pk));
+              ->where($this->_tbl_key . ' = ' . (int) $pk);
 
         $this->_db->setQuery($query);
 
@@ -218,106 +176,29 @@ class PFTable extends JTable
 
 
     /**
-     * Method to delete a child record of a parent asset.
-     * This method does the same thing as the "delete" method, only that it returns
-     * the asset ids that have been deleted and does not report any errors
+     * Method to delete a record by the give context
      *
-     * @param     mixed    $pk         An primary key value to delete.
+     * @param     integer    $pk         A primary key value to delete.
+     * @param     string     $context    The foreign asset context that initiated the delete action
      *
-     * @return    array    $deleted    The deleted asset ids
+     * @return    boolean                True on success, False on error
+     */
+    public function deleteByContext($pk, $context = null)
+    {
+        return $this->delete($pk);
+    }
+
+
+    /**
+     * @deprecated    use               deleteByContext instead
+     *
+     * @param         mixed      $pk    An primary key value to delete.
+     *
+     * @return        boolean           True on success, False on error
      */
     public function deleteChild($pk)
     {
-        static $tables = array();
-
-        $pk = (int) $pk;
-        $k  = $this->_tbl_key;
-
-        // If no primary key is given, return False.
-        if ($pk == 0) {
-            return false;
-        }
-
-        // If tracking assets, remove the asset first.
-        if ($this->_trackAssets) {
-            // Get the asset
-            $this->$k = $pk;
-
-            $name  = $this->_getAssetName();
-            $asset = JTable::getInstance('Asset');
-
-            if ($asset->loadByName($name)) {
-                // Get child assets
-                $query = $this->_db->getQuery(true);
-                $query->select('*')
-                      ->from('#__assets')
-                      ->where('parent_id = ' . $this->_db->quote($asset->id));
-
-                $this->_db->setQuery($query);
-                $direct_children   = (array) $this->_db->loadObjectList();
-                $indirect_children = (array) $this->_findAssetChildren($name);
-
-                $children = array_merge($direct_children, $indirect_children);
-
-                foreach ($children AS $child)
-                {
-                    if ($child->id == $asset->id) {
-                        // Skip self
-                        continue;
-                    }
-
-                    list($component, $asset_name, $asset_id) = explode('.', $child->name, 3);
-
-                    $table_prefix = 'PFtable';
-                    $table_name   = ucfirst($asset_name);
-                    $cache_key    = $table_prefix . '.' . $table_name;
-                    $asset_id     = (int) $asset_id;
-
-                    // Try to get an instance of the asset
-                    if (!array_key_exists($cache_key, $tables)) {
-                        $tables[$cache_key] = JTable::getInstance($table_name, $table_prefix);
-
-                        if ($tables[$cache_key]) {
-                            // We have an instance. now check if the "deleteByParentAsset" method is available
-                            $methods = get_class_methods($tables[$cache_key]);
-
-                            if (!in_array('deleteChild', $methods)) {
-                                $tables[$cache_key] = false;
-                            }
-                        }
-                    }
-
-                    $child_table = $tables[$cache_key];
-
-                    if (!$child_table) {
-                        // Not a valid table instance, go to the next record
-                        continue;
-                    }
-
-                    // Delete child
-                    $child_table->reset();
-                    $child_table->deleteChild($asset_id);
-                }
-
-                // Delete this asset
-                $asset->delete();
-            }
-        }
-
-        // Delete references first
-        $this->deleteReferences($pk);
-
-        // Delete the row by primary key.
-        $query = $this->_db->getQuery(true);
-
-        $query->delete()
-              ->from($this->_tbl)
-              ->where($this->_tbl_key . ' = ' . $this->_db->quote($pk));
-
-        $this->_db->setQuery($query);
-        $this->_db->execute();
-
-        return true;
+        return $this->deleteByContext($pk);
     }
 
 
@@ -347,11 +228,10 @@ class PFTable extends JTable
      */
     public function setState($pks = null, $state = 1, $uid = 0)
     {
-        // Initialise variables.
-        $k = $this->_tbl_key;
-
         // Sanitize input.
         JArrayHelper::toInteger($pks);
+
+        $k     = $this->_tbl_key;
         $uid   = (int) $uid;
         $state = (int) $state;
 
@@ -375,7 +255,7 @@ class PFTable extends JTable
             $checkin = '';
         }
         else {
-            $checkin = ' AND (checked_out = 0 OR checked_out = ' .(int) $uid . ')';
+            $checkin = ' AND (checked_out = 0 OR checked_out = ' . (int) $uid . ')';
         }
 
         // Update the state for rows with the given primary keys.
@@ -445,138 +325,92 @@ class PFTable extends JTable
      */
     public function updateChildren($pk, $data)
     {
-        static $tables      = array();
-        static $tbl_methods = array();
-        static $tbl_fields  = array();
-
         // This feature requires asset tracking
-        if (!$this->_trackAssets) {
-            return true;
-        }
+        if (!$this->_trackAssets || !$this->_update_children) return true;
 
-        $field_names = array_keys($data);
-
-        // Get and the asset name.
         $k = $this->_tbl_key;
         $this->$k = $pk;
 
-        $asset = JTable::getInstance('Asset');
-        $name  = $this->_getAssetName();
+        // Get and the asset name.
+        $fields = array_keys($data);
+        $asset  = JTable::getInstance('Asset');
+        $name   = $this->_getAssetName();
+        $query  = $this->_db->getQuery(true);
 
+        // Try to load the asset by its name
         if (!$asset->loadByName($name)) {
+            $this->setError($asset->getError());
             return false;
         }
 
-        // Get child assets
-        $query = $this->_db->getQuery(true);
-        $query->select('*')
+        // Get all children of this asset
+        $query->clear()
+              ->select('*')
               ->from('#__assets')
-              ->where('parent_id = ' . $this->_db->quote($asset->id));
+              ->where('parent_id = ' . (int) $asset->id)
+              ->order('level DESC');
 
         $this->_db->setQuery($query);
-        $direct_children   = (array) $this->_db->loadObjectList();
-        $indirect_children = (array) $this->_findAssetChildren($name);
 
-        $children = array_merge($direct_children, $indirect_children);
+        $children   = (array) $this->_db->loadObjectList();
+        $foreign    = (array) $this->getForeignAssets($name);
+        $all_assets = array_merge($children, $foreign);
 
-        foreach ($children AS $child)
+        unset($children, $foreign);
+
+        foreach ($all_assets AS $item)
         {
-            if ($child->id == $asset->id) {
-                // Skip self
-                continue;
-            }
+            // Skip self
+            if ($item->id == $asset->id) continue;
 
-            list($component, $asset_name, $asset_id) = explode('.', $child->name, 3);
+            // Extract component, name and id
+            list($component, $asset_name, $id) = explode('.', $item->name, 3);
 
-            $table_prefix = 'PFtable';
-            $table_name   = ucfirst($asset_name);
-            $cache_key    = $table_prefix . '.' . $table_name;
-            $asset_id     = (int) $asset_id;
+            $context = $component . '.' . $asset_name;
+            $methods = PFTableHelper::getMethods($context);
+            $table   = PFTableHelper::getInstance($context);
 
-            // Try to get an instance of the table
-            if (!array_key_exists($cache_key, $tables)) {
-                $tables[$cache_key] = JTable::getInstance($table_name, $table_prefix);
+            if (empty($table)) continue;
 
-                if ($tables[$cache_key]) {
-                    // We have an instance. now check if the "updateChildren" method is available
-                    $methods = get_class_methods($tables[$cache_key]);
+            $props   = $table->getProperties(true);
+            $update  = array();
+            $changed = false;
 
-                    $tbl_methods[$cache_key] = $methods;
-                    $tbl_fields[$cache_key]  = array();
+            // Load the record
+            $table->reset();
 
-                    $child_props = array_keys($tables[$cache_key]->getProperties(true));
-
-                    foreach($child_props AS $prop)
-                    {
-                        if (in_array($prop, $field_names)) {
-                            $tbl_fields[$cache_key][$prop] = $data[$prop];
-                        }
-                    }
-                }
-            }
-
-            $child_table = $tables[$cache_key];
-
-            if (!$child_table) {
-                // Not a valid table instance, go to the next record
-                continue;
+            if (!$table->load($id)) {
+                $this->setError($table->getError());
+                return false;
             }
 
             // Update the fields
-            if (count($tbl_fields[$cache_key])) {
-                $has_changed = false;
+            $changed = $this->updateFields($table, $methods, $data);
 
-                // Load the record
-                $child_table->reset();
-
-                if (!$child_table->load($asset_id)) {
-                    continue;
+            if ($changed) {
+                if (!$table->store()) {
+                    $this->setError($table->getError());
+                    return false;
                 }
+                if (in_array('updatereferences', $methods)) {
 
-                foreach($tbl_fields[$cache_key] AS $field => $value)
-                {
-                    $current = $child_table->$field;
-                    $parts   = explode('_', $field);
-                    $method  = 'set';
+                    $fields   = array_keys($data);
+                    $props    = $table->getProperties(true);
+                    $new_data = array();
 
-                    foreach ($parts AS $part)
+                    foreach ($fields AS $field)
                     {
-                        if (!$part) {
-                            continue;
-                        }
+                        if (!isset($props[$field])) continue;
 
-                        $method .= ucfirst($part);
+                        $new_data[$field] = $table->$field;
                     }
 
-                    $method .= 'Value';
-
-                    if (in_array($method, $tbl_methods[$cache_key]) && $method != 'setValue') {
-                        $child_table->$field = $child_table->$method($child_table->$field, $value);
-                    }
-                    else {
-                        $child_table->$field = $value;
-                    }
-
-                    if ($current != $child_table->$field) {
-                        $has_changed = true;
-                    }
+                    $table->updateReferences($id, $data);
                 }
-
-                if ($has_changed) {
-                    $child_table->store();
-
-                    if (in_array('updateReferences', $tbl_methods[$cache_key])) {
-                        $child_table->updateReferences($asset_id, $tbl_fields[$cache_key]);
-                    }
-                }
-            }
-
-            // Update children
-            if (in_array('updateChildren', $tbl_methods[$cache_key])) {
-                $child_table->reset();
-                $child_table->updateChildren($asset_id, $data);
             }
         }
+
+        unset($item);
 
         return true;
     }
@@ -658,11 +492,7 @@ class PFTable extends JTable
     {
         $allowed = PFAccessHelper::getAccessTree($new);
 
-        if (!in_array($old, $allowed)) {
-            return $new;
-        }
-
-        return $old;
+        return (in_array($old, $allowed) ? $old : $new);
     }
 
 
@@ -691,5 +521,86 @@ class PFTable extends JTable
         }
 
         return $old;
+    }
+
+
+    protected function updateFields(&$table, $methods, $data)
+    {
+        $fields  = array_keys($data);
+        $props   = $table->getProperties(true);
+        $changed = false;
+
+        foreach ($fields AS $field)
+        {
+            $method = 'set' . str_replace('_', '', strtolower($field)) . 'value';
+
+            if(!isset($props[$field])) continue;
+
+            $value     = $data[$field];
+            $old_value = $table->$field;
+
+            if (in_array($method, $methods) && $method != 'setvalue') {
+                $table->$field = call_user_func_array(array($table, $method), array($old_value, $value));
+            }
+            else {
+                $table->$field = $value;
+            }
+
+            if ($table->$field != $old_value) {
+                $changed = true;
+            }
+        }
+
+        return $changed;
+    }
+
+
+    /**
+     * Method to find all foreign component table classes and their child assets
+     *
+     * @deprecated    use                getForeignAssets instead
+     * @param         string    $name    The name of the parent asset
+     *
+     * @return        array              The names of the child assets
+     */
+    protected function _findAssetChildren($name)
+    {
+        return $this->getForeignAssets($name);
+    }
+
+
+    /**
+     * Method to find all associated foreign assets
+     *
+     * @param     string    $context    The name of the asset
+     *
+     * @return    array                 The names of foreign assets
+     */
+    protected function getForeignAssets($context)
+    {
+        // Discover component tables
+        PFTableHelper::discover();
+
+        $assets   = array();
+        $contexts = PFTableHelper::getContexts();
+
+        foreach ($contexts AS $hash)
+        {
+            $methods = PFTableHelper::getMethods($hash);
+
+            if (!in_array('getassetchildren', $methods)) continue;
+
+            $table = PFTableHelper::getInstance($hash);
+
+            if (empty($table)) continue;
+
+            $foreign = (array) $table->getAssetChildren($context);
+
+            if (count($foreign)) {
+                $assets = array_merge($assets, $foreign);
+            }
+        }
+
+        return $assets;
     }
 }
