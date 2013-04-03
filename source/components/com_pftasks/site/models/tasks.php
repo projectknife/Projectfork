@@ -118,8 +118,8 @@ class PFtasksModelTasks extends JModelList
 
         // Join over the comments for comment count
         $query->select('COUNT(DISTINCT co.id) AS comments');
-        $query->join('LEFT', '#__pf_comments AS co ON (co.context = '
-              . $db->quote('com_pftasks.task') . ' AND co.item_id = a.id)');
+        $query->join('LEFT', '#__pf_comments AS co ON (co.context = ' . $db->quote('com_pftasks.task')
+                           . ' AND co.item_id = a.id AND co.state = 1)');
 
         // Join over the task refs for dependencies
         $query->select('COUNT(d.id) AS dependency_count');
