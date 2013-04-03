@@ -25,9 +25,9 @@ if ($this_dir->parent_id > 1) : ?>
     <tr class="row1">
         <td class="center"></td>
         <td colspan="5">
-            <i class="icon-arrow-up"></i>
-            <a href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($this_dir->project_id, $this_dir->parent_id, $this_dir->path));?>">
-                ..
+            
+            <a href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($this_dir->project_id, $this_dir->parent_id, $this_dir->path));?>" class="btn btn-mini">
+                <span aria-hidden="true" class="icon-arrow-left"></span> <?php echo JText::_('JPREVIOUS'); ?>
             </a>
         </td>
     </tr>
@@ -66,21 +66,42 @@ foreach ($this->items['directories'] as $i => $item) :
         </td>
         <?php endif; ?>
         <td>
-            <i class="<?php echo $icon;?>"></i>
-            <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
+            <?php if ($item->checked_out) : ?><span aria-hidden="true" class="icon-lock"></span> <?php endif; ?>
 
-            <?php if ($exists) : ?>
-                <a href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($item->project_slug, $item->slug, $item->path));?>">
-                    <?php echo JText::_($this->escape($item->title)); ?>
-                </a>
-            <?php else : ?>
-                <span class="hasTip" title="<?php echo JText::_('COM_PROJECTFORK_ORPHANED_REPO'); ?>" style="cursor: help;">
-                    <?php echo JText::_($this->escape($item->title)); ?>
-                </span>
+            <span class="item-title pull-left">
+            	<?php if ($exists) : ?>
+	                <a href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($item->project_slug, $item->slug, $item->path));?>" class="hasPopover" rel="popover" title="<?php echo JText::_($this->escape($item->title)); ?>" data-content="<?php echo $this->escape($item->description); ?>" data-placement="right">
+	                	<span aria-hidden="true" class="<?php echo $icon;?>"></span> 
+	                    <?php echo JText::_($this->escape($item->title)); ?>
+	                </a>
+	            <?php else : ?>
+	                <span class="hasTooltip" rel="tooltip" title="<?php echo JText::_('COM_PROJECTFORK_ORPHANED_REPO'); ?>" style="cursor: help;">
+	                    <?php echo JText::_($this->escape($item->title)); ?>
+	                </span>
+	            <?php endif; ?>
+	            
+	            <?php if ($count_elements && $elements) : ?>
+                <span class="item-count badge badge-info"><?php echo $elements; ?></span>
             <?php endif; ?>
-
-            <?php if ($count_elements && $elements) : ?>
-                <span class="small">[<?php echo $elements; ?>]</span>
+            </span>
+            
+            <span class="dropdown pull-left">
+            	<?php
+	                $this->menu->start(array('class' => 'btn-mini btn-link'));
+	                $this->menu->itemEdit('directoryform', $item->id, ($can_edit || $can_edit_own));
+	
+	                if (($item->parent_id == 1 && !$item->project_exists) || $this_dir->id > 1) {
+	                    $this->menu->itemDelete('repository', $i, ($can_edit || $can_edit_own));
+	                }
+	
+	                $this->menu->end();
+	
+	                echo $this->menu->render(array('class' => 'btn-mini'));
+	            ?>
+            </span>
+            
+            <?php if ($item->access != 1) : ?>
+            	<?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
             <?php endif; ?>
 
             <?php if ($filter_project && $is_search): ?>
@@ -90,27 +111,13 @@ foreach ($this->items['directories'] as $i => $item) :
             <?php endif; ?>
         </td>
         <td>
-            <?php
-                $this->menu->start(array('class' => 'btn-mini'));
-                $this->menu->itemEdit('directoryform', $item->id, ($can_edit || $can_edit_own));
-
-                if (($item->parent_id == 1 && !$item->project_exists) || $this_dir->id > 1) {
-                    $this->menu->itemDelete('repository', $i, ($can_edit || $can_edit_own));
-                }
-
-                $this->menu->end();
-
-                echo $this->menu->render(array('class' => 'btn-mini'));
-            ?>
+        	<?php echo JText::_('JGRID_HEADING_DIRECTORY'); ?>
         </td>
         <td>
-            <?php echo JHtml::_('pfhtml.label.datetime', $item->created, false, $date_opts); ?>
+            <?php echo $item->author_name; ?>
         </td>
         <td>
-            <?php echo $this->escape($item->description); ?>
-            <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
-            <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
-            <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
+            <?php echo JHtml::_('date', $item->created, JText::_('M d')); ?>
         </td>
     </tr>
 <?php endforeach; ?>

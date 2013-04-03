@@ -21,6 +21,37 @@ $uid        = $user->get('id');
 $dir        = $this->items['directory'];
 
 $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
+
+$doc =& JFactory::getDocument();
+$style = '.text-large {'
+        . 'font-size: 20px;'
+        . 'line-height: 24px;'
+        . '}' 
+        . '.text-medium {'
+        . 'font-size: 16px;'
+        . 'line-height: 22px;'
+        . '}'
+        . '.margin-none {'
+        . 'margin: 0;'
+        . '}'
+        . '.icon-jpg:before,.icon-png:before,.icon-bmp:before,.icon-psd:before,.icon-tiff:before,.icon-jpeg:before {'
+        . 'content: "\2f";'
+        . 'color: #468847;'
+        . '}'
+        . '.icon-mov:before,.icon-swf:before,.icon-flv:before,.icon-mp4:before,.icon-wmv:before {'
+        . 'content: "\56";'
+        . 'color: #b94a48;'
+        . '}'
+        . '.icon-pdf:before {'
+        . 'margin: 0;'
+        . '}'
+        . '.item-title {'
+        . 'margin-right: 10px;'
+        . '}'
+        . '.item-count {'
+        . 'margin-left: 5px;'
+        . '}';
+$doc->addStyleDeclaration( $style );
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-repository">
 
@@ -77,17 +108,22 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
                         <th width="25%">
                             <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                         </th>
-                        <th width="1%">
-
+                        <th width="6%">
+                            <?php echo JText::_('JGRID_HEADING_TYPE'); ?>
                         </th>
-                        <th width="10%">
+                        <th width="8%">
+                            <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_BY', 'a.created_by', $list_dir, $list_order); ?>
+                        </th>
+                        <th width="8%">
                             <?php echo JHtml::_('grid.sort', 'JGRID_HEADING_CREATED_ON', 'a.created', $list_dir, $list_order); ?>
-                        </th>
-                        <th>
-                            <?php echo JText::_('JGRID_HEADING_DESCRIPTION'); ?>
                         </th>
                     </tr>
                 </thead>
+                <tfoot>
+                	<tr>
+                		<td colspan="5"></td>
+                	</tr>
+                </tfoot>
                 <tbody>
                     <?php echo $this->loadTemplate('directories'); ?>
                     <?php echo $this->loadTemplate('notes'); ?>
