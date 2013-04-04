@@ -560,7 +560,7 @@ class PFrepoModelDirectory extends JModelAdmin
      */
     public function save($data)
     {
-        $dispatcher = JEventDispatcher::getInstance();
+        $dispatcher = JDispatcher::getInstance();
         $date       = JFactory::getDate();
 
         $table    = $this->getTable();
