@@ -18,7 +18,6 @@
         <filename>pfusers.php</filename>
         <filename>controller.php</filename>
         <filename>router.php</filename>
-        <filename>LICENSE.txt</filename>
     </files>
     <administration>
         <files folder="admin">
@@ -26,7 +25,6 @@
             <folder>models</folder>
             <folder>tables</folder>
             <filename>pfusers.php</filename>
-            <filename>LICENSE.txt</filename>
         </files>
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_pfusers.ini</language>

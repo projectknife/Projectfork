@@ -13,7 +13,6 @@
     <scriptfile>script.php</scriptfile>
 	<files>
          <filename plugin="pfcomments">pfcomments.php</filename>
-         <filename>LICENSE.txt</filename>
          <filename>script.php</filename>
 	</files>
     <languages>

@@ -18,7 +18,6 @@
         <filename>pfmilestones.php</filename>
         <filename>controller.php</filename>
         <filename>router.php</filename>
-        <filename>LICENSE.txt</filename>
     </files>
     <administration>
         <files folder="admin">
@@ -31,7 +30,6 @@
             <filename>config.xml</filename>
             <filename>pfmilestones.php</filename>
             <filename>controller.php</filename>
-            <filename>LICENSE.txt</filename>
         </files>
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_pfmilestones.ini</language>

@@ -18,7 +18,6 @@
 		<folder>tmpl</folder>
 		<filename>helper.php</filename>
 		<filename>script.php</filename>
-		<filename>LICENSE.txt</filename>
 		<filename>mod_pf_tasks.xml</filename>
 	</files>
 	<languages>

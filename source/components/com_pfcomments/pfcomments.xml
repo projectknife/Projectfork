@@ -16,7 +16,6 @@
         <folder>views</folder>
         <filename>pfcomments.php</filename>
         <filename>controller.php</filename>
-        <filename>LICENSE.txt</filename>
     </files>
     <administration>
         <files folder="admin">
@@ -29,7 +28,6 @@
             <filename>config.xml</filename>
             <filename>pfcomments.php</filename>
             <filename>controller.php</filename>
-            <filename>LICENSE.txt</filename>
         </files>
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_pfcomments.ini</language>
