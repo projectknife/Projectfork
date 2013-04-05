@@ -28,6 +28,5 @@
         <folder>version</folder>
         <file>framework.php</file>
         <file>library.php</file>
-        <file>index.html</file>
     </files>
 </extension>

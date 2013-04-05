@@ -19,7 +19,6 @@
         <filename>controller.php</filename>
         <filename>router.php</filename>
         <filename>LICENSE.txt</filename>
-        <filename>index.html</filename>
     </files>
     <administration>
         <files folder="admin">
@@ -28,7 +27,6 @@
             <folder>tables</folder>
             <filename>pfusers.php</filename>
             <filename>LICENSE.txt</filename>
-            <filename>index.html</filename>
         </files>
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_pfusers.ini</language>

@@ -19,7 +19,6 @@
         <filename>controller.php</filename>
         <filename>router.php</filename>
         <filename>LICENSE.txt</filename>
-        <filename>index.html</filename>
     </files>
     <administration>
         <files folder="admin">
@@ -33,7 +32,6 @@
             <filename>pfprojects.php</filename>
             <filename>controller.php</filename>
             <filename>LICENSE.txt</filename>
-            <filename>index.html</filename>
         </files>
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_pfprojects.ini</language>

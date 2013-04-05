@@ -30,7 +30,6 @@
         <filename>controller.php</filename>
         <filename>router.php</filename>
         <filename>LICENSE.txt</filename>
-        <filename>index.html</filename>
     </files>
     <languages folder="site">
         <language tag="en-GB">language/en-GB/en-GB.com_projectfork.ini</language>
@@ -55,7 +54,6 @@
             <filename>projectfork.php</filename>
             <filename>controller.php</filename>
             <filename>LICENSE.txt</filename>
-            <filename>index.html</filename>
         </files>
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_projectfork.ini</language>
@@ -81,7 +79,6 @@
         </languages>
     </administration>
     <media destination="com_projectfork" folder="media">
-        <filename>index.html</filename>
         <folder>bootstrap</folder>
         <folder>flot</folder>
         <folder>jquery</folder>
