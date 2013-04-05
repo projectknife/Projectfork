@@ -1,5 +1,5 @@
 INSERT INTO `#__pf_comments` (`id`, `asset_id`, `project_id`, `item_id`, `context`, `title`, `alias`, `description`, `created`, `created_by`, `modified`, `modified_by`, `checked_out`, `checked_out_time`, `attribs`, `state`, `parent_id`, `lft`, `rgt`, `level`, `path`) VALUES
-(1, 0, 0, 0, 'system', 'ROOT', 'root', '', '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0, '0000-00-00 00:00:00', '', 1, 0, 0, 0, 0, '');
+(1, 0, 0, 0, 'system', 'ROOT', 'root', '', '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0, '0000-00-00 00:00:00', '', 1, 0, 0, 1, 0, '');
 
 INSERT INTO `#__pf_repo_dirs` (`id`, `asset_id`, `project_id`, `title`, `alias`, `description`, `created`, `created_by`, `modified`, `modified_by`, `checked_out`, `checked_out_time`, `attribs`, `access`, `protected`, `parent_id`, `lft`, `rgt`, `level`, `path`) VALUES
-(1, 0, 0, 'Root', 'root', '', '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0, '0000-00-00 00:00:00', '', 1, 1, 0, 0, 0, 0, '');
+(1, 0, 0, 'Root', 'root', '', '0000-00-00 00:00:00', 0, '0000-00-00 00:00:00', 0, 0, '0000-00-00 00:00:00', '', 1, 1, 0, 0, 1, 0, '');
