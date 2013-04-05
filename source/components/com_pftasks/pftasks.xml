@@ -2,12 +2,12 @@
 <extension type="component" version="2.5" method="upgrade">
     <name>com_pftasks</name>
     <author>Tobias Kuhn</author>
-    <creationDate>January 2013</creationDate>
+    <creationDate>April 2013</creationDate>
     <copyright>(C) 2006 - 2013 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>support@projectfork.net</authorEmail>
     <authorUrl>www.projectfork.net</authorUrl>
-    <version>4.0.0</version>
+    <version>4.1.0dev1</version>
     <description>COM_PFTASKS_XML_DESCRIPTION</description>
     <scriptfile>script.php</scriptfile>
     <files folder="site">
