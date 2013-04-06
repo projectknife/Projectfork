@@ -84,8 +84,16 @@ class PFTable extends JTable
 
             // Try to load the asset by its name
             if (!$asset->loadByName($name)) {
-                $this->setError($asset->getError());
-                return false;
+                $e = $asset->getError();
+
+                if (empty($e)) {
+                    $this->_trackAssets = false;
+                    return $this->delete($pk);
+                }
+                else {
+                    $this->setError($asset->getError());
+                    return false;
+                }
             }
 
             if ($this->_delete_children) {
