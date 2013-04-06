@@ -542,7 +542,7 @@ class PFtasksModelTask extends JModelAdmin
               ->where('a.item_id = ' . $this->_db->quote($pk));
 
         $this->_db->setQuery((string) $query);
-        $list = (array) $this->_db->loadResultArray();
+        $list = (array) $this->_db->loadColumn();
 
         // Add new references
         foreach($data AS $uid)
