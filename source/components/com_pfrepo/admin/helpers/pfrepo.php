@@ -138,7 +138,7 @@ class PFrepoHelper
      *
      * @return    string     $msg     The error message
      */
-    public static function getFileErrorMsg($num, $name)
+    public static function getFileErrorMsg($num, $name = '')
     {
         $size_limit = ini_get('upload_max_filesize');
         $name = '"' . htmlspecialchars($name, ENT_COMPAT, 'UTF-8') . '"';

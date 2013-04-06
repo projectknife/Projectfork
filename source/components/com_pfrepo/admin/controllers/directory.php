@@ -37,8 +37,7 @@ class PFrepoControllerDirectory extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $user = JFactory::getUser();
-
+        $user    = JFactory::getUser();
         $project = JArrayHelper::getValue($data, 'project_id', JRequest::getInt('filter_project'), 'int');
         $parent  = JArrayHelper::getValue($data, 'parent_id', JRequest::getInt('filter_parent_id'), 'int');
 

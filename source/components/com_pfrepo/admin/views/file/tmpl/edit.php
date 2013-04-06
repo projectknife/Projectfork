@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -27,7 +27,7 @@ Joomla.submitbutton = function(task)
     }
 }
 </script>
-<form action="<?php echo JRoute::_('index.php?option=com_pfrepo&view=file&id='.(int) $this->item->id . '&layout=edit'); ?>" method="post" name="adminForm" id="item-form" class="form-validate" enctype="multipart/form-data">
+<form action="<?php echo JRoute::_('index.php?option=com_pfrepo&view=file&id=' . (int) $this->item->id . '&layout=edit'); ?>" method="post" name="adminForm" id="item-form" class="form-validate" enctype="multipart/form-data">
 
     <div class="width-60 fltlft span7">
         <fieldset class="adminform">
@@ -121,7 +121,6 @@ Joomla.submitbutton = function(task)
             echo $this->form->getInput('created');
             echo $this->form->getInput('alias');
             echo $this->form->getInput('id');
-            echo $this->form->getInput('asset_id');
             echo $this->form->getInput('elements');
         ?>
         <input type="hidden" name="task" value="" />
