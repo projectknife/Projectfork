@@ -67,6 +67,7 @@ class PFrepoModelRepository extends JModelList
 
         // Load the items
         $items  = array();
+        $count  = (int) $this->getState('list.count_elements');
         $parent = (int) $this->getState('filter.parent_id', 1);
         $dir    = $this->getInstance('Directory', 'PFrepoModel', $config = array('ignore_request' => true));
 
@@ -79,6 +80,17 @@ class PFrepoModelRepository extends JModelList
                 $items['directories'] = $this->_getList($query, $this->getStart(), $this->getState('list.limit'));
                 $items['notes']       = array();
                 $items['files']       = array();
+
+                if ($count) {
+                    $pks      = JArrayHelper::getColumn($items['directories'], 'id');
+                    $elements = $this->getElementCount($pks);
+                }
+
+                foreach ($items['directories'] AS $item)
+                {
+                    $item->element_count = ($count ? $elements[$item->id] : 0);
+                    $item->orphaned      = empty($item->project_exists);
+                }
             }
             catch (RuntimeException $e) {
                 $this->setError($e->getMessage());
@@ -183,22 +195,8 @@ class PFrepoModelRepository extends JModelList
               ->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
         // Join over the projects for the project title.
-        $query->select('p.title AS project_title')
+        $query->select('p.id AS project_exists, p.title AS project_title, p.alias AS project_alias')
               ->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
-
-        if ($this->getState('list.count_elements')) {
-            // Join over the directories for folder count
-            $query->select('COUNT(DISTINCT d.id) AS dir_count')
-                  ->join('LEFT', '#__pf_repo_dirs AS d ON d.parent_id = a.id');
-
-            // Join over the files for file count
-            $query->select('COUNT(DISTINCT f.id) AS file_count')
-                  ->join('LEFT', '#__pf_repo_files AS f ON f.dir_id = a.id');
-
-            // Join over the notes for note count
-            $query->select('COUNT(DISTINCT n.id) AS note_count')
-                  ->join('LEFT', '#__pf_repo_notes AS n ON n.dir_id = a.id');
-        }
 
         // Filter by access level.
         if ($filter_access) {
@@ -237,6 +235,22 @@ class PFrepoModelRepository extends JModelList
               ->group('a.id');
 
         return $query;
+    }
+
+
+    /**
+     * Counts the contents of the given folders
+     *
+     * @param    array    $pks      The folders to count the contents of
+     *
+     * @retun    array    $count    The element count
+     */
+    protected function getElementCount($pks)
+    {
+        $config = array('ignore_request' => true);
+        $model  = $this->getInstance('Directories', 'PFrepoModel', $config);
+
+        return $model->getElementCount($pks);
     }
 
 

@@ -67,12 +67,14 @@ class PFrepoModelRepository extends JModelList
 
         // Load the items
         $items  = array();
+        $count  = (int) $this->getState('list.count_elements');
         $parent = (int) $this->getState('filter.parent_id', 1);
 
         if ($parent == 1) {
             // Load the list items.
-            $query = $this->_getListQuery();
-            $dir   = $this->getInstance('DirectoryForm', 'PFrepoModel', $config = array('ignore_request' => true));
+            $query  = $this->_getListQuery();
+            $dir    = $this->getInstance('DirectoryForm', 'PFrepoModel', $config = array('ignore_request' => true));
+            $labels = $this->getInstance('Labels', 'PFModel');
 
             try {
                 $items['directory']   = $dir->getItem($parent);
@@ -85,7 +87,10 @@ class PFrepoModelRepository extends JModelList
                 return false;
             }
 
-            $labels = $this->getInstance('Labels', 'PFModel');
+            if ($count) {
+                $pks      = JArrayHelper::getColumn($items['directories'], 'id');
+                $elements = $this->getElementCount($pks);
+            }
 
             foreach ($items['directories'] as $i => &$item)
             {
@@ -100,7 +105,10 @@ class PFrepoModelRepository extends JModelList
                 $item->project_slug = $item->project_alias ? ($item->project_id . ':' . $item->project_alias) : $item->project_id;
 
                 // Set orphaned status
-                $item->orphaned = $item->project_exists ? false : true;
+                $item->orphaned = empty($item->project_exists);
+
+                // Get element count
+                $item->element_count = ($count ? $elements[$item->id] : 0);
 
                 // Get the labels
                 if ($item->label_count > 0) {
@@ -218,27 +226,13 @@ class PFrepoModelRepository extends JModelList
               ->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
         // Join over the projects for the project title.
-        $query->select('p.title AS project_title, p.alias AS project_alias, p.id AS project_exists')
+        $query->select('p.id AS project_exists, p.title AS project_title, p.alias AS project_alias')
               ->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
 
         // Join over the label refs for label count
         $query->select('COUNT(DISTINCT lbl.id) AS label_count')
               ->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id '
                            . 'AND lbl.item_type = ' . $this->_db->quote('com_pfrepo.directory') . ')');
-
-        if ($this->getState('list.count_elements')) {
-            // Join over the directories for folder count
-            $query->select('COUNT(DISTINCT d.id) AS dir_count')
-                  ->join('LEFT', '#__pf_repo_dirs AS d ON d.parent_id = a.id');
-
-            // Join over the files for file count
-            $query->select('COUNT(DISTINCT f.id) AS file_count')
-                  ->join('LEFT', '#__pf_repo_files AS f ON f.dir_id = a.id');
-
-            // Join over the notes for note count
-            $query->select('COUNT(DISTINCT n.id) AS note_count')
-                  ->join('LEFT', '#__pf_repo_notes AS n ON n.dir_id = a.id');
-        }
 
         // Filter by access level.
         if ($filter_access) {
@@ -405,6 +399,22 @@ class PFrepoModelRepository extends JModelList
 
         // List state information.
         parent::populateState($ordering, $direction);
+    }
+
+
+    /**
+     * Counts the contents of the given folders
+     *
+     * @param    array    $pks      The folders to count the contents of
+     *
+     * @retun    array    $count    The element count
+     */
+    protected function getElementCount($pks)
+    {
+        $config = array('ignore_request' => true);
+        $model  = $this->getInstance('Directories', 'PFrepoModel', $config);
+
+        return $model->getElementCount($pks);
     }
 
 

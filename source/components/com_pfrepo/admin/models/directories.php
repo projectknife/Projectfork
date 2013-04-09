@@ -50,6 +50,146 @@ class PFrepoModelDirectories extends JModelList
 
 
     /**
+     * Method to get an array of data items.
+     *
+     * @return    mixed    An array of data items on success, false on failure.
+     */
+    public function getItems()
+    {
+        // Get a storage key.
+        $store = $this->getStoreId();
+
+        // Try to load the data from internal storage.
+        if (isset($this->cache[$store])) {
+            return $this->cache[$store];
+        }
+
+        // Load the list items.
+        $query = $this->_getListQuery();
+
+        try {
+            $count    = (int) $this->getState('list.count_elements');
+            $items    = $this->_getList($query, $this->getStart(), $this->getState('list.limit'));
+
+            if ($count) {
+                $pks      = JArrayHelper::getColumn($items, 'id');
+                $elements = $this->getElementCount($pks);
+            }
+
+            foreach ($items AS $item)
+            {
+                $item->element_count = ($count ? $elements[$item->id] : 0);
+                $item->orphaned      = empty($item->project_exists);
+            }
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        // Add the items to the internal cache.
+        $this->cache[$store] = $items;
+
+        return $this->cache[$store];
+    }
+
+
+    /**
+     * Counts the contents of the given folders
+     *
+     * @param    array    $pks      The folders to count the contents of
+     *
+     * @retun    array    $count    The element count
+     */
+    public function getElementCount($pks)
+    {
+        $query = $this->_db->getQuery(true);
+        $user  = JFactory::getUser();
+
+        if (!is_array($pks) || !count($pks)) return array();
+
+        // Count sub-folders
+        $query->select('parent_id, COUNT(id) AS folder_count')
+              ->from('#__pf_repo_dirs')
+              ->where('parent_id IN(' . implode(',', $pks) . ')');
+
+        if (!$user->authorise('core.admin')) {
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('access IN (' . $levels . ')');
+        }
+
+        $query->group('parent_id');
+        $this->_db->setQuery($query);
+
+        try {
+            $folder_count = $this->_db->loadAssocList('parent_id', 'folder_count');
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        // Count notes
+        $query->clear()
+              ->select('dir_id, COUNT(id) AS note_count')
+              ->from('#__pf_repo_notes')
+              ->where('dir_id IN(' . implode(',', $pks) . ')');
+
+        if (!$user->authorise('core.admin')) {
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('access IN (' . $levels . ')');
+        }
+
+        $query->group('dir_id');
+        $this->_db->setQuery($query);
+
+        try {
+            $note_count = $this->_db->loadAssocList('dir_id', 'note_count');
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        // Count files
+        $query->clear()
+              ->select('dir_id, COUNT(id) AS file_count')
+              ->from('#__pf_repo_files')
+              ->where('dir_id IN(' . implode(',', $pks) . ')');
+
+        if (!$user->authorise('core.admin')) {
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('access IN (' . $levels . ')');
+        }
+
+        $query->group('dir_id');
+        $this->_db->setQuery($query);
+
+        try {
+            $file_count = $this->_db->loadAssocList('dir_id', 'file_count');
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        // Put everything together
+        $count = array();
+
+        foreach ($pks as $pk)
+        {
+            $count[$pk] = 0;
+
+            if (isset($folder_count[$pk])) $count[$pk] += $folder_count[$pk];
+            if (isset($note_count[$pk]))   $count[$pk] += $note_count[$pk];
+            if (isset($file_count[$pk]))   $count[$pk] += $file_count[$pk];
+        }
+
+        return $count;
+    }
+
+
+    /**
      * Build an SQL query to load the list data.
      *
      * @return    jdatabasequery
@@ -91,22 +231,8 @@ class PFrepoModelDirectories extends JModelList
               ->join('LEFT', '#__users AS ua ON ua.id = a.created_by');
 
         // Join over the projects for the project title.
-        $query->select('p.title AS project_title, p.alias AS project_alias')
+        $query->select('p.id AS project_exists, p.title AS project_title, p.alias AS project_alias')
               ->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
-
-        if ($this->getState('list.count_elements')) {
-            // Join over the directories for folder count
-            $query->select('COUNT(d.id) AS dir_count')
-                  ->join('LEFT', '#__pf_repo_dirs AS d ON d.parent_id = a.id');
-
-            // Join over the files for file count
-            $query->select('COUNT(f.id) AS file_count')
-                  ->join('LEFT', '#__pf_repo_files AS f ON f.dir_id = a.id');
-
-            // Join over the notes for note count
-            $query->select('COUNT(n.id) AS note_count')
-                  ->join('LEFT', '#__pf_repo_notes AS n ON n.dir_id = a.id');
-        }
 
         // Filter by access level.
         if ($filter_access) {

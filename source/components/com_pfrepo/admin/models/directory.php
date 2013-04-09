@@ -73,14 +73,101 @@ class PFrepoModelDirectory extends JModelAdmin
 
             $item->labels   = $labels->getConnections('com_pfrepo.directory', $item->id);
             $item->orphaned = $this->isOrphaned($item->project_id);
+            $item->element_count = 0;
         }
         else {
             // New record
             $item->labels   = array();
             $item->orphaned = false;
+            $item->element_count = $this->getElementCount($pk);
         }
 
         return $item;
+    }
+
+
+    /**
+     * Counts the contents of the given folders
+     *
+     * @param    array    $pk      The folder primary key
+     *
+     * @retun    integer  $count    The element count
+     */
+    public function getElementCount($pk = null)
+    {
+        $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+        $query = $this->_db->getQuery(true);
+        $user  = JFactory::getUser();
+        $count = 0;
+
+        if (empty($pk)) return $count;
+
+        // Count sub-folders
+        $query->select('COUNT(*)')
+              ->from('#__pf_repo_dirs')
+              ->where('parent_id = ' . (int) $pk);
+
+        if (!$user->authorise('core.admin')) {
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('access IN (' . $levels . ')');
+        }
+
+        $query->group('parent_id');
+        $this->_db->setQuery($query);
+
+        try {
+            $count += (int) $this->_db->loadResult();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        // Count notes
+        $query->clear()
+              ->select('COUNT(*)')
+              ->from('#__pf_repo_notes')
+              ->where('dir_id = ' . (int) $pk);
+
+        if (!$user->authorise('core.admin')) {
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('access IN (' . $levels . ')');
+        }
+
+        $query->group('dir_id');
+        $this->_db->setQuery($query);
+
+        try {
+            $count += (int) $this->_db->loadResult();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        // Count files
+        $query->clear()
+              ->select('COUNT(id)')
+              ->from('#__pf_repo_files')
+              ->where('dir_id = ' . (int) $pk);
+
+        if (!$user->authorise('core.admin')) {
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('access IN (' . $levels . ')');
+        }
+
+        $query->group('dir_id');
+        $this->_db->setQuery($query);
+
+        try {
+            $count += (int) $this->_db->loadResult();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        return $count;
     }
 
 

@@ -41,8 +41,6 @@ foreach ($this->items['directories'] as $i => $item) :
     $edit_link = 'task=directory.edit&filter_project=' . $item->project_id . 'filter_parent_id=' . $item->parent_id . '&id=' . $item->id;
     $access    = PFrepoHelper::getActions('directory', $item->id);
 
-    $elements = ($count_elements ? ($item->dir_count + $item->note_count + $item->file_count) : 0 );
-
     $can_create   = $access->get('core.create');
     $can_edit     = $access->get('core.edit');
     $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
@@ -64,8 +62,8 @@ foreach ($this->items['directories'] as $i => $item) :
                     <?php echo JText::_($this->escape($item->title)); ?>
                 </a>
 
-                <?php if ($count_elements && $elements) : ?>
-                    <span class="small">[<?php echo $elements; ?>]</span>
+                <?php if ($count_elements && $item->element_count) : ?>
+                    <span class="small">[<?php echo $item->element_count; ?>]</span>
                 <?php endif; ?>
 
                 <?php if ($filter_project && $is_search): ?>
