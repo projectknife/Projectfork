@@ -58,13 +58,11 @@ foreach ($this->items['directories'] as $i => $item) :
     $date_opts    = array('past-class' => '', 'past-icon' => 'calendar');
     ?>
     <tr class="row<?php echo $i % 2; ?>">
-        <?php if ($this_dir->parent_id >= 1) : ?>
-        <td>
+        <td <?php if($this_dir->id == 1) echo 'style="display:none"'; ?>>
             <label for="cb<?php echo $i; ?>" class="checkbox">
                 <?php echo JHtml::_('pf.html.id', $i, $item->id, false, 'did'); ?>
             </label>
         </td>
-        <?php endif; ?>
         <td>
             <?php if ($item->checked_out) : ?><span aria-hidden="true" class="icon-lock"></span> <?php endif; ?>
 

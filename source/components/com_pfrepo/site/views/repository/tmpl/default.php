@@ -26,7 +26,7 @@ $doc =& JFactory::getDocument();
 $style = '.text-large {'
         . 'font-size: 20px;'
         . 'line-height: 24px;'
-        . '}' 
+        . '}'
         . '.text-medium {'
         . 'font-size: 16px;'
         . 'line-height: 22px;'
@@ -62,7 +62,8 @@ $doc->addStyleDeclaration( $style );
     <div class="clearfix"></div>
 
     <div class="cat-items">
-        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($dir->project_id, $dir->id)); ?>" method="post">
+        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($dir->project_id, $dir->id)); ?>"
+            method="post" autocomplete="off">
             <div class="btn-toolbar btn-toolbar-top">
                 <?php echo $this->toolbar;?>
                 <div class="filter-project btn-group">
@@ -100,11 +101,9 @@ $doc->addStyleDeclaration( $style );
             <table class="adminlist table table-striped">
                 <thead>
                     <tr>
-                        <?php if ($dir->parent_id >= 1) : ?>
-                        <th width="1%">
+                        <th width="1%" <?php if($dir->id == 1) echo 'style="display:none"'; ?>>
                             <input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
                         </th>
-                        <?php endif; ?>
                         <th width="25%">
                             <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
                         </th>

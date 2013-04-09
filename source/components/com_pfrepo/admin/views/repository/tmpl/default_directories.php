@@ -23,6 +23,7 @@ $is_search      = empty($filter_search) ? false : true;
 
 $txt_icon    = JText::_('COM_PROJECTFORK_FIELD_DIRECTORY_TITLE');
 $txt_edit    = JText::_('JACTION_EDIT');
+$txt_delete  = JText::_('JACTION_DELETE');
 $date_format = JText::_('DATE_FORMAT_LC4');
 
 if ($this_dir->parent_id > 1) : ?>
@@ -46,6 +47,20 @@ foreach ($this->items['directories'] as $i => $item) :
     $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
     $can_edit_own = ($access->get('core.edit.own') && $item->created_by == $uid);
     $can_change   = ($access->get('core.edit.state') && $can_checkin);
+    $can_delete   = ($access->get('core.delete') && ($item->orphaned || $item->parent_id > 1));
+
+    // Set folder icon
+    $icon = 'icon-folder';
+
+    if ($item->orphaned) {
+        $icon = 'icon-warning';
+    }
+    elseif ($item->parent_id == 1) {
+        $icon = 'icon-folder-2';
+    }
+    elseif ($item->protected) {
+        $icon = 'icon-locked';
+    }
     ?>
     <tr class="row<?php echo $i % 2; ?>">
         <td class="center hidden-phone">
@@ -57,7 +72,7 @@ foreach ($this->items['directories'] as $i => $item) :
                     <?php echo JHtml::_('jgrid.checkedout', $i, $item->editor, $item->checked_out_time, 'repository.', $can_change); ?>
                 <?php endif; ?>
 
-                <i class="icon-folder hasTip" title="<?php echo $txt_icon;?>"></i>
+                <i class="<?php echo $icon; ?> hasTip" title="<?php echo $txt_icon;?>"></i>
                 <a href="<?php echo JRoute::_('index.php?option=com_pfrepo&view=repository&filter_parent_id=' . $item->id);?>">
                     <?php echo JText::_($this->escape($item->title)); ?>
                 </a>
@@ -77,7 +92,15 @@ foreach ($this->items['directories'] as $i => $item) :
                 <div class="pull-left">
                     <?php
                         // Create dropdown items
-                        JHtml::_('dropdown.edit', $item->id, 'directory.');
+                        if ($can_edit ||$can_edit_own) {
+                            JHtml::_('dropdown.edit', $item->id, 'directory.');
+                        }
+
+                        if ($can_delete) {
+                            $cm_link = 'javascript:void(0)';
+                            $cm_js   = 'onclick="contextAction(\'cb' . $i . '\', \'repository.delete\')"';
+                            JHtml::_('dropdown.addCustomItem', $txt_delete, $cm_link, $cm_js);
+                        }
 
                         // Render dropdown list
                         echo JHtml::_('dropdown.render');

@@ -896,8 +896,8 @@ class PFrepoModelDirectory extends JModelAdmin
             $query->clear()
                   ->select('id')
                   ->from('#__pf_repo_dirs')
-                  ->where('a.lft > ' . (int) $table->lft)
-                  ->where('a.rgt < ' . (int) $table->rgt)
+                  ->where('lft > ' . (int) $table->lft)
+                  ->where('rgt < ' . (int) $table->rgt)
                   ->order('level DESC');
 
             $this->_db->setQuery($query);
@@ -1095,7 +1095,9 @@ class PFrepoModelDirectory extends JModelAdmin
      */
     protected function canDelete($record)
     {
-        if (empty($record->id) || $record->protected == '1') return false;
+        if (empty($record->id) || ($record->protected == '1' && !$this->isOrphaned($record->project_id))) {
+            return false;
+        }
 
         $user   = JFactory::getUser();
         $levels = $user->getAuthorisedViewLevels();
