@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Dashboard
+ * @package      pkg_projectfork
+ * @subpackage   com_projectfork
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -12,10 +12,10 @@ defined('_JEXEC') or die();
 
 
 // Create shortcuts
-$item    = &$this->item;
-$params  = &$this->params;
-$state   = &$this->state;
-$modules = &$this->modules;
+$item    = $this->item;
+$params  = $this->params;
+$state   = $this->state;
+$modules = $this->modules;
 
 $nulldate = JFactory::getDbo()->getNullDate();
 
@@ -31,8 +31,8 @@ $details_active = ($state->get('project.request') ? ' active' : '');
     <div class="cat-items">
 
         <form id="adminForm" name="adminForm" method="post" action="<?php echo JRoute::_(PFprojectsHelperRoute::getDashboardRoute($state->get('filter.project'))); ?>">
-        
-        	<?php if($state->get('filter.project')) : ?>
+
+        	<?php if($state->get('filter.project') && !empty($item)) : ?>
                 <div class="btn-group pull-right">
     			    <a data-toggle="collapse" data-target="#project-details" class="btn<?php echo $details_active;?>">
                         <?php echo JText::_('COM_PROJECTFORK_DETAILS_LABEL'); ?> <span class="caret"></span>
@@ -54,7 +54,7 @@ $details_active = ($state->get('project.request') ? ' active' : '');
 
             <?php if ($item) echo $item->event->beforeDisplayContent; ?>
 
-            <?php if($state->get('filter.project')) : ?>
+            <?php if($state->get('filter.project') && !empty($item)) : ?>
                 <div class="<?php echo $details_in;?>collapse" id="project-details">
                     <div class="well">
                         <div class="item-description">
@@ -125,7 +125,6 @@ $details_active = ($state->get('project.request') ? ' active' : '');
                             <div class="clearfix"></div>
 
                             <hr />
-
 
                     	</div>
                     </div>

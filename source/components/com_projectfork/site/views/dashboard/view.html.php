@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Dashboard
+ * @package      pkg_projectfork
+ * @subpackage   com_projectfork
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -31,8 +31,7 @@ class ProjectforkViewDashboard extends JViewLegacy
         $this->params  = $this->state->params;
         $this->modules = JFactory::getDocument()->loadRenderer('modules');
         $this->toolbar = $this->getToolbar();
-
-        $dispatcher	= JDispatcher::getInstance();
+        $dispatcher	   = JDispatcher::getInstance();
 
         // Escape strings for HTML output
 		$this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
@@ -44,7 +43,7 @@ class ProjectforkViewDashboard extends JViewLegacy
 		}
 
         // Process the content plugins.
-        if ($this->item) {
+        if (!empty($this->item)) {
             // Fake content item
             PFObjectHelper::toContentItem($this->item);
 
@@ -148,12 +147,12 @@ class ProjectforkViewDashboard extends JViewLegacy
      */
     protected function getToolbar()
     {
-        $id = (isset($this->item->id) ? $this->item->id : null);
+        $id = (empty($this->item) || empty($this->item->id) ? null : $this->item->id);
 
         $access = PFprojectsHelper::getActions($id);
         $uid    = JFactory::getUser()->get('id');
 
-        if ($id) {
+        if (!empty($id)) {
             $slug = $this->item->id . ':' . $this->item->alias;
 
             PFToolbar::button(
@@ -166,7 +165,6 @@ class ProjectforkViewDashboard extends JViewLegacy
                 )
             );
         }
-
 
         return PFToolbar::render();
     }

@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Dashboard
+ * @package      pkg_projectfork
+ * @subpackage   com_projectfork
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -49,8 +49,7 @@ class ProjectforkModelDashboard extends JModelItem
 
         if (!isset($this->_item[$pk])) {
             try {
-                $db    = $this->getDbo();
-                $query = $db->getQuery(true);
+                $query = $this->_db->getQuery(true);
 
                 $query->select($this->getState(
                         'item.select',
@@ -66,12 +65,18 @@ class ProjectforkModelDashboard extends JModelItem
                       ->join('LEFT', '#__users AS u on u.id = a.created_by')
                       ->where('a.id = ' . (int) $pk);
 
-                $db->setQuery((string) $query);
-                $data = $db->loadObject();
+                $this->_db->setQuery($query);
+                $data = $this->_db->loadObject();
 
-                if ($error = $db->getErrorMsg()) throw new Exception($error);
+                if ($error = $this->_db->getErrorMsg()) throw new Exception($error);
 
                 if (empty($data)) {
+                    if (PFApplicationHelper::getActiveProjectId() == $pk) {
+                        PFApplicationHelper::setActiveProject(0);
+                        $this->_item[$pk] = null;
+                        return $this->_item[$pk];
+                    }
+
                     return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_PROJECT_NOT_FOUND'));
                 }
 
