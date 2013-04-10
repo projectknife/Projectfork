@@ -325,6 +325,28 @@ abstract class PFhtmlScript
 
 
     /**
+     * Method to load upload JS
+     *
+     * @return    void
+     */
+    public static function upload()
+    {
+        // Only load once
+        if (!empty(self::$loaded[__METHOD__])) {
+            return;
+        }
+
+        // Load only of doc type is HTML
+        if (JFactory::getDocument()->getType() == 'html') {
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptUpload');
+        }
+
+        self::$loaded[__METHOD__] = true;
+    }
+
+
+    /**
      * Method to load Projectfork base JS
      *
      * @return    void
@@ -507,6 +529,12 @@ function triggerProjectforkScriptTask()
 function triggerProjectforkScriptTimerec()
 {
     JHtml::_('script', 'com_projectfork/projectfork/recorder.js', false, true, false, false, false);
+}
+
+
+function triggerProjectforkScriptUpload()
+{
+    JHtml::_('script', 'com_projectfork/projectfork/upload.js', false, true, false, false, false);
 }
 
 
