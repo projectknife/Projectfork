@@ -212,7 +212,7 @@ class PFrepoModelDirectories extends JModelList
                 'list.select',
                 'a.id, a.project_id, a.title, a.alias, a.description, a.checked_out, '
                 . 'a.checked_out_time, a.created, a.access, a.created_by, a.parent_id, '
-                . 'a.lft, a.rgt, a.level, a.path'
+                . 'a.protected, a.lft, a.rgt, a.level, a.path'
             )
         );
 
