@@ -48,4 +48,37 @@ class PFprojectsControllerProject extends JControllerForm
     {
         return parent::getModel($name, $prefix, $config);
     }
+
+
+    /**
+     * Method to save a record.
+     *
+     * @param     string     $key       The name of the primary key of the URL variable.
+     * @param     string     $urlVar    The name of the URL variable if different from the primary key.
+     *
+     * @return    boolean               True if successful, false otherwise.
+     */
+    public function save($key = null, $urlVar = null)
+    {
+        $data = JRequest::getVar('jform', array(), 'post', 'array');
+        $task = $this->getTask();
+
+        // Reset the repo dir when saving as copy
+        if ($task == 'save2copy' && isset($data['attribs']['repo_dir'])) {
+            $dir = (int) $data['attribs']['repo_dir'];
+
+            if ($dir) {
+                $data['attribs']['repo_dir'] = 0;
+            }
+        }
+
+        if (version_compare(JVERSION, '3.0.0', 'ge')) {
+            $this->input->post->set('jform', $data);
+        }
+        else {
+            JRequest::setVar('jform', $data, 'post');
+        }
+
+        return parent::save($key, $urlVar);
+    }
 }
