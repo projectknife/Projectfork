@@ -171,4 +171,48 @@ class PFrepoHelper
 
         return $msg;
     }
+
+
+    /**
+     * Method to get the max upload size from the php config
+     *
+     * @return    integer    $size   Max size in bytes
+     */
+    public static function getMaxUploadSize()
+    {
+        $val  = strtolower(trim(ini_get('upload_max_filesize')));
+        $char = substr($val, -1);
+        $size = (int) substr($val, 0, -1);
+
+        switch ($char)
+        {
+            case 'g': $size *= 1024;
+            case 'm': $size *= 1024;
+            case 'k': $size *= 1024;
+        }
+
+        return $size;
+    }
+
+
+    /**
+     * Method to get the max post size from the php config
+     *
+     * @return    integer    $size   Max size in bytes
+     */
+    public static function getMaxPostSize()
+    {
+        $val  = strtolower(trim(ini_get('post_max_size')));
+        $char = substr($val, -1);
+        $size = (int) substr($val, 0, -1);
+
+        switch ($char)
+        {
+            case 'g': $size *= 1024;
+            case 'm': $size *= 1024;
+            case 'k': $size *= 1024;
+        }
+
+        return $size;
+    }
 }

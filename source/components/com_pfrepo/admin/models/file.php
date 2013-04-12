@@ -569,6 +569,22 @@ class PFrepoModelFile extends JModelAdmin
         $ext  = JFile::getExt($name);
 
         if ($stream) {
+            // Check file size
+            $flimit = PFrepoHelper::getMaxUploadSize();
+            $plimit = PFrepoHelper::getMaxPostSize();
+            $size  = (isset($_SERVER["CONTENT_LENGTH"]) ? (int) $_SERVER["CONTENT_LENGTH"] : 0);
+
+            if ($flimit < $size) {
+                $msg = JText::sprintf('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_1', $name, $flimit);
+                $this->setError($msg);
+                return false;
+            }
+            elseif ($plimit < $size) {
+                $msg = JText::sprintf('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_9', $name, $plimit);
+                $this->setError($msg);
+                return false;
+            }
+
             $fp   = fopen("php://input", "r");
             $temp = tmpfile();
 
@@ -583,10 +599,9 @@ class PFrepoModelFile extends JModelAdmin
             }
 
             $check = stream_copy_to_stream($fp, $temp);
-            $size  = (isset($_SERVER["CONTENT_LENGTH"]) ? (int) $_SERVER["CONTENT_LENGTH"] : null);
             fclose($fp);
 
-            if ($check != $size || is_null($size)) {
+            if ($check != $size || empty($size)) {
                 $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_STREAM_ERROR_3'));
                 return false;
             }
