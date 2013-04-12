@@ -13,6 +13,7 @@ defined('_JEXEC') or die();
 
 $user       = JFactory::getUser();
 $uid        = $user->get('id');
+$dir        = $this->items['directory'];
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $project    = (int) $this->state->get('filter.project');
@@ -60,6 +61,10 @@ endif;
     endif;
 
     echo $this->loadTemplate('filter_' . ($this->is_j25 ? 'j25' : 'j30'));
+
+    if ($dir->id > 1 && $user->authorise('core.create', 'com_pfrepo.directory.' . $dir->id)) {
+        echo $this->loadTemplate('upload');
+    }
     ?>
     <table class="adminlist table table-striped">
         <thead>

@@ -544,12 +544,7 @@ class PFrepoModelFile extends JModelAdmin
     {
         $uploadpath = PFrepoHelper::getBasePath($project);
 
-        if (!is_array($file)) {
-            $this->setError(JText::_('COM_PROJECTFORK_WARNING_NO_FILE_SELECTED'));
-            return false;
-        }
-
-        if (!isset($file['tmp_name'])) {
+        if (!is_array($file) || !isset($file['tmp_name'])) {
             $this->setError(JText::_('COM_PROJECTFORK_WARNING_NO_FILE_SELECTED'));
             return false;
         }
@@ -573,8 +568,53 @@ class PFrepoModelFile extends JModelAdmin
         $name = $this->generateNewFileName($uploadpath, $file['name']);
         $ext  = JFile::getExt($name);
 
-        if (JFile::upload($file['tmp_name'], $uploadpath . '/' . $name, $stream) === true) {
+        if ($stream) {
+            $fp   = fopen("php://input", "r");
+            $temp = tmpfile();
+
+            if ($fp === false) {
+                $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_STREAM_ERROR_1'));
+                return false;
+            }
+
+            if ($temp === false) {
+                $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_STREAM_ERROR_2'));
+                return false;
+            }
+
+            $check = stream_copy_to_stream($fp, $temp);
+            $size  = (isset($_SERVER["CONTENT_LENGTH"]) ? (int) $_SERVER["CONTENT_LENGTH"] : null);
+            fclose($fp);
+
+            if ($check != $size || is_null($size)) {
+                $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_STREAM_ERROR_3'));
+                return false;
+            }
+
+            $dest = fopen($uploadpath . '/' . $name, "w");
+
+            if ($dest === false) {
+                $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_STREAM_ERROR_4'));
+                return false;
+            }
+
+            fseek($temp, 0, SEEK_SET);
+            $check = stream_copy_to_stream($temp, $dest);
+            fclose($dest);
+
+            if ($check != $size) {
+                $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_STREAM_ERROR_5'));
+                return false;
+            }
+
+            $file['size'] = $size;
+
             return array('name' => $name, 'size' => $file['size'], 'extension' => $ext);
+        }
+        else {
+            if (JFile::upload($file['tmp_name'], $uploadpath . '/' . $name) === true) {
+                return array('name' => $name, 'size' => $file['size'], 'extension' => $ext);
+            }
         }
 
         return false;

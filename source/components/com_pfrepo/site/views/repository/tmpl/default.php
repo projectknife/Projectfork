@@ -98,6 +98,10 @@ $doc->addStyleDeclaration( $style );
                 </div>
             </div>
 
+            <?php if ($dir->id > 1 && $user->authorise('core.create', 'com_pfrepo.directory.' . $dir->id)) :
+                echo $this->loadTemplate('upload');
+            endif; ?>
+
             <table class="adminlist table table-striped">
                 <thead>
                     <tr>
