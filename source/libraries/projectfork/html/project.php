@@ -1,10 +1,10 @@
 <?php
 /**
-* @package      Projectfork.Library
-* @subpackage   html
+* @package      pkg_projectfork
+* @subpackage   lib_projectfork
 *
 * @author       Tobias Kuhn (eaxs)
-* @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+* @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
 * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 **/
 
@@ -14,7 +14,7 @@ defined('_JEXEC') or die();
 abstract class PFhtmlProject
 {
     /**
-     * Renders an input field with a select button for choosing a project
+     * Renders a filter input field for selecting a project
      *
      * @param     int       $value         The state value
      * @param     bool      $can_change
@@ -22,6 +22,28 @@ abstract class PFhtmlProject
      * @return    string                   The input field html
      */
     public static function filter($value = 0, $can_change = true)
+    {
+        $app = JFactory::getApplication();
+
+        if (version_compare(JVERSION, '3.0', 'lt') && $app->isAdmin()) {
+            // Show the modal window selector in the backend of J2.5
+            return self::modal($value, $can_change);
+        }
+
+        // For all other versions and locations show the typeahead
+        return self::typeahead($value, $can_change);
+    }
+
+
+    /**
+     * Renders an input field which opens a modal window for selecting a project
+     *
+     * @param     int       $value         The state value
+     * @param     bool      $can_change
+     *
+     * @return    string                   The input field html
+     */
+    public static function modal($value = 0, $can_change = true)
     {
         JHtml::_('behavior.modal', 'a.modal');
 
@@ -89,5 +111,111 @@ abstract class PFhtmlProject
                 . '</span>';
 
         return $html;
+    }
+
+
+    /**
+     * Renders a typeahead input field for selecting a project
+     *
+     * @param     int       $value         The state value
+     * @param     bool      $can_change
+     *
+     * @return    string                   The input field html
+     */
+    public static function typeahead($value = 0, $can_change = true)
+    {
+        static $field_id = 0;
+
+        $doc = JFactory::getDocument();
+        $app = JFactory::getApplication();
+
+        // Get currently active project data
+        $active_id    = (int) PFApplicationHelper::getActiveProjectId();
+        $active_title = PFApplicationHelper::getActiveProjectTitle();
+
+        $field_id++;
+
+        // Prepare title value
+        $title_val = htmlspecialchars($active_title, ENT_COMPAT, 'UTF-8');
+
+        // Prepare field attributes
+        $attr_read = ($can_change ? '' : ' readonly="readonly"');
+        $css_txt   = ($can_change ? '' : ' disabled') . ($active_id ? ' success' : ' warning');
+        $placehold = htmlspecialchars(JText::_('COM_PROJECTFORK_SELECT_PROJECT'), ENT_COMPAT, 'UTF-8');
+
+        // Query url
+        $url = 'index.php?option=com_pfprojects&view=projects&tmpl=component&format=json&typeahead=1&filter_search=';
+
+        // Prepare JS typeahead script
+        $js = array();
+        $js[] = "jQuery(document).ready(function()";
+        $js[] = "{";
+        $js[] = "    var pta_done" . $field_id . " = true;";
+        $js[] = "    ";
+        $js[] = "    jQuery('#filter_project_title" . $field_id . "').typeahead({";
+        $js[] = "        source: function(query, process)";
+        $js[] = "        {";
+        $js[] = "            if(!pta_done" . $field_id . ") return {};";
+        $js[] = "            pta_done" . $field_id . " = false;";
+        $js[] = "            jQuery.getJSON('" . $url . "' + query, {}, function(response)";
+        $js[] = "            {";
+        $js[] = "                var data = new Array();";
+        $js[] = "                for(var i in response) { if(response.hasOwnProperty(i)) {data.push(i+'_'+response[i]);} }";
+        $js[] = "                process(data);";
+        $js[] = "                pta_done" . $field_id . " = true;";
+        $js[] = "            });";
+        $js[] = "        },";
+        $js[] = "        highlighter: function(item)";
+        $js[] = "        {";
+        $js[] = "            var parts = item.split('_');";
+        $js[] = "            parts.shift();";
+        $js[] = "            return parts.join('_');";
+        $js[] = "        },";
+        $js[] = "        updater: function(item)";
+        $js[] = "        {";
+        $js[] = "            var parts = item.split('_');";
+        $js[] = "            jQuery('#filter_project_id" . $field_id . "').val(parts.shift());";
+        $js[] = "            jQuery('#filter_project_title" . $field_id . "').addClass('disabled');";
+        $js[] = "            jQuery('#filter_project_title" . $field_id . "').attr('readonly', 'readonly');";
+        $js[] = "            jQuery('#filter_project_id" . $field_id . "').change();";
+        $js[] = "            return parts.join('_');";
+        $js[] = "        },";
+        $js[] = "        minLength: 1,";
+        $js[] = "        items: 5";
+        $js[] = "    });";
+        $js[] = "    jQuery('#filter_project_id" . $field_id . "').change(function()";
+        $js[] = "    {";
+        $js[] = "        this.form.submit();";
+        $js[] = "    });";
+        $js[] = "    jQuery('#filter_project_title" . $field_id . "').click(function()";
+        $js[] = "    {";
+        $js[] = "        jQuery(this).select();";
+        $js[] = "    });";
+        $js[] = "});";
+
+        // Prepare html output
+        $html = array();
+        $html[] = '<span class="btn-group form-inline">';
+        $html[] = '<input type="text" id="filter_project_title' . $field_id . '" class="input-medium' . $css_txt . '"';
+        $html[] = ' autocomplete="off" ' . $attr_read . ' value="' . $title_val.'" placeholder="' . $placehold . '" />';
+        $html[] = '</span>';
+
+        if ($active_id && $can_change) {
+            $clr_js = 'jQuery(\'#filter_project_id' . $field_id . '\').val(\'0\').change();';
+
+            $html[] = '<span class="btn-group">';
+            $html[] = '<button type="button" class="btn" onclick="' . $clr_js . '"><i class="icon-remove"></i></button>';
+            $html[] = '</span>';
+        }
+
+        $html[] = '<input type="hidden" id="filter_project_id' . $field_id . '" name="filter_project"';
+        $html[] = ' value="' . $active_id.'" autocomplete="off"' . $attr_read . '/>';
+
+        if ($can_change) {
+            // Add script
+            JFactory::getDocument()->addScriptDeclaration(implode("\n", $js));
+        }
+
+        return implode("\n", $html);
     }
 }
