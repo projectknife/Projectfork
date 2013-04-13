@@ -28,7 +28,7 @@ $doc =& JFactory::getDocument();
 $style = '.large {'
         . 'font-size: 20px;'
         . 'line-height: 24px;'
-        . '}' 
+        . '}'
         . '.medium {'
         . 'font-size: 16px;'
         . 'line-height: 22px;'
@@ -114,7 +114,7 @@ $doc->addStyleDeclaration( $style );
                 $task_count = (int) $item->tasks;
                 $completed  = (int) $item->completed_tasks;
                 $progress   = ($task_count == 0) ? 0 : round($completed * (100 / $task_count));
-                
+
                 // Repo directory
                 $repo_dir = (int) $this->params->get('repo_dir');
 
@@ -135,7 +135,7 @@ $doc->addStyleDeclaration( $style );
                     <h3><?php echo $this->escape($item->project_title);?></h3>
                     <hr />
                 <?php $current_project = $item->project_title; endif; ?>
-                
+
                 <div class="row-fluid">
                 	<div class="span1 hidden-phone">
                 		<div class="thumbnail center">
@@ -184,7 +184,7 @@ $doc->addStyleDeclaration( $style );
                 			<?php if ($tasks_enabled) : ?>
 	    	    				<div class="btn-group">
 	    	    			        <a href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->project_slug, $item->slug));?>" class="btn btn-mini">
-	    	    			            <span aria-hidden="true" class="icon-list-view"></span> 
+	    	    			            <span aria-hidden="true" class="icon-list-view"></span>
 	    	    			            <?php echo (int) $item->tasklists;?> <?php echo JText::_('JGRID_HEADING_TASKLISTS'); ?>
 	    	    			        </a>
 	    	    				</div>
@@ -192,7 +192,7 @@ $doc->addStyleDeclaration( $style );
 	    	    			<?php if ($tasks_enabled) : ?>
     	    	    			<div class="btn-group">
                                     <a href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->project_slug, $item->slug));?>" class="btn btn-mini">
-                                        <span aria-hidden="true" class="icon-checkmark"></span> 
+                                        <span aria-hidden="true" class="icon-checkmark"></span>
                                         <?php echo (int) $item->tasks;?> <?php echo JText::_('JGRID_HEADING_TASKS'); ?>
                                     </a>
     	    	    			</div>
@@ -200,16 +200,16 @@ $doc->addStyleDeclaration( $style );
 	    	    			<?php if ($repo_enabled) : ?>
 	    	    				<div class="btn-group">
 	    	    			        <a href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($item->project_slug, $repo_dir));?>" class="btn btn-mini">
-	    	    			            <span aria-hidden="true" class="icon-flag-2"></span> 
+	    	    			            <span aria-hidden="true" class="icon-flag-2"></span>
 	    	    			            <?php echo (int) $item->attachments;?> <?php echo JText::_('JGRID_HEADING_FILES'); ?>
 	    	    			        </a>
 	    	    				</div>
 	    	    			<?php endif; ?>
-	    	    			
+
                 			<?php echo $watch; ?>
                 		</div>
                 		</div>
-                		
+
                 	</div>
                 </div>
                 <hr />
@@ -217,7 +217,7 @@ $doc->addStyleDeclaration( $style );
             $k = 1 - $k;
             endforeach;
             ?>
-            
+
             <?php if ($this->pagination->get('pages.total') > 1) : ?>
                 <div class="pagination center">
                     <?php echo $this->pagination->getPagesLinks(); ?>
