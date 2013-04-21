@@ -122,11 +122,84 @@ class PFrepoHelper
         if ($fchar == '/' || $fchar == '\\') $dest = substr($dest, 1);
         if ($lchar == '/' || $lchar == '\\') $dest = substr($dest, 0, -1);
 
-        if ($project) $dest .= '/' . (int) $project;
+        if ($project) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('path')
+                  ->from('#__pf_repo_dirs')
+                  ->where('project_id = ' . $project)
+                  ->where('parent_id = 1');
+
+            $db->setQuery($query);
+            $path = $db->loadResult();
+
+            if (empty($path)) {
+                $query->clear()
+                      ->select('alias')
+                      ->from('#__pf_projects')
+                      ->where('id = ' . $project);
+
+                $db->setQuery($query);
+                $path = $db->loadResult();
+            }
+
+            if ($path) {
+                $dest .= '/' . $path;
+            }
+        }
 
         $cache[$project] = JPath::clean($base . $dest);
 
         return $cache[$project];
+    }
+
+
+    /**
+     * Method to get the pyhsical path location of a file
+     *
+     * @param     string     $name    The file name
+     * @param     integer    $dir     The directory id in which the file is stored
+     *
+     * @return    string              The path
+     */
+    public function getFilePath($name, $dir)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('project_id, path')
+              ->from('#__pf_repo_dirs')
+              ->where('id = ' . (int) $dir);
+
+        $db->setQuery($query);
+        $dir = $db->loadObject();
+
+        if (empty($dir)) return '';
+
+        $base = PFrepoHelper::getBasePath();
+        $file = $base . '/' . $dir->path . '/' . $name;
+
+        // Look in the directory
+        if (JFile::exists($file)) {
+            return $base . '/' . $dir->path;
+        }
+
+        // Look in the base dir (4.0 backwards compat)
+        $file = $base . '/' . $dir->project_id . '/' . $name;
+
+        if (JFile::exists($file)) {
+            return $base . '/' . $dir->project_id;
+        }
+
+        // Look in the base dir (3.0 backwards compat)
+        $file = $base . '/project_' . $dir->project_id . '/' . $name;
+
+        if (JFile::exists($file)) {
+            return $base . '/project_' . $dir->project_id;
+        }
+
+        return '';
     }
 
 
@@ -176,7 +249,7 @@ class PFrepoHelper
     /**
      * Method to get the max upload size from the php config
      *
-     * @return    integer    $size   Max size in bytes
+     * @return    integer    $size    Max size in bytes
      */
     public static function getMaxUploadSize()
     {
@@ -198,7 +271,7 @@ class PFrepoHelper
     /**
      * Method to get the max post size from the php config
      *
-     * @return    integer    $size   Max size in bytes
+     * @return    integer    $size    Max size in bytes
      */
     public static function getMaxPostSize()
     {
@@ -214,5 +287,33 @@ class PFrepoHelper
         }
 
         return $size;
+    }
+
+
+    /**
+     * Method to get the project id of a directory
+     *
+     * @param     integer    $id    The directory id
+     *
+     * @return    integer           The project id
+     */
+    public static function getProjectFromDir($id)
+    {
+        static $cache = array();
+
+        // Check cache
+        if (isset($cache[$id])) return $cache[$id];
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('project_id')
+              ->from('#__pf_repo_dirs')
+              ->where('id = ' . (int) $id);
+
+        $db->setQuery($query);
+        $cache[$id] = (int) $db->loadResult();
+
+        return $cache[$id];
     }
 }

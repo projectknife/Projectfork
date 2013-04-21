@@ -12,6 +12,7 @@ defined('_JEXEC') or die();
 
 
 jimport('projectfork.controller.form.json');
+jimport('joomla.filesystem.file');
 
 
 /**
@@ -20,7 +21,15 @@ jimport('projectfork.controller.form.json');
  */
 class PFrepoControllerFile extends PFControllerFormJson
 {
-    public function save()
+    /**
+     * Method to save a record.
+     *
+     * @param     string     $key       The name of the primary key of the URL variable.
+     * @param     string     $urlVar    The name of the URL variable if different from the primary key (sometimes required to avoid router collisions).
+     *
+     * @return    boolean               True if successful, false otherwise.
+     */
+    public function save($key = 'id', $urlVar = null)
     {
         $rdata = array();
         $rdata['success']  = true;
@@ -59,8 +68,8 @@ class PFrepoControllerFile extends PFControllerFormJson
         }
 
         // Check for upload error
-        if ($files_data['error']) {
-            $error = PFrepoHelper::getFileErrorMsg($files_data['error'], $files_data['name']);
+        if ($file['error']) {
+            $error = PFrepoHelper::getFileErrorMsg($file['error'], $file['name']);
 
             $rdata['success'] = false;
             $rdata['messages'][] = $error;
@@ -68,8 +77,21 @@ class PFrepoControllerFile extends PFControllerFormJson
             $this->sendResponse($rdata);
         }
 
+        // Find file with the same name in the same dir
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+        $name  = JFile::makeSafe($file['name']);
+
+        $query->select('id')
+              ->from('#__pf_repo_files')
+              ->where('dir_id = ' . (int) $dir)
+              ->where('file_name = ' . $db->quote($name));
+
+        $db->setQuery($query, 0, 1);
+        $parent_id = (int) $db->loadResult();
+
         $model  = $this->getModel();
-        $result = $model->upload($file, $project, ($method == 'xhr' ? true : false));
+        $result = $model->upload($file, $dir, ($method == 'xhr' ? true : false), $parent_id);
 
         if (!$result) {
             $rdata['success'] = false;
@@ -84,6 +106,10 @@ class PFrepoControllerFile extends PFControllerFormJson
         $data['dir_id']     = $dir;
         $data['file']       = $result;
         $data['title']      = $result['name'];
+
+        if ($parent_id) {
+            $data['id'] = $parent_id;
+        }
 
         if (!$model->save($data)) {
             $rdata['success'] = false;

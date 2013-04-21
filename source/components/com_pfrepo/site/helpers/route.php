@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -15,7 +15,7 @@ jimport('joomla.application.component.helper');
 
 
 /**
- * Projectfork Component Route Helper
+ * Projectfork Repository Component Route Helper
  *
  * @static
  */
@@ -122,14 +122,47 @@ abstract class PFrepoHelperRoute
      * @param     string    $project    The project slug. Optional
      * @param     string    $dir        The directory slug. Optional
      * @param     string    $path       The full directory path. Optional
+     * @param     string    $rev        The revision slug. Optional
      *
      *
      * @return    string    $link       The link
      */
-    public static function getFileRoute($file, $project = '', $dir = '', $path = '')
+    public static function getFileRoute($file, $project = '', $dir = '', $path = '', $rev = '')
     {
         $path  = self::getRepositoryPath($project, $path);
         $link  = 'index.php?option=com_pfrepo&view=file';
+        $link .= '&filter_project=' . $project;
+        $link .= '&filter_parent_id=' . $dir;
+        $link .= '&path=' . $path;
+        $link .= '&id=' . $file;
+
+        if ($rev) $link .= '&rev=' . $rev;
+
+        $item = PFApplicationHelper::itemRoute(null, 'com_pfrepo.repository');
+
+        if ($item) {
+            $link .= '&Itemid=' . $item;
+        }
+
+        return $link;
+    }
+
+
+    /**
+     * Creates a link to a file revision list
+     *
+     * @param     string    $file       The file slug
+     * @param     string    $project    The project slug. Optional
+     * @param     string    $dir        The directory slug. Optional
+     * @param     string    $path       The full directory path. Optional
+     *
+     *
+     * @return    string    $link       The link
+     */
+    public static function getFileRevisionsRoute($file, $project = '', $dir = '', $path = '')
+    {
+        $path  = self::getRepositoryPath($project, $path);
+        $link  = 'index.php?option=com_pfrepo&view=filerevisions';
         $link .= '&filter_project=' . $project;
         $link .= '&filter_parent_id=' . $dir;
         $link .= '&path=' . $path;
@@ -140,19 +173,16 @@ abstract class PFrepoHelperRoute
                          'path' => array($path),
                         );
 
-        if ($item = PFApplicationHelper::itemRoute($needles, 'com_pfrepo.file')) {
-            $link .= '&Itemid=' . $item;
-        }
-        elseif ($item = PFApplicationHelper::itemRoute(null, 'com_pfrepo.repository')) {
-            $link .= '&Itemid=' . $item;
-        }
+        $item = PFApplicationHelper::itemRoute(null, 'com_pfrepo.repository');
+
+        if ($item) $link .= '&Itemid=' . $item;
 
         return $link;
     }
 
 
     /**
-     * Creates a link a repo note
+     * Creates a link to a repo note
      *
      * @param     string    $file       The file slug
      * @param     string    $project    The project slug. Optional

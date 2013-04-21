@@ -107,7 +107,7 @@ class PFrepoModelDirectory extends JModelAdmin
               ->from('#__pf_repo_dirs')
               ->where('parent_id = ' . (int) $pk);
 
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_pfrepo')) {
             $levels = implode(',', $user->getAuthorisedViewLevels());
             $query->where('access IN (' . $levels . ')');
         }
@@ -129,7 +129,7 @@ class PFrepoModelDirectory extends JModelAdmin
               ->from('#__pf_repo_notes')
               ->where('dir_id = ' . (int) $pk);
 
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_pfrepo')) {
             $levels = implode(',', $user->getAuthorisedViewLevels());
             $query->where('access IN (' . $levels . ')');
         }
@@ -151,7 +151,7 @@ class PFrepoModelDirectory extends JModelAdmin
               ->from('#__pf_repo_files')
               ->where('dir_id = ' . (int) $pk);
 
-        if (!$user->authorise('core.admin')) {
+        if (!$user->authorise('core.admin', 'com_pfrepo')) {
             $levels = implode(',', $user->getAuthorisedViewLevels());
             $query->where('access IN (' . $levels . ')');
         }
@@ -300,6 +300,9 @@ class PFrepoModelDirectory extends JModelAdmin
             }
         }
 
+        $project   = $table->project_id;
+        $dest_path = $table->path;
+
         // Check that the user can create in the destination
         if (!$user->authorise('core.create', 'com_pfrepo.directory.' . $dest)) {
             $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_CANNOT_CREATE_DIRECTORY'));
@@ -332,6 +335,8 @@ class PFrepoModelDirectory extends JModelAdmin
                 }
             }
 
+            $path = $table->path;
+
             // Set the new location in the tree for the node.
             $table->setLocation($dest, 'last-child');
 
@@ -346,6 +351,9 @@ class PFrepoModelDirectory extends JModelAdmin
                 $this->setError($table->getError());
                 return false;
             }
+
+            // Update physical path
+            $this->savePhysical($project, $path, $table->path);
 
             // Rebuild the paths of the directory children
             if (!$table->rebuild($table->id, $table->lft, $table->level, $table->path)) {
@@ -463,6 +471,7 @@ class PFrepoModelDirectory extends JModelAdmin
             // Make a copy of the old ID and Parent ID
             $old_id     = $table->id;
             $old_parent = $table->parent_id;
+            $path       = $table->path;
 
             // Reset the id because we are making a copy.
             $table->id = 0;
@@ -492,6 +501,21 @@ class PFrepoModelDirectory extends JModelAdmin
 
             // Get the new item ID
             $new_id = $table->get('id');
+
+            // Rebuild the path for the directory
+            if (!$table->rebuildPath($new_id)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Make a physical copy
+            $this->copyPhysical($table->project_id, $path, $table->path);
+
+            // Rebuild the paths of the directory children
+            if (!$table->rebuild($table->id, $table->lft, $table->level, $table->path)) {
+                $this->setError($table->getError());
+                return false;
+            }
 
             // Add the new ID to the array
             $new_ids[$i] = $new_id;
@@ -539,7 +563,7 @@ class PFrepoModelDirectory extends JModelAdmin
                       ->where('dir_id = ' . (int) $old);
 
                 $this->_db->setQuery($query);
-                $files = (array) $db->loadObjectList();
+                $files = (array) $this->_db->loadObjectList();
 
                 // Check notes access
                 $pks = array();
@@ -762,10 +786,20 @@ class PFrepoModelDirectory extends JModelAdmin
             return false;
         }
 
+        // Update physical path
+        if (!$is_new) {
+            $this->savePhysical($table->project_id, $old_path, $table->path);
+        }
+
         // Rebuild the paths of the directory children
         if (!$table->rebuild($table->id, $table->lft, $table->level, $table->path)) {
             $this->setError($table->getError());
             return false;
+        }
+
+        // Create physical path
+        if ($is_new) {
+            $this->savePhysical($table->project_id, $table->path);
         }
 
         // Set id state
@@ -775,60 +809,6 @@ class PFrepoModelDirectory extends JModelAdmin
         $this->cleanCache();
 
         return true;
-    }
-
-
-    /**
-     * Method to rebuild the data structure on the server
-     *
-     * @param     string     $new        The new path
-     * @param     string     $old        The previous path to rename
-     * @param     integer    $project    The project id of the directory
-     *
-     * @return    boolean                True on success, otherwise False
-     */
-    public function exportStructure($project = 0)
-    {
-        $basepath = PFrepoHelper::getBasePath($project);
-
-        if (!empty($old) && $old != $new) {
-            // Rename existing path
-            $old_path = $basepath . '/' . $old;
-            $new_path = $basepath . '/' . $new;
-
-            if (JFolder::exists($new_path)) {
-                $this->setError(JText::_('COM_PROJECTFORK_ERROR_REPO_DIR_EXISTS') . ' ' . $new_path);
-                return false;
-            }
-
-            if (!JFolder::exists($old_path)) {
-                return $this->rebuildPath($new_path, NULL, $project);
-            }
-
-            $result = JFolder::move($old_path, $new_path);
-
-            if ($result !== true) {
-                return false;
-            }
-
-            return true;
-        }
-        else {
-            // Create new one
-            $new_path = $basepath . '/' . $new;
-
-            if (JFolder::exists($new_path)) {
-                return true;
-            }
-
-            if (!JFolder::create($new_path)) {
-                return false;
-            }
-
-            return true;
-        }
-
-        return false;
     }
 
 
@@ -958,7 +938,7 @@ class PFrepoModelDirectory extends JModelAdmin
                     }
 
                     // Delete physical path if exists
-                    $basepath = PFrepoHelper::getBasePath($sub_table->project_id);
+                    $basepath = PFrepoHelper::getBasePath();
                     $fullpath = JPath::clean($basepath . '/' . $sub_table->path);
 
                     if (JFolder::exists($fullpath)) JFolder::delete($fullpath);
@@ -972,7 +952,7 @@ class PFrepoModelDirectory extends JModelAdmin
             }
 
             // Delete physical path if exists
-            $basepath = PFrepoHelper::getBasePath($table->project_id);
+            $basepath = PFrepoHelper::getBasePath();
             $fullpath = JPath::clean($basepath . '/' . $table->path);
 
             if (JFolder::exists($fullpath)) JFolder::delete($fullpath);
@@ -985,6 +965,67 @@ class PFrepoModelDirectory extends JModelAdmin
         $this->cleanCache();
 
         return true;
+    }
+
+
+    /**
+     * Method to physically create or move a directory
+     *
+     * @param    array $data The directory data
+     *
+     * @return   boolean True on success
+     */
+    protected function savePhysical($project, $path, $dest = null)
+    {
+        if (!$project) return false;
+
+        $base        = PFrepoHelper::getBasePath();
+        $path_exists = JFolder::exists($base . '/' . $path);
+
+        // Create new directory?
+        if (empty($dest)) {
+            if ($path_exists) return true;
+
+            return JFolder::create($base . '/' . $path);
+        }
+
+        $dest_exists = JFolder::exists($base . '/' . $dest);
+
+        if ($dest == $path) return true;
+
+        // Move existing dir
+        if ($path_exists && !$dest_exists) {
+            return JFolder::move($base . '/' . $path, $base . '/' . $dest);
+        }
+
+        // Create new dir at destination
+        if (!$path_exists && !$dest_exists) {
+            return JFolder::create($base . '/' . $dest);
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Method to physically copy directory
+     *
+     * @param    array $data The directory data
+     *
+     * @return   boolean True on success
+     */
+    protected function copyPhysical($project, $path, $dest)
+    {
+        if (!$project) return false;
+
+        $base        = PFrepoHelper::getBasePath();
+        $path_exists = JFolder::exists($base . '/' . $path);
+        $dest_exists = JFolder::exists($base . '/' . $dest);
+
+        // Do nothing if the path does not exist or if the destination already exists
+        if (!$path_exists || $dest_exists) return true;
+
+        return JFolder::copy($base . '/' . $path, $base . '/' . $dest);
     }
 
 

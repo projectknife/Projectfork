@@ -120,6 +120,7 @@ endif;
     <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
     <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
     <input type="hidden" name="task" value="" />
+    <input type="hidden" name="filter_parent_id" value="<?php echo (int) $dir->id; ?>" />
     <?php echo JHtml::_('form.token'); ?>
 
     <?php if (!$this->is_j25) : ?>

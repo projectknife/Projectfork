@@ -692,8 +692,16 @@ class PFprojectsModelProject extends JModelAdmin
 
             // Delete the repo directory
             if ($repo_exists) {
+                // Delete repo 4.1
                 $repo = PFrepoHelper::getBasePath($pk);
+                if (JFolder::exists($repo)) JFolder::delete($repo);
 
+                // Delete repo 4.0
+                $repo = PFrepoHelper::getBasePath() . '/' . $pk;
+                if (JFolder::exists($repo)) JFolder::delete($repo);
+
+                // Delete repo 3.0
+                $repo = PFrepoHelper::getBasePath() . '/project_' . $pk;
                 if (JFolder::exists($repo)) JFolder::delete($repo);
             }
 

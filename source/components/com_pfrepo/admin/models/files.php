@@ -32,20 +32,96 @@ class PFrepoModelFiles extends JModelList
         if (empty($config['filter_fields'])) {
             $config['filter_fields'] = array(
                 'a.id',
-                'a.dir_id',
-                'a.project_id', 'project_title',
-                'a.title',
-                'a.created',
-                'a.created_by', 'author_name',
-                'a.modified',
-                'a.modified_by', 'editor',
-                'a.checked_out',
-                'a.checked_out_time',
-                'a.access', 'access_level'
+                'a.ordering'
             );
         }
 
         parent::__construct($config);
+    }
+
+
+    /**
+     * Method to get an array of data items.
+     *
+     * @return    mixed    An array of data items on success, false on failure.
+     */
+    public function getItems()
+    {
+        // Get a storage key.
+        $store = $this->getStoreId();
+
+        // Try to load the data from internal storage.
+        if (isset($this->cache[$store])) {
+            return $this->cache[$store];
+        }
+
+        // Load the list items.
+        $query = $this->_getListQuery();
+
+        try {
+            $items = $this->_getList($query, 0, 0);
+
+            $pks      = JArrayHelper::getColumn($items, 'id');
+            $elements = $this->getRevisionCount($pks);
+
+            foreach ($items AS $item)
+            {
+                $item->revision_count = $elements[$item->id];
+            }
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        // Add the items to the internal cache.
+        $this->cache[$store] = $items;
+
+        return $this->cache[$store];
+    }
+
+
+    /**
+     * Counts the revisions of the given files
+     *
+     * @param    array    $pks      The files to count the revisions of
+     *
+     * @retun    array    $count    The revision count
+     */
+    public function getRevisionCount($pks)
+    {
+        $query = $this->_db->getQuery(true);
+
+        if (!is_array($pks) || !count($pks)) return array();
+
+        // Count sub-folders
+        $query->select('parent_id, COUNT(id) AS revision_count')
+              ->from('#__pf_repo_file_revs')
+              ->where('parent_id IN(' . implode(',', $pks) . ')');
+
+
+        $query->group('parent_id');
+        $this->_db->setQuery($query);
+
+        try {
+            $rev_count = $this->_db->loadAssocList('parent_id', 'revision_count');
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        // Put everything together
+        $count = array();
+
+        foreach ($pks as $pk)
+        {
+            $count[$pk] = 0;
+
+            if (isset($rev_count[$pk])) $count[$pk] += $rev_count[$pk];
+        }
+
+        return $count;
     }
 
 

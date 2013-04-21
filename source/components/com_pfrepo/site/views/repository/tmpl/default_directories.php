@@ -80,8 +80,8 @@ foreach ($this->items['directories'] as $i => $item) :
 	            <?php endif; ?>
 
 	            <?php if ($count_elements && $item->element_count) : ?>
-                <span class="item-count badge badge-info"><?php echo $item->element_count; ?></span>
-            <?php endif; ?>
+                    <span class="item-count badge badge-info"><?php echo $item->element_count; ?></span>
+                <?php endif; ?>
             </span>
 
             <span class="dropdown pull-left">

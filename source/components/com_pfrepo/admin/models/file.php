@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -12,6 +12,9 @@ defined('_JEXEC') or die();
 
 
 jimport('joomla.application.component.modeladmin');
+jimport('joomla.filesystem.path');
+jimport('joomla.filesystem.folder');
+jimport('joomla.filesystem.file');
 
 
 /**
@@ -26,23 +29,6 @@ class PFrepoModelFile extends JModelAdmin
      * @var    string
      */
     protected $text_prefix = 'COM_PROJECTFORK_FILE';
-
-
-    /**
-     * Constructor.
-     *
-     * @param    array          $config    An optional associative array of configuration settings.
-     *
-     * @see      jcontroller
-     */
-    public function __construct($config = array())
-    {
-       jimport('joomla.filesystem.path');
-       jimport('joomla.filesystem.folder');
-       jimport('joomla.filesystem.file');
-
-       parent::__construct($config);
-    }
 
 
     /**
@@ -131,6 +117,7 @@ class PFrepoModelFile extends JModelAdmin
         $dispatcher = JDispatcher::getInstance();
         $pks        = (array) $pks;
         $table      = $this->getTable();
+        $query      = $this->_db->getQuery(true);
 
         // Include the content plugins for the on delete events.
         JPluginHelper::importPlugin('content');
@@ -150,15 +137,7 @@ class PFrepoModelFile extends JModelAdmin
                         return false;
                     }
 
-                    // Delete the physical file
-                    $path = PFrepoHelper::getBasePath($table->project_id);
-                    $file = $table->file_name;
-
-                    if (JFile::exists($path . '/' . $file)) {
-                        JFile::delete($path . '/' . $file);
-                        // Dont care if the deletion failed and remove the db record anyway.
-                    }
-
+                    // Delete from database 1st
                     if (!$table->delete($pk)) {
                         $this->setError($table->getError());
                         return false;
@@ -166,7 +145,6 @@ class PFrepoModelFile extends JModelAdmin
 
                     // Trigger the onContentAfterDelete event.
                     $dispatcher->trigger($this->event_after_delete, array($context, $table));
-
                 }
                 else {
                     // Prune items that you can't change.
@@ -239,7 +217,8 @@ class PFrepoModelFile extends JModelAdmin
             return false;
         }
 
-        $table = $this->getTable();
+        $dir_path = $table->path;
+        $table    = $this->getTable();
 
         // Parent exists so we let's proceed
         foreach ($pks as $pk)
@@ -256,6 +235,33 @@ class PFrepoModelFile extends JModelAdmin
                     $this->setError(JText::sprintf('JGLOBAL_BATCH_MOVE_ROW_NOT_FOUND', $pk));
                     continue;
                 }
+            }
+
+            // Skip if the the destination is the same as the current dir
+            if ($dest == $table->dir_id) continue;
+
+            // Move the physical file
+            $path = PFrepoHelper::getFilePath($table->file_name, $table->dir_id);
+
+            if (empty($path)) {
+                $this->setError(JText::sprintf('JGLOBAL_BATCH_MOVE_ROW_NOT_FOUND', $pk));
+                continue;
+            }
+
+            $base = PFrepoHelper::getBasePath();
+            $from = $path . '/' . $table->file_name;
+            $to   = $base . '/' . $dir_path;
+            $name = $this->generateNewFileName($to, $table->file_name);
+
+            if (!JFolder::exists($to)) {
+                if (JFolder::create($to) !== true) continue;
+            }
+
+            if (!JFile::move($from, $to . '/' . $name)) {
+                continue;
+            }
+            else {
+                $table->file_name = $name;
             }
 
             // Set the new location directory
@@ -323,8 +329,9 @@ class PFrepoModelFile extends JModelAdmin
             }
         }
 
-        $table  = $this->getTable();
-        $newIds = array();
+        $dir_path = $table->path;
+        $table    = $this->getTable();
+        $newIds   = array();
 
         // Parent exists so we let's proceed
         foreach ($pks as $pk)
@@ -344,18 +351,27 @@ class PFrepoModelFile extends JModelAdmin
             }
 
             // Copy the physical file
-            $basepath = PFrepoHelper::getBasePath($table->project_id);
+            $path = PFrepoHelper::getFilePath($table->file_name, $table->dir_id);
 
-            if (JFile::exists($basepath . '/' . $table->file_name)) {
-                $filepath = $basepath . '/' . $table->file_name;
-                $new_name = $this->generateNewFileName($basepath, $table->file_name);
+            if (empty($path)) {
+                $this->setError(JText::sprintf('JGLOBAL_BATCH_MOVE_ROW_NOT_FOUND', $pk));
+                continue;
+            }
 
-                if (!JFile::copy($basepath . '/' . $table->file_name, $basepath . '/' . $new_name)) {
-                    continue;
-                }
-                else {
-                    $table->file_name = $new_name;
-                }
+            $base = PFrepoHelper::getBasePath();
+            $from = $path . '/' . $table->file_name;
+            $to   = $base . '/' . $dir_path;
+            $name = $this->generateNewFileName($to, $table->file_name);
+
+            if (!JFolder::exists($to)) {
+                if (JFolder::create($to) !== true) continue;
+            }
+
+            if (!JFile::copy($from, $to . '/' . $name)) {
+                continue;
+            }
+            else {
+                $table->file_name = $name;
             }
 
             // Reset the id because we are making a copy.
@@ -394,18 +410,69 @@ class PFrepoModelFile extends JModelAdmin
      */
     public function getItem($pk = null)
     {
-        if ($item = parent::getItem($pk)) {
-            // Convert the params field to an array.
-            $registry = new JRegistry;
-            $registry->loadString($item->attribs);
-            $item->attribs = $registry->toArray();
+        $item = parent::getItem($pk);
 
-            // Get the labels
+        if ($item == false) return false;
+
+        if (property_exists($item, 'attribs')) {
+            // Convert the params field to an array.
+            $registry = new JRegistry();
+
+            $registry->loadString($item->attribs);
+
+            $item->params  = $registry;
+            $item->attribs = $registry->toArray();
+        }
+
+        if ($item->id > 0) {
+            // Existing record
             $labels = $this->getInstance('Labels', 'PFModel');
+
             $item->labels = $labels->getConnections('com_pfrepo.file', $item->id);
+            $item->revision_count = 0;
+        }
+        else {
+            // New record
+            $item->labels   = array();
+            $item->revision_count = $this->getRevisionCount($pk);
         }
 
         return $item;
+    }
+
+
+    /**
+     * Counts the revisions of the given file
+     *
+     * @param    array    $pk      The file primary key
+     *
+     * @retun    integer  $count    The revision count
+     */
+    public function getRevisionCount($pk = null)
+    {
+        $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+        $query = $this->_db->getQuery(true);
+        $count = 0;
+
+        if (empty($pk)) return $count;
+
+        // Count revs
+        $query->select('COUNT(*)')
+              ->from('#__pf_repo_file_revs')
+              ->where('parent_id = ' . (int) $pk);
+
+        $query->group('parent_id');
+        $this->_db->setQuery($query);
+
+        try {
+            $count += (int) $this->_db->loadResult();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        return $count;
     }
 
 
@@ -434,9 +501,25 @@ class PFrepoModelFile extends JModelAdmin
             }
         }
 
-        // Delete the old file if a new one is uploaded
+        // Save revision if not new
         if (!$is_new && isset($data['file']['name'])) {
-            $this->deleteFile($table->file_name, $table->project_id);
+            // $this->deleteFile($table->file_name, $table->dir_id);
+            $head_data = $table->getProperties(true);
+            $config    = array('ignore_request' => true);
+            $rev_model = $this->getInstance('FileRevision', 'PFrepoModel', $config);
+
+            $head_data['parent_id'] = $head_data['id'];
+            $head_data['id']        = null;
+
+            if (!$rev_model->save($head_data)) {
+                $this->setError($rev_model->getError());
+                return false;
+            }
+
+            // Change the title to the file name
+            if (strrpos($data['title'], $data['file']['extension']) !== false) {
+                $data['title'] = '';
+            }
         }
 
         // Use the file name as title if empty
@@ -534,15 +617,37 @@ class PFrepoModelFile extends JModelAdmin
     /**
      * Method for uploading a file
      *
-     * @param     array      $file       The file information
-     * @param     integer    $project    The project id
-     * @param     boolean    $stream     If set to true, use data stream
+     * @param     array      $file      The file information
+     * @param     integer    $dir       The directory id
+     * @param     boolean    $stream    If set to true, use data stream
+     * @param     integer    $parent_id If set, will try to move the original file to the revs folder
      *
-     * @return    mixed                  Array with file info on success, otherwise False
+     * @return    mixed                 Array with file info on success, otherwise False
      */
-    public function upload($file = NULL, $project = 0, $stream = false)
+    public function upload($file = NULL, $dir = 0, $stream = false, $parent_id = 0)
     {
-        $uploadpath = PFrepoHelper::getBasePath($project);
+        // Dont allow upload to root dir
+        if ((int) $dir <= 1) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_SELECT_DIRECTORY'));
+            return false;
+        }
+
+        $query = $this->_db->getQuery(true);
+
+        $query->select('project_id, path')
+              ->from('#__pf_repo_dirs')
+              ->where('id = ' . (int) $dir);
+
+        $this->_db->setQuery($query);
+        $dir = $this->_db->loadObject();
+
+        if (empty($dir)) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_SELECT_DIRECTORY'));
+            return false;
+        }
+
+        $project    = $dir->project_id;
+        $uploadpath = PFrepoHelper::getBasePath() . '/' . $dir->path;
 
         if (!is_array($file) || !isset($file['tmp_name'])) {
             $this->setError(JText::_('COM_PROJECTFORK_WARNING_NO_FILE_SELECTED'));
@@ -565,6 +670,52 @@ class PFrepoModelFile extends JModelAdmin
             return false;
         }
 
+        // If we have a parent id, move it to the revisions folder first
+        if ($parent_id) {
+            $query->clear()
+                  ->select('project_id, dir_id, file_name')
+                  ->from('#__pf_repo_files')
+                  ->where('id = ' . (int) $parent_id);
+
+            $this->_db->setQuery($query);
+            $head = $this->_db->loadObject();
+
+            if (empty($head)) {
+                $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_HEAD_NOT_FOUND'));
+                return false;
+            }
+
+            // Prepare file paths
+            $head_dest = PFrepoHelper::getBasePath($head->project_id) . '/_revs/file_' . (int) $parent_id;
+            $head_path = PFrepoHelper::getFilePath($head->file_name, $head->dir_id);
+
+            if (empty($head_path)) {
+                $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_HEAD_FILE_NOT_FOUND'));
+                return false;
+            }
+
+            if (!JFolder::exists($head_dest)) {
+                if (JFolder::create($head_dest) !== true) {
+                    return false;
+                }
+            }
+
+            $head_path .= '/' . $head->file_name;
+
+            $head_name = $this->generateNewFileName($head_dest, $head->file_name);
+            $head_dest .= '/' . $head_name;
+
+            // Move the file
+            $move = JFile::move($head_path, $head_dest);
+
+            if ($move !== true) {
+                if (!is_bool($move)) {
+                    $this->setError($move);
+                }
+                return false;
+            }
+        }
+
         $name = $this->generateNewFileName($uploadpath, $file['name']);
         $ext  = JFile::getExt($name);
 
@@ -577,11 +728,17 @@ class PFrepoModelFile extends JModelAdmin
             if ($flimit < $size) {
                 $msg = JText::sprintf('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_1', $name, $flimit);
                 $this->setError($msg);
+
+                if ($parent_id) JFile::move($head_dest, $head_path);
+
                 return false;
             }
             elseif ($plimit < $size) {
                 $msg = JText::sprintf('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_9', $name, $plimit);
                 $this->setError($msg);
+
+                if ($parent_id) JFile::move($head_dest, $head_path);
+
                 return false;
             }
 
@@ -590,11 +747,13 @@ class PFrepoModelFile extends JModelAdmin
 
             if ($fp === false) {
                 $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_STREAM_ERROR_1'));
+                if ($parent_id) JFile::move($head_dest, $head_path);
                 return false;
             }
 
             if ($temp === false) {
                 $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_STREAM_ERROR_2'));
+                if ($parent_id) JFile::move($head_dest, $head_path);
                 return false;
             }
 
@@ -603,6 +762,7 @@ class PFrepoModelFile extends JModelAdmin
 
             if ($check != $size || empty($size)) {
                 $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_STREAM_ERROR_3'));
+                if ($parent_id) JFile::move($head_dest, $head_path);
                 return false;
             }
 
@@ -610,6 +770,7 @@ class PFrepoModelFile extends JModelAdmin
 
             if ($dest === false) {
                 $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_STREAM_ERROR_4'));
+                if ($parent_id) JFile::move($head_dest, $head_path);
                 return false;
             }
 
@@ -619,18 +780,47 @@ class PFrepoModelFile extends JModelAdmin
 
             if ($check != $size) {
                 $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_STREAM_ERROR_5'));
+                if ($parent_id) JFile::move($head_dest, $head_path);
                 return false;
             }
 
             $file['size'] = $size;
 
+            if ($parent_id) {
+                // Rename the file name in the db
+                if ($head_name != $head->file_name) {
+                    $query->clear()
+                          ->update('#__pf_repo_files')
+                          ->set('file_name = ' . $this->_db->quote($head_name))
+                          ->where('id = ' . $parent_id);
+
+                    $this->_db->setQuery($query);
+                    $this->_db->execute();
+                }
+            }
+
             return array('name' => $name, 'size' => $file['size'], 'extension' => $ext);
         }
         else {
             if (JFile::upload($file['tmp_name'], $uploadpath . '/' . $name) === true) {
+                if ($parent_id) {
+                    // Rename the file name in the db
+                    if ($head_name != $head->file_name) {
+                        $query->clear()
+                              ->update('#__pf_repo_files')
+                              ->set('file_name = ' . $this->_db->quote($head_name))
+                              ->where('id = ' . $parent_id);
+
+                        $this->_db->setQuery($query);
+                        $this->_db->execute();
+                    }
+                }
+
                 return array('name' => $name, 'size' => $file['size'], 'extension' => $ext);
             }
         }
+
+        if ($parent_id) JFile::move($head_dest, $head_path);
 
         return false;
     }
@@ -639,26 +829,22 @@ class PFrepoModelFile extends JModelAdmin
     /**
      * Method to delete a file
      *
-     * @param     string     $name       The file name
-     * @param     integer    $project    The project id to which the file belongs to
+     * @param     string     $name    The file name
+     * @param     integer    $dir     The dir id to which the file belongs to
      *
-     * @return    boolean                True on success, otherwise False
+     * @return    boolean             True on success, otherwise False
      */
-    public function deleteFile($name, $project = 0)
+    public function deleteFile($name, $dir = 0)
     {
-        $uploadpath = PFrepoHelper::getBasePath($project);
+        $path = PFrepoHelper::getFilePath($name, $dir);
 
-        if (JFile::exists($uploadpath . '/' . $name)) {
-            if (JFile::delete($uploadpath . '/' . $name) !== true) {
-                return false;
-            }
-            else {
-                return true;
-            }
-        }
-        else {
+        if (empty($path)) return false;
+
+        if (JFile::delete($path . '/' . $name) !== true) {
             return false;
         }
+
+        return true;
     }
 
 
@@ -723,7 +909,7 @@ class PFrepoModelFile extends JModelAdmin
         $data = JFactory::getApplication()->getUserState('com_pfrepo.edit.' . $this->getName() . '.data', array());
 
         if (empty($data)) {
-			$data = $this->getItem();
+            $data = $this->getItem();
 
             // Set default values
             if ($this->getState($this->getName() . '.id') == 0) {
@@ -900,18 +1086,18 @@ class PFrepoModelFile extends JModelAdmin
     {
         $user = JFactory::getUser();
 
-		// Check for existing item.
-		if (!empty($record->id)) {
-			return $user->authorise('core.edit.state', 'com_pfrepo.file.' . (int) $record->id);
-		}
-		elseif (!empty($record->dir_id)) {
-		    // New item, so check against the directory.
-			return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->dir_id);
-		}
-		else {
-		    // Default to component settings.
-			return parent::canEditState('com_pfrepo');
-		}
+        // Check for existing item.
+        if (!empty($record->id)) {
+            return $user->authorise('core.edit.state', 'com_pfrepo.file.' . (int) $record->id);
+        }
+        elseif (!empty($record->dir_id)) {
+            // New item, so check against the directory.
+            return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->dir_id);
+        }
+        else {
+            // Default to component settings.
+            return parent::canEditState('com_pfrepo');
+        }
     }
 
 

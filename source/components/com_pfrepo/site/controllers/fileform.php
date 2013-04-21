@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -75,41 +75,124 @@ class PFrepoControllerFileForm extends JControllerForm
 
         if (empty($urlVar)) $urlVar = $key;
 
+        // Setup redirect links
         $record_id = JRequest::getInt($urlVar);
+        $link_base = 'index.php?option=' . $this->option . '&view=';
+        $link_list = $link_base . $this->view_list . $this->getRedirectToListAppend();
+        $link_item = $link_base . $this->view_item . $this->getRedirectToItemAppend($record_id, $urlVar);
 
+        // Get project id from directory if missing
+        if ((!isset($data['project_id']) || empty($data['project_id'])) && isset($data['dir_id'])) {
+            $data['project_id'] = PFrepoHelper::getProjectFromDir($data['dir_id']);
+        }
+
+        // Check edit id
         if (!$this->checkEditId($context, $record_id)) {
-			// Somehow the person just went to the form and tried to save it. We don't allow that.
-			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $record_id));
-			$this->setMessage($this->getError(), 'error');
+            // Somehow the person just went to the form and tried to save it. We don't allow that.
+            $this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $record_id));
+            $this->setMessage($this->getError(), 'error');
 
-			$this->setRedirect(
-				JRoute::_(
-					'index.php?option=' . $this->option . '&view=' . $this->view_list
-					. $this->getRedirectToListAppend(), false
-				)
-			);
+            $this->setRedirect(JRoute::_(($layout != 'modal' ? $link_item : $link_list), false));
 
-			return false;
-		}
+            return false;
+        }
 
-        if (is_array($file_form)) {
-            foreach($file_form AS $attr => $field)
-            {
-                $count = count($field);
-                $i     = 0;
+        // Get file info
+        $files = $this->getFormFiles($file_form);
 
-                while($count > $i)
-                {
-                    foreach($field AS $name => $value)
-                    {
-                        $files[$i][$attr] = $value;
-                    }
-                    $i++;
+        // Check for upload errors
+        if (!$this->checkFileError($files)) {
+            $this->setRedirect(JRoute::_(($layout != 'modal' ? $link_item : $link_list), false));
+            return false;
+        }
+
+        // Upload file if we have any
+        if (count($files) && !empty($files[0]['tmp_name'])) {
+            $file = $files[0];
+
+            if ($record_id) {
+                // File extension must be the same as the original
+                if (!$this->checkFileExtension($record_id, $file['name'])) {
+                    $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_10'));
+                    $this->setMessage($this->getError(), 'error');
+
+                    $this->setRedirect(JRoute::_(($layout != 'modal' ? $link_item : $link_list), false));
+
+                    return false;
                 }
+            }
+
+            // Upload the file
+            $result = $model->upload($file, $data['dir_id'], false, $record_id);
+
+            if (is_array($result)) {
+                $data['file'] = $result;
+            }
+            else {
+                $error = $model->getError();
+                $this->setError($error);
+                $this->setMessage($error, 'error');
+
+                $this->setRedirect(JRoute::_(($layout != 'modal' ? $link_item : $link_list), false));
+                return false;
             }
         }
 
-        // Check for upload errors
+        // Inject file info into the form post data
+        if (version_compare(JVERSION, '3.0.0', 'ge')) {
+            $this->input->post->set('jform', $data);
+        }
+        else {
+            JRequest::setVar('jform', $data, 'post');
+        }
+
+        // Store data
+        return parent::save($key, $urlVar);
+    }
+
+
+    /**
+     * Method the get the file info coming from a form
+     *
+     * @param     array    $data     The form data
+     *
+     * @return    array    $files    The file data
+     */
+    protected function getFormFiles($data)
+    {
+        $files = array();
+
+        if (!is_array($data)) return $files;
+
+        foreach($data AS $attr => $field)
+        {
+            $count = count($field);
+            $i     = 0;
+
+            while($count > $i)
+            {
+                foreach($field AS $name => $value)
+                {
+                    $files[$i][$attr] = $value;
+                }
+
+                $i++;
+            }
+        }
+
+        return $files;
+    }
+
+
+    /**
+     * Method to check for upload errors
+     *
+     * @param     array      $files    The files to check
+     *
+     * @return    boolean              True if no error
+     */
+    protected function checkFileError(&$files)
+    {
         foreach ($files AS &$file)
         {
             // Uploading a file is not required when updating an existing record
@@ -122,67 +205,35 @@ class PFrepoControllerFileForm extends JControllerForm
                 $this->setError($error);
                 $this->setMessage($error, 'error');
 
-                if ($layout != 'modal') {
-                    $this->setRedirect(
-                        JRoute::_(
-                            'index.php?option=' . $this->option . '&view=' . $this->view_item
-                            . $this->getRedirectToItemAppend($record_id, $urlVar), false
-                        )
-                    );
-                }
-                else {
-                    $this->setRedirect(
-                        JRoute::_(
-                            'index.php?option=' . $this->option . '&view=' . $this->view_list
-                            . $this->getRedirectToListAppend(), false
-                        )
-                    );
-                }
-
                 return false;
             }
         }
 
-        if (count($files) == 1 && !empty($files[0]['tmp_name'])) {
-            $result = $model->upload(array_pop($files), $data['project_id']);
+        return true;
+    }
 
-            if (is_array($result)) {
-                $data['file'] = $result;
-            }
-            else {
-                $error = $model->getError();
-                $this->setError($error);
-                $this->setMessage($error, 'error');
 
-                if ($layout != 'modal') {
-                    $this->setRedirect(
-                        JRoute::_(
-                            'index.php?option=' . $this->option . '&view=' . $this->view_item
-                            . $this->getRedirectToItemAppend($record_id, $urlVar), false
-                        )
-                    );
-                }
-                else {
-                    $this->setRedirect(
-        				JRoute::_(
-        					'index.php?option=' . $this->option . '&view=' . $this->view_list
-        					. $this->getRedirectToListAppend(), false
-        				)
-        			);
-                }
+    /**
+     * Method to check if the file extension is the same the original
+     *
+     * @param integer $id The file id
+     * @param string $file The name of the file to upload
+     *
+     * @return boolean True if they are the same
+     */
+    protected function checkFileExtension($id, $file)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
-                return false;
-            }
-        }
+        $query->select('file_extension')
+              ->from('#__pf_repo_files')
+              ->where('id = ' . (int) $id);
 
-        if (version_compare(JVERSION, '3.0.0', 'ge')) {
-            $this->input->post->set('jform', $data);
-        }
-        else {
-            JRequest::setVar('jform', $data, 'post');
-        }
+        $db->setQuery($query);
+        $original_ext = $db->loadResult();
 
-        return parent::save($key, $urlVar);
+        return (JFile::getExt($file) == $original_ext);
     }
 
 

@@ -26,7 +26,7 @@ class PFrepoControllerRepository extends JControllerAdmin
      * @param     string    $name      The name of the model.
      * @param     string    $prefix    The prefix for the PHP class name.
      *
-     * @return    jmodel               
+     * @return    jmodel
      */
     public function getModel($name = 'Repository', $prefix = 'PFrepoModel', $config = array('ignore_request' => true))
     {
@@ -99,7 +99,7 @@ class PFrepoControllerRepository extends JControllerAdmin
     /**
      * Removes an item.
      *
-     * @return    void    
+     * @return    void
      */
     public function delete()
     {
@@ -206,7 +206,7 @@ class PFrepoControllerRepository extends JControllerAdmin
                 JArrayHelper::toInteger($did);
 
                 // Build an array of item contexts to check
-                foreach ($cid as $id)
+                foreach ($did as $id)
                 {
                     $contexts[$id] = $this->option . '.directory.' . $id;
                 }

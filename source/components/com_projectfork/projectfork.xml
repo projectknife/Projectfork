@@ -7,7 +7,7 @@
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>support@projectfork.net</authorEmail>
     <authorUrl>www.projectfork.net</authorUrl>
-    <version>4.1.0dev1</version>
+    <version>4.1.0dev2</version>
     <description>COM_PROJECTFORK_XML_DESCRIPTION</description>
     <scriptfile>script.php</scriptfile>
     <install folder="admin">
@@ -16,6 +16,11 @@
             <file driver="mysql" charset="utf8">_install/mysql/data.sql</file>
         </sql>
     </install>
+    <update>
+		<schemas>
+			<schemapath type="mysql">_update/mysql</schemapath>
+		</schemas>
+	</update>
     <uninstall folder="admin">
         <sql>
             <file driver="mysql" charset="utf8">_uninstall/mysql/data.sql</file>

@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -38,7 +38,7 @@ function PFrepoBuildRoute(&$query)
     }
 
     // Handle repository query
-    if($view == 'repository' || $view == 'file' || $view == 'note') {
+    if($view == 'repository' || $view == 'file' || $view == 'note' || $view == 'filerevisions') {
         if (!$menu_item_given) $segments[] = $view;
         unset($query['view']);
 
@@ -89,12 +89,12 @@ function PFrepoBuildRoute(&$query)
         unset($query['filter_parent_id']);
 
         // Get file id
-        if (isset($query['id']) && $view == 'file') {
+        if (isset($query['id']) && ($view == 'file' || $view == 'filerevisions')) {
             if (strpos($query['id'], ':') === false) {
                 $query['id'] = PFrepoMakeSlug($query['id'], '#__pf_repo_files');
             }
 
-            $segments[] = 'file';
+            $segments[] = $view;
             $segments[] = $query['id'];
             unset($query['id']);
         }
@@ -168,6 +168,10 @@ function PFrepoParseRoute($segments)
                 $vars['view'] = $segments[$count - 2];
                 $count2 = $count - 2;
             }
+            if ($segments[$count - 2] == 'filerevisions' && intval($segments[$count - 2]) == 0) {
+                $vars['view'] = $segments[$count - 2];
+                $count2 = $count - 2;
+            }
             if ($segments[$count - 2] == 'note' && intval($segments[$count - 2]) == 0) {
                 $vars['view'] = $segments[$count - 2];
                 $count2 = $count - 2;
@@ -200,7 +204,7 @@ function PFrepoParseRoute($segments)
 
 
     // Handle File
-    if ($vars['view'] == 'file') {
+    if ($vars['view'] == 'file' || $vars['view'] == 'filerevisions') {
         $vars['id'] = PFrepoParseSlug($segments[$count - 1]);
 
         return $vars;

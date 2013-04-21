@@ -12,6 +12,7 @@ defined('_JEXEC') or die();
 
 
 jimport('joomla.database.tableasset');
+require_once JPATH_ADMINISTRATOR . '/components/com_pfrepo/helpers/pfrepo.php';
 
 
 /**
@@ -70,7 +71,7 @@ class PFtableFile extends PFTable
         $query    = $this->_db->getQuery(true);
 
         if ($this->dir_id) {
-            // Build the query to get the asset id for the parent topic.
+            // Build the query to get the asset id for the parent dir.
             $query->select('asset_id')
                   ->from('#__pf_repo_dirs')
                   ->where('id = ' . (int) $this->dir_id);
@@ -277,5 +278,44 @@ class PFtableFile extends PFTable
         }
 
         return parent::toXML($mapKeysToText);
+    }
+
+
+    /**
+     * Method to delete referenced data of an item.
+     *
+     * @param     mixed      $pk    An primary key value to delete.
+     *
+     * @return    boolean
+     */
+    public function deleteReferences($pk = null)
+    {
+        if(empty($this->id) || $this->id != $pk) {
+            if (!$this->load($pk)) return false;
+        }
+
+        // Delete the physical file
+        $path = PFrepoHelper::getFilePath($this->file_name, $this->dir_id);
+
+        if (!empty($path)) {
+            JFile::delete($path . '/' . $this->file_name);
+        }
+
+        // Delete the revisions folder
+        $path = PFrepoHelper::getBasePath($this->project_id) . '/_revs/file_' . (int) $pk;
+
+        if (JFolder::exists($path)) {
+            JFolder::delete($path);
+        }
+
+        // Delete revisions
+        $query = $this->_db->getQuery(true);
+
+        $query->clear()
+              ->delete('#__pf_repo_file_revs')
+              ->where('parent_id = ' . (int) $pk);
+
+        $this->_db->setQuery($query);
+        $this->_db->execute();
     }
 }

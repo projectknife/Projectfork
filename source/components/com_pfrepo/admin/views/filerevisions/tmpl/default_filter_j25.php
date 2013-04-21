@@ -13,7 +13,6 @@ defined('_JEXEC') or die();
 
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
-$project    = (int) $this->state->get('filter.project');
 ?>
 <fieldset id="filter-bar">
     <div class="filter-search fltlft">
@@ -33,29 +32,11 @@ $project    = (int) $this->state->get('filter.project');
         </button>
     </div>
 
-    <div class="fltlft">
-        <?php echo JHtml::_('pfhtml.project.filter');?>
-    </div>
-
     <div class="filter-select fltrt">
-        <?php if ($this->state->get('filter.project')) : ?>
-            <div class="fltrt">
-                <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
-                    <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                    <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
-                </select>
-            </div>
-            <div class="fltrt">
-                <select name="filter_parent_id" class="inputbox" onchange="this.form.submit()">
-                    <option value=""><?php echo JText::_('JOPTION_SELECT_DIRECTORY');?></option>
-                    <?php echo JHtml::_('select.options', JHtml::_('pfrepo.pathOptions', $project), 'value', 'text', $this->state->get('filter.parent_id'));?>
-                </select>
-            </div>
-        <?php endif; ?>
         <div class="fltrt">
-            <select name="filter_access" class="inputbox" onchange="this.form.submit()">
-                <option value=""><?php echo JText::_('JOPTION_SELECT_ACCESS');?></option>
-                <?php echo JHtml::_('select.options', JHtml::_('access.assetgroups'), 'value', 'text', $this->state->get('filter.access'), true);?>
+            <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
+                <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+                <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
             </select>
         </div>
     </div>
