@@ -101,7 +101,7 @@ class PFrepoControllerFileForm extends JControllerForm
         $files = $this->getFormFiles($file_form);
 
         // Check for upload errors
-        if (!$this->checkFileError($files)) {
+        if (!$this->checkFileError($files, $record_id)) {
             $this->setRedirect(JRoute::_(($layout != 'modal' ? $link_item : $link_list), false));
             return false;
         }
@@ -188,10 +188,11 @@ class PFrepoControllerFileForm extends JControllerForm
      * Method to check for upload errors
      *
      * @param     array      $files    The files to check
+     * @param     integer $record_id The file id
      *
      * @return    boolean              True if no error
      */
-    protected function checkFileError(&$files)
+    protected function checkFileError(&$files, $record_id = 0)
     {
         foreach ($files AS &$file)
         {
