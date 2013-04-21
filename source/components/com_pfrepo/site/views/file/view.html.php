@@ -26,6 +26,8 @@ class PFrepoViewFile extends JViewLegacy
 
     function display($tpl = null)
     {
+        $user = JFactory::getUser();
+
         $this->item  = $this->get('Item');
         $this->state = $this->get('State');
 
