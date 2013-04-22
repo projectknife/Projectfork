@@ -229,7 +229,7 @@ class PFtableProject extends PFTable
      *
      * @return    boolean
      */
-    public function deleteReferences($pk)
+    public function deleteReferences($pk = null)
     {
         // Delete related attachments
         $query = $this->_db->getQuery(true);
