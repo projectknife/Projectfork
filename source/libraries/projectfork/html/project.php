@@ -140,7 +140,7 @@ abstract class PFhtmlProject
 
         // Prepare field attributes
         $attr_read = ($can_change ? '' : ' readonly="readonly"');
-        $css_txt   = ($can_change ? '' : ' disabled') . ($active_id ? ' success' : ' warning');
+        $css_txt   = ($can_change ? '' : ' disabled muted') . ($active_id ? ' success' : ' warning');
         $placehold = htmlspecialchars(JText::_('COM_PROJECTFORK_SELECT_PROJECT'), ENT_COMPAT, 'UTF-8');
 
         // Query url
@@ -175,12 +175,12 @@ abstract class PFhtmlProject
         $js[] = "        {";
         $js[] = "            var parts = item.split('_');";
         $js[] = "            jQuery('#filter_project_id" . $field_id . "').val(parts.shift());";
-        $js[] = "            jQuery('#filter_project_title" . $field_id . "').addClass('disabled');";
+        $js[] = "            jQuery('#filter_project_title" . $field_id . "').addClass('disabled muted');";
         $js[] = "            jQuery('#filter_project_title" . $field_id . "').attr('readonly', 'readonly');";
         $js[] = "            jQuery('#filter_project_id" . $field_id . "').change();";
         $js[] = "            return parts.join('_');";
         $js[] = "        },";
-        $js[] = "        minLength: 1,";
+        $js[] = "        minLength: 0,";
         $js[] = "        items: 5";
         $js[] = "    });";
         $js[] = "    jQuery('#filter_project_id" . $field_id . "').change(function()";
@@ -195,18 +195,25 @@ abstract class PFhtmlProject
 
         // Prepare html output
         $html = array();
-        $html[] = '<span class="btn-group form-inline">';
+        $html[] = '<span class="btn-group form-inline input-append">';
+
         $html[] = '<input type="text" id="filter_project_title' . $field_id . '" class="input-medium' . $css_txt . '"';
         $html[] = ' autocomplete="off" ' . $attr_read . ' value="' . $title_val.'" placeholder="' . $placehold . '" />';
-        $html[] = '</span>';
 
         if ($active_id && $can_change) {
             $clr_js = 'jQuery(\'#filter_project_id' . $field_id . '\').val(\'0\').change();';
-
-            $html[] = '<span class="btn-group">';
             $html[] = '<button type="button" class="btn" onclick="' . $clr_js . '"><i class="icon-remove"></i></button>';
-            $html[] = '</span>';
         }
+        elseif (!$active_id) {
+            $html[] = '<span class="add-on"><i class="icon-briefcase"></i></span>';
+        }
+        elseif (!$can_change) {
+            $html[] = '<span class="add-on"><i class="icon-lock"></i></span>';
+        }
+
+        $html[] = '</span>';
+
+
 
         $html[] = '<input type="hidden" id="filter_project_id' . $field_id . '" name="filter_project"';
         $html[] = ' value="' . $active_id.'" autocomplete="off"' . $attr_read . '/>';
