@@ -106,7 +106,10 @@ $doc->addStyleDeclaration( $style );
                 <thead>
                     <tr>
                         <th width="1%" <?php if($dir->id == 1) echo 'style="display:none"'; ?>>
-                            <input type="checkbox" name="checkall-toggle" value="" title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>" onclick="Joomla.checkAll(this)" />
+                            <input type="checkbox" name="checkall-toggle" value=""
+                                title="<?php echo JText::_('JGLOBAL_CHECK_ALL'); ?>"
+                                onclick="Joomla.checkAll(this); PFlist.toggleBulkButton();"
+                            />
                         </th>
                         <th width="25%">
                             <?php echo JHtml::_('grid.sort', 'JGLOBAL_TITLE', 'a.title', $list_dir, $list_order); ?>
