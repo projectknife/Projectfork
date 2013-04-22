@@ -640,14 +640,19 @@ class PFprojectsModelProject extends JModelAdmin
      */
     public function delete(&$pks)
     {
-        $dispatcher = JDispatcher::getInstance();
         $pks   = (array) $pks;
         $table = $this->getTable();
+        $query = $this->_db->getQuery(true);
 
         $active_id   = PFApplicationHelper::getActiveProjectId();
         $repo_exists = PFApplicationHelper::exists('com_pfrepo');
 
+        if ($repo_exists) {
+            $base_path = PFrepoHelper::getBasePath();
+        }
+
         // Include the content plugins for the on delete events.
+        $dispatcher = JDispatcher::getInstance();
         JPluginHelper::importPlugin('content');
 
         // Iterate the items to delete each one.
@@ -684,6 +689,21 @@ class PFprojectsModelProject extends JModelAdmin
                 return false;
             }
 
+            if ($repo_exists) {
+                $params = new JRegistry;
+                $params->loadString($table->attribs);
+
+                $repo_dir = (int) $params->get('repo_dir');
+
+                $query->clear()
+                      ->select('path')
+                      ->from('#__pf_repo_dirs')
+                      ->where('id = ' . $repo_dir);
+
+                $this->_db->setQuery($query);
+                $repo_path = $this->_db->loadResult();
+            }
+
             // Delete the item
             if (!$table->delete($pk)) {
                 $this->setError($table->getError());
@@ -692,17 +712,19 @@ class PFprojectsModelProject extends JModelAdmin
 
             // Delete the repo directory
             if ($repo_exists) {
-                // Delete repo 4.1
-                $repo = PFrepoHelper::getBasePath($pk);
-                if (JFolder::exists($repo)) JFolder::delete($repo);
+                if ($repo_path && $repo_dir) {
+                    // Delete repo 4.1
+                    $repo = $base_path . '/' . $repo_path;
+                    if (JFolder::exists($repo) && $repo != $base_path) JFolder::delete($repo);
 
-                // Delete repo 4.0
-                $repo = PFrepoHelper::getBasePath() . '/' . $pk;
-                if (JFolder::exists($repo)) JFolder::delete($repo);
+                    // Delete repo 4.0
+                    $repo = $base_path . '/' . $pk;
+                    if (JFolder::exists($repo)) JFolder::delete($repo);
 
-                // Delete repo 3.0
-                $repo = PFrepoHelper::getBasePath() . '/project_' . $pk;
-                if (JFolder::exists($repo)) JFolder::delete($repo);
+                    // Delete repo 3.0
+                    $repo = $base_path . '/project_' . $pk;
+                    if (JFolder::exists($repo)) JFolder::delete($repo);
+                }
             }
 
             // Delete the logo
