@@ -45,9 +45,13 @@ class PFtasksViewTask extends JViewLegacy
 		// Check for errors.
 		if (count($errors = $this->get('Errors'))) {
 			JError::raiseWarning(500, implode("\n", $errors));
-
 			return false;
 		}
+
+        // Set active project
+        if (!PFApplicationHelper::setActiveProject($this->item->project_id)) {
+            return false;
+        }
 
 		// Merge item params.
 		$this->params = $this->state->get('params');
