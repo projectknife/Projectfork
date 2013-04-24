@@ -1,6 +1,6 @@
-# [Projectfork 4](https://projectfork.net)
+# [Projectfork](https://projectfork.net)
 
-Projectfork - a Joomla Project Management Software with milestones, tasks, files, calendar, discussions, timesheets, & so much more...
+_a Joomla Project Management Software with milestones, tasks, files, calendar, discussions, timesheets, & so much more..._
 
 
 ## Quick start
