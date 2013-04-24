@@ -49,7 +49,7 @@ Please submit all pull requests against dev branch. If your pull request contain
 Projectfork is translated into many languages. May there is already one for you! Have a look at the [Translations project](https://github.com/projectfork/Translations) maintained by our [Projectfork Translation Team](https://raw.github.com/projectfork/Translations/wiki/translation_team).
 
 
-Thanks!
+#### Thanks!
 
 
 ## Copyright and license
