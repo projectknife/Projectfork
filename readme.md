@@ -35,12 +35,9 @@ Have an issue related to the Projectfork Language Pack? [Please visit the Projec
 ## Contributing
 Anyone and everyone is welcome to contribute. Please take a moment to review the [guidelines for contributing](CONTRIBUTING.md)
 
-#### Projectfork
-Please submit all pull requests against dev branch. All HTML and CSS should conform to these [code guide](wiki/html-and-css-code-guide).
-
 #### Projectfork Translations (Language Package)
 Projectfork is translated into many languages. Have a look at the [Translations project](https://github.com/projectfork/Translations) maintained by our [Projectfork Translation Team](https://raw.github.com/projectfork/Translations/wiki/translation_team).
-
+Is your language not yet translatated? Join and help us on [Transifex](https://www.transifex.com/projects/p/projectfork-languages/).
 
 ## Community
 
