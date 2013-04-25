@@ -21,7 +21,7 @@ Guidelines for bug reports:
 
 A good bug report shouldn't leave others needing to chase you up for more
 information. Please try to be as detailed as possible in your report. What is
-your environment? What steps will reproduce the issue? What browser(s) and OS
+your environment? What steps will reproduce the issue? What browser(s); Projectfork; Joomla and PHP version
 experience the problem? What would you expect to be the outcome? All these
 details will help people to fix any potential bugs.
 
