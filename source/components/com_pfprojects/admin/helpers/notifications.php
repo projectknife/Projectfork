@@ -11,6 +11,9 @@
 defined('_JEXEC') or die();
 
 
+JLoader::register('PFprojectsHelperRoute', JPATH_SITE . '/components/com_pfprojects/helpers/route.php');
+
+
 /**
  * Email Notification Helper Class
  * This class is invoked by the Projectfork notifications plugin
@@ -21,14 +24,14 @@ abstract class PFprojectsNotificationsHelper
     /**
      * Supported item contexts
      *
-     * @var    array    
+     * @var    array
      */
     protected static $contexts = array('com_pfprojects.project', 'com_pfprojects.form');
 
     /**
      * Email string prefix
      *
-     * @var    string    
+     * @var    string
      */
     protected static $prefix   = 'COM_PROJECTFORK_PROJECT_EMAIL';
 
@@ -38,7 +41,7 @@ abstract class PFprojectsNotificationsHelper
      *
      * @param     string     $context    The item context
      *
-     * @return    boolean                
+     * @return    boolean
      */
     public static function isSupported($context)
     {
@@ -53,7 +56,7 @@ abstract class PFprojectsNotificationsHelper
      *
      * @param     string    $context    The item context
      *
-     * @return    string                
+     * @return    string
      */
     public static function getItemName($context)
     {
@@ -68,7 +71,7 @@ abstract class PFprojectsNotificationsHelper
      * @param     object     $table      Instance of the item table
      * @param     boolean    $is_new     True if the item is new
      *
-     * @return    array                  
+     * @return    array
      */
     public static function getObservers($context, $table, $is_new = false)
     {
@@ -97,7 +100,7 @@ abstract class PFprojectsNotificationsHelper
      * @param     object     $before       Instance of the item table before it was updated
      * @param     boolean    $is_new       True if the item is new ($before will be null)
      *
-     * @return    string                   
+     * @return    string
      */
     public static function getProjectSubject($lang, $receiver, $user, $after, $before, $is_new)
     {
@@ -120,7 +123,7 @@ abstract class PFprojectsNotificationsHelper
      * @param     object     $before       Instance of the item table before it was updated
      * @param     boolean    $is_new       True if the item is new ($before will be null)
      *
-     * @return    string                   
+     * @return    string
      */
     public static function getProjectMessage($lang, $receiver, $user, $after, $before, $is_new)
     {
