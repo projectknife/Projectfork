@@ -56,6 +56,36 @@ abstract class PFusersHelperRoute
      */
     public static function getUserRoute($id)
     {
+        static $dest = null;
+
+        if (is_null($dest)) {
+            $params = JComponentHelper::getParams('com_projectfork');
+
+            $dest = $params->get('user_profile_link');
+        }
+
+        $link = null;
+
+        switch ($dest)
+        {
+            case 'cb':
+                $link = self::getCBRoute($id);
+                break;
+
+            case 'jomsocial':
+                $link = self::getJSRoute($id);
+                break;
+
+            case 'kunena':
+                $link = self::getKRoute($id);
+                break;
+        }
+
+        if (!empty($link)) {
+            return $link;
+        }
+
+        // Default - Projectfork Profile
         $link  = 'index.php?option=com_pfusers&view=user';
         $link .= '&id=' . $id;
 
@@ -69,5 +99,118 @@ abstract class PFusersHelperRoute
         }
 
         return $link;
+    }
+
+
+    /**
+     * Method to link to a Community Builder user profile page
+     *
+     * @param     integer    $id      The user slug
+     *
+     * @return    string              The profile url
+     */
+    protected static function getCBRoute($id)
+    {
+        static $itemid = null;
+
+        // Try to find a suitable menu item
+        if (is_null($itemid)) {
+            $app	= JFactory::getApplication();
+			$menu	= $app->getMenu();
+			$com	= JComponentHelper::getComponent('com_comprofiler');
+
+            if (empty($com) || !isset($com->id)) {
+                $itemid = 0;
+                return null;
+            }
+
+			$items	= $menu->getItems('component_id', $com->id);
+
+            $profile_id = 0;
+            $cb_id = 0;
+
+			// If no items found, set to empty array.
+			if (!$items) $items = array();
+
+            foreach ($items as $item)
+            {
+                if (!isset($item->query['task']) || $item->query['task'] == 'userProfile') {
+    				$itemid = $item->id;
+    				break;
+    			}
+            }
+
+            if (!$itemid) $itemid = 0;
+        }
+
+        // Return null if item id was not found
+        if (!$itemid) return null;
+
+        // Return link
+        return 'index.php?option=com_comprofiler&task=userProfile&user=' . $id . ($itemid ? '&Itemid=' . $itemid : '');
+    }
+
+
+    /**
+     * Method to link to a JomSocial user profile page
+     *
+     * @param     integer    $id      The user id
+     *
+     * @return    string              The profile url
+     */
+    protected static function getJSRoute($id)
+    {
+        static $router = null;
+
+        // Include the route helper once
+        if (is_null($router)) {
+            $file = JPATH_SITE . '/components/com_community/helpers/url.php';
+
+            if (!file_exists($file)) {
+                $router = false;
+            }
+            else {
+                require_once $file;
+                $router = true;
+            }
+        }
+
+        // Return null if router was not found
+        if (!$router) return null;
+
+        // Return link
+        return CUrlHelper::userLink((int) $id, false);
+    }
+
+
+    /**
+     * Method to link to a Kunena user profile page
+     *
+     * @param     integer    $id      The user id
+     *
+     * @return    string              The profile url
+     */
+    protected static function getKRoute($id)
+    {
+        static $router = null;
+
+        // Include the route helper once
+        if (is_null($router)) {
+            $file = JPATH_SITE . '/components/com_kunena/lib/kunena.link.class.php';
+
+            if (!file_exists($file)) {
+                $router = false;
+            }
+            else {
+                require_once $file;
+                $router = true;
+            }
+        }
+
+        // Return null if router was not found
+        if (!$router) return null;
+
+        // Return link
+        return CKunenaLink::GetMyProfileURL((int) $id);
     }
 }
