@@ -72,7 +72,7 @@ abstract class PFusersHelperRoute
                 $link = self::getCBRoute($id);
                 break;
 
-            case 'jomsocial':
+            case 'js':
                 $link = self::getJSRoute($id);
                 break;
 
@@ -160,26 +160,28 @@ abstract class PFusersHelperRoute
      */
     protected static function getJSRoute($id)
     {
-        static $router = null;
+        static $exists = null;
 
         // Include the route helper once
-        if (is_null($router)) {
-            $file = JPATH_SITE . '/components/com_community/helpers/url.php';
+        if (is_null($exists)) {
+            $file   = JPATH_SITE . '/components/com_community/helpers/url.php';
+            $exists = file_exists($file);
 
-            if (!file_exists($file)) {
-                $router = false;
-            }
-            else {
+            if ($exists) {
                 require_once $file;
-                $router = true;
+
+                $file   = JPATH_ROOT . '/components/com_community/libraries/core.php';
+                $exists = file_exists($file);
+
+                if ($exists) require_once $file;
             }
         }
 
         // Return null if router was not found
-        if (!$router) return null;
+        if (!$exists) return null;
 
         // Return link
-        return CUrlHelper::userLink((int) $id, false);
+        return CUrlHelper::userLink((int) $id, true);
     }
 
 
