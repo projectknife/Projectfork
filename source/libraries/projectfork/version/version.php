@@ -30,7 +30,7 @@ final class PFVersion
     public $DEV_STATUS = 'dev';
 
     /** @var  string  Build number. */
-    public $BUILD = '2';
+    public $BUILD = '3';
 
     /** @var  string  Code name. */
     public $CODENAME = 'Intermezzo';

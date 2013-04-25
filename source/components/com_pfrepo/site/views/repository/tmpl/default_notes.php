@@ -45,18 +45,29 @@ foreach ($this->items['notes'] as $i => $item) :
         	<span class="item-title pull-left">
 	            <?php if ($item->checked_out) : ?><span aria-hidden="true" class="icon-lock"></span> <?php endif; ?>
 	            <a href="<?php echo JRoute::_($link);?>"  class="hasPopover" rel="popover" title="<?php echo JText::_($this->escape($item->title)); ?>" data-content="<?php echo $this->escape($item->description); ?>" data-placement="right">
-	            	<span aria-hidden="true" class="icon-pencil-2 text-warning"></span> 
+	            	<span aria-hidden="true" class="icon-pencil-2 text-warning"></span>
 	                <?php echo JText::_($this->escape($item->title)); ?>
 	            </a>
+
+                <?php if ($item->revision_count) : ?>
+                    <span class="item-count badge badge-info"><?php echo $item->revision_count; ?></span>
+                <?php endif; ?>
         	</span>
-        	
+
         	<span class="dropdown pull-left">
 	        	<?php
 	                $this->menu->start(array('class' => 'btn-mini btn-link'));
 	                $this->menu->itemEdit('noteform', $item->id, ($can_edit || $can_edit_own));
+
+                    if ($item->revision_count) {
+                        $link_revs = PFrepoHelperRoute::getNoteRevisionsRoute($item->slug, $item->project_slug, $item->dir_slug, $item->path);
+
+                        $this->menu->itemLink('icon-flag', 'COM_PROJECTFORK_VIEW_REVISIONS', JRoute::_($link_revs));
+                    }
+
 	                $this->menu->itemDelete('repository', $x, ($can_edit || $can_edit_own));
 	                $this->menu->end();
-	
+
 	                echo $this->menu->render(array('class' => 'btn-mini'));
 	            ?>
         	</span>

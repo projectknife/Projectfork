@@ -277,18 +277,92 @@ class PFrepoModelNote extends JModelAdmin
      */
     public function getItem($pk = null)
     {
-        if ($item = parent::getItem($pk)) {
-            // Convert the params field to an array.
-            $registry = new JRegistry;
-            $registry->loadString($item->attribs);
-            $item->attribs = $registry->toArray();
+        $item = parent::getItem($pk);
 
-            // Get the labels
+        if ($item == false) return false;
+
+        if (property_exists($item, 'attribs')) {
+            // Convert the params field to an array.
+            $registry = new JRegistry();
+
+            $registry->loadString($item->attribs);
+
+            $item->params  = $registry;
+            $item->attribs = $registry->toArray();
+        }
+
+        if ($item->id > 0) {
+            // Existing record
             $labels = $this->getInstance('Labels', 'PFModel');
+
             $item->labels = $labels->getConnections('com_pfrepo.note', $item->id);
+            $item->revision_count = 0;
+
+            $rev = (int) $this->getState($this->getName() . '.rev');
+
+            if ($rev) {
+                $cfg = array('ignore_request' => true);
+                $rev_model = $this->getInstance('NoteRevision', 'PFrepoModel', $cfg);
+
+                $rev_item = $rev_model->getItem($rev);
+
+                if (!$rev_item || $rev_item->parent_id != $item->id) return false;
+
+                // Override properties of item
+                $props = array('title', 'description', 'attribs', 'params', 'created', 'created_by');
+
+                foreach ($props AS $prop)
+                {
+                    $item->$prop = $rev_item->$prop;
+                }
+
+                // Check out the note so it can't be edited
+                $item->checked_out = 1;
+                $item->checked_out_time = 1;
+            }
+        }
+        else {
+            // New record
+            $item->labels = array();
+            $item->revision_count = $this->getRevisionCount($pk);
         }
 
         return $item;
+    }
+
+
+    /**
+     * Counts the revisions of the given file
+     *
+     * @param    array    $pk      The file primary key
+     *
+     * @retun    integer  $count    The revision count
+     */
+    public function getRevisionCount($pk = null)
+    {
+        $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+        $query = $this->_db->getQuery(true);
+        $count = 0;
+
+        if (empty($pk)) return $count;
+
+        // Count revs
+        $query->select('COUNT(*)')
+              ->from('#__pf_repo_note_revs')
+              ->where('parent_id = ' . (int) $pk);
+
+        $query->group('parent_id');
+        $this->_db->setQuery($query);
+
+        try {
+            $count += (int) $this->_db->loadResult();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        return $count;
     }
 
 
@@ -320,6 +394,21 @@ class PFrepoModelNote extends JModelAdmin
             }
             else {
                 $pk = 0;
+            }
+        }
+
+        // Save revision if not new
+        if (!$is_new) {
+            $head_data = $table->getProperties(true);
+            $config    = array('ignore_request' => true);
+            $rev_model = $this->getInstance('NoteRevision', 'PFrepoModel', $config);
+
+            $head_data['parent_id'] = $head_data['id'];
+            $head_data['id']        = null;
+
+            if (!$rev_model->save($head_data)) {
+                $this->setError($rev_model->getError());
+                return false;
             }
         }
 
@@ -636,8 +725,11 @@ class PFrepoModelNote extends JModelAdmin
 		$key   = $table->getKeyName();
 
 		// Get the pk of the record from the request.
-		$pk = JRequest::getInt($key);
+		$pk  = JRequest::getUInt($key);
+		$rev = JRequest::getUInt('rev');
+
 		$this->setState($this->getName() . '.id', $pk);
+		$this->setState($this->getName() . '.rev', $rev);
 
         if ($pk) {
             $table = $this->getTable();
@@ -650,6 +742,8 @@ class PFrepoModelNote extends JModelAdmin
                 $dir_id = (int) $table->dir_id;
                 $this->setState($this->getName() . '.dir_id', $dir_id);
             }
+
+
         }
         else {
             $dir_id = JRequest::getUInt('filter_parent_id', 0);

@@ -168,11 +168,6 @@ abstract class PFrepoHelperRoute
         $link .= '&path=' . $path;
         $link .= '&id=' . $file;
 
-        $needles = array('filter_project'   => array((int) $project),
-                         'filter_parent_id' => array((int) $dir),
-                         'path' => array($path),
-                        );
-
         $item = PFApplicationHelper::itemRoute(null, 'com_pfrepo.repository');
 
         if ($item) $link .= '&Itemid=' . $item;
@@ -184,15 +179,16 @@ abstract class PFrepoHelperRoute
     /**
      * Creates a link to a repo note
      *
-     * @param     string    $file       The file slug
+     * @param     string    $note       The note slug
      * @param     string    $project    The project slug. Optional
      * @param     string    $dir        The directory slug. Optional
      * @param     string    $path       The full directory path. Optional
+     * @param     string    $rev        The revision slug. Optional
      *
      *
      * @return    string    $link       The link
      */
-    public static function getNoteRoute($note, $project = '', $dir = '', $path = '')
+    public static function getNoteRoute($note, $project = '', $dir = '', $path = '', $rev = '')
     {
         $path  = self::getRepositoryPath($project, $path);
         $link  = 'index.php?option=com_pfrepo&view=note';
@@ -201,15 +197,41 @@ abstract class PFrepoHelperRoute
         $link .= '&path=' . $path;
         $link .= '&id=' . $note;
 
-        $needles = array('filter_project'   => array((int) $project),
-                         'filter_parent_id' => array((int) $dir),
-                         'path' => array($path),
-                        );
+        if ($rev) $link .= '&rev=' . $rev;
 
-        if ($item = PFApplicationHelper::itemRoute($needles, 'com_pfrepo.note')) {
+        $item = PFApplicationHelper::itemRoute(null, 'com_pfrepo.repository');
+
+        if ($item) {
             $link .= '&Itemid=' . $item;
         }
-        elseif ($item = PFApplicationHelper::itemRoute(null, 'com_pfrepo.repository')) {
+
+        return $link;
+    }
+
+
+    /**
+     * Creates a link to a note revision list
+     *
+     * @param     string    $note       The note slug
+     * @param     string    $project    The project slug. Optional
+     * @param     string    $dir        The directory slug. Optional
+     * @param     string    $path       The full directory path. Optional
+     *
+     *
+     * @return    string    $link       The link
+     */
+    public static function getNoteRevisionsRoute($note, $project = '', $dir = '', $path = '')
+    {
+        $path  = self::getRepositoryPath($project, $path);
+        $link  = 'index.php?option=com_pfrepo&view=noterevisions';
+        $link .= '&filter_project=' . $project;
+        $link .= '&filter_parent_id=' . $dir;
+        $link .= '&path=' . $path;
+        $link .= '&id=' . $note;
+
+        $item = PFApplicationHelper::itemRoute(null, 'com_pfrepo.repository');
+
+        if ($item) {
             $link .= '&Itemid=' . $item;
         }
 

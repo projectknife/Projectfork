@@ -198,6 +198,10 @@ class PFrepoModelNotes extends JModelList
         $items  = parent::getItems();
         $labels = $this->getInstance('Labels', 'PFModel');
 
+        // Get revision count
+        $pks      = JArrayHelper::getColumn($items, 'id');
+        $elements = $this->getRevisionCount($pks);
+
         foreach ($items as $i => &$item)
         {
             // Convert the parameter fields into objects.
@@ -215,9 +219,56 @@ class PFrepoModelNotes extends JModelList
             if ($item->label_count > 0) {
                 $item->labels = $labels->getConnections('com_pfrepo.note', $item->id);
             }
+
+            // Revision count
+            $item->revision_count = $elements[$item->id];
         }
 
         return $items;
+    }
+
+
+    /**
+     * Counts the revisions of the given files
+     *
+     * @param    array    $pks      The files to count the revisions of
+     *
+     * @retun    array    $count    The revision count
+     */
+    public function getRevisionCount($pks)
+    {
+        $query = $this->_db->getQuery(true);
+
+        if (!is_array($pks) || !count($pks)) return array();
+
+        // Count sub-folders
+        $query->select('parent_id, COUNT(id) AS revision_count')
+              ->from('#__pf_repo_note_revs')
+              ->where('parent_id IN(' . implode(',', $pks) . ')');
+
+
+        $query->group('parent_id');
+        $this->_db->setQuery($query);
+
+        try {
+            $rev_count = $this->_db->loadAssocList('parent_id', 'revision_count');
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        // Put everything together
+        $count = array();
+
+        foreach ($pks as $pk)
+        {
+            $count[$pk] = 0;
+
+            if (isset($rev_count[$pk])) $count[$pk] += $rev_count[$pk];
+        }
+
+        return $count;
     }
 
 

@@ -15,10 +15,10 @@ jimport('joomla.database.tableasset');
 
 
 /**
- * File Revision Table Class
+ * Repository Note Revision Table Class
  *
  */
-class PFtableFileRevision extends PFTable
+class PFtableNoteRevision extends PFTable
 {
     /**
      * Constructor
@@ -27,7 +27,7 @@ class PFtableFileRevision extends PFTable
      */
     public function __construct(&$db)
     {
-        parent::__construct('#__pf_repo_file_revs', 'id', $db);
+        parent::__construct('#__pf_repo_note_revs', 'id', $db);
     }
 
 
@@ -47,6 +47,12 @@ class PFtableFileRevision extends PFTable
             $array['attribs'] = (string) $registry;
         }
 
+        // Bind the rules.
+        if (isset($array['rules']) && is_array($array['rules'])) {
+            $rules = new JRules($array['rules']);
+            $this->setRules($rules);
+        }
+
         return parent::bind($array, $ignore);
     }
 
@@ -58,19 +64,19 @@ class PFtableFileRevision extends PFTable
      */
     public function check()
     {
-        if (trim(str_replace('&nbsp;', '', $this->title)) == '') {
-            if ($this->file_name == '') {
-                $this->setError(JText::_('COM_PROJECTFORK_WARNING_PROVIDE_VALID_TITLE'));
-                return false;
-            }
-            else {
-                $this->title = $this->file_name;
-            }
+        if (trim(str_replace('&nbsp;', '', $this->description)) == '') {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_PROVIDE_VALID_DESC'));
+            return false;
         }
 
         // Check if a project is selected
         if ((int) $this->project_id <= 0) {
             $this->setError(JText::_('COM_PROJECTFORK_WARNING_SELECT_PROJECT'));
+            return false;
+        }
+
+        // Check if a parent note is selected
+        if ((int) $this->parent_id <= 0) {
             return false;
         }
 

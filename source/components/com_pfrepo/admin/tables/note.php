@@ -246,6 +246,29 @@ class PFtableNote extends PFTable
 
 
     /**
+     * Method to delete referenced data of an item.
+     *
+     * @param     mixed      $pk    An primary key value to delete.
+     *
+     * @return    boolean
+     */
+    public function deleteReferences($pk = null)
+    {
+        if (empty($pk)) return true;
+
+        // Delete revisions
+        $query = $this->_db->getQuery(true);
+
+        $query->clear()
+              ->delete('#__pf_repo_note_revs')
+              ->where('parent_id = ' . (int) $pk);
+
+        $this->_db->setQuery($query);
+        $this->_db->execute();
+    }
+
+
+    /**
      * Converts record to XML
      *
      * @param     boolean    $mapKeysToText    Map foreign keys to text values

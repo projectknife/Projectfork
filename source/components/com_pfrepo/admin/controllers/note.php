@@ -31,6 +31,14 @@ class PFrepoControllerNote extends JControllerForm
      */
     public function __construct($config = array())
     {
+        $id   = JRequest::getUint('id');
+        $rev  = JRequest::getUint('rev');
+        $task = JRequest::getVar('task');
+
+        if ($task == 'cancel' && $id && $rev) {
+            $this->view_list = 'noterevisions';
+        }
+
         parent::__construct($config);
     }
 
@@ -104,9 +112,26 @@ class PFrepoControllerNote extends JControllerForm
         $layout  = JRequest::getCmd('layout', 'edit');
         $project = JRequest::getUint('filter_project', 0);
         $parent  = JRequest::getUint('filter_parent_id', 0);
+        $rev     = JRequest::getUint('rev', 0);
         $append  = '';
 
         // Setup redirect info.
+        if ($project) {
+            $append .= '&filter_project=' . $project;
+        }
+
+        if ($parent) {
+            $append .= '&filter_parent_id=' . $parent;
+        }
+
+        if ($id) {
+            $append .= '&' . $url_var . '=' . $id;
+        }
+
+        if ($rev) {
+            $append .= '&rev=' . $rev;
+        }
+
         if ($tmpl) {
             $append .= '&tmpl=' . $tmpl;
         }
@@ -115,17 +140,7 @@ class PFrepoControllerNote extends JControllerForm
             $append .= '&layout=' . $layout;
         }
 
-        if ($id) {
-            $append .= '&' . $url_var . '=' . $id;
-        }
 
-        if ($project) {
-            $append .= '&filter_project=' . $project;
-        }
-
-        if ($parent) {
-            $append .= '&filter_parent_id=' . $parent;
-        }
 
         return $append;
     }
@@ -141,6 +156,8 @@ class PFrepoControllerNote extends JControllerForm
         $tmpl    = JRequest::getCmd('tmpl');
         $project = JRequest::getUint('filter_project');
         $parent  = JRequest::getUint('filter_parent_id');
+        $id      = JRequest::getUint('id');
+        $rev     = JRequest::getUint('rev');
         $append  = '';
 
         // Setup redirect info.
@@ -150,6 +167,10 @@ class PFrepoControllerNote extends JControllerForm
 
         if ($parent) {
             $append .= '&filter_parent_id=' . $parent;
+        }
+
+        if ($id && $rev) {
+            $append .= '&id=' . $id;
         }
 
         if ($tmpl) {

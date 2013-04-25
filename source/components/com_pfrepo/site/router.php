@@ -38,7 +38,9 @@ function PFrepoBuildRoute(&$query)
     }
 
     // Handle repository query
-    if($view == 'repository' || $view == 'file' || $view == 'note' || $view == 'filerevisions') {
+    $views = array('repository', 'file', 'note', 'filerevisions', 'noterevisions');
+
+    if(in_array($view, $views)) {
         if (!$menu_item_given) $segments[] = $view;
         unset($query['view']);
 
@@ -100,12 +102,12 @@ function PFrepoBuildRoute(&$query)
         }
 
         // Get note id
-        if (isset($query['id']) && $view == 'note') {
+        if (isset($query['id']) && ($view == 'note' || $view == 'noterevisions')) {
             if (strpos($query['id'], ':') === false) {
                 $query['id'] = PFrepoMakeSlug($query['id'], '#__pf_repo_notes');
             }
 
-            $segments[] = 'note';
+            $segments[] = $view;
             $segments[] = $query['id'];
             unset($query['id']);
         }
@@ -176,6 +178,10 @@ function PFrepoParseRoute($segments)
                 $vars['view'] = $segments[$count - 2];
                 $count2 = $count - 2;
             }
+            if ($segments[$count - 2] == 'noterevisions' && intval($segments[$count - 2]) == 0) {
+                $vars['view'] = $segments[$count - 2];
+                $count2 = $count - 2;
+            }
         }
         if ($count2 >= 1) {
             $vars['filter_project'] = PFrepoParseSlug($segments[0]);
@@ -212,7 +218,7 @@ function PFrepoParseRoute($segments)
 
 
     // Handle Note
-    if ($vars['view'] == 'note') {
+    if ($vars['view'] == 'note' || $vars['view'] == 'noterevisions') {
         $vars['id'] = PFrepoParseSlug($segments[$count - 1]);
 
         return $vars;
