@@ -51,14 +51,16 @@ class PFprojectsHelper
 
             if (count($parts) == 2) $title = trim($parts[1]);
 
-            $class::addEntry(
+            call_user_func(
+                array($class, 'addEntry'),
                 $title,
                 'index.php?option=' . $component->element,
                 ($option == $component->element)
             );
 
             if ($component->element == self::$extension && ($view == 'projects' || $view == 'categories')) {
-                $class::addEntry(
+                call_user_func(
+                    array($class, 'addEntry'),
                     JText::_('COM_PROJECTFORK_SUBMENU_CATEGORIES'),
                     'index.php?option=com_categories&extension=' . $component->element,
                     ($view == 'categories')

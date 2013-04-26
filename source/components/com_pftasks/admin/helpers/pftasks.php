@@ -48,14 +48,16 @@ class PFtasksHelper
 
             if (count($parts) == 2) $title = trim($parts[1]);
 
-            $class::addEntry(
+            call_user_func(
+                array($class, 'addEntry'),
                 $title,
                 'index.php?option=' . $component->element,
                 ($option == $component->element && $view == 'tasks')
             );
 
             if ($option == $component->element) {
-                $class::addEntry(
+                call_user_func(
+                    array($class, 'addEntry'),
                     JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS'),
                     'index.php?option=' . $component->element . '&view=tasklists',
                     ($option == $component->element && $view == 'tasklists')

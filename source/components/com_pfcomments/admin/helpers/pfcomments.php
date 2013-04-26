@@ -47,7 +47,8 @@ class PFcommentsHelper
 
             if (count($parts) == 2) $title = trim($parts[1]);
 
-            $class::addEntry(
+            call_user_func(
+                array($class, 'addEntry'),
                 $title,
                 'index.php?option=' . $component->element,
                 ($option == $component->element)
