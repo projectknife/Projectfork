@@ -558,32 +558,6 @@ class PFprojectsModelProject extends JModelAdmin
 
 
     /**
-     * Method to change the published state of one or more records.
-     *
-     * @param     array      A list of the primary keys to change.
-     * @param     integer    The value of the published state.
-     *
-     * @return    boolean    True on success.
-     */
-    public function publish(&$pks, $value = 1)
-    {
-        $result  = parent::publish($pks, $value);
-        $changes = array('state', $value);
-        $table   = $this->getTable();
-
-        if ($result) {
-            // State change succeeded. Now update all children
-            foreach ($pks AS $id)
-            {
-                $table->updateChildren($id, $changes);
-            }
-        }
-
-        return $result;
-    }
-
-
-    /**
      * Method to set a project to active on the current user
      *
      * @param     array      The form data
