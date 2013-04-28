@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Forum
+ * @package      pkg_projectfork
+ * @subpackage   com_pfforum
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -15,7 +15,7 @@ defined('_JEXEC') or die();
  * Reply table
  *
  */
-class PFtableReply extends PFTable
+class PFtableReply extends JTable
 {
     /**
      * Constructor
@@ -213,6 +213,30 @@ class PFtableReply extends PFTable
 
 
     /**
+     * Method to delete a row from the database table by primary key value.
+     *
+     * @param     mixed      $pk    An optional primary key value to delete.
+     *
+     * @return    boolean           True on success.
+     */
+    public function delete($pk = null)
+    {
+        $k  = $this->_tbl_key;
+        $pk = (is_null($pk)) ? $this->$k : $pk;
+
+         // Call parent method
+         if (!parent::delete($pk)) {
+             return false;
+         }
+
+         // Delete references
+         $this->deleteReferences($pk);
+
+         return true;
+    }
+
+
+    /**
      * Method to delete referenced data of an item.
      *
      * @param     mixed      $pk    An primary key value to delete.
@@ -221,6 +245,8 @@ class PFtableReply extends PFTable
      */
     public function deleteReferences($pk = null)
     {
+        $k  = $this->_tbl_key;
+        $pk = (is_null($pk)) ? $this->$k : $pk;
         // Delete related attachments
         $query = $this->_db->getQuery(true);
         $query->delete('#__pf_ref_attachments')
@@ -235,23 +261,91 @@ class PFtableReply extends PFTable
 
 
     /**
-     * Converts record to XML
+     * Method to set the publishing state for a row or list of rows in the database
+     * table.
      *
-     * @param     boolean    $mapKeysToText    Map foreign keys to text values
-     * @return    string                       Record in XML format
+     * @param     mixed      $pks      An optional array of primary key values to update.
+     * @param     integer    $state    The publishing state
+     * @param     integer    $uid      The user id of the user performing the operation.
+     *
+     * @return    boolean              True on success.
      */
-    public function toXML($mapKeysToText=false)
+    public function publish($pks = null, $state = 1, $uid = 0)
     {
-        $db = JFactory::getDbo();
+        return $this->setState($pks, $state, $uid);
+    }
 
-        if ($mapKeysToText) {
-            $query = 'SELECT name'
-            . ' FROM #__users'
-            . ' WHERE id = ' . (int) $this->created_by;
-            $db->setQuery($query);
-            $this->created_by = $db->loadResult();
+
+    /**
+     * Method to set the state for a row or list of rows in the database
+     * table.
+     *
+     * @param     mixed      $pks      An optional array of primary key values to update.
+     * @param     integer    $state    The state.
+     * @param     integer    $uid      The user id of the user performing the operation.
+     *
+     * @return    boolean              True on success.
+     */
+    public function setState($pks = null, $state = 1, $uid = 0)
+    {
+        // Sanitize input.
+        JArrayHelper::toInteger($pks);
+
+        $k     = $this->_tbl_key;
+        $uid   = (int) $uid;
+        $state = (int) $state;
+
+        // If there are no primary keys set check to see if the instance key is set.
+        if (empty($pks)) {
+            if ($this->$k) {
+                $pks = array($this->$k);
+            }
+            else {
+                // Nothing to set state on, return false.
+                $this->setError(JText::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'));
+                return false;
+            }
         }
 
-        return parent::toXML($mapKeysToText);
+        // Build the WHERE clause for the primary keys.
+        $where = $k . '=' . implode(' OR ' . $k . '=', $pks);
+
+        // Determine if there is checkin support for the table.
+        if (!property_exists($this, 'checked_out') || !property_exists($this, 'checked_out_time')) {
+            $checkin = '';
+        }
+        else {
+            $checkin = ' AND (checked_out = 0 OR checked_out = ' . (int) $uid . ')';
+        }
+
+        // Update the state for rows with the given primary keys.
+        $this->_db->setQuery(
+            'UPDATE ' . $this->_db->quoteName($this->_tbl).
+            ' SET ' . $this->_db->quoteName('state').' = ' .(int) $state .
+            ' WHERE (' . $where . ')' .
+            $checkin
+        );
+        $this->_db->query();
+
+        // Check for a database error.
+        if ($this->_db->getErrorNum()) {
+            $this->setError($this->_db->getErrorMsg());
+            return false;
+        }
+
+        // If checkin is supported and all rows were adjusted, check them in.
+        if ($checkin && (count($pks) == $this->_db->getAffectedRows())) {
+            // Checkin the rows.
+            foreach($pks as $pk)
+            {
+                $this->checkin($pk);
+            }
+        }
+
+        // If the JTable instance value is in the list of primary keys that were set, set the instance.
+        if (in_array($this->$k, $pks)) $this->state = $state;
+        $this->setError('');
+
+        return true;
     }
 }
