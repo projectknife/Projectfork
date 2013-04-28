@@ -24,7 +24,7 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string
+     * @var    string    
      */
     protected $text_prefix = 'COM_PROJECTFORK_DIRECTORY';
 
@@ -89,9 +89,9 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Counts the contents of the given folders
      *
-     * @param    array    $pk      The folder primary key
+     * @param    array      $pk       The folder primary key
      *
-     * @retun    integer  $count    The element count
+     * @retun    integer    $count    The element count
      */
     public function getElementCount($pk = null)
     {
@@ -268,11 +268,11 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Batch move items to a new directory
      *
-     * @param     integer    $value    The new parent ID.
-     * @param     array      $pks      An array of row IDs.
+     * @param     integer    $value       The new parent ID.
+     * @param     array      $pks         An array of row IDs.
      * @param     array      $contexts    An array of item contexts.
      *
-     * @return    boolean              True if successful, false otherwise and internal error is set.
+     * @return    boolean                 True if successful, false otherwise and internal error is set.
      */
     protected function batchMove($value, $pks, $contexts)
     {
@@ -311,12 +311,12 @@ class PFrepoModelDirectory extends JModelAdmin
 
         // Check that the user can edit the all selected items
         foreach ($pks as $pk)
-		{
-			if (!$user->authorise('core.edit', 'com_pfrepo.directory.' . (int) $pk)) {
-				$this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_CANNOT_EDIT_DIRECTORY'));
-				return false;
-			}
-		}
+        {
+            if (!$user->authorise('core.edit', 'com_pfrepo.directory.' . (int) $pk)) {
+                $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_CANNOT_EDIT_DIRECTORY'));
+                return false;
+            }
+        }
 
         // Move each item
         foreach ($pks as $pk)
@@ -815,11 +815,12 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Method to delete one or more records.
      *
-     * @param     array      $pks    An array of record primary keys.
+     * @param     array      $pks              An array of record primary keys.
+     * @param     bool       $ignore_access    If true, ignore permission and just delete
      *
-     * @return    boolean            True if successful, false if an error occurs.
+     * @return    boolean                      True if successful, false if an error occurs.
      */
-    public function delete(&$pks)
+    public function delete(&$pks, $ignore_access = false)
     {
         $dispatcher = JDispatcher::getInstance();
 
@@ -847,20 +848,22 @@ class PFrepoModelDirectory extends JModelAdmin
             }
 
             // Check delete permission (includes check on sub-dirs, notes and files)
-            if (!$this->canDelete($table)) {
-                // Prune items that you can't change.
-                unset($pks[$i]);
+            if (!$ignore_access) {
+                if (!$this->canDelete($table)) {
+                    // Prune items that you can't change.
+                    unset($pks[$i]);
 
-                $error = $this->getError();
+                    $error = $this->getError();
 
-                if ($error) {
-                    JError::raiseWarning(500, $error);
+                    if ($error) {
+                        JError::raiseWarning(500, $error);
+                    }
+                    else {
+                        JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'));
+                    }
+
+                    return false;
                 }
-                else {
-                    JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'));
-                }
-
-                return false;
             }
 
             // Trigger the onContentBeforeDelete event.
@@ -908,7 +911,7 @@ class PFrepoModelDirectory extends JModelAdmin
 
             // Delete all notes
             if (count($notes)) {
-                if (!$note_model->delete($notes)) {
+                if (!$note_model->delete($notes, $ignore_access)) {
                     $this->setError($note_model->getError());
                     return false;
                 }
@@ -916,7 +919,7 @@ class PFrepoModelDirectory extends JModelAdmin
 
             // Delete all files
             if (count($files)) {
-                if (!$file_model->delete($files)) {
+                if (!$file_model->delete($files, $ignore_access)) {
                     $this->setError($file_model->getError());
                     return false;
                 }
@@ -971,9 +974,9 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Method to physically create or move a directory
      *
-     * @param    array $data The directory data
+     * @param     array      $data    The directory data
      *
-     * @return   boolean True on success
+     * @return    boolean             True on success
      */
     protected function savePhysical($project, $path, $dest = null)
     {
@@ -1010,9 +1013,9 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Method to physically copy directory
      *
-     * @param    array $data The directory data
+     * @param     array      $data    The directory data
      *
-     * @return   boolean True on success
+     * @return    boolean             True on success
      */
     protected function copyPhysical($project, $path, $dest)
     {
@@ -1119,7 +1122,7 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Custom clean the cache of com_projectfork and projectfork modules
      *
-     * @return    void
+     * @return    void    
      */
     protected function cleanCache($group = 'com_pfrepo', $client_id = 0)
     {
@@ -1297,7 +1300,7 @@ class PFrepoModelDirectory extends JModelAdmin
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
-     * @return    void
+     * @return    void    
      */
     protected function populateState()
     {

@@ -19,7 +19,7 @@ require_once JPATH_ADMINISTRATOR . '/components/com_pfrepo/helpers/pfrepo.php';
  * File Table Class
  *
  */
-class PFtableFile extends PFTable
+class PFtableFile extends JTable
 {
     /**
      * Constructor
@@ -34,8 +34,6 @@ class PFtableFile extends PFTable
 
     /**
      * Method to compute the default name of the asset.
-     * The default name is in the form table_name.id
-     * where id is the value of the primary key of the table.
      *
      * @return    string
      */
@@ -136,37 +134,6 @@ class PFtableFile extends PFTable
 
 
     /**
-     * Method to get the children on an asset (which are not directly connected in the assets table)
-     *
-     * @param    string    $name    The name of the parent asset
-     *
-     * @return    array    The names of the child assets
-     */
-    public function getAssetChildren($name)
-    {
-        $assets = array();
-
-        list($component, $item, $id) = explode('.', $name, 3);
-
-        // Get the project assets
-        if ($component == 'com_pfprojects' && $item == 'project') {
-            $query = $this->_db->getQuery(true);
-
-            $query->select('c.*')
-                  ->from('#__assets AS c')
-                  ->join('INNER', $this->_tbl . ' AS a ON (a.asset_id = c.id)')
-                  ->where('a.project_id = ' . (int) $id)
-                  ->group('c.id');
-
-            $this->_db->setQuery($query);
-            $assets = (array) $this->_db->loadObjectList();
-        }
-
-        return $assets;
-    }
-
-
-    /**
      * Overloaded bind function
      *
      * @param     array    $array     Named array
@@ -260,24 +227,26 @@ class PFtableFile extends PFTable
 
 
     /**
-     * Converts record to XML
+     * Method to delete a row from the database table by primary key value.
      *
-     * @param     boolean    $mapKeysToText    Map foreign keys to text values
-     * @return    string                       Record in XML format
+     * @param     mixed      $pk    An optional primary key value to delete.
+     *
+     * @return    boolean           True on success.
      */
-    public function toXML($mapKeysToText=false)
+    public function delete($pk = null)
     {
-        $db = JFactory::getDbo();
+        $k  = $this->_tbl_key;
+        $pk = (is_null($pk)) ? $this->$k : $pk;
 
-        if ($mapKeysToText) {
-            $query = 'SELECT name'
-            . ' FROM #__users'
-            . ' WHERE id = ' . (int) $this->created_by;
-            $db->setQuery($query);
-            $this->created_by = $db->loadResult();
-        }
+         // Call parent method
+         if (!parent::delete($pk)) {
+             return false;
+         }
 
-        return parent::toXML($mapKeysToText);
+         // Delete references
+         $this->deleteReferences($pk);
+
+         return true;
     }
 
 

@@ -18,7 +18,7 @@ jimport('joomla.database.tableasset');
  * File Revision Table Class
  *
  */
-class PFtableFileRevision extends PFTable
+class PFtableFileRevision extends JTable
 {
     /**
      * Constructor
@@ -75,27 +75,5 @@ class PFtableFileRevision extends PFTable
         }
 
         return true;
-    }
-
-
-    /**
-     * Converts record to XML
-     *
-     * @param     boolean    $mapKeysToText    Map foreign keys to text values
-     * @return    string                       Record in XML format
-     */
-    public function toXML($mapKeysToText=false)
-    {
-        $db = JFactory::getDbo();
-
-        if ($mapKeysToText) {
-            $query = 'SELECT name'
-            . ' FROM #__users'
-            . ' WHERE id = ' . (int) $this->created_by;
-            $db->setQuery($query);
-            $this->created_by = $db->loadResult();
-        }
-
-        return parent::toXML($mapKeysToText);
     }
 }

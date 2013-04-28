@@ -107,11 +107,12 @@ class PFrepoModelFile extends JModelAdmin
     /**
      * Method to delete one or more records.
      *
-     * @param     array  &    $pks    An array of record primary keys.
+     * @param     array  &    $pks              An array of record primary keys.
+     * @param     bool        $ignore_access    If true, ignore permission and just delete
      *
-     * @return    boolean             True if successful, false if an error occurs.
+     * @return    boolean                       True if successful, false if an error occurs.
      */
-    public function delete(&$pks)
+    public function delete(&$pks, $ignore_access = false)
     {
         // Initialise variables.
         $dispatcher = JDispatcher::getInstance();
@@ -126,7 +127,7 @@ class PFrepoModelFile extends JModelAdmin
         foreach ($pks as $i => $pk)
         {
             if ($table->load($pk)) {
-                if ($this->canDelete($table)) {
+                if ($ignore_access || $this->canDelete($table)) {
                     $context = $this->option . '.' . $this->name;
 
                     // Trigger the onContentBeforeDelete event.
@@ -444,9 +445,9 @@ class PFrepoModelFile extends JModelAdmin
     /**
      * Counts the revisions of the given file
      *
-     * @param    array    $pk      The file primary key
+     * @param    array      $pk       The file primary key
      *
-     * @retun    integer  $count    The revision count
+     * @retun    integer    $count    The revision count
      */
     public function getRevisionCount($pk = null)
     {
@@ -617,12 +618,12 @@ class PFrepoModelFile extends JModelAdmin
     /**
      * Method for uploading a file
      *
-     * @param     array      $file      The file information
-     * @param     integer    $dir       The directory id
-     * @param     boolean    $stream    If set to true, use data stream
-     * @param     integer    $parent_id If set, will try to move the original file to the revs folder
+     * @param     array      $file         The file information
+     * @param     integer    $dir          The directory id
+     * @param     boolean    $stream       If set to true, use data stream
+     * @param     integer    $parent_id    If set, will try to move the original file to the revs folder
      *
-     * @return    mixed                 Array with file info on success, otherwise False
+     * @return    mixed                    Array with file info on success, otherwise False
      */
     public function upload($file = NULL, $dir = 0, $stream = false, $parent_id = 0)
     {

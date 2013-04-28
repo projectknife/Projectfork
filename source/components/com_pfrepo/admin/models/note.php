@@ -23,7 +23,7 @@ class PFrepoModelNote extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string
+     * @var    string    
      */
     protected $text_prefix = 'COM_PROJECTFORK_NOTE';
 
@@ -334,9 +334,9 @@ class PFrepoModelNote extends JModelAdmin
     /**
      * Counts the revisions of the given file
      *
-     * @param    array    $pk      The file primary key
+     * @param    array      $pk       The file primary key
      *
-     * @retun    integer  $count    The revision count
+     * @retun    integer    $count    The revision count
      */
     public function getRevisionCount($pk = null)
     {
@@ -363,6 +363,81 @@ class PFrepoModelNote extends JModelAdmin
         }
 
         return $count;
+    }
+
+
+    /**
+     * Method to delete one or more records.
+     *
+     * @param     array  &    $pks              An array of record primary keys.
+     * @param     bool        $ignore_access    If true, ignore permission and just delete
+     *
+     * @return    boolean                       True if successful, false if an error occurs.
+     */
+    public function delete(&$pks, $ignore_access = false)
+    {
+        $dispatcher = JEventDispatcher::getInstance();
+        $pks = (array) $pks;
+        $table = $this->getTable();
+
+        // Include the content plugins for the on delete events.
+        JPluginHelper::importPlugin('content');
+
+        // Iterate the items to delete each one.
+        foreach ($pks as $i => $pk)
+        {
+            if ($table->load($pk))
+            {
+                if ($ignore_access || $this->canDelete($table))
+                {
+                    $context = $this->option . '.' . $this->name;
+
+                    // Trigger the onContentBeforeDelete event.
+                    $result = $dispatcher->trigger($this->event_before_delete, array($context, $table));
+                    if (in_array(false, $result, true))
+                    {
+                        $this->setError($table->getError());
+                        return false;
+                    }
+
+                    if (!$table->delete($pk))
+                    {
+                        $this->setError($table->getError());
+                        return false;
+                    }
+
+                    // Trigger the onContentAfterDelete event.
+                    $dispatcher->trigger($this->event_after_delete, array($context, $table));
+
+                }
+                else
+                {
+                    // Prune items that you can't change.
+                    unset($pks[$i]);
+                    $error = $this->getError();
+                    if ($error)
+                    {
+                        JLog::add($error, JLog::WARNING, 'jerror');
+                        return false;
+                    }
+                    else
+                    {
+                        JLog::add(JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), JLog::WARNING, 'jerror');
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                $this->setError($table->getError());
+                return false;
+            }
+        }
+
+        // Clear the component's cache
+        $this->cleanCache();
+
+        return true;
     }
 
 
@@ -547,7 +622,7 @@ class PFrepoModelNote extends JModelAdmin
         $data = JFactory::getApplication()->getUserState('com_pfrepo.edit.' . $this->getName() . '.data', array());
 
         if (empty($data)) {
-			$data = $this->getItem();
+            $data = $this->getItem();
 
             // Set default values
             if ($this->getState($this->getName() . '.id') == 0) {
@@ -596,12 +671,12 @@ class PFrepoModelNote extends JModelAdmin
     /**
      * Method to change the title.
      *
-     * @param     integer    $dir_id       The parent directory
-     * @param     string     $title        The directory title
-     * @param     string     $alias        The current alias
-     * @param     integer    $id           The note id
+     * @param     integer    $dir_id    The parent directory
+     * @param     string     $title     The directory title
+     * @param     string     $alias     The current alias
+     * @param     integer    $id        The note id
      *
-     * @return    string                   Contains the new title
+     * @return    string                Contains the new title
      */
     protected function generateNewTitle($dir_id, $title, $alias = '', $id = 0)
     {
@@ -673,18 +748,18 @@ class PFrepoModelNote extends JModelAdmin
     {
         $user = JFactory::getUser();
 
-		// Check for existing item.
-		if (!empty($record->id)) {
-			return $user->authorise('core.edit.state', 'com_pfrepo.note.' . (int) $record->id);
-		}
-		elseif (!empty($record->dir_id)) {
-		    // New item, so check against the directory.
-			return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->dir_id);
-		}
-		else {
-		    // Default to component settings.
-			return parent::canEditState('com_pfrepo');
-		}
+        // Check for existing item.
+        if (!empty($record->id)) {
+            return $user->authorise('core.edit.state', 'com_pfrepo.note.' . (int) $record->id);
+        }
+        elseif (!empty($record->dir_id)) {
+            // New item, so check against the directory.
+            return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->dir_id);
+        }
+        else {
+            // Default to component settings.
+            return parent::canEditState('com_pfrepo');
+        }
     }
 
 
@@ -715,21 +790,21 @@ class PFrepoModelNote extends JModelAdmin
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
-     * @return    void
+     * @return    void    
      */
     protected function populateState()
     {
         // Initialise variables.
         $app   = JFactory::getApplication();
-		$table = $this->getTable();
-		$key   = $table->getKeyName();
+        $table = $this->getTable();
+        $key   = $table->getKeyName();
 
-		// Get the pk of the record from the request.
-		$pk  = JRequest::getUInt($key);
-		$rev = JRequest::getUInt('rev');
+        // Get the pk of the record from the request.
+        $pk  = JRequest::getUInt($key);
+        $rev = JRequest::getUInt('rev');
 
-		$this->setState($this->getName() . '.id', $pk);
-		$this->setState($this->getName() . '.rev', $rev);
+        $this->setState($this->getName() . '.id', $pk);
+        $this->setState($this->getName() . '.rev', $rev);
 
         if ($pk) {
             $table = $this->getTable();
@@ -767,8 +842,8 @@ class PFrepoModelNote extends JModelAdmin
             }
         }
 
-		// Load the parameters.
-		$value = JComponentHelper::getParams($this->option);
-		$this->setState('params', $value);
+        // Load the parameters.
+        $value = JComponentHelper::getParams($this->option);
+        $this->setState('params', $value);
     }
 }
