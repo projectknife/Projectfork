@@ -237,7 +237,7 @@ class plgContentPFtasks extends JPlugin
         $task_table = JTable::getInstance('Task', 'PFtable');
         $list_table = JTable::getInstance('Tasklist', 'PFtable');
 
-        if (!$table || !$list_table) return;
+        if (!$task_table || !$list_table) return;
 
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
