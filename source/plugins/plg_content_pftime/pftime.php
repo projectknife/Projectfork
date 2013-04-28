@@ -162,7 +162,7 @@ class plgContentPFtime extends JPlugin
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
-        $query->update('#__pf_time')
+        $query->update('#__pf_timesheet')
               ->set('state = ' . $state)
               ->where('project_id = ' . (int) $project);
 
@@ -196,7 +196,7 @@ class plgContentPFtime extends JPlugin
 
         $allowed = PFAccessHelper::getAccessTree($access);
 
-        $query->update('#__pf_time')
+        $query->update('#__pf_timesheet')
               ->set('access = ' . (int) $access)
               ->where('project_id = ' . (int) $project);
 
