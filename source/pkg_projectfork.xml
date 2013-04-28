@@ -37,6 +37,7 @@
         <file type="plugin" id="pftasks" group="content">plugins/plg_content_pftasks</file>
         <file type="plugin" id="pftime" group="content">plugins/plg_content_pftime</file>
         <file type="plugin" id="pfforum" group="content">plugins/plg_content_pfforum</file>
+        <file type="plugin" id="pfrepo" group="content">plugins/plg_content_pfrepo</file>
 
         <!-- Install modules -->
         <file type="module" id="mod_pf_dash_buttons" client="site">modules/mod_pf_dash_buttons</file>
