@@ -58,6 +58,33 @@ class plgContentPFrepo extends JPlugin
 
 
     /**
+     * "onContentAfterDelete" event handler
+     *
+     * @param     string     $context    The item context
+     * @param     object     $table      The item table object
+     *
+     * @return    boolean                True
+     */
+    public function onContentAfterDelete($context, $table)
+    {
+        // Do nothing if the plugin is disabled
+        if (!JPluginHelper::isEnabled('content', 'pfrepo')) return true;
+
+        // Check if the context is supported
+        if (!in_array($context, $this->contexts)) return true;
+
+        $context = $this->unalias($context);
+
+        // Delete repo
+        if ($context == 'com_pfprojects.project') {
+            $this->deleteFromProject($table->id);
+        }
+
+        return true;
+    }
+
+
+    /**
      * Method to unalias the context
      *
      * @param     string    $context    The context alias
@@ -78,6 +105,52 @@ class plgContentPFrepo extends JPlugin
         }
 
         return $context;
+    }
+
+
+    /**
+     * Method to delete a project repo
+     *
+     * @param     integer    $id    The project
+     *
+     * @return    void
+     */
+    protected function deleteFromProject($id)
+    {
+        static $imported = false;
+
+        if (!$imported) {
+            jimport('projectfork.library');
+            JLoader::register('PFtableDirectory', JPATH_ADMINISTRATOR . '/components/com_pfrepo/tables/directory.php');
+            JLoader::register('PFtableNote', JPATH_ADMINISTRATOR . '/components/com_pfrepo/tables/note.php');
+            JLoader::register('PFtableFile', JPATH_ADMINISTRATOR . '/components/com_pfrepo/tables/file.php');
+            JLoader::register('PFrepoModelDirectory', JPATH_ADMINISTRATOR . '/components/com_pfrepo/models/directory.php');
+            JLoader::register('PFrepoModelNote', JPATH_ADMINISTRATOR . '/components/com_pfrepo/models/note.php');
+            JLoader::register('PFrepoModelFile', JPATH_ADMINISTRATOR . '/components/com_pfrepo/models/file.php');
+
+            $imported = true;
+        }
+
+        $cfg   = array('ignore_request' => true);
+        $model = JModelLegacy::getInstance('Directory', 'PFrepoModel', $cfg);
+
+        if (!$model) return;
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('id')
+              ->from('#__pf_repo_dirs')
+              ->where('project_id = ' . (int) $id)
+              ->where('parent_id = 1');
+
+        $db->setQuery($query, 0, 1);
+        $pk = (int) $db->loadResult();
+
+        $pks    = array($pk);
+        $ignore = true;
+
+        $model->delete($pks, $ignore);
     }
 
 
