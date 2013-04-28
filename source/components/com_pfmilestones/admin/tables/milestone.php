@@ -302,6 +302,30 @@ class PFtableMilestone extends JTable
 
 
     /**
+     * Method to delete a row from the database table by primary key value.
+     *
+     * @param     mixed      $pk    An optional primary key value to delete.
+     *
+     * @return    boolean           True on success.
+     */
+    public function delete($pk = null)
+    {
+        $k  = $this->_tbl_key;
+        $pk = (is_null($pk)) ? $this->$k : $pk;
+
+         // Call parent method
+         if (!parent::delete($pk)) {
+             return false;
+         }
+
+         // Delete references
+         $this->deleteReferences($pk);
+
+         return true;
+    }
+
+
+    /**
      * Method to delete referenced data of an item.
      *
      * @param     mixed      $pk    An primary key value to delete.
