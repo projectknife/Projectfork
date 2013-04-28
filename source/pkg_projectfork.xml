@@ -34,6 +34,7 @@
         <file type="plugin" id="pfnotifications" group="content">plugins/plg_content_pfnotifications</file>
         <file type="plugin" id="pfprojects" group="content">plugins/plg_content_pfprojects</file>
         <file type="plugin" id="pfmilestones" group="content">plugins/plg_content_pfmilestones</file>
+        <file type="plugin" id="pftasks" group="content">plugins/plg_content_pftasks</file>
 
         <!-- Install modules -->
         <file type="module" id="mod_pf_dash_buttons" client="site">modules/mod_pf_dash_buttons</file>
