@@ -378,16 +378,6 @@ class PFprojectsModelProject extends JModelAdmin
 
             $this->setActive(array('id' => $id));
 
-            // To keep data integrity, update all child assets
-            if (!$is_new) {
-                $props   = array('access', 'state', array('start_date', 'NE-SQLDATE'), array('end_date', 'NE-SQLDATE'));
-                $changes = PFObjectHelper::getDiff($old, $table, $props);
-
-                if (count($changes)) {
-                    $table->updateChildren($table->id, $changes);
-                }
-            }
-
             // Add to watch list
             if ($is_new) {
                 $cid = array($id);
