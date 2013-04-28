@@ -48,7 +48,7 @@ class plgContentPFrepo extends JPlugin
         // Do nothing if this is a new item
         if ($is_new) return true;
 
-        $context = $this->unlias($context);
+        $context = $this->unalias($context);
 
         // Update access
         $this->updateAccess($context, $table->id, $table->access);
@@ -64,7 +64,7 @@ class plgContentPFrepo extends JPlugin
      *
      * @return    string    $context    The actual context
      */
-    protected function unlias($context)
+    protected function unalias($context)
     {
         switch ($context)
         {

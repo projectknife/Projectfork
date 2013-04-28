@@ -152,7 +152,7 @@ class plgContentPfcomments extends JPlugin
      *
      * @return    string    $context    The actual context
      */
-    protected function unlias($context)
+    protected function unalias($context)
     {
         switch ($context)
         {

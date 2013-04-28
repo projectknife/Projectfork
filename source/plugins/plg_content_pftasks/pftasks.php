@@ -104,7 +104,7 @@ class plgContentPFtasks extends JPlugin
         // Do nothing if this is a new item
         if ($is_new) return true;
 
-        $context = $this->unlias($context);
+        $context = $this->unalias($context);
 
         if (in_array($context, array('com_pfprojects.project', 'com_pfmilestones.milestone', 'com_pftasks.tasklist'))) {
             // Update access
@@ -147,7 +147,7 @@ class plgContentPFtasks extends JPlugin
         // Check if the context is supported
         if (!in_array($context, $this->contexts)) return true;
 
-        $context = $this->unlias($context);
+        $context = $this->unalias($context);
 
         // Update publishing state
         foreach ($pks AS $id)
@@ -175,7 +175,7 @@ class plgContentPFtasks extends JPlugin
         // Check if the context is supported
         if (!in_array($context, $this->contexts)) return true;
 
-        $context = $this->unlias($context);
+        $context = $this->unalias($context);
 
         $this->deleteFromContext($context, $table->id);
 
@@ -190,7 +190,7 @@ class plgContentPFtasks extends JPlugin
      *
      * @return string $context The actual context
      */
-    protected function unlias($context)
+    protected function unalias($context)
     {
         switch ($context)
         {
