@@ -24,7 +24,7 @@ $repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
 $doc =& JFactory::getDocument();
 $style = '.row-topics .well,.row-topics .btn-toolbar {'
         . 'margin-bottom: 0;'
-        . '}' 
+        . '}'
         . '.list-comments img,.collapse-comments img {'
         . 'margin-right: 10px;'
         . '}'
@@ -143,7 +143,7 @@ $doc->addStyleDeclaration( $style );
 		                        </a>
     						</h4>
     						<div class="well-description">
-    							<?php echo JHtml::_('pf.html.truncate', $item->description, 300); ?> 
+    							<?php echo JHtml::_('pf.html.truncate', $item->description, 300); ?>
     						</div>
     					</div>
     					<div class="btn-toolbar margin-none">
@@ -159,14 +159,7 @@ $doc->addStyleDeclaration( $style );
     	    			       	 <span aria-hidden="true" class="icon-comment"></span> <?php echo JText::plural('COM_PROJECTFORK_N_REPLIES', (int) $item->replies); ?>
     	    			        </a>
     	    			    </div>
-	    	    			<?php if ($repo_enabled) : ?>
-	    	    				<div class="btn-group">
-	    	    			        <a href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($item->project_slug, $repo_dir));?>" class="btn btn-mini">
-	    	    			            <span aria-hidden="true" class="icon-flag-2"></span> <?php echo JText::plural('COM_PROJECTFORK_N_ATTACHMENTS', (int) $item->attachments); ?>
-	    	    			        </a>
-	    	    				</div>
-	    	    			<?php endif; ?>
-	    	    			
+
                 			<?php echo $watch; ?>
                 		</div>
     				</div>

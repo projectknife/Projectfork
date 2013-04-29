@@ -29,6 +29,9 @@ $return_page     = base64_encode(JFactory::getURI()->toString());
 $link_edit_topic = PFforumHelperRoute::getRepliesRoute($topic, $project) . '&task=topicform.edit&id=' . $this->topic->id . '&return=' . $return_page;
 $editor          = JFactory::getEditor();
 
+$can_edit_topic     = $user->authorise('core.edit', 'com_pfforum.topic.' . $this->topic->id);
+$can_edit_own_topic = ($user->authorise('core.edit.own', 'com_pfforum.topic.' . $this->topic->id) && $uid == $this->topic->created_by);
+
 $doc =& JFactory::getDocument();
 $style = '.row-replies .well,.row-replies .btn-toolbar {'
         . 'margin-bottom: 0;'
@@ -110,7 +113,7 @@ Joomla.submitbutton = function(task)
     							<?php echo $this->topic->description; ?>
     						</div>
     						<div class="btn-toolbar margin-none">
-	                			<?php if ($can_edit || $can_edit_own) : ?>
+	                			<?php if ($can_edit_topic || $can_edit_own_topic) : ?>
 	    	    	    			<div class="btn-group">
 	    	    	    			    <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_pfforum&task=topicform.edit&id=' . $this->topic->id);?>">
 	    	    	    			        <span aria-hidden="true" class="icon-pencil"></span> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT'); ?>
@@ -124,7 +127,7 @@ Joomla.submitbutton = function(task)
 			<!-- End Topic -->
 
             <!-- Start Replies -->
-            
+
             <?php
             $k = 0;
             foreach($this->items AS $i => $item) :
