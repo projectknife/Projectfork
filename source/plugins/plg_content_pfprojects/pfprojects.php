@@ -191,6 +191,7 @@ class plgContentPFprojects extends JPlugin
         }
 
         // Get all tasks
+        $query->clear();
         $query->select('id, milestone_id, start_date, end_date')
               ->from('#__pf_tasks')
               ->where('project_id = ' . (int) $project)
