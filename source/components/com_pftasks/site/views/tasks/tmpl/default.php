@@ -32,7 +32,7 @@ $can_track     = ($user->authorise('core.create', 'com_pftime') && $time_enabled
 $doc =& JFactory::getDocument();
 $style = '.complete {'
         . 'opacity:0.5;'
-        . '}' 
+        . '}'
         . '.task-title > a {'
         . 'margin-left:10px;'
         . 'margin-right:10px;'
@@ -212,7 +212,7 @@ jQuery(document).ready(function() {
                         ?>
                         <div class="cat-list-row<?php echo $k;?>">
                         	<?php if ($item->list_title) : ?>
-                               
+
                                <h3>
 		                          <a class="pull-left" href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->project_slug, $item->milestone_slug, $item->list_slug));?>">
 		                              <?php echo $this->escape($item->list_title);?>
@@ -224,9 +224,9 @@ jQuery(document).ready(function() {
                                     $this->menu->end();
                                     echo $this->menu->render(array('class' => 'btn-mini btn-link', 'pull' => 'left'));
 	                              ?>
-		                           <small><?php echo $this->escape($item->list_description);?></small>
+		                           <small><?php echo htmlspecialchars_decode($this->escape($item->list_description));?></small>
 	                           </h3>
-                               
+
                                <div class="clearfix clr"></div>
                             <?php endif; ?>
                             <ul class="list-tasks list-striped list-condensed unstyled" id="tasklist_<?php echo $i;?>">
@@ -295,7 +295,7 @@ jQuery(document).ready(function() {
 	                            <a href="<?php echo JRoute::_(PFtasksHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>" class="pull-left">
 	                                <?php if ($item->checked_out) : ?><span aria-hidden="true" class="icon-lock"></span> <?php endif; ?>
 	                                <?php echo $this->escape($item->title);?>
-	                            </a> 
+	                            </a>
 	                            <span class="dropdown pull-left">
 	                            	<?php
 		                                $this->menu->start(array('class' => 'btn-mini btn-link'));
@@ -303,31 +303,31 @@ jQuery(document).ready(function() {
 	                                    $itm_txt  = 'COM_PROJECTFORK_DETAILS_LABEL';
 	                                    $itm_link = '#collapse-' . $x;
 	                                    $this->menu->itemCollapse($itm_icon, $itm_txt, $itm_link);
-	                                    
+
 	                                    $this->menu->itemDivider();
-	                                    
+
 		                                $this->menu->itemEdit('taskform', $item->id, ($can_edit || $can_edit_own));
 		                                $this->menu->itemTrash('tasks', $x, ($can_edit || $can_edit_own));
-	
+
 	                                    if ($can_track) {
 	                                        $this->menu->itemDivider();
 	                                        $this->menu->itemJavaScript('icon-clock ', 'COM_PROJECTFORK_TASKS_TRACK_TIME', 'PFtask.trackItem(' . $item->id . ');');
 	                                    }
-	
+
 		                                if (($can_edit || $can_edit_own)) {
 		                                    $itm_icon = 'icon-plus';
 		                                    $itm_txt  = 'COM_PROJECTFORK_ASSIGN_TO_USER';
 		                                    $itm_link = PFusersHelperRoute::getUsersRoute() . '&amp;layout=modal&amp;tmpl=component&amp;field=PFtaskAssignUser';
-	
+
 		                                    $this->menu->itemDivider();
 		                                    $this->menu->itemModal($itm_icon, $itm_txt, $itm_link, "PFlist.setTarget(" . $x . ");");
 		                                }
-	
+
 		                                if ($can_change) {
 		                                    $itm_icon = 'icon-warning';
 		                                    $itm_pfx  = 'COM_PROJECTFORK_PRIORITY';
 		                                    $itm_ac   = 'PFtask.priority(' . $x . ',';
-	
+
 		                                    $this->menu->itemDivider();
 		                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_VERY_LOW', $itm_ac . ' 1, \'' . addslashes(JText::_($itm_pfx. '_VERY_LOW')) . '\')');
 		                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_LOW', $itm_ac . ' 2, \'' . addslashes(JText::_($itm_pfx. '_LOW')) . '\')');
@@ -335,14 +335,16 @@ jQuery(document).ready(function() {
 		                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_HIGH', $itm_ac . ' 4, \'' . addslashes(JText::_($itm_pfx. '_HIGH')) . '\')');
 		                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_VERY_HIGH', $itm_ac . ' 5, \'' . addslashes(JText::_($itm_pfx. '_VERY_HIGH')) . '\')');
 		                                }
-	
+
 		                                $this->menu->end();
-	
+
 		                                echo $this->menu->render(array('class' => 'btn-mini'));
 		                            ?>
 	                            </span>
 	                        </span>
-	                        <small class="task-description"><?php echo $this->escape(JHtml::_('pf.html.truncate', $item->description, '100'));?></small>
+	                        <small class="task-description">
+                                <?php echo htmlspecialchars_decode($this->escape(JHtml::_('pf.html.truncate', $item->description, '100')));?>
+                         </small>
                         </div>
                         <div id="collapse-<?php echo $x; ?>" class="collapse">
                         	<hr />
