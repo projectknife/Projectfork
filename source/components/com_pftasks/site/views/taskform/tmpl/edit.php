@@ -244,6 +244,7 @@ Joomla.submitbutton = function(task)
         <div id="jform_access_reload"><?php echo $this->form->getInput('access'); ?></div>
     </div>
 
+    <div style="display: none;">
     <?php
         if ($this->item->id > 0) {
             echo $this->form->getInput('project_id');
@@ -252,7 +253,7 @@ Joomla.submitbutton = function(task)
         echo $this->form->getInput('created');
         echo $this->form->getInput('elements');
     ?>
-
+    </div>
 	<input type="hidden" name="task" value="" />
 	<input type="hidden" name="return" value="<?php echo $this->return_page;?>" />
     <input type="hidden" name="view" value="<?php echo htmlspecialchars($this->get('Name'), ENT_COMPAT, 'UTF-8');?>" />
