@@ -103,7 +103,7 @@ class PFforumModelReplies extends JModelList
         $filters = array();
         $filters['a.state']      = array('STATE',       $this->getState('filter.published'));
         $filters['a.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
-        $filters['a.topic_id']   = array('INT-NOTZERO', $this->getState('filter.topic'));
+        $filters['a.topic_id']   = array('INT-NOTZERO', (int) $this->getState('filter.topic'));
         $filters['a.created_by'] = array('INT-NOTZERO', $this->getState('filter.author'));
         $filters['a']            = array('SEARCH',      $this->getState('filter.search'));
 
