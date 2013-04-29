@@ -57,7 +57,7 @@ class plgContentPFtimeInstallerScript
      */
     public function postflight($route, JAdapterInstance $adapter)
     {
-        if (strtolower($route) == 'install') {
+        if (strtolower($route) == 'install' || strtolower($route) == 'update') {
             // Get the XML manifest data
             $manifest = $adapter->get('manifest');
 
