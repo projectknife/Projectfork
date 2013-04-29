@@ -245,6 +245,9 @@ Joomla.submitbutton = function(task)
     </div>
 
     <?php
+        if ($this->item->id > 0) {
+            echo $this->form->getInput('project_id');
+        }
         echo $this->form->getInput('alias');
         echo $this->form->getInput('created');
         echo $this->form->getInput('elements');
