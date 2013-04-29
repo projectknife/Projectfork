@@ -66,16 +66,13 @@ endif;
             <div class="span12">
                 <?php if ($show_assigned) :
                     foreach ($item->users AS $usr) :
-                        $usr->user_id;
-                        $usr->username;
-                        $usr->name;
-                    endforeach;
-                ?>
+                    ?>
                     <img title="<?php echo $usr->name;?>"
                          width="30"
                          src="<?php echo JHtml::_('projectfork.avatar.path', $usr->user_id);?>"
                          class="img-circle hasTooltip pull-left width-30"
                     />
+                    <?php endforeach; ?>
                 <?php endif; ?>
                 <span class="task-name item-name">
                     <?php
