@@ -25,7 +25,7 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
 $topic_in   = ($this->pagination->get('pages.current') == 1 ? 'in ' : '');
 $details_in = ($this->pagination->get('pages.current') == 1 ? ' active' : '');
 
-$return_page     = base64_encode(JFactory::getURI()->toString());
+$return_page     = base64_encode(PFforumHelperRoute::getRepliesRoute($topic, $project));
 $link_edit_topic = PFforumHelperRoute::getRepliesRoute($topic, $project) . '&task=topicform.edit&id=' . $this->topic->id . '&return=' . $return_page;
 $editor          = JFactory::getEditor();
 
@@ -57,7 +57,7 @@ Joomla.submitbutton = function(task)
 
     <div class="cat-items">
 
-        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(PFforumHelperRoute::getRepliesRoute($topic, $project)); ?>" method="post">
+        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(PFforumHelperRoute::getRepliesRoute($topic, $project)); ?>" method="post" autocomplete="off">
 	            <div class="btn-toolbar btn-toolbar-top">
                     <?php echo $this->toolbar; ?>
 	            </div>
@@ -148,9 +148,6 @@ Joomla.submitbutton = function(task)
                              rel="tooltip"
                         />
     				</div>
-    				<div style="display: none !important;">
-                        <?php echo JHtml::_('grid.id', $i, $item->id); ?>
-                    </div>
     				<div class="span11">
     					<div class="well well-small">
     						<?php if ($can_change || $uid) : ?>

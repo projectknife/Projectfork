@@ -53,6 +53,46 @@ class PFforumControllerReplies extends JControllerAdmin
 
 
     /**
+	 * Removes an item.
+	 *
+	 * @return  void
+	 */
+	public function delete()
+	{
+	   parent::delete();
+
+       $project = JRequest::getUInt('filter_project');
+       $topic   = JRequest::getUInt('filter_topic');
+
+       $link = 'index.php?option=' . $this->option . '&view=' . $this->view_list
+             . '&filter_project=' . $project
+             . '&filter_topic=' . $topic;
+
+       $this->setRedirect(JRoute::_($link, false));
+    }
+
+
+    /**
+	 * Method to publish a list of items
+	 *
+	 * @return  void
+	 */
+	public function publish()
+	{
+	   parent::publish();
+
+       $project = JRequest::getUInt('filter_project');
+       $topic   = JRequest::getUInt('filter_topic');
+
+       $link = 'index.php?option=' . $this->option . '&view=' . $this->view_list
+             . '&filter_project=' . $project
+             . '&filter_topic=' . $topic;
+
+       $this->setRedirect(JRoute::_($link, false));
+    }
+
+
+    /**
      * Gets the URL arguments to append to an item redirect.
      *
      * @param     int       $id         The primary key id for the item.
