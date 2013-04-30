@@ -84,10 +84,6 @@ class PFforumModelTopics extends JModelList
         $query->select('p.title AS project_title, p.alias AS project_alias');
         $query->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
 
-        // Join over the replies for reply count
-        $query->select('COUNT(DISTINCT r.id) AS replies');
-        $query->join('LEFT', '#__pf_replies AS r ON r.topic_id = a.id');
-
         // Join over the replies for last activity
         $query->select('CASE WHEN MAX(c.created) IS NULL THEN a.created ELSE MAX(c.created) END AS last_activity');
         $query->join('LEFT', '#__pf_replies AS c ON c.topic_id = a.id');
@@ -167,6 +163,10 @@ class PFforumModelTopics extends JModelList
         $global_params = JComponentHelper::getParams('com_pfforum', true);
         $null_date     = JFactory::getDbo()->getNullDate();
 
+        // Get reply count
+        $pks      = JArrayHelper::getColumn($items, 'id');
+        $replies  = $this->getReplyCount($pks);
+
         foreach ($items as $i => &$item)
         {
             // Convert the parameter fields into objects.
@@ -179,6 +179,9 @@ class PFforumModelTopics extends JModelList
             $items[$i]->slug         = $items[$i]->alias ? ($items[$i]->id . ':' . $items[$i]->alias) : $items[$i]->id;
             $items[$i]->project_slug = $items[$i]->project_alias ? ($items[$i]->project_id . ':' . $items[$i]->project_alias) : $items[$i]->project_id;
 
+            // Reply count
+            $item->replies = $replies[$item->id];
+
             // Get the labels
             if ($items[$i]->label_count > 0) {
                 $items[$i]->labels = $labels->getConnections('com_pfforum.topic', $items[$i]->id);
@@ -186,6 +189,55 @@ class PFforumModelTopics extends JModelList
         }
 
         return $items;
+    }
+
+
+    /**
+     * Counts the replies of the given topics
+     *
+     * @param    array    $pks      The topic ids
+     *
+     * @retun    array    $count    The reply count
+     */
+    public function getReplyCount($pks)
+    {
+        $query = $this->_db->getQuery(true);
+
+        if (!is_array($pks) || !count($pks)) return array();
+
+        $state = $this->getState('filter.published');
+
+        // Count sub-folders
+        $query->select('topic_id, COUNT(id) AS replies')
+              ->from('#__pf_replies')
+              ->where('topic_id IN(' . implode(',', $pks) . ')');
+
+        if (empty($state) || $state == '1') {
+            $query->where('state = 1');
+        }
+
+        $query->group('topic_id');
+        $this->_db->setQuery($query);
+
+        try {
+            $reply_count = $this->_db->loadAssocList('topic_id', 'replies');
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        // Put everything together
+        $count = array();
+
+        foreach ($pks as $pk)
+        {
+            $count[$pk] = 0;
+
+            if (isset($reply_count[$pk])) $count[$pk] += $reply_count[$pk];
+        }
+
+        return $count;
     }
 
 
