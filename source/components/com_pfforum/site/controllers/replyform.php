@@ -247,7 +247,6 @@ class PFforumControllerReplyform extends JControllerForm
         if ($topic)   $append .= '&filter_topic=' . $topic;
         if ($id)      $append .= '&' . $url_var . '=' . $id;
         if ($item_id) $append .= '&Itemid=' . $item_id;
-        if ($return)  $append .= '&return='.base64_encode($return);
 
         return $append;
     }
