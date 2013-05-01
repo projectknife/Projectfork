@@ -4,7 +4,7 @@
  * @subpackage   Tasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -15,7 +15,7 @@ jimport('joomla.application.component.controlleradmin');
 
 
 /**
- * Task controller class.
+ * Projectfork Tasks (list) controller class.
  *
  */
 class PFtasksControllerTasks extends JControllerAdmin
@@ -29,28 +29,37 @@ class PFtasksControllerTasks extends JControllerAdmin
 
 
     /**
-     * Constructor.
+     * Proxy for getModel.
      *
-     * @param    array          $config    An optional associative array of configuration settings
-     * @see      jcontroller
+     * @param     string    $name      The name of the model.
+     * @param     string    $prefix    The prefix for the class name.
+     * @param     array     $config    Configuration array for model. Optional.
+     *
+     * @return    object
      */
-    public function __construct($config = array())
+    public function getModel($name = 'Task', $prefix = 'PFtasksModel', $config = array('ignore_request' => true))
     {
-        parent::__construct($config);
+        return parent::getModel($name, $prefix, $config);
     }
 
 
     /**
-     * Proxy for getModel.
+     * Method to save the submitted ordering values for records via AJAX.
      *
-     * @param     string    $name      The name of the model.
-     * @param     string    $prefix    The prefix for the PHP class name.
-     * @return    jmodel
+     * @return    void
      */
-    public function getModel($name = 'Task', $prefix = 'PFtasksModel', $config = array('ignore_request' => true))
+    public function saveOrderAjax()
     {
-        $model = parent::getModel($name, $prefix, $config);
+        $pks   = $this->input->post->get('cid', array(), 'array');
+        $order = $this->input->post->get('order', array(), 'array');
 
-        return $model;
+        // Sanitize the input
+        JArrayHelper::toInteger($pks);
+        JArrayHelper::toInteger($order);
+
+        if ($this->getModel()->saveorder($pks, $order)) echo "1";
+
+        // Close the application
+        JFactory::getApplication()->close();
     }
 }

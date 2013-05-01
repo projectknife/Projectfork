@@ -2,12 +2,12 @@
 <extension type="component" version="2.5" method="upgrade">
     <name>com_projectfork</name>
     <author>Tobias Kuhn</author>
-    <creationDate>January 2013</creationDate>
+    <creationDate>May 2013</creationDate>
     <copyright>(C) 2006 - 2013 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>support@projectfork.net</authorEmail>
     <authorUrl>www.projectfork.net</authorUrl>
-    <version>4.0.0</version>
+    <version>4.1.0b1</version>
     <description>COM_PROJECTFORK_XML_DESCRIPTION</description>
     <scriptfile>script.php</scriptfile>
     <install folder="admin">
@@ -16,6 +16,11 @@
             <file driver="mysql" charset="utf8">_install/mysql/data.sql</file>
         </sql>
     </install>
+    <update>
+		<schemas>
+			<schemapath type="mysql">_update/mysql</schemapath>
+		</schemas>
+	</update>
     <uninstall folder="admin">
         <sql>
             <file driver="mysql" charset="utf8">_uninstall/mysql/data.sql</file>
@@ -29,40 +34,27 @@
         <filename>projectfork.php</filename>
         <filename>controller.php</filename>
         <filename>router.php</filename>
-        <filename>LICENSE.txt</filename>
-        <filename>index.html</filename>
     </files>
     <languages folder="site">
         <language tag="en-GB">language/en-GB/en-GB.com_projectfork.ini</language>
-        <language tag="fr-FR">language/fr-FR/fr-FR.com_projectfork.ini</language>
-        <language tag="it-IT">language/it-IT/it-IT.com_projectfork.ini</language>
-        <language tag="tr-TR">language/tr-TR/tr-TR.com_projectfork.ini</language>
     </languages>
     <administration>
         <files folder="admin">
             <folder>_install</folder>
             <folder>_uninstall</folder>
+            <folder>_update</folder>
             <folder>helpers</folder>
             <folder>views</folder>
             <filename>config.xml</filename>
             <filename>projectfork.php</filename>
             <filename>controller.php</filename>
-            <filename>LICENSE.txt</filename>
-            <filename>index.html</filename>
         </files>
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_projectfork.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_projectfork.sys.ini</language>
-            <language tag="fr-FR">language/fr-FR/fr-FR.com_projectfork.ini</language>
-            <language tag="fr-FR">language/fr-FR/fr-FR.com_projectfork.sys.ini</language>
-            <language tag="it-IT">language/it-IT/it-IT.com_projectfork.ini</language>
-            <language tag="it-IT">language/it-IT/it-IT.com_projectfork.sys.ini</language>
-            <language tag="tr-TR">language/tr-TR/tr-TR.com_projectfork.ini</language>
-            <language tag="tr-TR">language/tr-TR/tr-TR.com_projectfork.sys.ini</language>
         </languages>
     </administration>
     <media destination="com_projectfork" folder="media">
-        <filename>index.html</filename>
         <folder>bootstrap</folder>
         <folder>flot</folder>
         <folder>jquery</folder>

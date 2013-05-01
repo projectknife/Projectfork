@@ -1,31 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="content" method="upgrade">
 	<name>plg_content_pfnotifications</name>
-	<creationDate>January 2013</creationDate>
+	<creationDate>May 2013</creationDate>
 	<author>Tobias Kuhn</author>
 	<copyright>(C) 2006 - 2013 Tobias Kuhn. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>support@projectfork.net</authorEmail>
 	<authorUrl>www.projectfork.net</authorUrl>
-	<version>4.0.0</version>
+	<version>4.1.0b1</version>
 	<description>PLG_CONTENT_PFNOTIFICATIONS_XML_DESCRIPTION</description>
     <published>1</published>
     <scriptfile>script.php</scriptfile>
 	<files>
-		<filename plugin="pfnotifications">pfnotifications.php</filename>
-        <filename>index.html</filename>
-        <filename>LICENSE.txt</filename>
+        <filename plugin="pfnotifications">pfnotifications.php</filename>
         <filename>script.php</filename>
         <filename>helper.php</filename>
 	</files>
     <languages>
-	    <language tag="en-GB">language/en-GB/en-GB.plg_content_pfnotifications.ini</language>
-	    <language tag="en-GB">language/en-GB/en-GB.plg_content_pfnotifications.sys.ini</language>
-        <language tag="fr-FR">language/fr-FR/fr-FR.plg_content_pfnotifications.ini</language>
-		<language tag="fr-FR">language/fr-FR/fr-FR.plg_content_pfnotifications.sys.ini</language>
-        <language tag="it-IT">language/it-IT/it-IT.plg_content_pfnotifications.ini</language>
-		<language tag="it-IT">language/it-IT/it-IT.plg_content_pfnotifications.sys.ini</language>
-        <language tag="tr-TR">language/tr-TR/tr-TR.plg_content_pfnotifications.ini</language>
-		<language tag="tr-TR">language/tr-TR/tr-TR.plg_content_pfnotifications.sys.ini</language>
-	</languages>
+            <language tag="en-GB">language/en-GB/en-GB.plg_content_pfnotifications.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.plg_content_pfnotifications.sys.ini</language>
+    </languages>
 </extension>

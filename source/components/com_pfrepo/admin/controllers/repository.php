@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -21,22 +21,11 @@ jimport('joomla.application.component.controlleradmin');
 class PFrepoControllerRepository extends JControllerAdmin
 {
     /**
-     * Constructor.
-     *
-     * @param    array          $config    An optional associative array of configuration settings
-     * @see      jcontroller
-     */
-    public function __construct($config = array())
-    {
-        parent::__construct($config);
-    }
-
-
-    /**
      * Proxy for getModel.
      *
      * @param     string    $name      The name of the model.
      * @param     string    $prefix    The prefix for the PHP class name.
+     *
      * @return    jmodel
      */
     public function getModel($name = 'Repository', $prefix = 'PFrepoModel', $config = array('ignore_request' => true))
@@ -44,6 +33,66 @@ class PFrepoControllerRepository extends JControllerAdmin
         $model = parent::getModel($name, $prefix, $config);
 
         return $model;
+    }
+
+
+    /**
+     * Check in of one or more records.
+     *
+     * @return    boolean    True on success
+     */
+    public function checkin()
+    {
+        // Check for request forgeries.
+        JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+        $parent_id = (int) JRequest::getUInt('filter_parent_id', 0);
+
+        $link = 'index.php?option=' . $this->option . '&view=' . $this->view_list
+              . ($parent_id > 1 ? '&filter_parent_id=' . $parent_id : '');
+
+        // Get items to check in from the request.
+        $did = JRequest::getVar('did', array(), 'post', 'array');
+        $nid = JRequest::getVar('nid', array(), 'post', 'array');
+        $fid = JRequest::getVar('fid', array(), 'post', 'array');
+
+        // Check-in directories
+        if (count($did)) {
+            $model = $this->getModel('Directory');
+
+            if (!$model->checkin($did)) {
+                $message = JText::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError());
+                $this->setRedirect(JRoute::_($link, false), $message, 'error');
+                return false;
+            }
+        }
+
+        // Check-in notes
+        if (count($nid)) {
+            $model = $this->getModel('Note');
+
+            if (!$model->checkin($nid)) {
+                $message = JText::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError());
+                $this->setRedirect(JRoute::_($link, false), $message, 'error');
+                return false;
+            }
+        }
+
+        // Check-in files
+        if (count($fid)) {
+            $model = $this->getModel('File');
+
+            if (!$model->checkin($fid)) {
+                $message = JText::sprintf('JLIB_APPLICATION_ERROR_CHECKIN_FAILED', $model->getError());
+                $this->setRedirect(JRoute::_($link, false), $message, 'error');
+                return false;
+            }
+        }
+
+        $message = JText::plural($this->text_prefix . '_N_ITEMS_CHECKED_IN', (count($did) + count($nid) + count($fid)));
+        $this->setRedirect(JRoute::_($link, false), $message);
+
+        return true;
     }
 
 
@@ -60,12 +109,11 @@ class PFrepoControllerRepository extends JControllerAdmin
         $parent_id = (int) JRequest::getUInt('filter_parent_id', 0);
 
         // Get items to remove from the request.
-        $did = (array) JRequest::getVar('did', array(), '', 'array');
-        $nid = (array) JRequest::getVar('nid', array(), '', 'array');
-        $fid = (array) JRequest::getVar('fid', array(), '', 'array');
+        $did = JRequest::getVar('did', array(), 'post', 'array');
+        $nid = JRequest::getVar('nid', array(), 'post', 'array');
+        $fid = JRequest::getVar('fid', array(), 'post', 'array');
 
-
-        if ((!is_array($did) && !is_array($nid) && !is_array($fid)) || (count($did) < 1 && count($nid) < 1 && count($fid) < 1)) {
+        if ((count($did) < 1 && count($nid) < 1 && count($fid) < 1)) {
             JError::raiseWarning(500, JText::_($this->text_prefix . '_NO_ITEM_SELECTED'));
         }
         else {
@@ -73,7 +121,7 @@ class PFrepoControllerRepository extends JControllerAdmin
             $app = JFactory::getApplication();
 
             // Delete directories
-            if (is_array($did) && count($did) > 0) {
+            if (count($did)) {
                 $model = $this->getModel('Directory');
 
                 JArrayHelper::toInteger($did);
@@ -87,7 +135,7 @@ class PFrepoControllerRepository extends JControllerAdmin
             }
 
             // Delete notes
-            if (is_array($nid) && count($nid) > 0) {
+            if (count($nid)) {
                 $model = $this->getModel('Note');
 
                 JArrayHelper::toInteger($nid);
@@ -101,7 +149,7 @@ class PFrepoControllerRepository extends JControllerAdmin
             }
 
             // Delete files
-            if (is_array($fid) && count($fid) > 0) {
+            if (count($fid)) {
                 $model = $this->getModel('File');
 
                 JArrayHelper::toInteger($fid);
@@ -115,77 +163,116 @@ class PFrepoControllerRepository extends JControllerAdmin
             }
         }
 
-        $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list . ($parent_id > 1 ? '&filter_parent_id=' . $parent_id : ''), false));
+        $link = 'index.php?option=' . $this->option . '&view=' . $this->view_list
+              . ($parent_id > 1 ? '&filter_parent_id=' . $parent_id : '');
+
+        $this->setRedirect(JRoute::_($link, false));
     }
 
 
     /**
      * Method to run batch operations.
      *
-     * @return    void
+     * @param     object     $model    The model of the component being processed.
+     *
+     * @return    boolean              True if successful, false otherwise and internal error is set.
      */
-    public function batch()
+    public function batch($model = null)
     {
         // Check for request forgeries
         JSession::checkToken() or die(JText::_('JINVALID_TOKEN'));
 
         $parent_id = (int) JRequest::getUInt('filter_parent_id', 0);
+        $return    = true;
 
-        $vars = (array) JRequest::getVar('batch', array(), '', 'array');
-        $did  = (array) JRequest::getVar('did', array(), '', 'array');
-        $nid  = (array) JRequest::getVar('nid', array(), '', 'array');
-        $fid  = (array) JRequest::getVar('fid', array(), '', 'array');
+        $vars = JRequest::getVar('batch', array(), 'post', 'array');
+        $did  = JRequest::getVar('did', array(), 'post', 'array');
+        $nid  = JRequest::getVar('nid', array(), 'post', 'array');
+        $fid  = JRequest::getVar('fid', array(), 'post', 'array');
 
-        if ((!is_array($did) && !is_array($nid) && !is_array($fid)) || (count($did) < 1 && count($nid) < 1 && count($fid) < 1)) {
+        if (count($did) < 1 && count($nid) < 1 && count($fid) < 1) {
             JError::raiseWarning(500, JText::_($this->text_prefix . '_NO_ITEM_SELECTED'));
+            $return = false;
         }
         else {
             jimport('joomla.utilities.arrayhelper');
             $app = JFactory::getApplication();
 
             // Batch directories
-            if (is_array($did) && count($did) > 0) {
-                $model = $this->getModel('Directory');
+            if (count($did) > 0) {
+                $model    = $this->getModel('Directory');
+                $contexts = array();
 
                 JArrayHelper::toInteger($did);
 
-                if ($model->batch($vars, $did)) {
+                // Build an array of item contexts to check
+                foreach ($did as $id)
+                {
+                    $contexts[$id] = $this->option . '.directory.' . $id;
+                }
+
+                // Process
+                if ($model->batch($vars, $did, $contexts)) {
                     $app->enqueueMessage(JText::_('COM_PROJECTFORK_SUCCESS_BATCH_DIRECTORIES'));
                 }
                 else {
                     $app->enqueueMessage($model->getError(), 'error');
+                    $return = false;
                 }
             }
 
             // Batch notes
-            if (is_array($nid) && count($nid) > 0) {
-                $model = $this->getModel('Note');
+            if (count($nid) > 0) {
+                $model    = $this->getModel('Note');
+                $contexts = array();
 
                 JArrayHelper::toInteger($nid);
 
-                if ($model->batch($vars, $nid)) {
+                // Build an array of item contexts to check
+                foreach ($nid as $id)
+                {
+                    $contexts[$id] = $this->option . '.note.' . $id;
+                }
+
+                // Process
+                if ($model->batch($vars, $nid, $contexts)) {
                     $app->enqueueMessage(JText::_('COM_PROJECTFORK_SUCCESS_BATCH_NOTES'));
                 }
                 else {
                     $app->enqueueMessage($model->getError(), 'error');
+                    $return = false;
                 }
             }
 
             // Batch files
-            if (is_array($fid) && count($fid) > 0) {
-                $model = $this->getModel('File');
+            if (count($fid) > 0) {
+                $model    = $this->getModel('File');
+                $contexts = array();
 
                 JArrayHelper::toInteger($fid);
 
-                if ($model->batch($vars, $fid)) {
+                // Build an array of item contexts to check
+                foreach ($fid as $id)
+                {
+                    $contexts[$id] = $this->option . '.file.' . $id;
+                }
+
+                // Process
+                if ($model->batch($vars, $fid, $contexts)) {
                     $app->enqueueMessage(JText::_('COM_PROJECTFORK_SUCCESS_BATCH_FILES'));
                 }
                 else {
                     $app->enqueueMessage($model->getError(), 'error');
+                    $return = false;
                 }
             }
         }
 
-        $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list . ($parent_id > 1 ? '&filter_parent_id=' . $parent_id : ''), false));
+        $link = 'index.php?option=' . $this->option . '&view=' . $this->view_list
+              . ($parent_id > 1 ? '&filter_parent_id=' . $parent_id : '');
+
+        $this->setRedirect(JRoute::_($link, false));
+
+        return $return;
     }
 }

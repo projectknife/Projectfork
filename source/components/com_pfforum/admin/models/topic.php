@@ -153,32 +153,6 @@ class PFforumModelTopic extends JModelAdmin
 
 
     /**
-     * Method to change the published state of one or more records.
-     *
-     * @param     array      A list of the primary keys to change.
-     * @param     integer    The value of the published state.
-     *
-     * @return    boolean    True on success.
-     */
-    public function publish(&$pks, $value = 1)
-    {
-        $result  = parent::publish($pks, $value);
-        $changes = array('state' => $value);
-        $table   = $this->getTable();
-
-        if ($result) {
-            // State change succeeded. Now update all children
-            foreach ($pks AS $id)
-            {
-                $table->updateChildren($id, $changes);
-            }
-        }
-
-        return $result;
-    }
-
-
-    /**
      * Method to get the data that should be injected in the form.
      *
      * @return    mixed    The data for the form.
@@ -270,16 +244,6 @@ class PFforumModelTopic extends JModelAdmin
 
             // Set the active project
             PFApplicationHelper::setActiveProject($updated->project_id);
-
-            // To keep data integrity, update all child assets
-            if (!$is_new) {
-                $props   = array('access', 'state');
-                $changes = PFObjectHelper::getDiff($record, $updated, $props);
-
-                if (count($changes)) {
-                    $updated->updateChildren($id, $changes);
-                }
-            }
 
             // Add to watch list
             if ($is_new) {

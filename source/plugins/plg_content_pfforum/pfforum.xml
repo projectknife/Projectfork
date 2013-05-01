@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension version="2.5" type="plugin" group="content" method="upgrade">
+	<name>plg_content_pfforum</name>
+	<creationDate>May 2013</creationDate>
+	<author>Tobias Kuhn</author>
+	<copyright>(C) 2006 - 2013 Tobias Kuhn. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
+	<authorEmail>support@projectfork.net</authorEmail>
+	<authorUrl>www.projectfork.net</authorUrl>
+	<version>4.1.0b1</version>
+	<description>PLG_CONTENT_PFFORUM_XML_DESCRIPTION</description>
+    <published>1</published>
+    <scriptfile>script.php</scriptfile>
+	<files>
+        <filename plugin="pfforum">pfforum.php</filename>
+        <filename>script.php</filename>
+	</files>
+    <languages>
+            <language tag="en-GB">language/en-GB/en-GB.plg_content_pfforum.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.plg_content_pfforum.sys.ini</language>
+    </languages>
+</extension>

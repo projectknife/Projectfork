@@ -2,16 +2,21 @@
 <config>
     <fieldset name="general" label="COM_PFREPO_CONFIG_GENERAL_LABEL" description="COM_PFREPO_CONFIG_GENERAL_DESC"
         addfieldpath="administrator/components/com_pfrepo/models/fields"
-    >
+        >
         <field type="repopath" name="repo_basepath" default=""
             label="COM_PFREPO_CONFIG_REPO_BASEPATH_LABEL" description="COM_PFREPO_CONFIG_REPO_BASEPATH_DESC"
         />
+        <field name="show_element_count" type="radio" class="btn-group" default="0"
+			label="COM_REPO_CONFIG_SHOW_ELEMENT_COUNT_LABEL" description="COM_REPO_CONFIG_SHOW_ELEMENT_COUNT_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
     </fieldset>
     <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
-		<field name="rules" type="rules"
-			label="JCONFIG_PERMISSIONS_LABEL"
-			class="inputbox" validate="rules" filter="rules"
-			component="com_pfrepo" section="component"
+        <field name="rules" type="rules"
+            label="JCONFIG_PERMISSIONS_LABEL"
+            class="inputbox" validate="rules" filter="rules"
+            component="com_pfrepo" section="component"
         />
-	</fieldset>
+    </fieldset>
 </config>

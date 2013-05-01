@@ -2,12 +2,12 @@
 <extension type="component" version="2.5" method="upgrade">
     <name>com_pfforum</name>
     <author>Tobias Kuhn</author>
-    <creationDate>January 2013</creationDate>
+    <creationDate>May 2013</creationDate>
     <copyright>(C) 2006 - 2013 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>support@projectfork.net</authorEmail>
     <authorUrl>www.projectfork.net</authorUrl>
-    <version>4.0.0</version>
+    <version>4.1.0b1</version>
     <description>COM_PFFORUM_XML_DESCRIPTION</description>
     <scriptfile>script.php</scriptfile>
     <files folder="site">
@@ -18,8 +18,6 @@
         <filename>pfforum.php</filename>
         <filename>controller.php</filename>
         <filename>router.php</filename>
-        <filename>LICENSE.txt</filename>
-        <filename>index.html</filename>
     </files>
     <administration>
         <files folder="admin">
@@ -32,18 +30,10 @@
             <filename>config.xml</filename>
             <filename>pfforum.php</filename>
             <filename>controller.php</filename>
-            <filename>LICENSE.txt</filename>
-            <filename>index.html</filename>
         </files>
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_pfforum.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pfforum.sys.ini</language>
-            <language tag="fr-FR">language/fr-FR/fr-FR.com_pfforum.ini</language>
-            <language tag="fr-FR">language/fr-FR/fr-FR.com_pfforum.sys.ini</language>
-            <language tag="it-IT">language/it-IT/it-IT.com_pfforum.ini</language>
-            <language tag="it-IT">language/it-IT/it-IT.com_pfforum.sys.ini</language>
-            <language tag="tr-TR">language/tr-TR/tr-TR.com_pfforum.ini</language>
-            <language tag="tr-TR">language/tr-TR/tr-TR.com_pfforum.sys.ini</language>
         </languages>
     </administration>
 </extension>

@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -87,8 +87,18 @@ class PFrepoModelFile extends JModelItem
                 $registry = new JRegistry;
                 $registry->loadString($data->attribs);
 
-                $data->params = clone $this->getState('params');
-                $data->params->merge($registry);
+                $params = $this->getState('params');
+
+                if ($params) {
+                    $data->params = clone $this->getState('params');
+                    $data->params->merge($registry);
+                }
+                else {
+                    $data->params = $registry;
+                }
+
+                // Get the pyhsical location
+                $data->physical_path = PFrepoHelper::getFilePath($data->file_name, $data->dir_id);
 
                 // Compute view access permissions.
                 if ($access = $this->getState('filter.access')) {

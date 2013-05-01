@@ -37,5 +37,19 @@
             <option value="0">JNO</option>
 			<option value="1">JYES</option>
 		</field>
+        <field name="user_profile_link" type="list" default="" label="COM_PROJECTFORK_CONFIG_USER_PROFILE_LINK_LABEL" description="COM_PROJECTFORK_CONFIG_USER_PROFILE_LINK_DESC">
+		    <option value="">Projectfork</option>
+            <option value="cb">Community Builder</option>
+			<option value="js">JomSocial</option>
+			<option value="kunena">Kunena</option>
+		</field>
+        <field name="user_profile_avatar" type="list" default="" label="COM_PROJECTFORK_CONFIG_USER_PROFILE_AVATAR_LABEL" description="COM_PROJECTFORK_CONFIG_USER_PROFILE_AVATAR_DESC">
+		    <option value="">Projectfork</option>
+            <option value="cb">Community Builder</option>
+            <option value="gravatar">Gravatar</option>
+			<option value="js">JomSocial</option>
+			<option value="kunena">Kunena</option>
+			<option value="mosets">Mosets Profile Picture</option>
+		</field>
 	</fieldset>
 </config>

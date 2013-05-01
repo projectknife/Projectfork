@@ -16,3 +16,5 @@ DROP TABLE `#__pf_timesheet`;
 DROP TABLE `#__pf_repo_dirs`;
 DROP TABLE `#__pf_repo_notes`;
 DROP TABLE `#__pf_repo_files`;
+DROP TABLE `#__pf_repo_file_revs`;
+DROP TABLE `#__pf_repo_note_revs`;

@@ -378,16 +378,6 @@ class PFprojectsModelProject extends JModelAdmin
 
             $this->setActive(array('id' => $id));
 
-            // To keep data integrity, update all child assets
-            if (!$is_new) {
-                $props   = array('access', 'state', array('start_date', 'NE-SQLDATE'), array('end_date', 'NE-SQLDATE'));
-                $changes = PFObjectHelper::getDiff($old, $table, $props);
-
-                if (count($changes)) {
-                    $table->updateChildren($table->id, $changes);
-                }
-            }
-
             // Add to watch list
             if ($is_new) {
                 $cid = array($id);
@@ -558,32 +548,6 @@ class PFprojectsModelProject extends JModelAdmin
 
 
     /**
-     * Method to change the published state of one or more records.
-     *
-     * @param     array      A list of the primary keys to change.
-     * @param     integer    The value of the published state.
-     *
-     * @return    boolean    True on success.
-     */
-    public function publish(&$pks, $value = 1)
-    {
-        $result  = parent::publish($pks, $value);
-        $changes = array('state', $value);
-        $table   = $this->getTable();
-
-        if ($result) {
-            // State change succeeded. Now update all children
-            foreach ($pks AS $id)
-            {
-                $table->updateChildren($id, $changes);
-            }
-        }
-
-        return $result;
-    }
-
-
-    /**
      * Method to set a project to active on the current user
      *
      * @param     array      The form data
@@ -640,77 +604,102 @@ class PFprojectsModelProject extends JModelAdmin
      */
     public function delete(&$pks)
     {
-        // Initialise variables.
-        $dispatcher = JDispatcher::getInstance();
         $pks   = (array) $pks;
         $table = $this->getTable();
+        $query = $this->_db->getQuery(true);
 
         $active_id   = PFApplicationHelper::getActiveProjectId();
         $repo_exists = PFApplicationHelper::exists('com_pfrepo');
 
+        if ($repo_exists) {
+            $base_path = PFrepoHelper::getBasePath();
+        }
+
         // Include the content plugins for the on delete events.
+        $dispatcher = JDispatcher::getInstance();
         JPluginHelper::importPlugin('content');
 
         // Iterate the items to delete each one.
         foreach ($pks as $i => $pk)
         {
-            if ($table->load($pk)) {
-                if ($this->canDelete($table)) {
-                    $context = $this->option . '.' . $this->name;
-                    // Trigger the onContentBeforeDelete event.
-                    $result = $dispatcher->trigger($this->event_before_delete, array($context, $table));
-
-                    if (in_array(false, $result, true)) {
-                        $this->setError($table->getError());
-                        return false;
-                    }
-
-                    if (!$table->delete($pk)) {
-                        $this->setError($table->getError());
-                        return false;
-                    }
-
-                    // Try to delete the repo
-                    if ($repo_exists) {
-                        $repo = PFrepoHelper::getBasePath($pk);
-
-                        if (JFolder::exists($repo)) {
-                            JFolder::delete($repo);
-                        }
-                    }
-
-                    // Try to delete the logo
-                    $this->deleteLogo($pk);
-
-                    // Check if the currently active project is being deleted.
-                    // If so, clear it from the session
-                    if ($active_id == $pk) {
-                        $this->setActive(array('id' => 0));
-                    }
-
-                    // Trigger the onContentAfterDelete event.
-                    $dispatcher->trigger($this->event_after_delete, array($context, $table));
-                }
-                else {
-                    // Prune items that you can't change.
-                    unset($pks[$i]);
-
-                    $error = $this->getError();
-
-                    if ($error) {
-                        JError::raiseWarning(500, $error);
-                        return false;
-                    }
-                    else {
-                        JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'));
-                        return false;
-                    }
-                }
-            }
-            else {
+            // Try to load from the db
+            if ($table->load($pk) === false) {
                 $this->setError($table->getError());
                 return false;
             }
+
+            // Check delete permission
+            if (!$this->canDelete($table)) {
+                unset($pks[$i]);
+
+                $error = $this->getError();
+
+                if ($error) {
+                    JError::raiseWarning(500, $error);
+                }
+                else {
+                    JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'));
+                }
+
+                return false;
+            }
+
+            // Trigger the onContentBeforeDelete event.
+            $context = $this->option . '.' . $this->name;
+            $result  = $dispatcher->trigger($this->event_before_delete, array($context, $table));
+
+            if (in_array(false, $result, true)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            if ($repo_exists) {
+                $params = new JRegistry;
+                $params->loadString($table->attribs);
+
+                $repo_dir = (int) $params->get('repo_dir');
+
+                $query->clear()
+                      ->select('path')
+                      ->from('#__pf_repo_dirs')
+                      ->where('id = ' . $repo_dir);
+
+                $this->_db->setQuery($query);
+                $repo_path = $this->_db->loadResult();
+            }
+
+            // Delete the item
+            if (!$table->delete($pk)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Delete the repo directory
+            if ($repo_exists) {
+                if ($repo_path && $repo_dir) {
+                    // Delete repo 4.1
+                    $repo = $base_path . '/' . $repo_path;
+                    if (JFolder::exists($repo) && $repo != $base_path) JFolder::delete($repo);
+
+                    // Delete repo 4.0
+                    $repo = $base_path . '/' . $pk;
+                    if (JFolder::exists($repo)) JFolder::delete($repo);
+
+                    // Delete repo 3.0
+                    $repo = $base_path . '/project_' . $pk;
+                    if (JFolder::exists($repo)) JFolder::delete($repo);
+                }
+            }
+
+            // Delete the logo
+            $this->deleteLogo($pk);
+
+            // Check if the currently active project is being deleted.
+            // If so, clear it from the session
+            if ($active_id == $pk) $this->setActive(array('id' => 0));
+
+            // Trigger the onContentAfterDelete event.
+            $dispatcher->trigger($this->event_after_delete, array($context, $table));
         }
 
         // Clear the component's cache
@@ -739,68 +728,83 @@ class PFprojectsModelProject extends JModelAdmin
      */
     protected function createRepository($item)
     {
-        if (!is_object($item) || empty($item)) {
-            return false;
-        }
+        if (empty($item)) return false;
 
+        // Get Repo dir model
+        $suffix    = (JFactory::getApplication()->isSite() ? 'Form' : '');
+        $config    = array('ignore_request' => true);
+        $dir_class = $this->getInstance('Directory' . $suffix, 'PFrepoModel', $config);
+
+        // Indicate to the model that we possibly want to create a new repo
+        $dir_class->setState('create_repo', true);
+
+        // Load attributes into JRegistry
         $registry = new JRegistry;
         $registry->loadString($item->attribs);
 
-        $repo_dir = ($registry->get('repo_dir') ? (int) $registry->get('repo_dir') : 0 );
-        $suffix   = (JFactory::getApplication()->isSite() ? 'Form' : '');
+        // Get the repo dir pk
+        $repo_dir = (int) $registry->get('repo_dir');
 
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-
+        // Check if the dir exists
         if ($repo_dir) {
-            // A repo dir reference is set. See if the dir actually exists
-            $dir = $this->getInstance('Directory' . $suffix, 'PFrepoModel', array('ignore_request'));
+            $record = $dir_class->getItem($repo_dir);
 
-            if (!$dir->getState('create_repo')) {
-                $dir->setState('create_repo', true);
-            }
-
-            $record = $dir->getItem($repo_dir);
-
-            if ($record === false || $record->id == 0) {
+            if ($record === false || empty($record->id)) {
+                // Record not found
                 $repo_dir = 0;
+            }
+            else {
+                // Record found, update it
+                $data = array();
+                $data['id']         = $record->id;
+                $data['title']      = $item->title;
+                $data['project_id'] = $item->id;
+                $data['parent_id']  = $record->id;
+
+                if (!$dir_class->save($data)) {
+                    $this->setError($dir_class->getError());
+                    return false;
+                }
+
+                return true;
             }
         }
 
-        // Create repo dir if it does not exist
-        if (!$repo_dir) {
-            $dir = $this->getInstance('Directory' . $suffix, 'PFrepoModel', array('ignore_request'));
+        // Create repo dir
+        $query = $this->_db->getQuery(true);
+        $data  = array();
 
-            if (!$dir->getState('create_repo')) {
-                $dir->setState('create_repo', true);
-            }
+        $data['id']         = 0;
+        $data['protected']  = 1;
+        $data['title']      = $item->title;
+        $data['project_id'] = $item->id;
+        $data['created']    = $item->created;
+        $data['created_by'] = $item->created_by;
+        $data['access']     = $item->access;
+        $data['parent_id']  = 1;
 
-            $data = array();
-            $data['id']         = 0;
-            $data['protected']  = 1;
-            $data['title']      = $item->title;
-            $data['project_id'] = $item->id;
-            $data['created']    = $item->created;
-            $data['created_by'] = $item->created_by;
-            $data['access']     = $item->access;
-            $data['parent_id']  = 1;
+        if (!$dir_class->save($data)) {
+            $this->setError($dir_class->getError());
+            return false;
+        }
 
-            if (!$dir->save($data)) {
-                $this->setError($dir->getError());
-                return false;
-            }
+        $repo_dir = $dir_class->getState($dir_class->getName() . '.id');
+        $registry->set('repo_dir', $repo_dir);
 
-            $repo_dir = $dir->getState($dir->getName() . '.id');
-            $registry->set('repo_dir', $repo_dir);
+        if (!$repo_dir) return false;
 
-            // Update the project attribs
-            $query->clear();
-            $query->update('#__pf_projects')
-                  ->set('attribs = ' . $db->quote((string) $registry))
-                  ->where('id = ' . $db->quote($item->id));
+        // Update the project attribs
+        $query->clear();
+        $query->update('#__pf_projects')
+              ->set('attribs = ' . $this->_db->quote((string) $registry))
+              ->where('id = ' . (int) $item->id);
 
-            $db->setQuery((string) $query);
-            $db->execute();
+        $this->_db->setQuery($query);
+        $this->_db->execute();
+
+        if ($this->_db->getError()) {
+            $this->setError($this->_db->getError());
+            return false;
         }
 
         return true;

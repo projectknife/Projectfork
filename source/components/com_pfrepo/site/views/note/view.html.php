@@ -25,6 +25,7 @@ class PFrepoViewNote extends JViewLegacy
 	protected $print;
 	protected $state;
 	protected $user;
+    protected $rev;
 
 
 	function display($tpl = null)
@@ -38,6 +39,7 @@ class PFrepoViewNote extends JViewLegacy
 		$this->item	 = $this->get('Item');
 		$this->print = JRequest::getBool('print');
 		$this->state = $this->get('State');
+        $this->rev   = $this->state->get($this->getName() . '.rev');
 		$this->user  = $user;
 
 		// Check for errors.

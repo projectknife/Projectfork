@@ -1,0 +1,8 @@
+.qq-upload-failed-text {
+    display: none;
+}
+.qq-upload-button-hover,
+.qq-upload-button-hover input
+{
+    cursor: pointer !important;
+}

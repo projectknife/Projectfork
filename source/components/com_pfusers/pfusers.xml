@@ -2,12 +2,12 @@
 <extension type="component" version="2.5" method="upgrade">
     <name>com_pfusers</name>
     <author>Tobias Kuhn</author>
-    <creationDate>January 2013</creationDate>
+    <creationDate>May 2013</creationDate>
     <copyright>(C) 2006 - 2013 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>support@projectfork.net</authorEmail>
     <authorUrl>www.projectfork.net</authorUrl>
-    <version>4.0.0</version>
+    <version>4.1.0b1</version>
     <description>COM_PFUSERS_XML_DESCRIPTION</description>
     <scriptfile>script.php</scriptfile>
     <files folder="site">
@@ -18,8 +18,6 @@
         <filename>pfusers.php</filename>
         <filename>controller.php</filename>
         <filename>router.php</filename>
-        <filename>LICENSE.txt</filename>
-        <filename>index.html</filename>
     </files>
     <administration>
         <files folder="admin">
@@ -27,18 +25,10 @@
             <folder>models</folder>
             <folder>tables</folder>
             <filename>pfusers.php</filename>
-            <filename>LICENSE.txt</filename>
-            <filename>index.html</filename>
         </files>
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_pfusers.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pfusers.sys.ini</language>
-            <language tag="fr-FR">language/fr-FR/fr-FR.com_pfusers.ini</language>
-            <language tag="fr-FR">language/fr-FR/fr-FR.com_pfusers.sys.ini</language>
-            <language tag="it-IT">language/it-IT/it-IT.com_pfusers.ini</language>
-            <language tag="it-IT">language/it-IT/it-IT.com_pfusers.sys.ini</language>
-            <language tag="tr-TR">language/tr-TR/tr-TR.com_pfusers.ini</language>
-            <language tag="tr-TR">language/tr-TR/tr-TR.com_pfusers.sys.ini</language>
         </languages>
     </administration>
 </extension>

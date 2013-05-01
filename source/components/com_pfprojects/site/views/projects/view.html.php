@@ -146,8 +146,9 @@ class PFprojectsViewProjects extends JViewLegacy
      */
     protected function getToolbar()
     {
-        $access = PFprojectsHelper::getActions();
-        $state  = $this->get('State');
+        $access  = PFprojectsHelper::getActions();
+        $state   = $this->get('State');
+        $options = array();
 
         PFToolbar::button(
             'COM_PROJECTFORK_ACTION_NEW',
@@ -156,18 +157,19 @@ class PFprojectsViewProjects extends JViewLegacy
             array('access' => $access->get('core.create'))
         );
 
-        $options = array();
+
         if ($access->get('core.edit.state')) {
             $options[] = array('text' => 'COM_PROJECTFORK_ACTION_PUBLISH',   'task' => $this->getName() . '.publish');
             $options[] = array('text' => 'COM_PROJECTFORK_ACTION_UNPUBLISH', 'task' => $this->getName() . '.unpublish');
             $options[] = array('text' => 'COM_PROJECTFORK_ACTION_ARCHIVE',   'task' => $this->getName() . '.archive');
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_TRASH',     'task' => $this->getName() . '.trash');
             $options[] = array('text' => 'COM_PROJECTFORK_ACTION_CHECKIN',   'task' => $this->getName() . '.checkin');
         }
 
-        if ($state->get('filter.published') == -2 && $access->get('project.delete')) {
+        if ($state->get('filter.published') == -2 && $access->get('core.delete')) {
             $options[] = array('text' => 'COM_PROJECTFORK_ACTION_DELETE', 'task' => $this->getName() . '.delete');
         }
-        elseif ($access->get('project.edit.state')) {
+        elseif ($access->get('core.edit.state')) {
             $options[] = array('text' => 'COM_PROJECTFORK_ACTION_TRASH', 'task' => $this->getName() . '.trash');
         }
 

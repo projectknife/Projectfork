@@ -277,18 +277,167 @@ class PFrepoModelNote extends JModelAdmin
      */
     public function getItem($pk = null)
     {
-        if ($item = parent::getItem($pk)) {
-            // Convert the params field to an array.
-            $registry = new JRegistry;
-            $registry->loadString($item->attribs);
-            $item->attribs = $registry->toArray();
+        $item = parent::getItem($pk);
 
-            // Get the labels
+        if ($item == false) return false;
+
+        if (property_exists($item, 'attribs')) {
+            // Convert the params field to an array.
+            $registry = new JRegistry();
+
+            $registry->loadString($item->attribs);
+
+            $item->params  = $registry;
+            $item->attribs = $registry->toArray();
+        }
+
+        if ($item->id > 0) {
+            // Existing record
             $labels = $this->getInstance('Labels', 'PFModel');
+
             $item->labels = $labels->getConnections('com_pfrepo.note', $item->id);
+            $item->revision_count = 0;
+
+            $rev = (int) $this->getState($this->getName() . '.rev');
+
+            if ($rev) {
+                $cfg = array('ignore_request' => true);
+                $rev_model = $this->getInstance('NoteRevision', 'PFrepoModel', $cfg);
+
+                $rev_item = $rev_model->getItem($rev);
+
+                if (!$rev_item || $rev_item->parent_id != $item->id) return false;
+
+                // Override properties of item
+                $props = array('title', 'description', 'attribs', 'params', 'created', 'created_by');
+
+                foreach ($props AS $prop)
+                {
+                    $item->$prop = $rev_item->$prop;
+                }
+
+                // Check out the note so it can't be edited
+                $item->checked_out = 1;
+                $item->checked_out_time = 1;
+            }
+        }
+        else {
+            // New record
+            $item->labels = array();
+            $item->revision_count = $this->getRevisionCount($pk);
         }
 
         return $item;
+    }
+
+
+    /**
+     * Counts the revisions of the given file
+     *
+     * @param    array      $pk       The file primary key
+     *
+     * @retun    integer    $count    The revision count
+     */
+    public function getRevisionCount($pk = null)
+    {
+        $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+        $query = $this->_db->getQuery(true);
+        $count = 0;
+
+        if (empty($pk)) return $count;
+
+        // Count revs
+        $query->select('COUNT(*)')
+              ->from('#__pf_repo_note_revs')
+              ->where('parent_id = ' . (int) $pk);
+
+        $query->group('parent_id');
+        $this->_db->setQuery($query);
+
+        try {
+            $count += (int) $this->_db->loadResult();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        return $count;
+    }
+
+
+    /**
+     * Method to delete one or more records.
+     *
+     * @param     array  &    $pks              An array of record primary keys.
+     * @param     bool        $ignore_access    If true, ignore permission and just delete
+     *
+     * @return    boolean                       True if successful, false if an error occurs.
+     */
+    public function delete(&$pks, $ignore_access = false)
+    {
+        $dispatcher = JEventDispatcher::getInstance();
+        $pks = (array) $pks;
+        $table = $this->getTable();
+
+        // Include the content plugins for the on delete events.
+        JPluginHelper::importPlugin('content');
+
+        // Iterate the items to delete each one.
+        foreach ($pks as $i => $pk)
+        {
+            if ($table->load($pk))
+            {
+                if ($ignore_access || $this->canDelete($table))
+                {
+                    $context = $this->option . '.' . $this->name;
+
+                    // Trigger the onContentBeforeDelete event.
+                    $result = $dispatcher->trigger($this->event_before_delete, array($context, $table));
+                    if (in_array(false, $result, true))
+                    {
+                        $this->setError($table->getError());
+                        return false;
+                    }
+
+                    if (!$table->delete($pk))
+                    {
+                        $this->setError($table->getError());
+                        return false;
+                    }
+
+                    // Trigger the onContentAfterDelete event.
+                    $dispatcher->trigger($this->event_after_delete, array($context, $table));
+
+                }
+                else
+                {
+                    // Prune items that you can't change.
+                    unset($pks[$i]);
+                    $error = $this->getError();
+                    if ($error)
+                    {
+                        JLog::add($error, JLog::WARNING, 'jerror');
+                        return false;
+                    }
+                    else
+                    {
+                        JLog::add(JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'), JLog::WARNING, 'jerror');
+                        return false;
+                    }
+                }
+            }
+            else
+            {
+                $this->setError($table->getError());
+                return false;
+            }
+        }
+
+        // Clear the component's cache
+        $this->cleanCache();
+
+        return true;
     }
 
 
@@ -301,13 +450,17 @@ class PFrepoModelNote extends JModelAdmin
      */
     public function save($data)
     {
-        // Initialise variables;
+        $dispatcher = JDispatcher::getInstance();
+
         $table  = $this->getTable();
         $pk     = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
         $date   = JFactory::getDate();
         $is_new = true;
 
         $old_path = null;
+
+        // Include the content plugins for the on save events.
+        JPluginHelper::importPlugin('content');
 
         // Load the row if saving an existing item.
         if ($pk > 0) {
@@ -323,18 +476,27 @@ class PFrepoModelNote extends JModelAdmin
             }
         }
 
+        // Save revision if not new
+        if (!$is_new) {
+            $head_data = $table->getProperties(true);
+            $config    = array('ignore_request' => true);
+            $rev_model = $this->getInstance('NoteRevision', 'PFrepoModel', $config);
+
+            $head_data['parent_id'] = $head_data['id'];
+            $head_data['id']        = null;
+
+            if (!$rev_model->save($head_data)) {
+                $this->setError($rev_model->getError());
+                return false;
+            }
+        }
+
         // Make sure the title and alias are always unique
         $data['alias'] = '';
         list($title, $alias) = $this->generateNewTitle($data['dir_id'], $data['title'], $data['alias'], $pk);
 
         $data['title'] = $title;
         $data['alias'] = $alias;
-
-        // Bind the data.
-        if (!$table->bind($data)) {
-            $this->setError($table->getError());
-            return false;
-        }
 
         // Handle permissions and access level
         if (isset($data['rules'])) {
@@ -357,8 +519,22 @@ class PFrepoModelNote extends JModelAdmin
             }
         }
 
+        // Bind the data.
+        if (!$table->bind($data)) {
+            $this->setError($table->getError());
+            return false;
+        }
+
         // Check the data.
         if (!$table->check()) {
+            $this->setError($table->getError());
+            return false;
+        }
+
+        // Trigger the onContentBeforeSave event.
+        $result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, $is_new));
+
+        if (in_array(false, $result, true)) {
             $this->setError($table->getError());
             return false;
         }
@@ -368,6 +544,9 @@ class PFrepoModelNote extends JModelAdmin
             $this->setError($table->getError());
             return false;
         }
+
+        // Trigger the onContentAfterSave event.
+        $dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $is_new));
 
         $this->setState($this->getName() . '.id', $table->id);
 
@@ -458,7 +637,7 @@ class PFrepoModelNote extends JModelAdmin
         $data = JFactory::getApplication()->getUserState('com_pfrepo.edit.' . $this->getName() . '.data', array());
 
         if (empty($data)) {
-			$data = $this->getItem();
+            $data = $this->getItem();
 
             // Set default values
             if ($this->getState($this->getName() . '.id') == 0) {
@@ -507,12 +686,12 @@ class PFrepoModelNote extends JModelAdmin
     /**
      * Method to change the title.
      *
-     * @param     integer    $dir_id       The parent directory
-     * @param     string     $title        The directory title
-     * @param     string     $alias        The current alias
-     * @param     integer    $id           The note id
+     * @param     integer    $dir_id    The parent directory
+     * @param     string     $title     The directory title
+     * @param     string     $alias     The current alias
+     * @param     integer    $id        The note id
      *
-     * @return    string                   Contains the new title
+     * @return    string                Contains the new title
      */
     protected function generateNewTitle($dir_id, $title, $alias = '', $id = 0)
     {
@@ -584,18 +763,18 @@ class PFrepoModelNote extends JModelAdmin
     {
         $user = JFactory::getUser();
 
-		// Check for existing item.
-		if (!empty($record->id)) {
-			return $user->authorise('core.edit.state', 'com_pfrepo.note.' . (int) $record->id);
-		}
-		elseif (!empty($record->dir_id)) {
-		    // New item, so check against the directory.
-			return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->dir_id);
-		}
-		else {
-		    // Default to component settings.
-			return parent::canEditState('com_pfrepo');
-		}
+        // Check for existing item.
+        if (!empty($record->id)) {
+            return $user->authorise('core.edit.state', 'com_pfrepo.note.' . (int) $record->id);
+        }
+        elseif (!empty($record->dir_id)) {
+            // New item, so check against the directory.
+            return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->dir_id);
+        }
+        else {
+            // Default to component settings.
+            return parent::canEditState('com_pfrepo');
+        }
     }
 
 
@@ -632,12 +811,15 @@ class PFrepoModelNote extends JModelAdmin
     {
         // Initialise variables.
         $app   = JFactory::getApplication();
-		$table = $this->getTable();
-		$key   = $table->getKeyName();
+        $table = $this->getTable();
+        $key   = $table->getKeyName();
 
-		// Get the pk of the record from the request.
-		$pk = JRequest::getInt($key);
-		$this->setState($this->getName() . '.id', $pk);
+        // Get the pk of the record from the request.
+        $pk  = JRequest::getUInt($key);
+        $rev = JRequest::getUInt('rev');
+
+        $this->setState($this->getName() . '.id', $pk);
+        $this->setState($this->getName() . '.rev', $rev);
 
         if ($pk) {
             $table = $this->getTable();
@@ -650,6 +832,8 @@ class PFrepoModelNote extends JModelAdmin
                 $dir_id = (int) $table->dir_id;
                 $this->setState($this->getName() . '.dir_id', $dir_id);
             }
+
+
         }
         else {
             $dir_id = JRequest::getUInt('filter_parent_id', 0);
@@ -673,8 +857,8 @@ class PFrepoModelNote extends JModelAdmin
             }
         }
 
-		// Load the parameters.
-		$value = JComponentHelper::getParams($this->option);
-		$this->setState('params', $value);
+        // Load the parameters.
+        $value = JComponentHelper::getParams($this->option);
+        $this->setState('params', $value);
     }
 }

@@ -25,9 +25,18 @@ $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
 $topic_in   = ($this->pagination->get('pages.current') == 1 ? 'in ' : '');
 $details_in = ($this->pagination->get('pages.current') == 1 ? ' active' : '');
 
-$return_page     = base64_encode(JFactory::getURI()->toString());
+$return_page     = base64_encode(PFforumHelperRoute::getRepliesRoute($topic, $project));
 $link_edit_topic = PFforumHelperRoute::getRepliesRoute($topic, $project) . '&task=topicform.edit&id=' . $this->topic->id . '&return=' . $return_page;
 $editor          = JFactory::getEditor();
+
+$can_edit_topic     = $user->authorise('core.edit', 'com_pfforum.topic.' . $this->topic->id);
+$can_edit_own_topic = ($user->authorise('core.edit.own', 'com_pfforum.topic.' . $this->topic->id) && $uid == $this->topic->created_by);
+
+$doc =& JFactory::getDocument();
+$style = '.row-replies .well,.row-replies .btn-toolbar {'
+        . 'margin-bottom: 0;'
+        . '}';
+$doc->addStyleDeclaration( $style );
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task)
@@ -48,7 +57,7 @@ Joomla.submitbutton = function(task)
 
     <div class="cat-items">
 
-        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(PFforumHelperRoute::getRepliesRoute($topic, $project)); ?>" method="post">
+        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(PFforumHelperRoute::getRepliesRoute($topic, $project)); ?>" method="post" autocomplete="off">
 	            <div class="btn-toolbar btn-toolbar-top">
                     <?php echo $this->toolbar; ?>
 	            </div>
@@ -56,7 +65,7 @@ Joomla.submitbutton = function(task)
 	            <div class="clearfix"> </div>
 
 	            <div class="<?php echo $filter_in;?>collapse" id="filters">
-	                <div class="well btn-toolbar">
+	                <div class="btn-toolbar">
 	                    <div class="filter-search btn-group pull-left">
 	                        <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
 	                    </div>
@@ -87,43 +96,38 @@ Joomla.submitbutton = function(task)
 	                <div class="clearfix"> </div>
 	            </div>
 	        </div>
-
-            <!-- Start Topic -->
-            <div class="btn-group pull-right">
-			    <a data-toggle="collapse" data-target="#topic-details" class="btn<?php echo $details_in;?>">
-                    <?php echo JText::_('COM_PROJECTFORK_DETAILS_LABEL'); ?> <span class="caret"></span>
-                </a>
-			</div>
-
-            <div class="clearfix"></div>
-
-            <div class="<?php echo $topic_in;?>collapse" id="topic-details">
-                <div class="well">
-                    <div class="item-description">
-                        <?php echo $this->topic->description; ?>
-                        <dl class="article-info dl-horizontal pull-right">
-                    		<dt class="owner-title">
-                    			<?php echo JText::_('JGRID_HEADING_CREATED_BY'); ?>:
-                    		</dt>
-                    		<dd class="owner-data">
-                    			 <?php echo $this->escape($this->topic->author_name);?>
-                    		</dd>
-                    		<dt class="start-title">
-                                <?php echo JText::_('JGRID_HEADING_CREATED_ON'); ?>:
-                            </dt>
-                            <dd class="start-data">
-                                <?php echo JHtml::_('date', $this->topic->created, $this->params->get('date_format', JText::_('DATE_FORMAT_LC4'))); ?>
-                            </dd>
-                    	</dl>
-                        <div class="clearfix"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="clearfix"></div>
-            <!-- End Topic -->
+	        <div class="row-striped row-replies">
+            <!-- Begin Topic -->
+    			<div class="row-fluid">
+    				<div class="span1">
+                        <img title="<?php echo $this->escape($this->topic->author_name);?>"
+                             src="<?php echo JHtml::_('projectfork.avatar.path', $this->topic->created_by);?>"
+                             class="img-circle hasTooltip"
+                             rel="tooltip"
+                        />
+    				</div>
+    				<div class="span11">
+    					<div class="well well-small">
+    						<span class="small muted pull-right"><?php echo JHtml::_('date', $this->topic->created, $this->params->get('date_format', JText::_('DATE_FORMAT_LC2'))); ?></span>
+    						<div class="well-description">
+    							<?php echo $this->topic->description; ?>
+    						</div>
+    						<div class="btn-toolbar margin-none">
+	                			<?php if ($can_edit_topic || $can_edit_own_topic) : ?>
+	    	    	    			<div class="btn-group">
+	    	    	    			    <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_pfforum&task=topicform.edit&id=' . $this->topic->id);?>">
+	    	    	    			        <span aria-hidden="true" class="icon-pencil"></span> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT'); ?>
+	    	    	    			    </a>
+	    	    	    			</div>
+		    	    			<?php endif; ?>
+	                		</div>
+    					</div>
+    				</div>
+    			</div>
+			<!-- End Topic -->
 
             <!-- Start Replies -->
-            <div class="row-striped row-replies">
+
             <?php
             $k = 0;
             foreach($this->items AS $i => $item) :
@@ -136,26 +140,37 @@ Joomla.submitbutton = function(task)
 
                 $date_opts = array('past-class' => '', 'past-icon' => 'calendar');
             ?>
-                <div class="row-fluid row-<?php echo $k;?>">
-                    <div style="display: none !important;">
-                        <?php echo JHtml::_('grid.id', $i, $item->id); ?>
-                    </div>
-                    <blockquote id="reply-<?php echo $item->id;?>">
-                    	<?php echo $item->description;?>
-                    </blockquote>
-                    <hr />
-                    <?php
-                        $this->menu->start(array('class' => 'btn-mini', 'pull' => 'left'));
-                        $this->menu->itemEdit('replyform', $item->id, ($can_edit || $can_edit_own));
-                        $this->menu->itemTrash('replies', $i, $can_change);
-                        $this->menu->end();
-
-                        echo $this->menu->render(array('class' => 'btn-mini', 'pull' => 'left'));
-	                ?>
-                    <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
-                    <?php echo JHtml::_('pfhtml.label.datetime', $item->created, false, $date_opts); ?>
-                    <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
-                </div>
+            	<div class="row-fluid">
+    				<div class="span1">
+                        <img title="<?php echo $this->escape($item->author_name);?>"
+                             src="<?php echo JHtml::_('projectfork.avatar.path', $item->created_by);?>"
+                             class="img-circle hasTooltip"
+                             rel="tooltip"
+                        />
+    				</div>
+    				<div class="span11">
+    					<div class="well well-small">
+    						<?php if ($can_change || $uid) : ?>
+		                        <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
+		                            <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
+		                        </label>
+		                    <?php endif; ?>
+    						<span class="small muted pull-right"><?php echo JHtml::_('date', $item->created, $this->params->get('date_format', JText::_('DATE_FORMAT_LC2'))); ?></span>
+    						<div class="well-description">
+    							<?php echo $item->description;?>
+    						</div>
+    					</div>
+    					<div class="btn-toolbar margin-none">
+                			<?php if ($can_edit || $can_edit_own) : ?>
+    	    	    			<div class="btn-group">
+    	    	    			    <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_pfforum&task=replyform.edit&id=' . $item->id);?>">
+    	    	    			        <span aria-hidden="true" class="icon-pencil"></span> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT'); ?>
+    	    	    			    </a>
+    	    	    			</div>
+	    	    			<?php endif; ?>
+                		</div>
+    				</div>
+    			</div>
             <?php
             $k = 1 - $k;
             endforeach;

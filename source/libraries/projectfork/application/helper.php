@@ -174,19 +174,12 @@ abstract class PFApplicationHelper
     {
         static $model = null;
 
-        if (!$model) {
-            if (JFactory::getApplication()->isSite()) {
-                $model = JModelLegacy::getInstance('Form', 'PFprojectsModel', array('ignore_request' => true));
-            }
-            else {
-                $model = JModelLegacy::getInstance('Project', 'PFprojectsModel', array('ignore_request' => true));
-            }
-        }
+        if ($id == self::getActiveProjectId()) return true;
 
-        $current = self::getActiveProjectId();
-
-        if ($current == $id) {
-            return true;
+        if (is_null($model)) {
+            $name   = (JFactory::getApplication()->isSite() ? 'Form' : 'Project');
+            $config = array('ignore_request' => true);
+            $model  = JModelLegacy::getInstance($name, 'PFprojectsModel', $config);
         }
 
         $result = $model->setActive(array('id' => (int) $id));
@@ -197,7 +190,7 @@ abstract class PFApplicationHelper
         else {
             if ($id) {
                 $title = self::getActiveProjectTitle();
-                $msg = JText::sprintf('COM_PROJECTFORK_INFO_NEW_ACTIVE_PROJECT', '"' . $title . '"');
+                $msg   = JText::sprintf('COM_PROJECTFORK_INFO_NEW_ACTIVE_PROJECT', '"' . $title . '"');
                 JFactory::getApplication()->enqueueMessage($msg);
             }
         }
@@ -213,28 +206,21 @@ abstract class PFApplicationHelper
      *
      * @return    int                   The project id
      **/
-    public static function getActiveProjectId($request = NULL)
+    public static function getActiveProjectId($request = null)
     {
-        $app = JFactory::getApplication();
+        $key     = 'com_projectfork.project.active.id';
+        $current = JFactory::getApplication()->getUserState($key);
+        $current = (is_null($current) ? '' : $current);
 
-        $old_state = $app->getUserState('com_projectfork.project.active.id');
-        $cur_state = (!is_null($old_state)) ? $old_state : '';
+        if (empty($request)) return $current;
 
-        if (!empty($request)) {
-            $new_state = JRequest::getVar($request, null, 'default');
+        $request = JRequest::getVar($request, null);
 
-            if (!is_null($new_state)) {
-                $result = self::setActiveProject($new_state);
-
-                if (!$result) {
-                    return $cur_state;
-                }
-
-                return $new_state;
-            }
+        if (!is_null($request) && self::setActiveProject((int) $request)) {
+            $current = is_numeric($request) ? (int) $request : '';
         }
 
-        return $cur_state;
+        return $current;
     }
 
 

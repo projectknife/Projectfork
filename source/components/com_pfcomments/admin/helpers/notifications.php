@@ -11,6 +11,9 @@
 defined('_JEXEC') or die();
 
 
+JLoader::register('PFprojectsHelperRoute', JPATH_SITE . '/components/com_pfprojects/helpers/route.php');
+
+
 /**
  * Email Notification Helper Class
  * This class is invoked by the Projectfork notifications plugin
@@ -186,6 +189,10 @@ abstract class PFcommentsNotificationsHelper
                 $class_name = 'PF' . str_replace('com_pf', '', $component) . 'HelperRoute';
                 $method     = 'get' . ucfirst($item) . 'Route';
                 $link       = '';
+
+                if (file_exists(JPATH_SITE . '/components/' . $component . '/helpers/route.php')) {
+                    JLoader::register($class_name, JPATH_SITE . '/components/' . $component . '/helpers/route.php');
+                }
 
                 if (class_exists($class_name)) {
                     if (in_array($method, get_class_methods($class_name))) {

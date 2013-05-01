@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -17,6 +17,8 @@ JHtml::_('behavior.keepalive');
 JHtml::_('pfhtml.script.form');
 
 $user = JFactory::getUser();
+$view_only  = ($this->item->checked_out && $this->item->checked_out != $user->id);
+$txt_action = ($view_only ? 'COM_PROJECTFORK_VIEW_NOTE' : 'COM_PROJECTFORK_EDIT_NOTE');
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task)
@@ -34,9 +36,11 @@ Joomla.submitbutton = function(task)
 
     <div class="width-60 fltlft span8">
         <fieldset class="adminform">
-            <legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_NOTE') : JText::_('COM_PROJECTFORK_EDIT_NOTE'); ?></legend>
+            <legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_NOTE') : JText::_($txt_action); ?></legend>
             <ul class="adminformlist unstyled">
-                <li><?php echo $this->form->getLabel('dir_id') . $this->form->getInput('dir_id'); ?></li>
+                <?php if (!$view_only) : ?>
+                    <li><?php echo $this->form->getLabel('dir_id') . $this->form->getInput('dir_id'); ?></li>
+                <?php endif; ?>
                 <li><?php echo $this->form->getLabel('title') . $this->form->getInput('title'); ?></li>
             </ul>
             <?php echo $this->form->getLabel('description'); ?>
@@ -98,7 +102,7 @@ Joomla.submitbutton = function(task)
 
     <div class="clr"></div>
 
-    <?php if ($user->authorise('core.admin', 'com_pfrepo')) : ?>
+    <?php if ($user->authorise('core.admin', 'com_pfrepo') && !$this->item->checked_out) : ?>
         <div class="width-100 fltlft span11">
     		<?php echo JHtml::_('sliders.start', 'permissions-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
 
@@ -134,6 +138,7 @@ Joomla.submitbutton = function(task)
         <input type="hidden" name="return" value="<?php echo JRequest::getCmd('return');?>" />
         <input type="hidden" name="view" value="<?php echo htmlspecialchars($this->get('Name'), ENT_COMPAT, 'UTF-8');?>" />
         <input type="hidden" name="filter_parent_id" value="<?php echo intval($this->form->getValue('dir_id'));?>" />
+        <input type="hidden" name="rev" value="<?php echo intval($this->state->get('note.rev'));?>" />
         <?php echo JHtml::_('form.token'); ?>
     </div>
 </form>

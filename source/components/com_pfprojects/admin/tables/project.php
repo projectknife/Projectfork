@@ -1,47 +1,26 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Projects
+ * @package      pkg_projectfork
+ * @subpackage   com_pfprojects
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
 defined('_JEXEC') or die();
 
 
-jimport('projectfork.table.table');
+jimport('joomla.database.tableasset');
+jimport('joomla.database.table');
 
 
 /**
- * Project table
+ * Projectfork Project Table
  *
  */
-class PFtableProject extends PFTable
+class PFtableProject extends JTable
 {
-    /**
-     * Should the table delete all child items too?
-     *
-     * @var    boolean
-     */
-    protected $_delete_children = true;
-
-    /**
-     * Should the table update all child items too?
-     *
-     * @var    boolean
-     */
-    protected $_update_children = true;
-
-    /**
-     * The fields of the child items to update
-     *
-     * @var    array
-     */
-    protected $_update_fields = array('access', 'state', 'start_date', 'end_date');
-
-
     /**
      * Constructor
      *
@@ -55,8 +34,6 @@ class PFtableProject extends PFTable
 
     /**
      * Method to compute the default name of the asset.
-     * The default name is in the form table_name.id
-     * where id is the value of the primary key of the table.
      *
      * @return    string
      */
@@ -91,9 +68,9 @@ class PFtableProject extends PFTable
         $query    = $this->_db->getQuery(true);
         $asset_id = null;
 
-        $query->select($this->_db->quoteName('id'))
-              ->from($this->_db->quoteName('#__assets'))
-              ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pfprojects"));
+        $query->select('id')
+              ->from('#__assets')
+              ->where('name = ' . $this->_db->quote("com_pfprojects"));
 
         // Get the asset id from the database.
         $this->_db->setQuery($query);
@@ -186,6 +163,7 @@ class PFtableProject extends PFTable
         return true;
     }
 
+
     /**
      * Overrides JTable::store to set modified data and user id.
      *
@@ -204,8 +182,7 @@ class PFtableProject extends PFTable
             $this->modified_by = $user->get('id');
         }
         else {
-            // New item. A project created_by field can be set by the user,
-            // so we don't touch it if set.
+            // New item
             $this->created = $date->toSql();
             if (empty($this->created_by)) $this->created_by = $user->get('id');
         }
@@ -223,69 +200,150 @@ class PFtableProject extends PFTable
 
 
     /**
+     * Method to delete a row from the database table by primary key value.
+     *
+     * @param     mixed      $pk    An optional primary key value to delete.
+     *
+     * @return    boolean           True on success.
+     */
+    public function delete($pk = null)
+    {
+        $k  = $this->_tbl_key;
+        $pk = (is_null($pk)) ? $this->$k : $pk;
+
+         // Call parent method
+         if (!parent::delete($pk)) {
+             return false;
+         }
+
+         // Delete references
+         $this->deleteReferences($pk);
+
+         return true;
+    }
+
+
+    /**
      * Method to delete referenced data of an item.
      *
      * @param     mixed      $pk    An primary key value to delete.
      *
      * @return    boolean
      */
-    public function deleteReferences($pk)
+    public function deleteReferences($pk = null)
     {
-        // Delete related attachments
-        $query = $this->_db->getQuery(true);
-        $query->delete('#__pf_ref_attachments')
-              ->where('project_id = ' . $this->_db->quote((int) $pk));
+        $k  = $this->_tbl_key;
+        $pk = (is_null($pk)) ? $this->$k : $pk;
 
-        $this->_db->setQuery($query);
-        $this->_db->execute();
+        $query  = $this->_db->getQuery(true);
+        $tables = array(
+            '#__pf_ref_attachments',
+            '#__pf_labels',
+            '#__pf_ref_labels',
+            '#__pf_ref_observer'
+        );
 
-        // Delete related labels
-        $query->clear();
-        $query->delete('#__pf_labels')
-              ->where('project_id = ' . $this->_db->quote((int) $pk));
+        // Delete related data
+        foreach ($tables AS $tbl)
+        {
+            $query->clear()
+                  ->delete($tbl)
+                  ->where('project_id = ' . (int) $pk);
 
-        $this->_db->setQuery($query);
-        $this->_db->execute();
-
-        // Delete related label references
-        $query->clear();
-        $query->delete('#__pf_ref_labels')
-              ->where('project_id = ' . $this->_db->quote((int) $pk));
-
-        $this->_db->setQuery($query);
-        $this->_db->execute();
-
-        // Delete related watching users
-        $query->clear();
-        $query->delete('#__pf_ref_observer')
-              ->where('project_id = ' . $this->_db->quote((int) $pk));
-
-        $this->_db->setQuery($query);
-        $this->_db->execute();
+            $this->_db->setQuery($query);
+            $this->_db->execute();
+        }
 
         return true;
     }
 
 
     /**
-     * Converts record to XML
+     * Method to set the publishing state for a row or list of rows in the database
+     * table.
      *
-     * @param     boolean    $mapKeysToText    Map foreign keys to text values
-     * @return    string                       Record in XML format
+     * @param     mixed      $pks      An optional array of primary key values to update.
+     * @param     integer    $state    The publishing state
+     * @param     integer    $uid      The user id of the user performing the operation.
+     *
+     * @return    boolean              True on success.
      */
-    public function toXML($mapKeysToText=false)
+    public function publish($pks = null, $state = 1, $uid = 0)
     {
-        $db = JFactory::getDbo();
+        return $this->setState($pks, $state, $uid);
+    }
 
-        if ($mapKeysToText) {
-            $query = 'SELECT name'
-                   . ' FROM #__users'
-                   . ' WHERE id = ' . (int) $this->created_by;
 
-            $db->setQuery($query);
-            $this->created_by = $db->loadResult();
+    /**
+     * Method to set the state for a row or list of rows in the database
+     * table.
+     *
+     * @param     mixed      $pks      An optional array of primary key values to update.
+     * @param     integer    $state    The state.
+     * @param     integer    $uid      The user id of the user performing the operation.
+     *
+     * @return    boolean              True on success.
+     */
+    public function setState($pks = null, $state = 1, $uid = 0)
+    {
+        // Sanitize input.
+        JArrayHelper::toInteger($pks);
+
+        $k     = $this->_tbl_key;
+        $uid   = (int) $uid;
+        $state = (int) $state;
+
+        // If there are no primary keys set check to see if the instance key is set.
+        if (empty($pks)) {
+            if ($this->$k) {
+                $pks = array($this->$k);
+            }
+            else {
+                // Nothing to set state on, return false.
+                $this->setError(JText::_('JLIB_DATABASE_ERROR_NO_ROWS_SELECTED'));
+                return false;
+            }
         }
 
-        return parent::toXML($mapKeysToText);
+        // Build the WHERE clause for the primary keys.
+        $where = $k . '=' . implode(' OR ' . $k . '=', $pks);
+
+        // Determine if there is checkin support for the table.
+        if (!property_exists($this, 'checked_out') || !property_exists($this, 'checked_out_time')) {
+            $checkin = '';
+        }
+        else {
+            $checkin = ' AND (checked_out = 0 OR checked_out = ' . (int) $uid . ')';
+        }
+
+        // Update the state for rows with the given primary keys.
+        $this->_db->setQuery(
+            'UPDATE ' . $this->_db->quoteName($this->_tbl).
+            ' SET ' . $this->_db->quoteName('state').' = ' .(int) $state .
+            ' WHERE (' . $where . ')' .
+            $checkin
+        );
+        $this->_db->query();
+
+        // Check for a database error.
+        if ($this->_db->getErrorNum()) {
+            $this->setError($this->_db->getErrorMsg());
+            return false;
+        }
+
+        // If checkin is supported and all rows were adjusted, check them in.
+        if ($checkin && (count($pks) == $this->_db->getAffectedRows())) {
+            // Checkin the rows.
+            foreach($pks as $pk)
+            {
+                $this->checkin($pk);
+            }
+        }
+
+        // If the JTable instance value is in the list of primary keys that were set, set the instance.
+        if (in_array($this->$k, $pks)) $this->state = $state;
+        $this->setError('');
+
+        return true;
     }
 }

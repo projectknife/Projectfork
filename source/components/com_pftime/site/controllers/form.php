@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Timetracking
+ * @package      pkg_projectfork
+ * @subpackage   com_pftime
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -107,25 +107,6 @@ class PFtimeControllerForm extends JControllerForm
         $model = parent::getModel($name, $prefix, $config);
 
         return $model;
-    }
-
-
-    /**
-     * Method to save a record.
-     *
-     * @param     string     $key        The name of the primary key of the URL variable.
-     * @param     string     $url_var    The name of the URL variable if different from the primary key.
-     *
-     * @return    boolean                True if successful, false otherwise.
-     */
-    public function save($key = null, $url_var = 'id')
-    {
-        $result = parent::save($key, $url_var);
-
-        // If ok, redirect to the return page.
-        if ($result) $this->setRedirect($this->getReturnPage());
-
-        return $result;
     }
 
 
@@ -267,8 +248,15 @@ class PFtimeControllerForm extends JControllerForm
     {
         $task = $this->getTask();
 
-        if ($task == 'save') {
-            $this->setRedirect(JRoute::_('index.php?option=com_pftime&view=' . $this->view_list, false));
+        switch($task)
+        {
+            case 'save2new':
+                // No redirect because its already set
+                break;
+
+            default:
+                $this->setRedirect($this->getReturnPage());
+                break;
         }
     }
 }

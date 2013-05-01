@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -36,70 +36,6 @@ class PFrepoControllerFileForm extends JControllerForm
 
 
     /**
-     * Constructor.
-     *
-     * @param    array          $config    An optional associative array of configuration settings.
-     *
-     * @see      jcontroller
-     */
-    public function __construct($config = array())
-    {
-        parent::__construct($config);
-    }
-
-
-    /**
-     * Method to add a new record.
-     *
-     * @return    boolean    True if the item can be added, false if not.
-     */
-    public function add()
-    {
-        if (!parent::add()) {
-            // Redirect to the return page.
-            $this->setRedirect($this->getReturnPage());
-            return false;
-        }
-
-        return true;
-    }
-
-
-    /**
-     * Method to cancel an edit.
-     *
-     * @param     string     $key    The name of the primary key of the URL variable.
-     *
-     * @return    boolean            True if access level checks pass, false otherwise.
-     */
-    public function cancel($key = 'id')
-    {
-        $result = parent::cancel($key);
-
-        // Redirect to the return page.
-        $this->setRedirect($this->getReturnPage());
-
-        return $result;
-    }
-
-
-    /**
-     * Method to edit an existing record.
-     *
-     * @param     string     $key        The name of the primary key of the URL variable.
-     * @param     string     $url_var    The name of the URL variable if different from the primary key.
-     *
-     * @return    boolean                True if access level check and checkout passes, false otherwise.
-     */
-    public function edit($key = null, $url_var = 'id')
-    {
-        $result = parent::edit($key, $url_var);
-
-        return $result;
-    }
-
-
-    /**
      * Method to get a model object, loading it if required.
      *
      * @param     string    $name      The model name. Optional.
@@ -124,7 +60,7 @@ class PFrepoControllerFileForm extends JControllerForm
      *
      * @return    boolean               True if successful, false otherwise.
      */
-    public function save($key = null, $urlVar = null)
+    public function save($key = 'id', $urlVar = null)
     {
         // Check for request forgeries.
         JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
@@ -139,42 +75,55 @@ class PFrepoControllerFileForm extends JControllerForm
 
         if (empty($urlVar)) $urlVar = $key;
 
+        // Setup redirect links
         $record_id = JRequest::getInt($urlVar);
+        $link_base = 'index.php?option=' . $this->option . '&view=';
+        $link_list = $link_base . $this->view_list . $this->getRedirectToListAppend();
+        $link_item = $link_base . $this->view_item . $this->getRedirectToItemAppend($record_id, $urlVar);
 
-        if (!$this->checkEditId($context, $record_id)) {
-			// Somehow the person just went to the form and tried to save it. We don't allow that.
-			$this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $record_id));
-			$this->setMessage($this->getError(), 'error');
-
-			$this->setRedirect(
-				JRoute::_(
-					'index.php?option=' . $this->option . '&view=' . $this->view_list
-					. $this->getRedirectToListAppend(), false
-				)
-			);
-
-			return false;
-		}
-
-        if (is_array($file_form)) {
-            foreach($file_form AS $attr => $field)
-            {
-                $count = count($field);
-                $i     = 0;
-
-                while($count > $i)
-                {
-                    foreach($field AS $name => $value)
-                    {
-                        $files[$i][$attr] = $value;
-                    }
-                    $i++;
-                }
-            }
+        // Get project id from directory if missing
+        if ((!isset($data['project_id']) || empty($data['project_id'])) && isset($data['dir_id'])) {
+            $data['project_id'] = PFrepoHelper::getProjectFromDir($data['dir_id']);
         }
 
-        if (count($files) == 1 && !empty($files[0]['tmp_name'])) {
-            $result = $model->upload(array_pop($files), $data['project_id']);
+        // Check edit id
+        if (!$this->checkEditId($context, $record_id)) {
+            // Somehow the person just went to the form and tried to save it. We don't allow that.
+            $this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $record_id));
+            $this->setMessage($this->getError(), 'error');
+
+            $this->setRedirect(JRoute::_(($layout != 'modal' ? $link_item : $link_list), false));
+
+            return false;
+        }
+
+        // Get file info
+        $files = $this->getFormFiles($file_form);
+
+        // Check for upload errors
+        if (!$this->checkFileError($files, $record_id)) {
+            $this->setRedirect(JRoute::_(($layout != 'modal' ? $link_item : $link_list), false));
+            return false;
+        }
+
+        // Upload file if we have any
+        if (count($files) && !empty($files[0]['tmp_name'])) {
+            $file = $files[0];
+
+            if ($record_id) {
+                // File extension must be the same as the original
+                if (!$this->checkFileExtension($record_id, $file['name'])) {
+                    $this->setError(JText::_('COM_PROJECTFORK_WARNING_FILE_UPLOAD_ERROR_10'));
+                    $this->setMessage($this->getError(), 'error');
+
+                    $this->setRedirect(JRoute::_(($layout != 'modal' ? $link_item : $link_list), false));
+
+                    return false;
+                }
+            }
+
+            // Upload the file
+            $result = $model->upload($file, $data['dir_id'], false, $record_id);
 
             if (is_array($result)) {
                 $data['file'] = $result;
@@ -184,27 +133,12 @@ class PFrepoControllerFileForm extends JControllerForm
                 $this->setError($error);
                 $this->setMessage($error, 'error');
 
-                if ($layout != 'modal') {
-                    $this->setRedirect(
-                        JRoute::_(
-                            'index.php?option=' . $this->option . '&view=' . $this->view_item
-                            . $this->getRedirectToItemAppend($record_id, $urlVar), false
-                        )
-                    );
-                }
-                else {
-                    $this->setRedirect(
-        				JRoute::_(
-        					'index.php?option=' . $this->option . '&view=' . $this->view_list
-        					. $this->getRedirectToListAppend(), false
-        				)
-        			);
-                }
-
+                $this->setRedirect(JRoute::_(($layout != 'modal' ? $link_item : $link_list), false));
                 return false;
             }
         }
 
+        // Inject file info into the form post data
         if (version_compare(JVERSION, '3.0.0', 'ge')) {
             $this->input->post->set('jform', $data);
         }
@@ -212,7 +146,95 @@ class PFrepoControllerFileForm extends JControllerForm
             JRequest::setVar('jform', $data, 'post');
         }
 
+        // Store data
         return parent::save($key, $urlVar);
+    }
+
+
+    /**
+     * Method the get the file info coming from a form
+     *
+     * @param     array    $data     The form data
+     *
+     * @return    array    $files    The file data
+     */
+    protected function getFormFiles($data)
+    {
+        $files = array();
+
+        if (!is_array($data)) return $files;
+
+        foreach($data AS $attr => $field)
+        {
+            $count = count($field);
+            $i     = 0;
+
+            while($count > $i)
+            {
+                foreach($field AS $name => $value)
+                {
+                    $files[$i][$attr] = $value;
+                }
+
+                $i++;
+            }
+        }
+
+        return $files;
+    }
+
+
+    /**
+     * Method to check for upload errors
+     *
+     * @param     array      $files    The files to check
+     * @param     integer $record_id The file id
+     *
+     * @return    boolean              True if no error
+     */
+    protected function checkFileError(&$files, $record_id = 0)
+    {
+        foreach ($files AS &$file)
+        {
+            // Uploading a file is not required when updating an existing record
+            if ($file['error'] == 4 && $record_id > 0) {
+                $file['error'] = 0;
+            }
+
+            if ($file['error']) {
+                $error = PFrepoHelper::getFileErrorMsg($file['error'], $file['name']);
+                $this->setError($error);
+                $this->setMessage($error, 'error');
+
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Method to check if the file extension is the same the original
+     *
+     * @param integer $id The file id
+     * @param string $file The name of the file to upload
+     *
+     * @return boolean True if they are the same
+     */
+    protected function checkFileExtension($id, $file)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('file_extension')
+              ->from('#__pf_repo_files')
+              ->where('id = ' . (int) $id);
+
+        $db->setQuery($query);
+        $original_ext = $db->loadResult();
+
+        return (JFile::getExt($file) == $original_ext);
     }
 
 
@@ -225,37 +247,39 @@ class PFrepoControllerFileForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $user  = JFactory::getUser();
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $user    = JFactory::getUser();
+        $project = JArrayHelper::getValue($data, 'project_id', JRequest::getInt('filter_project'), 'int');
+        $dir_id  = JArrayHelper::getValue($data, 'dir_id', JRequest::getInt('filter_parent_id'), 'int');
 
-        $access  = true;
-        $levels  = $user->getAuthorisedViewLevels();
-        $dir     = isset($data['dir_id'])  ? (int) $data['dir_id'] : 0;
+        // Check general access
+        if (!$user->authorise('core.create', 'com_pfrepo')) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_CREATE_FILE_DENIED'));
+            return false;
+        }
 
-        if (empty($data)) {
-            $dir = JRequest::getUint('filter_parent_id');
+        // Validate directory access
+        $model = $this->getModel('Directory', 'PFrepoModel');
+        $item  = $model->getItem($dir_id);
 
-            // Do not allow if no dir is given
-            if (!$dir) {
-                $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_NOT_FOUND'));
+        if ($item == false || empty($item->id) || $dir_id <= 1) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_NOT_FOUND'));
+            return false;
+        }
+
+        $access = PFrepoHelper::getActions('directory', $item->id);
+
+        if (!$user->authorise('core.admin')) {
+            if (!in_array($item->access, $user->getAuthorisedViewLevels())) {
+                $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_ACCESS_DENIED'));
+                return false;
+            }
+            elseif (!$access->get('core.create')) {
+                $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_CREATE_FILE_DENIED'));
                 return false;
             }
         }
 
-        // Check if the user has access to the parent directory
-        if (!$user->authorise('core.admin', 'com_pfrepo')) {
-            if ($dir) {
-                $query->select('access')
-                      ->from('#__pf_repo_dirs')
-                      ->where('id = ' . $db->quote($dir));
-
-                $db->setQuery($query);
-                $access = (in_array((int) $db->loadResult(), $levels) && $user->authorise('core.create', 'com_pfrepo.directory.' . $dir));
-            }
-        }
-
-        return ($user->authorise('core.create', 'com_pfrepo') && $access);
+        return true;
     }
 
 
@@ -269,24 +293,20 @@ class PFrepoControllerFileForm extends JControllerForm
      */
     protected function allowEdit($data = array(), $key = 'id')
     {
-        // Initialise variables.
-        $id     = (int) isset($data[$key]) ? $data[$key] : 0;
-        $uid    = JFactory::getUser()->get('id');
-        $access = PFrepoHelper::getActions('file', $id);
+        $user  = JFactory::getUser();
+        $uid   = $user->get('id');
+        $id    = (int) isset($data[$key]) ? $data[$key] : 0;
+        $owner = (int) isset($data['created_by']) ? $data['created_by'] : 0;
 
         // Check general edit permission first.
-        if ($access->get('core.edit')) {
+        if ($user->authorise('core.edit', 'com_pfrepo.file.' . $id)) {
             return true;
         }
 
         // Fallback on edit.own.
-        // First test if the permission is available.
-        if ($access->get('core.edit.own')) {
+        if ($user->authorise('core.edit.own', 'com_pfrepo.file.' . $id)) {
             // Now test the owner is the user.
-            $owner = (int) isset($data['created_by']) ? $data['created_by'] : 0;
-
-            if (empty($owner) && $id) {
-                // Need to do a lookup from the model.
+            if (!$owner && $id) {
                 $record = $this->getModel()->getItem($id);
 
                 if (empty($record)) return false;
@@ -294,11 +314,10 @@ class PFrepoControllerFileForm extends JControllerForm
                 $owner = $record->created_by;
             }
 
-            // If the owner matches 'me' then do the test.
             if ($owner == $uid) return true;
         }
 
-        // Since there is no asset tracking, revert to the component permissions.
+        // Fall back to the component permissions.
         return parent::allowEdit($data, $key);
     }
 
@@ -322,15 +341,13 @@ class PFrepoControllerFileForm extends JControllerForm
         $return  = $this->getReturnPage($parent, $project);
         $append  = '';
 
-
         // Setup redirect info.
-        if ($tmpl) $append .= '&tmpl=' . $tmpl;
-
-        $append .= '&layout=edit';
         if ($project) $append .= '&filter_project=' . $project;
         if ($parent)  $append .= '&filter_parent_id=' . $parent;
         if ($id)      $append .= '&' . $url_var . '=' . $id;
         if ($item_id) $append .= '&Itemid=' . $item_id;
+        if ($layout)  $append .= '&layout=' . $layout;
+        if ($tmpl) $append .= '&tmpl=' . $tmpl;
         if ($return)  $append .= '&return='.base64_encode($return);
 
         return $append;
@@ -347,30 +364,14 @@ class PFrepoControllerFileForm extends JControllerForm
         $tmpl    = JRequest::getCmd('tmpl');
         $project = JRequest::getUint('filter_project');
         $parent  = JRequest::getUint('filter_parent_id');
-        $layout  = JRequest::getCmd('layout');
         $func    = JRequest::getCmd('function');
         $append  = '';
 
         // Setup redirect info.
-        if ($project) {
-            $append .= '&filter_project=' . $project;
-        }
-
-        if ($parent) {
-            $append .= '&filter_parent_id=' . $parent;
-        }
-
-        if ($tmpl) {
-            $append .= '&tmpl=' . $tmpl;
-        }
-
-        if ($layout) {
-            $append .= '&layout=' . $layout;
-        }
-
-        if ($func) {
-            $append .= '&function=' . $func;
-        }
+        if ($project) $append .= '&filter_project=' . $project;
+        if ($parent)  $append .= '&filter_parent_id=' . $parent;
+        if ($tmpl)    $append .= '&tmpl=' . $tmpl;
+        if ($func)    $append .= '&function=' . $func;
 
         return $append;
     }
@@ -388,7 +389,7 @@ class PFrepoControllerFileForm extends JControllerForm
         $append = '';
 
         if ($project) $append .= '&filter_project=' . $project;
-        if ($parent)   $append .= '&filter_parent_id=' . $parent;
+        if ($parent)  $append .= '&filter_parent_id=' . $parent;
 
         if (empty($return) || !JUri::isInternal(base64_decode($return))) {
             return JRoute::_('index.php?option=com_pfrepo&view=' . $this->view_list . $append, false);
@@ -396,23 +397,5 @@ class PFrepoControllerFileForm extends JControllerForm
         else {
             return base64_decode($return);
         }
-    }
-
-
-    /**
-     * Function that allows child controller access to model data after the data has been saved.
-     *
-     * @param     jmodel    $model    The data model object.
-     * @param     array     $data     The validated data.
-     *
-     * @return    void
-     */
-    protected function postSaveHook(&$model, $data)
-    {
-        $task = $this->getTask();
-
-        /*if ($task == 'save') {
-            $this->setRedirect(JRoute::_('index.php?option=com_projectfork&view=' . $this->view_list, false));
-        }*/
     }
 }

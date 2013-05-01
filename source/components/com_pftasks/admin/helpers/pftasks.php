@@ -4,7 +4,7 @@
  * @subpackage   Tasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -30,34 +30,34 @@ class PFtasksHelper
      */
     public static function addSubmenu($view)
     {
-        if (in_array($view, array('task', 'tasklist')) && version_compare(JVERSION, '3.0.0', 'ge')) {
-            return;
-        }
+        $is_j3 = version_compare(JVERSION, '3.0.0', 'ge');
+        $forms = array('task', 'tasklist');
+
+        if (in_array($view, $forms) && $is_j3) return;
 
         $components = PFApplicationHelper::getComponents();
         $option     = JFactory::getApplication()->input->get('option');
+        $class      = ($is_j3 ? 'JHtmlSidebar' : 'JSubMenuHelper');
 
         foreach ($components AS $component)
         {
-            if ($component->enabled == '0') {
-                continue;
-            }
+            if ($component->enabled == '0') continue;
 
             $title = JText::_($component->element);
             $parts = explode('-', $title, 2);
 
-            if (count($parts) == 2) {
-                $title = trim($parts[1]);
-            }
+            if (count($parts) == 2) $title = trim($parts[1]);
 
-            JSubMenuHelper::addEntry(
+            call_user_func(
+                array($class, 'addEntry'),
                 $title,
                 'index.php?option=' . $component->element,
-                ($option == $component->element)
+                ($option == $component->element && $view == 'tasks')
             );
 
             if ($option == $component->element) {
-                JSubMenuHelper::addEntry(
+                call_user_func(
+                    array($class, 'addEntry'),
                     JText::_('COM_PROJECTFORK_SUBMENU_TASKLISTS'),
                     'index.php?option=' . $component->element . '&view=tasklists',
                     ($option == $component->element && $view == 'tasklists')

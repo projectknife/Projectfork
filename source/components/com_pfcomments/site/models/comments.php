@@ -114,12 +114,6 @@ class PFcommentsModelComments extends JModelList
             $query->where('a.item_id = ' . (int) $item_id);
         }
 
-        // Filter by project id
-        $project = $this->getState('filter.project');
-        if (is_numeric($project)) {
-            $query->where('a.project_id = ' . (int) $project);
-        }
-
         // Add the list ordering clause.
         $query->group('a.id');
         $query->order($this->getState('list.ordering', 'a.lft') . ' ' . $this->getState('list.direction', 'ASC'));

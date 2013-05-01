@@ -29,13 +29,15 @@
 	        if (!$isset_bsjs) {
 	            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/bootstrap.min.js');
 	        }
-
-	        $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/application.js');
+	        
 	    }
+	    
 	    // Add 2.5 System Stylesheets
 		$doc->addStyleSheet('templates/system/css/general.css');
 		$doc->addStyleSheet('templates/system/css/system.css');
 	}
+	
+	$doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/application.js');
 
 	// Add Template Stylesheet
 	$doc->addStyleSheet('templates/'.$this->template.'/css/template.css');
@@ -136,6 +138,14 @@
     else :
     	$span = "span12";
     endif;
+    
+    // Logo file or site title param
+	if ($this->params->get('logoFile'))
+	{
+		$logo = '<img src="'. JURI::root() . $this->params->get('logoFile') .'" alt="'. $sitename .'" />';
+	} else {
+		$logo = '<img src="'. JURI::root() . '/templates/' . $this->template . '/img/logo.png' .'" alt="'. $sitename .'" />';
+	}
 	?>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
@@ -155,7 +165,7 @@
 	<!-- Top Navigation -->
 	<div class="navbar navbar-inverse navbar-fixed-top">
 		<div class="navbar-inner">
-			<div class="container-fluid"> <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a> <a class="brand" href="<?php echo $this->baseurl; ?>"><?php echo $sitename; ?></a>
+			<div class="container-fluid"> <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="icon-bar"></span> <span class="icon-bar"></span> <span class="icon-bar"></span> </a> <a class="brand" href="<?php echo $this->baseurl; ?>"><?php echo $sitename;?></a>
 				<div class="nav-collapse">
 					<jdoc:include type="modules" name="position-1" style="none" />
 					<ul class="nav pull-right">
@@ -185,7 +195,7 @@
 		<div class="container-fluid">
 			<div class="row-fluid">
 				<div class="span2">
-					<a class="logo" href="<?php echo $this->baseurl; ?>"></a>
+					<a href="<?php echo $this->baseurl; ?>"><?php echo $logo;?></a>
 				</div>
 				<div class="span10 navbar-search">
 					<jdoc:include type="modules" name="searchload" style="none" />
@@ -201,7 +211,7 @@
 			<div id="sidebar" class="span2">
 				<jdoc:include type="modules" name="create" style="xhtml" />
 				<!-- Begin Sidebar -->
-				<?php if ($user->id) : ?>
+				<?php if ($user->id && $this->params->get('createButton')) : ?>
 				<div class="hidden-phone">
 	                <div class="btn-group">
 					  <a href="#" class="btn btn-large btn-info btn-wide dropdown-toggle" data-toggle="dropdown">
@@ -252,7 +262,7 @@
 				</div>
                 <?php endif; ?>
                 
-                <?php if ($user->id) : ?>
+                <?php if ($user->id && $this->params->get('createButton')) : ?>
                 <div class="visible-phone">
                   <a href="#" data-target=".create-collapse" class="btn btn-large btn-info btn-wide dropdown-toggle" data-toggle="collapse">
                     <?php echo JText::_('TPL_GOGGLES_CREATE');?>

@@ -296,16 +296,6 @@ class PFmilestonesModelMilestone extends JModelAdmin
             // Set the active project
             PFApplicationHelper::setActiveProject($table->project_id);
 
-            // To keep data integrity, update all child assets
-            if (!$is_new) {
-                $props   = array('access', 'state', array('start_date', 'NE-SQLDATE'), array('end_date', 'NE-SQLDATE'));
-                $changes = PFObjectHelper::getDiff($old, $table, $props);
-
-                if (count($changes)) {
-                    $table->updateChildren($table->id, $changes);
-                }
-            }
-
             // Add to watch list
             if ($is_new) {
                 $cid = array($id);
@@ -461,32 +451,6 @@ class PFmilestonesModelMilestone extends JModelAdmin
         $this->cleanCache();
 
         return true;
-    }
-
-
-    /**
-     * Method to change the published state of one or more records.
-     *
-     * @param     array      A list of the primary keys to change.
-     * @param     integer    The value of the published state.
-     *
-     * @return    boolean    True on success.
-     */
-    public function publish(&$pks, $value = 1)
-    {
-        $result  = parent::publish($pks, $value);
-        $changes = array('state' => $value);
-        $table   = $this->getTable();
-
-        if ($result) {
-            // State change succeeded. Now update all children
-            foreach ($pks AS $id)
-            {
-                $table->updateChildren($id, $changes);
-            }
-        }
-
-        return $result;
     }
 
 

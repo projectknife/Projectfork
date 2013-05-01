@@ -138,7 +138,7 @@ class PFtasksControllerTaskForm extends JControllerForm
                 // Check if the user has access to the task list
                 $query->select('access')
                       ->from('#__pf_task_lists')
-                      ->where('id = ' . $db->quote($list));
+                      ->where('id = ' . $list);
 
                 $db->setQuery($query);
                 $access = (in_array((int) $db->loadResult(), $levels) && $user->authorise('core.create', 'com_pftasks.tasklist.' . $list));
@@ -263,7 +263,7 @@ class PFtasksControllerTaskForm extends JControllerForm
         $return = JRequest::getVar('return', null, 'default', 'base64');
 
         if (empty($return) || !JUri::isInternal(base64_decode($return))) {
-            return JRoute::_('index.php?option=com_pftasks&view=' . $this->view_list, false);
+            return JRoute::_(PFtasksHelperRoute::getTasksRoute());
         }
         else {
             return base64_decode($return);

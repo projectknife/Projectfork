@@ -42,14 +42,13 @@ class PFrepoModelNote extends JModelItem
         if ($this->_item === null) $this->_item = array();
 
         if (!isset($this->_item[$pk])) {
-
             try {
                 $db    = $this->getDbo();
                 $query = $db->getQuery(true);
 
                 $query->select($this->getState(
                         'item.select',
-                        'a.id, a.asset_id, a.project_id, a.title, a.alias, a.description AS text, '
+                        'a.id, a.asset_id, a.project_id, a.dir_id, a.title, a.alias, a.description AS text, '
                         . 'a.created, a.created_by, a.modified_by, a.checked_out, a.checked_out_time, '
                         . 'a.attribs, a.access'
                     )
@@ -59,6 +58,10 @@ class PFrepoModelNote extends JModelItem
                 // Join on project table.
                 $query->select('p.title AS project_title, p.alias AS project_alias');
                 $query->join('LEFT', '#__pf_projects AS p on p.id = a.project_id');
+
+                // Join on directories table.
+                $query->select('d.title AS dir_title, d.alias AS dir_alias, d.path');
+                $query->join('LEFT', '#__pf_repo_dirs AS d on d.id = a.dir_id');
 
                 // Join on user table.
                 $query->select('u.name AS author');
@@ -78,13 +81,21 @@ class PFrepoModelNote extends JModelItem
                 // Generate slugs
                 $data->slug         = $data->alias           ? ($data->id . ':' . $data->alias)                     : $data->id;
                 $data->project_slug = $data->project_alias   ? ($data->project_id . ':' . $data->project_alias)     : $data->project_id;
+                $data->dir_slug     = $data->dir_alias     ? ($data->dir_id . ':' . $data->dir_alias)         : $data->dir_id;
 
                 // Convert parameter fields to objects.
                 $registry = new JRegistry;
                 $registry->loadString($data->attribs);
 
-                $data->params = clone $this->getState('params');
-                $data->params->merge($registry);
+                $params = $this->getState('params');
+
+                if ($params) {
+                    $data->params = clone $this->getState('params');
+                    $data->params->merge($registry);
+                }
+                else {
+                    $data->params = $registry;
+                }
 
                 // Compute selected asset permissions.
                 // Technically guest could edit an article, but lets not check that to improve performance a little.
@@ -116,6 +127,31 @@ class PFrepoModelNote extends JModelItem
                     $data->params->set('access-view', in_array($data->access, $groups));
                 }
 
+                // Get the revision if requested
+                $rev = (int) $this->getState($this->getName() . '.rev');
+
+                if ($rev) {
+                    $cfg = array('ignore_request' => true);
+                    $rev_model = $this->getInstance('NoteRevision', 'PFrepoModel', $cfg);
+
+                    $rev_item = $rev_model->getItem($rev);
+
+                    if (!$rev_item || $rev_item->parent_id != $data->id) {
+                        $data->params->set('access-view', false);
+                    }
+                    else {
+                        // Override properties of item
+                        $props = array('title', 'description', 'created', 'created_by');
+
+                        foreach ($props AS $prop)
+                        {
+                            $data->$prop = $rev_item->$prop;
+                        }
+
+                        $data->text = $rev_item->description;
+                    }
+                }
+
                 $this->_item[$pk] = $data;
             }
             catch (JException $e)
@@ -144,8 +180,11 @@ class PFrepoModelNote extends JModelItem
     protected function populateState()
     {
         // Load state from the request.
-        $pk = JRequest::getInt('id');
+        $pk  = JRequest::getUInt('id');
+        $rev = JRequest::getUInt('rev');
+
         $this->setState($this->getName() . '.id', $pk);
+        $this->setState($this->getName() . '.rev', $rev);
 
         // Load the parameters.
         $params = JFactory::getApplication('site')->getParams();

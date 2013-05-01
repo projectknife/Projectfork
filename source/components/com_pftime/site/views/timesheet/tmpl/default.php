@@ -27,6 +27,21 @@ $unbillable_percent = ($this->total_time == 0) ? 0 : round($this->total_time_unb
 
 $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
 ?>
+<script type="text/javascript">
+Joomla.submitbutton = function(task)
+{
+    if (task == 'recorder') {
+        var win_attr = 'width=500,height=600,resizable=yes,'
+                     + 'scrollbars=yes,toolbar=no,location=no,'
+                     + 'directories=no,status=no,menubar=no';
+
+        window.open('<?php echo JRoute::_('index.php?option=com_pftime&view=recorder&tmpl=component'); ?>', 'winPFtimerec', win_attr);
+    }
+    else {
+        Joomla.submitform(task, document.getElementById('adminForm'));
+    }
+}
+</script>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-timesheet">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -45,10 +60,8 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
                 </div>
             </div>
 
-            <div class="clearfix"> </div>
-
             <div class="<?php echo $filter_in;?>collapse" id="filters">
-                <div class="well btn-toolbar">
+                <div class="btn-toolbar clearfix">
                     <div class="filter-search btn-group pull-left">
                         <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
                     </div>
@@ -56,89 +69,101 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
                         <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>"><i class="icon-search"></i></button>
                         <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();"><i class="icon-remove"></i></button>
                     </div>
-
-                    <div class="clearfix"> </div>
-                    <hr />
-
                     <?php if ($this->access->get('time.edit.state') || $this->access->get('time.edit')) : ?>
-                        <div class="filter-published btn-group">
-                            <select name="filter_published" class="inputbox input-medium" onchange="this.form.submit()">
+                        <div class="filter-published btn-group pull-left">
+                            <select name="filter_published" class="inputbox input-small" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_PUBLISHED');?></option>
                                 <?php echo JHtml::_('select.options', JHtml::_('jgrid.publishedOptions'), 'value', 'text', $this->state->get('filter.published'), true);?>
                             </select>
                         </div>
                     <?php endif; ?>
                     <?php if (intval($this->state->get('filter.project')) > 0) : ?>
-                        <div class="filter-author btn-group">
-                            <select id="filter_author" name="filter_author" class="inputbox input-medium" onchange="this.form.submit()">
+                        <div class="filter-author btn-group pull-left">
+                            <select id="filter_author" name="filter_author" class="inputbox input-small" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
                                 <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'), true);?>
                             </select>
                         </div>
-                        <div class="filter-task btn-group">
-                            <select id="filter_task" name="filter_task" class="inputbox input-medium" onchange="this.form.submit()">
+                        <div class="filter-task btn-group pull-left">
+                            <select id="filter_task" name="filter_task" class="inputbox input-small" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('COM_PROJECTFORK_OPTION_SELECT_TASK');?></option>
                                 <?php echo JHtml::_('select.options', $this->tasks, 'value', 'text', $this->state->get('filter.task'), true);?>
                             </select>
                         </div>
                     <?php endif; ?>
-                    <div class="clearfix"> </div>
+                    <div class="btn-group filter-order pull-left">
+                        <select name="filter_order" class="inputbox input-small" onchange="this.form.submit()">
+                            <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
+                        </select>
+                    </div>
+                    <div class="btn-group folder-order-dir pull-left">
+                        <select name="filter_order_Dir" class="inputbox input-small" onchange="this.form.submit()">
+                            <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
+                        </select>
+                    </div>
                 </div>
             </div>
 
             <?php if (intval($this->state->get('filter.project')) > 0) : ?>
-                <h3><?php echo PFApplicationHelper::getActiveProjectTitle();?></h3>
-
-                <div class="row-fluid">
+                <div class="row-fluid row-hours">
                 	<div class="span3">
-                		<div class="thumbnail thumbnail-timesheet">
-                			<h6><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTAL_HOURS');?></h6>
-                			<h1><?php echo JHtml::_('time.format', $this->total_time, 'decimal');?></h1>
-                			<h5><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (<?php echo JHtml::_('time.format', $this->total_estimated_time, 'decimal');?>)</h5>
-                		</div>
+                		<fieldset>
+                			<legend><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTAL_HOURS');?></legend>
+                			<p>
+                				<span class="label label-info">
+                					<?php echo JHtml::_('time.format', $this->total_time, 'decimal');?> <?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTAL_HOURS');?>
+                				</span>
+                			</p>
+                			<div>
+                				<?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (<?php echo JHtml::_('time.format', $this->total_estimated_time, 'decimal');?>)
+                			</div>
+                		</fieldset>
                 	</div>
                 	<div class="span6">
-                		<div class="thumbnail thumbnail-timesheet">
-                			<h6><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTAL_HOURS');?></h6>
-                			<div class="row-fluid">
-                				<div class="span6">
-                					<div class="progress progress-success">
-    									<div class="bar" style="width: <?php echo $billable_percent;?>%;"></div>
-    								</div>
-    								<div class="progress">
-    									<div class="bar" style="width: <?php echo $unbillable_percent;?>%;"></div>
-    								</div>
-                				</div>
-                				<div class="span6">
-                					<h2>
-                                        <?php echo JHtml::_('time.format', $this->total_time_billable, 'decimal');?>
-                                        <span class="label label-success"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE');?></span>
-                                    </h2>
-                					<h2>
-                                        <?php echo JHtml::_('time.format', $this->total_time_unbillable, 'decimal');?>
-                                        <span class="label label-info"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_UNBILLABLE');?></span>
-                                    </h2>
-                				</div>
-                			</div>
-                		</div>
+            			<fieldset>
+            				<legend><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTAL_HOURS');?>: <?php echo PFApplicationHelper::getActiveProjectTitle();?></legend>
+        					<div class="progress progress-success">
+								<div class="bar" style="width: <?php echo $billable_percent;?>%;">
+									<?php if ($billable_percent) : ?>
+										<?php echo JHtml::_('time.format', $this->total_time_billable, 'decimal');?>
+										<?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE');?>
+									<?php endif; ?>
+								</div>
+							</div>
+							<div class="progress progress-info">
+								<div class="bar" style="width: <?php echo $unbillable_percent;?>%;">
+									<?php if ($unbillable_percent) : ?>
+										<?php echo JHtml::_('time.format', $this->total_time_unbillable, 'decimal');?>
+										<?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_UNBILLABLE');?>
+									<?php endif; ?>
+								</div>
+							</div>
+            			</fieldset>
                 	</div>
                 	<div class="span3">
-                		<div class="thumbnail thumbnail-timesheet">
-                			<h6><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE_TOTAL');?></h6>
-                			<h2><?php echo JHtml::_('pfhtml.format.money', $this->total_billable);?></h2>
-                			<h5><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (<?php echo JHtml::_('pfhtml.format.money', $this->total_estimated_cost);?>)</h5>
-                		</div>
+                		<fieldset>
+                			<legend><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE_TOTAL');?></legend>
+                			<p>
+                				<span class="label label-success">
+                					<?php echo JHtml::_('pfhtml.format.money', $this->total_billable);?> <?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE_TOTAL');?>
+                				</span>
+                			</p>
+                			<div>
+                				<?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (<?php echo JHtml::_('pfhtml.format.money', $this->total_estimated_cost);?>)
+                			</div>
+                		</fieldset>
                 	</div>
                 </div>
             <?php endif; ?>
 
             <hr />
 
-            <table class="table table-striped">
+            <table class="table table-striped table-condensed">
             	<thead>
             		<tr>
             			<th width="1%"></th>
                         <th><?php echo JText::_('JGRID_HEADING_TASK');?></th>
+                        <th width="1%"></th>
             			<th width="10%"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TIME');?></th>
             			<th width="10%"></th>
             			<th width="10%"><?php echo JText::_('JGRID_HEADING_AUTHOR');?></th>
@@ -182,14 +207,6 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
 			        <tr>
                         <td>
                             <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
-			        		<?php
-                            $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
-                            $this->menu->itemEdit('form', $item->id, ($can_edit || $can_edit_own));
-                            $this->menu->itemTrash('timesheet', $i, $can_change);
-                            $this->menu->end();
-
-                            echo $this->menu->render(array('class' => 'btn-mini'));
-	                        ?>
 			        	</td>
 			        	<td>
                             <?php if ($exists) : ?>
@@ -205,10 +222,20 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
                             <?php endif; ?>
 			        	</td>
 			        	<td>
+			        		<?php
+	                        $this->menu->start(array('class' => 'btn-mini'));
+	                        $this->menu->itemEdit('form', $item->id, ($can_edit || $can_edit_own));
+	                        $this->menu->itemTrash('timesheet', $i, $can_change);
+	                        $this->menu->end();
+
+	                        echo $this->menu->render(array('class' => 'btn-mini'));
+	                        ?>
+			        	</td>
+			        	<td>
 			        		<?php echo JHtml::_('time.format', $item->log_time); ?>
 			        	</td>
 			        	<td>
-							<div class="<?php echo $percentage_class;?>">
+							<div class="<?php echo $percentage_class;?>" style="margin: 0;">
 								<div class="bar" style="width: <?php echo $percentage;?>%;"></div>
 							</div>
 			        	</td>
@@ -235,6 +262,7 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
             		<tr>
             			<th><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTALS');?></th>
             			<th></th>
+            			<th></th>
             			<th><?php echo JHtml::_('time.format', $list_total_time); ?></th>
             			<th></th>
             			<th></th>
@@ -245,26 +273,17 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
             	</tfoot>
             </table>
 
-            <div class="filters btn-toolbar">
-                <div class="btn-group filter-order">
-                    <select name="filter_order" class="inputbox input-medium" onchange="this.form.submit()">
-                        <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
-                    </select>
+            <?php if ($this->pagination->get('pages.total') > 1) : ?>
+                <div class="pagination center">
+                    <?php echo $this->pagination->getPagesLinks(); ?>
                 </div>
-                <div class="btn-group folder-order-dir">
-                    <select name="filter_order_Dir" class="inputbox input-medium" onchange="this.form.submit()">
-                        <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
-                    </select>
-                </div>
-                <div class="btn-group display-limit">
+                <p class="counter center"><?php echo $this->pagination->getPagesCounter(); ?></p>
+            <?php endif; ?>
+
+            <div class="filters center">
+                <span class="display-limit">
                     <?php echo $this->pagination->getLimitBox(); ?>
-                </div>
-                <?php if ($this->pagination->get('pages.total') > 1) : ?>
-                    <div class="btn-group pagination">
-                        <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
-                        <?php echo $this->pagination->getPagesLinks(); ?>
-                    </div>
-                <?php endif; ?>
+                </span>
             </div>
 
             <input type="hidden" id="boxchecked" name="boxchecked" value="0" />

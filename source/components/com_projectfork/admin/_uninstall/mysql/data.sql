@@ -16,3 +16,5 @@ DELETE FROM `#__pf_timesheet`;
 DELETE FROM `#__pf_repo_dirs`;
 DELETE FROM `#__pf_repo_notes`;
 DELETE FROM `#__pf_repo_files`;
+DELETE FROM `#__pf_repo_file_revs`;
+DELETE FROM `#__pf_repo_note_revs`;

@@ -3,12 +3,12 @@
     <name>Projectfork</name>
     <libraryname>projectfork</libraryname>
     <author>Tobias Kuhn</author>
-    <creationDate>January 2013</creationDate>
+    <creationDate>May 2013</creationDate>
     <copyright>Copyright (C) 2006 - 2013 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later.</license>
     <authorEmail>support@projectfork.net</authorEmail>
     <authorUrl>www.projectfork.net</authorUrl>
-    <version>4.0.0</version>
+    <version>4.1.0b1</version>
     <description>Shared classes and tools for Projectfork related components. Do not remove!</description>
     <files>
         <folder>access</folder>
@@ -28,6 +28,5 @@
         <folder>version</folder>
         <file>framework.php</file>
         <file>library.php</file>
-        <file>index.html</file>
     </files>
 </extension>

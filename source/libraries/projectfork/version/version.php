@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      Projectfork.Library
- * @subpackage   Version
+ * @package      pkg_projectfork
+ * @subpackage   lib_projectfork
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
@@ -21,22 +21,22 @@ final class PFVersion
     public $PRODUCT = 'Projectfork';
 
     /** @var  string  Release version. */
-    public $RELEASE = '4.0';
+    public $RELEASE = '4.1';
 
     /** @var  string  Maintenance version. */
     public $DEV_LEVEL = '0';
 
     /** @var  string  Development status. */
-    public $DEV_STATUS = 'Stable';
+    public $DEV_STATUS = 'beta';
 
     /** @var  string  Build number. */
-    public $BUILD = '';
+    public $BUILD = '1';
 
     /** @var  string  Code name. */
-    public $CODENAME = '22:33';
+    public $CODENAME = 'Barrow';
 
     /** @var  string  Release date. */
-    public $RELDATE = '14-January-2013';
+    public $RELDATE = '01-May-2013';
 
     /** @var  string  Release time. */
     public $RELTIME = '20:00';

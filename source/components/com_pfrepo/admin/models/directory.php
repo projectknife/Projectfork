@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -24,22 +24,9 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string
+     * @var    string    
      */
     protected $text_prefix = 'COM_PROJECTFORK_DIRECTORY';
-
-
-    /**
-     * Constructor.
-     *
-     * @param    array          $config    An optional associative array of configuration settings.
-     *
-     * @see      jcontroller
-     */
-    public function __construct($config = array())
-    {
-        parent::__construct($config);
-    }
 
 
     /**
@@ -66,58 +53,153 @@ class PFrepoModelDirectory extends JModelAdmin
      */
     public function getItem($pk = null)
     {
-        if ($item = parent::getItem($pk)) {
-            // Convert the params field to an array.
-            $registry = new JRegistry;
-            $registry->loadString($item->attribs);
-            $item->attribs = $registry->toArray();
+        $item = parent::getItem($pk);
 
-            // Get the labels
+        if ($item == false) return false;
+
+        if (property_exists($item, 'attribs')) {
+            // Convert the params field to an array.
+            $registry = new JRegistry();
+
+            $registry->loadString($item->attribs);
+
+            $item->params  = $registry;
+            $item->attribs = $registry->toArray();
+        }
+
+        if ($item->id > 0) {
+            // Existing record
             $labels = $this->getInstance('Labels', 'PFModel');
-            $item->labels = $labels->getConnections('com_pfrepo.directory', $item->id);
+
+            $item->labels   = $labels->getConnections('com_pfrepo.directory', $item->id);
+            $item->orphaned = $this->isOrphaned($item->project_id);
+            $item->element_count = 0;
+        }
+        else {
+            // New record
+            $item->labels   = array();
+            $item->orphaned = false;
+            $item->element_count = $this->getElementCount($pk);
         }
 
         return $item;
     }
 
 
-    public function getItemFromProjectPath($project, $path)
+    /**
+     * Counts the contents of the given folders
+     *
+     * @param    array      $pk       The folder primary key
+     *
+     * @retun    integer    $count    The element count
+     */
+    public function getElementCount($pk = null)
     {
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+        $query = $this->_db->getQuery(true);
+        $user  = JFactory::getUser();
+        $count = 0;
 
-        if (substr($path, -1) == '/') {
-            $path = substr($path, 0, -1);
+        if (empty($pk)) return $count;
+
+        // Count sub-folders
+        $query->select('COUNT(*)')
+              ->from('#__pf_repo_dirs')
+              ->where('parent_id = ' . (int) $pk);
+
+        if (!$user->authorise('core.admin', 'com_pfrepo')) {
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('access IN (' . $levels . ')');
         }
 
-        $params   = PFApplicationHelper::getProjectParams((int) $project);
-        $repo_dir = (int) $params->get('repo_dir');
+        $query->group('parent_id');
+        $this->_db->setQuery($query);
 
-        if (!$repo_dir) {
+        try {
+            $count += (int) $this->_db->loadResult();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
             return false;
         }
 
+        // Count notes
+        $query->clear()
+              ->select('COUNT(*)')
+              ->from('#__pf_repo_notes')
+              ->where('dir_id = ' . (int) $pk);
+
+        if (!$user->authorise('core.admin', 'com_pfrepo')) {
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('access IN (' . $levels . ')');
+        }
+
+        $query->group('dir_id');
+        $this->_db->setQuery($query);
+
+        try {
+            $count += (int) $this->_db->loadResult();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        // Count files
+        $query->clear()
+              ->select('COUNT(id)')
+              ->from('#__pf_repo_files')
+              ->where('dir_id = ' . (int) $pk);
+
+        if (!$user->authorise('core.admin', 'com_pfrepo')) {
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('access IN (' . $levels . ')');
+        }
+
+        $query->group('dir_id');
+        $this->_db->setQuery($query);
+
+        try {
+            $count += (int) $this->_db->loadResult();
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return false;
+        }
+
+        return $count;
+    }
+
+
+    public function getItemFromProjectPath($project, $path)
+    {
+        $params   = PFApplicationHelper::getProjectParams((int) $project);
+        $repo_dir = (int) $params->get('repo_dir');
+        $query    = $this->_db->getQuery(true);
+
+        // Remove trailing slash
+        if (substr($path, -1) == '/') $path = substr($path, 0, -1);
+
+        // Can't get a path without project repo dir
+        if (!$repo_dir) return false;
+
         $query->select('alias')
               ->from('#__pf_repo_dirs')
-              ->where('id = ' . $db->quote($repo_dir));
+              ->where('id = ' . (int) $repo_dir);
 
-        $db->setQuery($query);
-        $alias = $db->loadResult();
-
-        $path = $db->escape($alias . '/' . $path);
+        $this->_db->setQuery($query);
+        $alias = $this->_db->loadResult();
 
         $query->clear();
         $query->select('id')
               ->from('#__pf_repo_dirs')
-              ->where('project_id = ' . $db->quote((int) $project))
-              ->where('path = ' . $db->quote($path));
+              ->where('project_id = ' . (int) $project)
+              ->where('path = ' . $this->_db->quote($alias . '/' . $path));
 
-        $db->setQuery($query);
-        $id = (int) $db->loadResult();
+        $this->_db->setQuery($query);
+        $id = (int) $this->_db->loadResult();
 
-        if ($id) {
-            return $this->getItem($id);
-        }
+        if ($id) return $this->getItem($id);
 
         return false;
     }
@@ -128,10 +210,11 @@ class PFrepoModelDirectory extends JModelAdmin
      *
      * @param     array      $commands    An array of commands to perform.
      * @param     array      $pks         An array of item ids.
+     * @param     array      $contexts    An array of item contexts.
      *
      * @return    boolean                 Returns true on success, false on failure.
      */
-    public function batch($commands, $pks)
+    public function batch($commands, $pks, $contexts)
     {
         // Sanitize user ids.
         $pks = array_unique($pks);
@@ -154,7 +237,7 @@ class PFrepoModelDirectory extends JModelAdmin
             $cmd = JArrayHelper::getValue($commands, 'move_copy', 'c');
 
             if ($cmd == 'c') {
-                $result = $this->batchCopy($commands['parent_id'], $pks);
+                $result = $this->batchCopy($commands['parent_id'], $pks, $contexts);
 
                 if (is_array($result)) {
                     $pks = $result;
@@ -163,9 +246,10 @@ class PFrepoModelDirectory extends JModelAdmin
                     return false;
                 }
             }
-            elseif ($cmd == 'm' && !$this->batchMove($commands['parent_id'], $pks)) {
+            elseif ($cmd == 'm' && !$this->batchMove($commands['parent_id'], $pks, $contexts)) {
                 return false;
             }
+
             $done = true;
         }
 
@@ -184,18 +268,24 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Batch move items to a new directory
      *
-     * @param     integer    $value    The new parent ID.
-     * @param     array      $pks      An array of row IDs.
+     * @param     integer    $value       The new parent ID.
+     * @param     array      $pks         An array of row IDs.
+     * @param     array      $contexts    An array of item contexts.
      *
-     * @return    boolean              True if successful, false otherwise and internal error is set.
+     * @return    boolean                 True if successful, false otherwise and internal error is set.
      */
-    protected function batchMove($value, $pks)
+    protected function batchMove($value, $pks, $contexts)
     {
-        $dest = (int) $value;
-
+        $dest  = (int) $value;
         $table = $this->getTable();
+        $user  = JFactory::getUser();
 
         // Check that the destination exists
+        if (empty($dest)) {
+            $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_MOVE_DIRECTORY_NOT_FOUND'));
+            return false;
+        }
+
         if ($dest) {
             if (!$table->load($dest)) {
                 if ($error = $dest->getError()) {
@@ -210,19 +300,25 @@ class PFrepoModelDirectory extends JModelAdmin
             }
         }
 
-        if (empty($dest)) {
-            $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_MOVE_DIRECTORY_NOT_FOUND'));
-            return false;
-        }
+        $project   = $table->project_id;
+        $dest_path = $table->path;
 
-        // Check that user has create and edit permission
-        $access = PFrepoHelper::getActions();
-        if (!$access->get('core.create')) {
+        // Check that the user can create in the destination
+        if (!$user->authorise('core.create', 'com_pfrepo.directory.' . $dest)) {
             $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_CANNOT_CREATE_DIRECTORY'));
             return false;
         }
 
-        // Parent exists so we let's proceed
+        // Check that the user can edit the all selected items
+        foreach ($pks as $pk)
+        {
+            if (!$user->authorise('core.edit', 'com_pfrepo.directory.' . (int) $pk)) {
+                $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_CANNOT_EDIT_DIRECTORY'));
+                return false;
+            }
+        }
+
+        // Move each item
         foreach ($pks as $pk)
         {
             // Check that the row actually exists
@@ -239,6 +335,8 @@ class PFrepoModelDirectory extends JModelAdmin
                 }
             }
 
+            $path = $table->path;
+
             // Set the new location in the tree for the node.
             $table->setLocation($dest, 'last-child');
 
@@ -253,6 +351,9 @@ class PFrepoModelDirectory extends JModelAdmin
                 $this->setError($table->getError());
                 return false;
             }
+
+            // Update physical path
+            $this->savePhysical($project, $path, $table->path);
 
             // Rebuild the paths of the directory children
             if (!$table->rebuild($table->id, $table->lft, $table->level, $table->path)) {
@@ -271,63 +372,60 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Batch copy directories to a new directory.
      *
-     * @param     integer    $value    The destination dir.
-     * @param     array      $pks      An array of row IDs.
+     * @param     integer    $value       The destination dir.
+     * @param     array      $pks         An array of row IDs.
+     * @param     array      $contexts    An array of item contexts.
      *
-     * @return    mixed                An array of new IDs on success, boolean false on failure.
+     * @return    mixed                   An array of new IDs on success, boolean false on failure.
      */
-    protected function batchCopy($value, $pks)
+    protected function batchCopy($value, $pks, $contexts)
     {
-        $dest = (int) $value;
-        $rbid = null;
-
+        $dest  = (int) $value;
         $table = $this->getTable();
-        $db    = $this->getDbo();
+        $query = $this->_db->getQuery(true);
         $user  = JFactory::getUser();
 
-        $i = 0;
+        $is_admin = $user->authorise('core.admin', 'com_pfrepo');
+        $levels   = $user->getAuthorisedViewLevels();
 
         // Check that the parent exists
-        if ($dest) {
-            if (!$table->load($dest)) {
-                if ($error = $table->getError()) {
-                    $this->setError($error);
-                    return false;
-                }
-                else {
-                    $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_COPY_DIRECTORY_NOT_FOUND'));
-                    return false;
-                }
-            }
-            // Check that user has create permission for parent directory
-            $access = PFrepoHelper::getActions('directory', $dest);
+        if (!$dest) {
+            $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_COPY_DIRECTORY_NOT_FOUND'));
+            return false;
+        }
 
-            if (!$access->get('core.create')) {
-                // Error since user cannot create in parent dir
-                $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_CANNOT_CREATE_DIRECTORY'));
+        if (!$table->load($dest)) {
+            if ($error = $table->getError()) {
+                $this->setError($error);
+                return false;
+            }
+            else {
+                $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_COPY_DIRECTORY_NOT_FOUND'));
                 return false;
             }
         }
 
-        // We need to log the parent ID
-        $rbid    = $table->parent_id;
-        $parents = array();
-
-        // Calculate the emergency stop count as a precaution against a runaway loop bug
-        $query = $db->getQuery(true);
-        $query->select('COUNT(id)')
-              ->from($db->quoteName('#__pf_repo_dirs'))
-              ->where('project_id = ' . $db->quote($table->project_id));
-
-        $db->setQuery($query);
-        $count = (int) $db->loadResult();
-
-        if ($error = $db->getErrorMsg()) {
-            $this->setError($error);
+        // Check that user has create permission for parent directory
+        if (!$user->authorise('core.create', 'com_pfrepo.directory.' . $dest)) {
+            $this->setError(JText::_('COM_PROJECTFORK_ERROR_BATCH_CANNOT_CREATE_DIRECTORY'));
             return false;
         }
 
-        // Parent exists so we let's proceed
+        // Calculate the emergency stop count as a precaution against a runaway loop bug
+        $query->select('COUNT(id)')
+              ->from('#__pf_repo_dirs')
+              ->where('project_id = ' . (int) $table->project_id);
+
+        $this->_db->setQuery($query);
+        $count = (int) $this->_db->loadResult();
+
+        // We need to log the parent ID
+        $rbid    = (int) $table->parent_id;
+        $parents = array();
+        $new_ids = array();
+        $i       = 0;
+
+        // Process each item
         while (!empty($pks) && $count > 0)
         {
             // Pop the first id off the stack
@@ -349,46 +447,49 @@ class PFrepoModelDirectory extends JModelAdmin
                 }
             }
 
-            // Copy is a bit tricky, because we also need to copy the children
-            $query->clear();
-            $query->select('id')
-                  ->from($db->quoteName('#__pf_repo_dirs'))
+            // Copy is a bit tricky, because we also need to copy the children too
+            $query->clear()
+                  ->select('id, access')
+                  ->from('#__pf_repo_dirs')
                   ->where('lft > ' . (int) $table->lft)
                   ->where('rgt < ' . (int) $table->rgt);
 
-            $db->setQuery($query);
-            $childIds = $db->loadColumn();
+            $this->_db->setQuery($query);
+            $sub_dirs = (array) $this->_db->loadObjectList();
 
-            // Add child ID's to the array only if they aren't already there.
-            foreach ($childIds as $childId)
+            // Add sub dirs to the array only if they aren't already there.
+            foreach ($sub_dirs as $dir)
             {
-                if (!in_array($childId, $pks)) {
-                    array_push($pks, $childId);
+                if (!in_array($dir->id, $pks)) {
+                    // Check viewing access
+                    if ($is_admin || in_array($dir->access, $levels)) {
+                        array_push($pks, $dir->id);
+                    }
                 }
             }
 
             // Make a copy of the old ID and Parent ID
-            $oldId       = $table->id;
-            $oldParentId = $table->parent_id;
+            $old_id     = $table->id;
+            $old_parent = $table->parent_id;
+            $path       = $table->path;
 
             // Reset the id because we are making a copy.
             $table->id = 0;
 
-            // If we a copying children, the Old ID will turn up in the parents list
+            // If we are copying children, the Old ID will turn up in the parents list
             // otherwise it's a new top level item
-            $table->parent_id = isset($parents[$oldParentId]) ? $parents[$oldParentId] : $dest;
+            $table->parent_id = isset($parents[$old_parent]) ? $parents[$old_parent] : $dest;
 
             // Set the new location in the tree for the node.
             $table->setLocation($table->parent_id, 'last-child');
 
-            $table->level = null;
+            $table->level    = null;
             $table->asset_id = null;
-            $table->lft = null;
-            $table->rgt = null;
-            $table->protected = 0;
+            $table->lft      = null;
+            $table->rgt      = null;
 
             // Alter the title & alias
-            list($title, $alias) = $this->generateNewTitle($table->parent_id, $table->title, $table->alias);
+            list($title, $alias) = $this->generateNewTitle($table->parent_id, $table->title, '');
             $table->title = $title;
             $table->alias = $alias;
 
@@ -399,14 +500,29 @@ class PFrepoModelDirectory extends JModelAdmin
             }
 
             // Get the new item ID
-            $newId = $table->get('id');
+            $new_id = $table->get('id');
+
+            // Rebuild the path for the directory
+            if (!$table->rebuildPath($new_id)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Make a physical copy
+            $this->copyPhysical($table->project_id, $path, $table->path);
+
+            // Rebuild the paths of the directory children
+            if (!$table->rebuild($table->id, $table->lft, $table->level, $table->path)) {
+                $this->setError($table->getError());
+                return false;
+            }
 
             // Add the new ID to the array
-            $newIds[$i] = $newId;
+            $new_ids[$i] = $new_id;
             $i++;
 
             // Now we log the old 'parent' to the new 'parent'
-            $parents[$oldId] = $table->id;
+            $parents[$old_id] = $table->id;
             $count--;
         }
 
@@ -424,53 +540,82 @@ class PFrepoModelDirectory extends JModelAdmin
 
         // Copy the notes and files in the directories
         if (count($parents)) {
+            $config     = array('ignore_request' => true);
             $suffix     = ((JFactory::getApplication()->isSite()) ? 'Form' : '');
-            $note_model = $this->getInstance('Note' . $suffix, 'PFrepoModel', array('ignore_request' => true));
-            $file_model = $this->getInstance('File' . $suffix, 'PFrepoModel', array('ignore_request' => true));
+            $note_model = $this->getInstance('Note' . $suffix, 'PFrepoModel', $config);
+            $file_model = $this->getInstance('File' . $suffix, 'PFrepoModel', $config);
 
             foreach($parents AS $old => $new)
             {
-                $query->clear();
-                $query->select('id')
-                      ->from($db->quoteName('#__pf_repo_notes'))
+                // Get notes
+                $query->clear()
+                      ->select('id, access')
+                      ->from('#__pf_repo_notes')
                       ->where('dir_id = ' . (int) $old);
 
-                $db->setQuery($query);
-                $notes = (array) $db->loadColumn();
+                $this->_db->setQuery($query);
+                $notes = (array) $this->_db->loadObjectList();
 
-                $query->clear();
-                $query->select('id')
-                      ->from($db->quoteName('#__pf_repo_files'))
+                // Get files
+                $query->clear()
+                      ->select('id, access')
+                      ->from('#__pf_repo_files')
                       ->where('dir_id = ' . (int) $old);
 
-                $db->setQuery($query);
-                $files = (array) $db->loadColumn();
+                $this->_db->setQuery($query);
+                $files = (array) $this->_db->loadObjectList();
 
-                if (count($notes)) {
-                    if (!$note_model->batchCopy($new, $notes)) {
-                        $this->setError($note_model->getError());
+                // Check notes access
+                $pks = array();
+                foreach ($notes AS $item)
+                {
+                    if ($is_admin || in_array($item->access, $levels)) {
+                        $pks[] = $item->id;
                     }
                 }
 
+                $notes = $pks;
+
+                // Check files access
+                $pks = array();
+                foreach ($files AS $item)
+                {
+                    if ($is_admin || in_array($item->access, $levels)) {
+                        $pks[] = $item->id;
+                    }
+                }
+
+                $files = $pks;
+
+                // Process notes
+                if (count($notes)) {
+                    if (!$note_model->batchCopy($new, $notes, $contexts)) {
+                        $this->setError($note_model->getError());
+                        return false;
+                    }
+                }
+
+                // Process files
                 if (count($files)) {
-                    if (!$file_model->batchCopy($new, $files)) {
+                    if (!$file_model->batchCopy($new, $files, $contexts)) {
                         $this->setError($file_model->getError());
+                        return false;
                     }
                 }
             }
         }
 
-        return $newIds;
+        return $new_ids;
     }
 
 
     /**
      * Method to get the record form.
      *
-     * @param     array      Data for the form.
-     * @param     boolean    True if the form is to load its own data (default case), false if not.
+     * @param     array      $data        Data for the form.
+     * @param     boolean    $loadData    True if the form is to load its own data (default case), false if not.
      *
-     * @return    mixed      A JForm object on success, false on failure
+     * @return    mixed                   A JForm object on success, false on failure
      */
     public function getForm($data = array(), $loadData = true)
     {
@@ -483,7 +628,7 @@ class PFrepoModelDirectory extends JModelAdmin
         $id     = (int) $jinput->get('id', 0);
 
         // Always disable these fields while saving
-		$form->setFieldAttribute('alias', 'filter', 'unset');
+        $form->setFieldAttribute('alias', 'filter', 'unset');
 
         // Disable these fields if not an admin
         if (!$user->authorise('core.admin', 'com_pfrepo')) {
@@ -502,15 +647,14 @@ class PFrepoModelDirectory extends JModelAdmin
 
             // We still need to inject the project id when reloading the form
             if (!isset($data['project_id'])) {
-                $db    = JFactory::getDbo();
-                $query = $db->getQuery(true);
+                $query = $this->_db->getQuery(true);
 
                 $query->select('project_id')
                       ->from('#__pf_repo_dirs')
-                      ->where('id = ' . $db->quote($id));
+                      ->where('id = ' . $id);
 
-                $db->setQuery($query);
-                $form->setValue('project_id', null, (int) $db->loadResult());
+                $this->_db->setQuery($query);
+                $form->setValue('project_id', null, (int) $this->_db->loadResult());
             }
         }
 
@@ -527,73 +671,72 @@ class PFrepoModelDirectory extends JModelAdmin
      */
     public function save($data)
     {
-        // Initialise variables;
-        $table  = $this->getTable();
-        $pk     = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
-        $date   = JFactory::getDate();
-        $is_new = true;
+        $dispatcher = JDispatcher::getInstance();
+        $date       = JFactory::getDate();
 
+        $table    = $this->getTable();
+        $pk       = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
+        $is_new   = true;
         $old_path = null;
+
+        // Include the content plugins for the on save events.
+        JPluginHelper::importPlugin('content');
 
         // Load the row if saving an existing item.
         if ($pk > 0) {
             if ($table->load($pk)) {
                 $is_new = false;
 
-                if (!empty($table->path)) {
-                    $old_path = $table->path;
-                }
-            }
-            else {
-                $pk = 0;
+                if (!empty($table->path)) $old_path = $table->path;
             }
         }
 
-        if (!$is_new) {
-            $data['project_id'] = $table->project_id;
-        }
+        // Prevent project id override for existing items
+        if (!$is_new) $data['project_id'] = $table->project_id;
 
         // Make sure the title and alias are always unique
-        $data['alias'] = '';
-        list($title, $alias) = $this->generateNewTitle($data['parent_id'], $data['title'], $data['alias'], $pk);
+        list($title, $alias) = $this->generateNewTitle($data['parent_id'], $data['title'], '', $pk);
 
         $data['title'] = $title;
         $data['alias'] = $alias;
 
+        // If we're not creating a new project repo...
         if (!$this->getState('create_repo')) {
-            if (intval($data['parent_id']) <= 1 && ($isNew == false && $table->parent_id > 1)) {
-                $this->setError(JText::_('COM_PROJECTFORK_ERROR_REPO_SAVE_ROOT_DIR') . 'yarr 0');
+            // Don't allow the creation of new folders in root
+            if ($data['parent_id'] <= 1 && $is_new) {
+                $this->setError(JText::_('COM_PROJECTFORK_ERROR_REPO_SAVE_ROOT_DIR'));
                 return false;
             }
 
-            if (isset($data['protected'])) {
-                $data['protected'] = 0;
-            }
+            // Don't allow new folders to be protected
+            if (isset($data['protected'])) $data['protected'] = 0;
         }
 
         // Set the new parent id if parent id not matched OR while New/Save as Copy.
         if ($table->parent_id != $data['parent_id'] || $is_new) {
-            $table->setLocation($data['parent_id'], 'last-child');
+            // Fix: Folder cannot be parent of self
+            if ($data['parent_id'] != $table->id) {
+                $table->setLocation($data['parent_id'], 'last-child');
+            }
+            else {
+                $data['parent_id'] = $table->parent_id;
+            }
         }
 
         // Handle permissions and access level
         if (isset($data['rules'])) {
             $access = PFAccessHelper::getViewLevelFromRules($data['rules'], intval($data['access']));
 
-            if ($access) {
-                $data['access'] = $access;
-            }
+            if ($access) $data['access'] = $access;
         }
         else {
             if ($is_new) {
                 // Let the table class find the correct access level
                 $data['access'] = 0;
             }
-            else {
+            elseif (isset($data['access'])) {
                 // Keep the existing access in the table
-                if (isset($data['access'])) {
-                    unset($data['access']);
-                }
+                unset($data['access']);
             }
         }
 
@@ -609,10 +752,32 @@ class PFrepoModelDirectory extends JModelAdmin
             return false;
         }
 
+        // Trigger the onContentBeforeSave event.
+        $result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, $is_new));
+
+        if (in_array(false, $result, true)) {
+            $this->setError($table->getError());
+            return false;
+        }
+
         // Store the data.
         if (!$table->store()) {
             $this->setError($table->getError());
             return false;
+        }
+
+        // Trigger the onContentAfterSave event.
+        $dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $is_new));
+
+        // Store the labels
+        if (isset($data['labels'])) {
+            $labels = $this->getInstance('Labels', 'PFModel', $config = array());
+
+            $labels->setState('item.project', $table->project_id);
+            $labels->setState('item.type', 'com_pfrepo.directory');
+            $labels->setState('item.id', $table->id);
+
+            $labels->saveRefs($data['labels']);
         }
 
         // Rebuild the path for the directory
@@ -621,32 +786,24 @@ class PFrepoModelDirectory extends JModelAdmin
             return false;
         }
 
+        // Update physical path
+        if (!$is_new) {
+            $this->savePhysical($table->project_id, $old_path, $table->path);
+        }
+
         // Rebuild the paths of the directory children
         if (!$table->rebuild($table->id, $table->lft, $table->level, $table->path)) {
             $this->setError($table->getError());
             return false;
         }
 
-        $this->setState($this->getName() . '.id', $table->id);
-
-        $updated = $this->getTable();
-        if ($updated->load($table->id) === false) return false;
-
-        // Store the labels
-        if (isset($data['labels'])) {
-            $labels = $this->getInstance('Labels', 'PFModel');
-
-            if ((int) $labels->getState('item.project') == 0) {
-                $labels->setState('item.project', $updated->project_id);
-            }
-
-            $labels->setState('item.type', 'com_pfrepo.directory');
-            $labels->setState('item.id', $updated->id);
-
-            if (!$labels->saveRefs($data['labels'])) {
-                return false;
-            }
+        // Create physical path
+        if ($is_new) {
+            $this->savePhysical($table->project_id, $table->path);
         }
+
+        // Set id state
+        $this->setState($this->getName() . '.id', $table->id);
 
         // Clear the cache
         $this->cleanCache();
@@ -656,307 +813,249 @@ class PFrepoModelDirectory extends JModelAdmin
 
 
     /**
-     * Method to rebuild the data structure on the server
-     *
-     * @param     string     $new        The new path
-     * @param     string     $old        The previous path to rename
-     * @param     integer    $project    The project id of the directory
-     *
-     * @return    boolean                True on success, otherwise False
-     */
-    public function exportStructure($project = 0)
-    {
-        $basepath = PFrepoHelper::getBasePath($project);
-
-        if (!empty($old) && $old != $new) {
-            // Rename existing path
-            $old_path = $basepath . '/' . $old;
-            $new_path = $basepath . '/' . $new;
-
-            if (JFolder::exists($new_path)) {
-                $this->setError(JText::_('COM_PROJECTFORK_ERROR_REPO_DIR_EXISTS') . ' ' . $new_path);
-                return false;
-            }
-
-            if (!JFolder::exists($old_path)) {
-                return $this->rebuildPath($new_path, NULL, $project);
-            }
-
-            $result = JFolder::move($old_path, $new_path);
-
-            if ($result !== true) {
-                return false;
-            }
-
-            return true;
-        }
-        else {
-            // Create new one
-            $new_path = $basepath . '/' . $new;
-
-            if (JFolder::exists($new_path)) {
-                return true;
-            }
-
-            if (!JFolder::create($new_path)) {
-                return false;
-            }
-
-            return true;
-        }
-
-        return false;
-    }
-
-
-    /**
      * Method to delete one or more records.
      *
-     * @param     array      $pks    An array of record primary keys.
+     * @param     array      $pks              An array of record primary keys.
+     * @param     bool       $ignore_access    If true, ignore permission and just delete
      *
-     * @return    boolean            True if successful, false if an error occurs.
+     * @return    boolean                      True if successful, false if an error occurs.
      */
-    public function delete(&$pks)
+    public function delete(&$pks, $ignore_access = false)
     {
         $dispatcher = JDispatcher::getInstance();
 
         $pks   = (array) $pks;
-        $table = $this->getTable();
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
-        $moved = array();
-        $dest  = 0;
+        $query = $this->_db->getQuery(true);
 
         // Include the content plugins for the on delete events.
         JPluginHelper::importPlugin('content');
 
-        // Move the sub folders up which we are not allowed to delete
+        // Get model instances
+        $config     = array('ignore_request' => true);
+        $suffix     = (JFactory::getApplication()->isSite() ? 'Form' : '');
+        $note_model = $this->getInstance('Note' . $suffix, 'PFrepoModel', $config);
+        $file_model = $this->getInstance('File' . $suffix, 'PFrepoModel', $config);
+        $sub_table  = $this->getTable();
+        $table      = $this->getTable();
+
+        // Iterate over the items to delete each one.
         foreach ($pks as $i => $pk)
         {
-            // Get the parent id of the current directory
-            $query->clear();
-            $query->select('parent_id')
-                  ->from($table->getTableName())
-                  ->where($table->getKeyName() . ' = ' . (int) $pk);
-
-            $db->setQuery((string) $query);
-            $dest = (int) $db->loadResult();
-
-            if ($dest > 1) {
-                // Get the children
-                $tree = (array) $table->getTree($pk);
-
-                foreach($tree AS $x => $item)
-                {
-                    $is_included = false;
-                    foreach ($moved AS $p)
-                    {
-                        if ($item->lft > $p[0] && $item->rgt < $p[1]) {
-                            $is_included = true;
-                        }
-                    }
-
-                    if ($is_included) continue;
-
-                    if (intval($item->id) != $pk) {
-                        if (!$this->canDelete($item)) {
-                            $table->load($item->id);
-                            $table->setLocation($dest, 'last-child');
-
-                            if (!$table->store()) {
-                                $this->setError($table->getError());
-                                return false;
-                            }
-
-                            if (!$table->rebuildPath($table->id)) {
-                                $this->setError($table->getError());
-                                return false;
-                            }
-
-                            if (!$table->rebuild($table->id, $table->lft, $table->level, $table->path)) {
-                                $this->setError($table->getError());
-                                return false;
-                            }
-
-                            $moved[] = array($item->lft, $item->rgt);
-                        }
-                    }
-                }
-            }
-        }
-
-        // Iterate the items to delete each one.
-        $suffix     = ((JFactory::getApplication()->isSite()) ? 'Form' : '');
-        $note_model = $this->getInstance('Note' . $suffix, 'PFrepoModel', array('ignore_request' => true));
-        $file_model = $this->getInstance('File' . $suffix, 'PFrepoModel', array('ignore_request' => true));
-        $note_table = $this->getTable('Note');
-        $file_table = $this->getTable('File');
-
-        foreach ($pks as $i => $pk)
-        {
-            if ($table->load($pk)) {
-                if ($this->canDelete($table)) {
-                    $context  = $this->option . '.' . $this->name;
-                    $tree     = $table->getTree($pk, true);
-                    $dir_list = array();
-
-                    $dir_project = (int) $table->project_id;
-                    $dir_path    = $table->path;
-
-                    if (is_array($tree) && count($tree) > 0) {
-                        foreach($tree AS $dir)
-                        {
-                            $dir_list[] = (int) $dir->id;
-                        }
-                    }
-
-                    // Trigger the onContentBeforeDelete event.
-                    $result = $dispatcher->trigger($this->event_before_delete, array($context, $table));
-
-                    if (in_array(false, $result, true)) {
-                        $this->setError($table->getError());
-                        return false;
-                    }
-
-                    if (!$table->delete($pk)) {
-                        $this->setError($table->getError());
-                        return false;
-                    }
-
-                    if (is_array($dir_list) && count($dir_list) > 0) {
-                        $move_notes = array();
-                        $del_notes  = array();
-                        $move_files = array();
-                        $del_files  = array();
-
-                        // Get the notes for deletion
-                        $query->clear();
-                        $query->select('id, asset_id, access')
-                              ->from('#__pf_repo_notes')
-                              ->where('dir_id IN(' . implode(', ', $dir_list) . ')');
-
-                        $db->setQuery($query);
-                        $notes = (array) $db->loadObjectList();
-
-                        foreach($notes AS $note)
-                        {
-                            if (!$note_model->canDelete($note)) {
-                                $move_notes[] = $note->id;
-                            }
-                            else {
-                                $del_notes[] = $note->id;
-                            }
-                        }
-
-                        // Get the files for deletion
-                        $query->clear();
-                        $query->select('id, asset_id, access')
-                              ->from('#__pf_repo_files')
-                              ->where('dir_id IN(' . implode(', ', $dir_list) . ')');
-
-                        $db->setQuery($query);
-                        $files = (array) $db->loadObjectList();
-
-                        foreach($files AS $file)
-                        {
-                            if (!$file_model->canDelete($file)) {
-                                $move_files[] = $file->id;
-                            }
-                            else {
-                                $del_files[] = $file->id;
-                            }
-                        }
-
-                        // Delete notes
-                        if (count($del_notes)) {
-                            $query->clear();
-                            $query->delete('#__pf_repo_notes')
-                                  ->where('id IN(' . implode(', ', $del_notes) . ')');
-
-                            $db->setQuery((string) $query);
-                            $db->execute();
-
-                            if ($db->getErrorMsg()) {
-                                $this->setError($db->getErrorMsg());
-                            }
-                        }
-
-                        // Move notes you cant delete
-                        foreach($move_notes AS $note)
-                        {
-                            if ($note_table->load($note)) {
-                                $note_table->dir_id = $table->parent_id;
-
-                                if (!$note_table->store()) {
-                                    $this->setError($note_table->getError());
-                                }
-                            }
-                        }
-
-                        // Delete files
-                        if (count($del_files)) {
-                            $query->clear();
-                            $query->delete('#__pf_repo_files')
-                                  ->where('id IN(' . implode(', ', $del_files) . ')');
-
-                            $db->setQuery((string) $query);
-                            $db->execute();
-
-                            if ($db->getErrorMsg()) {
-                                $this->setError($db->getErrorMsg());
-                            }
-                        }
-
-                        // Move files you cant delete
-                        foreach($move_files AS $file)
-                        {
-                            if ($file_table->load($file)) {
-                                $file_table->dir_id = $table->parent_id;
-
-                                if (!$file_table->store()) {
-                                    $this->setError($file_table->getError());
-                                }
-                            }
-                        }
-                    }
-
-                    // Delete the physical directory if it exists
-                    if ($dir_project) {
-                        $basepath = PFrepoHelper::getBasePath($dir_project);
-                        $fullpath = JPath::clean($basepath . '/' . $dir_path);
-
-                        if (JFolder::exists($fullpath)) {
-                            JFolder::delete($fullpath);
-                        }
-                    }
-
-                    // Trigger the onContentAfterDelete event.
-                    $dispatcher->trigger($this->event_after_delete, array($context, $table));
-                }
-                else {
-                    // Prune items that you can't change.
-                    unset($pks[$i]);
-                    $error = $this->getError();
-                    if ($error) {
-                        JError::raiseWarning(500, $error);
-                        return false;
-                    }
-                    else {
-                        JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'));
-                        return false;
-                    }
-                }
-            }
-            else {
+            // Try to load the item from the db
+            if (!$table->load($pk)) {
                 $this->setError($table->getError());
                 return false;
             }
+
+            // Check delete permission (includes check on sub-dirs, notes and files)
+            if (!$ignore_access) {
+                if (!$this->canDelete($table)) {
+                    // Prune items that you can't change.
+                    unset($pks[$i]);
+
+                    $error = $this->getError();
+
+                    if ($error) {
+                        JError::raiseWarning(500, $error);
+                    }
+                    else {
+                        JError::raiseWarning(403, JText::_('JLIB_APPLICATION_ERROR_DELETE_NOT_PERMITTED'));
+                    }
+
+                    return false;
+                }
+            }
+
+            // Trigger the onContentBeforeDelete event.
+            $context = $this->option . '.' . $this->name;
+            $result  = $dispatcher->trigger($this->event_before_delete, array($context, $table));
+
+            if (in_array(false, $result, true)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Get all sub-directories
+            $query->clear()
+                  ->select('id')
+                  ->from('#__pf_repo_dirs')
+                  ->where('lft > ' . (int) $table->lft)
+                  ->where('rgt < ' . (int) $table->rgt)
+                  ->order('level DESC');
+
+            $this->_db->setQuery($query);
+            $sub_dirs = (array) $this->_db->loadColumn();
+
+            $dirs   = $sub_dirs;
+            $dirs[] = (int) $table->id;
+
+            $where = 'dir_id ' . (count($sub_dirs) == 1 ? '= ' . $dirs[0] : 'IN(' . implode(', ', $dirs) . ')');
+
+            // Get all notes
+            $query->clear()
+                  ->select('id')
+                  ->from('#__pf_repo_notes')
+                  ->where($where);
+
+            $this->_db->setQuery($query);
+            $notes = (array) $this->_db->loadColumn();
+
+            // Get all files
+            $query->clear()
+                  ->select('id')
+                  ->from('#__pf_repo_files')
+                  ->where($where);
+
+            $this->_db->setQuery($query);
+            $files = (array) $this->_db->loadColumn();
+
+            // Delete all notes
+            if (count($notes)) {
+                if (!$note_model->delete($notes, $ignore_access)) {
+                    $this->setError($note_model->getError());
+                    return false;
+                }
+            }
+
+            // Delete all files
+            if (count($files)) {
+                if (!$file_model->delete($files, $ignore_access)) {
+                    $this->setError($file_model->getError());
+                    return false;
+                }
+            }
+
+            // Delete all sub-dirs
+            if (count($sub_dirs)) {
+                foreach ($sub_dirs AS $sub_dir)
+                {
+                    // Try to load the item from the db
+                    if (!$sub_table->load($sub_dir)) {
+                        $this->setError($sub_table->getError());
+                        return false;
+                    }
+
+                    if (!$sub_table->delete((int) $sub_dir)) {
+                        $this->setError($sub_table->getError());
+                        return false;
+                    }
+
+                    // Delete physical path if exists
+                    $basepath = PFrepoHelper::getBasePath();
+                    $fullpath = JPath::clean($basepath . '/' . $sub_table->path);
+
+                    if (JFolder::exists($fullpath)) JFolder::delete($fullpath);
+                }
+            }
+
+            // And finally, delete this dir
+            if (!$table->delete($pk)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Delete physical path if exists
+            $basepath = PFrepoHelper::getBasePath();
+            $fullpath = JPath::clean($basepath . '/' . $table->path);
+
+            if (JFolder::exists($fullpath)) JFolder::delete($fullpath);
+
+            // Trigger the onContentAfterDelete event.
+            $dispatcher->trigger($this->event_after_delete, array($context, $table));
         }
 
         // Clear the component's cache
         $this->cleanCache();
 
         return true;
+    }
+
+
+    /**
+     * Method to physically create or move a directory
+     *
+     * @param     array      $data    The directory data
+     *
+     * @return    boolean             True on success
+     */
+    protected function savePhysical($project, $path, $dest = null)
+    {
+        if (!$project) return false;
+
+        $base        = PFrepoHelper::getBasePath();
+        $path_exists = JFolder::exists($base . '/' . $path);
+
+        // Create new directory?
+        if (empty($dest)) {
+            if ($path_exists) return true;
+
+            return JFolder::create($base . '/' . $path);
+        }
+
+        $dest_exists = JFolder::exists($base . '/' . $dest);
+
+        if ($dest == $path) return true;
+
+        // Move existing dir
+        if ($path_exists && !$dest_exists) {
+            return JFolder::move($base . '/' . $path, $base . '/' . $dest);
+        }
+
+        // Create new dir at destination
+        if (!$path_exists && !$dest_exists) {
+            return JFolder::create($base . '/' . $dest);
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Method to physically copy directory
+     *
+     * @param     array      $data    The directory data
+     *
+     * @return    boolean             True on success
+     */
+    protected function copyPhysical($project, $path, $dest)
+    {
+        if (!$project) return false;
+
+        $base        = PFrepoHelper::getBasePath();
+        $path_exists = JFolder::exists($base . '/' . $path);
+        $dest_exists = JFolder::exists($base . '/' . $dest);
+
+        // Do nothing if the path does not exist or if the destination already exists
+        if (!$path_exists || $dest_exists) return true;
+
+        return JFolder::copy($base . '/' . $path, $base . '/' . $dest);
+    }
+
+
+    /**
+     * Method to check if a project still exists
+     *
+     * @param     integer    $project    The project id to check
+     *
+     * @return    boolean                True if not found, False if found.
+     */
+    protected function isOrphaned($project)
+    {
+        static $cache = array();
+
+        // Check the cache
+        if (isset($cache[$project])) return $cache[$project];
+
+        $query = $this->_db->getQuery(true);
+
+        $query->select('id')
+              ->from('#__pf_projects')
+              ->where('id = ' . (int) $project);
+
+        $this->_db->setQuery($query);
+        $cache[$project] = ($this->_db->loadResult() > 0 ? false : true);
+
+        return $cache[$project];
     }
 
 
@@ -972,10 +1071,8 @@ class PFrepoModelDirectory extends JModelAdmin
      */
     protected function generateNewTitle($parent_id, $title, $alias = '', $id = 0)
     {
-        // Alter the title & alias
         $table = $this->getTable();
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        $query = $this->_db->getQuery(true);
 
         if (empty($alias)) {
             $alias = JApplication::stringURLSafe($title);
@@ -987,40 +1084,34 @@ class PFrepoModelDirectory extends JModelAdmin
 
         $query->select('COUNT(id)')
               ->from($table->getTableName())
-              ->where('alias = ' . $db->quote($alias))
-              ->where('parent_id = ' . $db->quote($parent_id));
+              ->where('alias = ' . $this->_db->quote($alias))
+              ->where('parent_id = ' . (int) $parent_id);
 
-        if ($id) {
-            $query->where('id != ' . intval($id));
-        }
+        if ($id) $query->where('id != ' . intval($id));
 
-        $db->setQuery((string) $query);
-        $count = (int) $db->loadResult();
+        $this->_db->setQuery($query);
+        $count = (int) $this->_db->loadResult();
 
-        if ($id > 0 && $count == 0) {
-            return array($title, $alias);
-        }
-        elseif ($id == 0 && $count == 0) {
-            return array($title, $alias);
-        }
-        else {
-            while ($table->load(array('alias' => $alias, 'parent_id' => $parent_id)))
-            {
-                $m = null;
+        // No duplicates found?
+        if (!$count) return array($title, $alias);
 
-                if (preg_match('#-(\d+)$#', $alias, $m)) {
-                    $alias = preg_replace('#-(\d+)$#', '-'.($m[1] + 1).'', $alias);
-                }
-                else {
-                    $alias .= '-2';
-                }
+        // Generate new title
+        while ($table->load(array('alias' => $alias, 'parent_id' => $parent_id)))
+        {
+            $m = null;
 
-                if (preg_match('#\((\d+)\)$#', $title, $m)) {
-                    $title = preg_replace('#\(\d+\)$#', '('.($m[1] + 1).')', $title);
-                }
-                else {
-                    $title .= ' (2)';
-                }
+            if (preg_match('#-(\d+)$#', $alias, $m)) {
+                $alias = preg_replace('#-(\d+)$#', '-'.($m[1] + 1).'', $alias);
+            }
+            else {
+                $alias .= '-2';
+            }
+
+            if (preg_match('#\((\d+)\)$#', $title, $m)) {
+                $title = preg_replace('#\(\d+\)$#', '('.($m[1] + 1).')', $title);
+            }
+            else {
+                $title .= ' (2)';
             }
         }
 
@@ -1031,16 +1122,16 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Custom clean the cache of com_projectfork and projectfork modules
      *
+     * @return    void    
      */
-    protected function cleanCache()
+    protected function cleanCache($group = 'com_pfrepo', $client_id = 0)
     {
-        parent::cleanCache('com_pfrepo');
+        parent::cleanCache($group, $client_id);
     }
 
 
     /**
      * Method to test whether a record can be deleted.
-     * Defaults to the permission set in the component.
      *
      * @param     object     A record object.
      *
@@ -1048,14 +1139,84 @@ class PFrepoModelDirectory extends JModelAdmin
      */
     protected function canDelete($record)
     {
-        if (!empty($record->id)) {
-            $user  = JFactory::getUser();
-            $asset = 'com_pfrepo.directory.' . (int) $record->id;
-
-            return $user->authorise('core.delete', $asset);
+        if (empty($record->id) || ($record->protected == '1' && !$this->isOrphaned($record->project_id))) {
+            return false;
         }
 
-        return parent::canDelete($record);
+        $user   = JFactory::getUser();
+        $levels = $user->getAuthorisedViewLevels();
+
+        // Check if admin first
+        if ($user->authorise('core.admin', 'com_pfrepo')) {
+            return true;
+        }
+
+        // Check delete permission on the folder
+        if (!$user->authorise('core.delete', 'com_pfrepo.directory.' . (int) $record->id)) {
+            return false;
+        }
+
+        // Check delete permissions for sub-folders
+        $query = $this->_db->getQuery(true);
+
+        $query->select('id, access')
+              ->from('#__pf_repo_dirs')
+              ->where('a.lft > ' . (int) $record->lft)
+              ->where('a.rgt < ' . (int) $record->rgt);
+
+        $this->_db->setQuery($query);
+
+        $items = (array) $this->_db->loadObjectList();
+        $dirs  = array((int) $record->id);
+
+        foreach ($items AS $i => $item)
+        {
+            $can_access = in_array($item->access, $levels);
+            $can_delete = $user->authorise('core.delete', 'com_pfrepo.directory.' . (int) $item->id);
+
+            if (!$can_access || !$can_delete) return false;
+
+            $dirs[] = (int) $item->id;
+        }
+
+        $count = count($dirs);
+        $where = 'dir_id ' . ($count == 1 ? '= ' . $dirs[0] : 'IN(' . implode(', ', $dirs) . ')');
+
+        // Check all notes
+        $query->clear()
+              ->select('id, access')
+              ->from('#__pf_repo_notes')
+              ->where($where);
+
+        $this->_db->setQuery($query);
+        $items = (array) $this->_db->loadObjectList();
+
+        foreach ($items AS $i => $item)
+        {
+            $can_access = in_array($item->access, $levels);
+            $can_delete = $user->authorise('core.delete', 'com_pfrepo.note.' . (int) $item->id);
+
+            if (!$can_access || !$can_delete) return false;
+        }
+
+        // Check all files
+        $query->clear()
+              ->select('id, access')
+              ->from('#__pf_repo_files')
+              ->where($where);
+
+        $this->_db->setQuery($query);
+        $items = (array) $this->_db->loadObjectList();
+
+        foreach ($items AS $i => $item)
+        {
+            $can_access = in_array($item->access, $levels);
+            $can_delete = $user->authorise('core.delete', 'com_pfrepo.file.' . (int) $item->id);
+
+            if (!$can_access || !$can_delete) return false;
+        }
+
+        return true;
     }
 
 
@@ -1071,18 +1232,18 @@ class PFrepoModelDirectory extends JModelAdmin
     {
         $user = JFactory::getUser();
 
-		// Check for existing item.
-		if (!empty($record->id)) {
-			return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->id);
-		}
-		elseif (!empty($record->parent_id)) {
-		    // New item, so check against the parent dir.
-			return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->parent_id);
-		}
-		else {
-		    // Default to component settings.
-			return parent::canEditState('com_pfrepo');
-		}
+        // Check for existing item.
+        if (!empty($record->id)) {
+            return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->id);
+        }
+        elseif (!empty($record->parent_id)) {
+            // New item, so check against the parent dir.
+            return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->parent_id);
+        }
+        else {
+            // Default to component settings.
+            return parent::canEditState('com_pfrepo');
+        }
     }
 
 
@@ -1120,7 +1281,7 @@ class PFrepoModelDirectory extends JModelAdmin
         $data = JFactory::getApplication()->getUserState('com_pfrepo.edit.' . $this->getName() . '.data', array());
 
         if (empty($data)) {
-			$data = $this->getItem();
+            $data = $this->getItem();
 
             // Set default values
             if ($this->getState($this->getName() . '.id') == 0) {
@@ -1139,7 +1300,7 @@ class PFrepoModelDirectory extends JModelAdmin
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
-     * @return    void
+     * @return    void    
      */
     protected function populateState()
     {
@@ -1174,7 +1335,6 @@ class PFrepoModelDirectory extends JModelAdmin
 
             if ($project) {
                 $this->setState($this->getName() . '.project', $project);
-                PFApplicationHelper::setActiveProject($project);
             }
         }
 

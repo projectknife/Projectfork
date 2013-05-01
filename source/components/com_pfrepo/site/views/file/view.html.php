@@ -1,9 +1,10 @@
 <?php
 /**
- * @package      Projectfork
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -25,6 +26,8 @@ class PFrepoViewFile extends JViewLegacy
 
     function display($tpl = null)
     {
+        $user = JFactory::getUser();
+
         $this->item  = $this->get('Item');
         $this->state = $this->get('State');
 
@@ -34,11 +37,39 @@ class PFrepoViewFile extends JViewLegacy
             return false;
         }
 
-        $uploadpath = PFrepoHelper::getBasePath($this->item->project_id);
-        $filepath   = $uploadpath . '/' . $this->item->file_name;
-        $filename   = $this->item->file_name;
+        // Check access
+		if ($this->item->params->get('access-view') != true && (($this->item->params->get('show_noauth') != true && $user->get('guest') ))) {
+		    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+			return false;
+		}
 
-        if (!JFile::exists($filepath)) {
+        $rev = JRequest::getUInt('rev');
+
+        if ($rev) {
+            $rev_model = JModelLegacy::getInstance('FileRevision', 'PFrepoModel', $c = array('ignore_request' => true));
+            $file_rev  = $rev_model->getItem($rev);
+
+            if (!$file_rev || empty($file_rev->id)) {
+                JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_FILE_NOT_FOUND'));
+                return false;
+            }
+
+            // Check access
+            if ($file_rev->parent_id != $this->item->id) {
+                JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+                return false;
+            }
+
+            $filepath = PFrepoHelper::getBasePath($this->item->project_id) . '/_revs/file_' . $this->item->id;
+            $filename = $file_rev->file_name;
+        }
+        else {
+            $filepath = $this->item->physical_path;
+            $filename = $this->item->file_name;
+        }
+
+        // Check if the file exists
+        if (empty($filepath) || !JFile::exists($filepath . '/' . $filename)) {
             JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_FILE_NOT_FOUND'));
             return false;
         }
@@ -50,15 +81,15 @@ class PFrepoViewFile extends JViewLegacy
 
         ob_end_clean();
         header("Content-Type: APPLICATION/OCTET-STREAM");
-        header("Content-Length: " . filesize($filepath));
+        header("Content-Length: " . filesize($filepath . '/' . $filename));
         header("Content-Disposition: attachment; filename=\"" . $filename . "\";");
         header("Content-Transfer-Encoding: Binary");
 
         if (function_exists('readfile')) {
-            readfile($filepath);
+            readfile($filepath . '/' . $filename);
         }
         else {
-            echo file_get_contents($filepath);
+            echo file_get_contents($filepath . '/' . $filename);
         }
 
         jexit();

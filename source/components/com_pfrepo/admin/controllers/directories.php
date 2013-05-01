@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -21,15 +21,11 @@ jimport('joomla.application.component.controlleradmin');
 class PFrepoControllerDirectories extends JControllerAdmin
 {
     /**
-     * Constructor.
-     *
-     * @param    array          $config    An optional associative array of configuration settings
-     * @see      jcontroller
-     */
-    public function __construct($config = array())
-    {
-        parent::__construct($config);
-    }
+	 * The URL view list variable.
+	 *
+	 * @var    string
+	 */
+	protected $view_list = 'repository';
 
 
     /**

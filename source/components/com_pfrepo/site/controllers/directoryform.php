@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -36,77 +36,6 @@ class PFrepoControllerDirectoryForm extends JControllerForm
 
 
     /**
-     * Constructor.
-     *
-     * @param    array          $config    An optional associative array of configuration settings.
-     *
-     * @see      jcontroller
-     */
-    public function __construct($config = array())
-    {
-        parent::__construct($config);
-
-        // Register quick-save as "save" action
-        $this->registerTask('quicksave', 'save');
-    }
-
-
-    /**
-     * Method to add a new record.
-     *
-     * @return    boolean    True if the item can be added, false if not.
-     */
-    public function add()
-    {
-        if (!parent::add()) {
-            // Redirect to the return page.
-            $parent  = JRequest::getUint('filter_parent_id');
-            $project = JRequest::getUint('filter_project');
-            $this->setRedirect($this->getReturnPage($parent, $project));
-            return false;
-        }
-
-        return true;
-    }
-
-
-    /**
-     * Method to cancel an edit.
-     *
-     * @param     string     $key    The name of the primary key of the URL variable.
-     *
-     * @return    boolean            True if access level checks pass, false otherwise.
-     */
-    public function cancel($key = 'id')
-    {
-        $parent  = JRequest::getUint('filter_parent_id');
-        $project = JRequest::getUint('filter_project');
-        $result  = parent::cancel($key);
-
-        // Redirect to the return page.
-        $this->setRedirect($this->getReturnPage($parent, $project));
-
-        return $result;
-    }
-
-
-    /**
-     * Method to edit an existing record.
-     *
-     * @param     string     $key        The name of the primary key of the URL variable.
-     * @param     string     $url_var    The name of the URL variable if different from the primary key.
-     *
-     * @return    boolean                True if access level check and checkout passes, false otherwise.
-     */
-    public function edit($key = null, $url_var = 'id')
-    {
-        $result = parent::edit($key, $url_var);
-
-        return $result;
-    }
-
-
-    /**
      * Method to get a model object, loading it if required.
      *
      * @param     string    $name      The model name. Optional.
@@ -120,27 +49,6 @@ class PFrepoControllerDirectoryForm extends JControllerForm
         $model = parent::getModel($name, $prefix, $config);
 
         return $model;
-    }
-
-
-    /**
-     * Method to save a record.
-     *
-     * @param     string     $key        The name of the primary key of the URL variable.
-     * @param     string     $url_var    The name of the URL variable if different from the primary key.
-     *
-     * @return    boolean                True if successful, false otherwise.
-     */
-    public function save($key = null, $url_var = 'id')
-    {
-        $result  = parent::save($key, $url_var);
-        $project = JRequest::getUint('filter_project', 0);
-        $parent  = JRequest::getUint('filter_parent_id', 0);
-
-        // If ok, redirect to the return page.
-        if ($result) $this->setRedirect($this->getReturnPage($parent, $project));
-
-        return $result;
     }
 
 
@@ -177,7 +85,7 @@ class PFrepoControllerDirectoryForm extends JControllerForm
             if ($dir) {
                 $query->select('access')
                       ->from('#__pf_repo_dirs')
-                      ->where('id = ' . $db->quote($dir));
+                      ->where('id = ' . $dir);
 
                 $db->setQuery($query);
                 $access = (in_array((int) $db->loadResult(), $levels) && $user->authorise('core.create', 'com_pfrepo.directory.' . $dir));
@@ -262,17 +170,14 @@ class PFrepoControllerDirectoryForm extends JControllerForm
         $project = JRequest::getUint('filter_project', 0);
         $parent  = JRequest::getUint('filter_parent_id', 0);
         $return  = $this->getReturnPage($parent, $project);
-        $append  = '';
-
+        $append  = '&layout=edit';
 
         // Setup redirect info.
-        if ($tmpl) $append .= '&tmpl=' . $tmpl;
-
-        $append .= '&layout=edit';
         if ($project) $append .= '&filter_project=' . $project;
         if ($parent)  $append .= '&filter_parent_id=' . $parent;
         if ($id)      $append .= '&' . $url_var . '=' . $id;
         if ($item_id) $append .= '&Itemid=' . $item_id;
+        if ($tmpl)    $append .= '&tmpl=' . $tmpl;
         if ($return)  $append .= '&return='.base64_encode($return);
 
         return $append;
@@ -290,13 +195,14 @@ class PFrepoControllerDirectoryForm extends JControllerForm
         $tmpl    = JRequest::getCmd('tmpl');
         $project = JRequest::getUint('filter_project', 0);
         $parent  = JRequest::getUint('filter_parent_id', 0);
+        $return  = $this->getReturnPage();
         $append  = '';
-
 
         // Setup redirect info.
         if ($project) $append .= '&filter_project=' . $project;
         if ($parent)  $append .= '&filter_parent_id=' . $parent;
         if ($tmpl)    $append .= '&tmpl=' . $tmpl;
+        if ($return)  $append .= '&return=' . $return;
 
         return $append;
     }
@@ -308,10 +214,12 @@ class PFrepoControllerDirectoryForm extends JControllerForm
      *
      * @return    string    The return URL.
      */
-    protected function getReturnPage($parent, $project = 0)
+    protected function getReturnPage()
     {
-        $return = JRequest::getVar('return', null, 'default', 'base64');
-        $append = '';
+        $return  = JRequest::getVar('return', null, 'default', 'base64');
+        $parent  = JRequest::getUint('filter_parent_id');
+        $project = JRequest::getUint('filter_project');
+        $append  = '';
 
         if ($project) $append .= '&filter_project=' . $project;
         if ($parent)  $append .= '&filter_parent_id=' . $parent;
@@ -321,24 +229,6 @@ class PFrepoControllerDirectoryForm extends JControllerForm
         }
         else {
             return base64_decode($return);
-        }
-    }
-
-
-    /**
-     * Function that allows child controller access to model data after the data has been saved.
-     *
-     * @param     jmodel    $model    The data model object.
-     * @param     array     $data     The validated data.
-     *
-     * @return    void
-     */
-    protected function postSaveHook(&$model, $data)
-    {
-        $task = $this->getTask();
-
-        if ($task == 'save') {
-            $this->setRedirect(JRoute::_('index.php?option=com_pfrepo&view=' . $this->view_list, false));
         }
     }
 }

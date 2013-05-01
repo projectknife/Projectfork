@@ -4,7 +4,7 @@
  * @subpackage   Tasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -26,14 +26,62 @@ $can_order    = $user->authorise('core.edit.state', 'com_pftasks');
 
 $repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
 $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
+$time_enabled  = PFApplicationHelper::enabled('com_pftime');
+$can_track     = ($user->authorise('core.create', 'com_pftime') && $time_enabled);
+
+$doc =& JFactory::getDocument();
+$style = '.complete {'
+        . 'opacity:0.5;'
+        . '}'
+        . '.task-title > a {'
+        . 'margin-left:10px;'
+        . 'margin-right:10px;'
+        . '}'
+        . '.margin-none {'
+        . 'margin: 0;'
+        . '}'
+        . '.priority-1 {'
+        . 'border-left:2px solid #CCC;'
+        . '}'
+        . '.priority-2 {'
+        . 'border-left:2px solid #468847;'
+        . '}'
+        . '.priority-3 {'
+        . 'border-left:2px solid #3a87ad;'
+        . '}'
+        . '.priority-4 {'
+        . 'border-left:2px solid #c09853;'
+        . '}'
+        . '.priority-5 {'
+        . 'border-left:2px solid #b94a48;'
+        . '}'
+        . '.list-striped .dropdown-menu li {'
+        . 'background-color:transparent;'
+        . 'padding: 0;'
+        . 'border-bottom-width: 0;'
+        . '}'
+        . '.list-striped .dropdown-menu li.divider {'
+        . 'background-color: rgba(0, 0, 0, 0.1);'
+        . 'margin: 2px 0;'
+        . '}';
+$doc->addStyleDeclaration( $style );
 ?>
-<?php if ($uid && $this->state->get('filter.project') && $can_order) : ?>
 <script type="text/javascript">
 jQuery(document).ready(function() {
-    PFlist.sortable('.list-tasks', 'tasks');
+    <?php if ($can_track) : ?>
+        var turl  = '<?php echo JRoute::_('index.php?option=com_pftime&task=recorder.add&tmpl=component', false); ?>';
+        var topts = 'width=500,height=600,resizable=yes,'
+                  + 'scrollbars=yes,toolbar=no,location=no,'
+                  + 'directories=no,status=no,menubar=no';
+
+        PFtask.setTimeTracker(turl, topts);
+    <?php endif; ?>
+
+    <?php if ($uid && $this->state->get('filter.project') && $can_order) : ?>
+        PFlist.sortable('.list-tasks', 'tasks');
+    <?php endif; ?>
 });
 </script>
-<?php endif; ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-tasks">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -54,16 +102,16 @@ jQuery(document).ready(function() {
             <div class="clearfix"> </div>
 
             <div class="<?php echo $filter_in;?>collapse" id="filters">
-                <div class="well btn-toolbar">
+                <div class="btn-toolbar">
                     <div class="filter-search btn-group pull-left">
                         <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
                     </div>
                     <div class="filter-search-buttons btn-group pull-left">
                         <button type="submit" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_SUBMIT'); ?>">
-                            <i class="icon-search"></i>
+                            <span aria-hidden="true" class="icon-search"></span>
                         </button>
                         <button type="button" class="btn" rel="tooltip" title="<?php echo JText::_('JSEARCH_FILTER_CLEAR'); ?>" onclick="document.id('filter_search').value='';this.form.submit();">
-                            <i class="icon-remove"></i>
+                           <span aria-hidden="true" class="icon-remove"></span>
                         </button>
                     </div>
 
@@ -106,10 +154,18 @@ jQuery(document).ready(function() {
                             </select>
                         </div>
                     <?php endif; ?>
+
                     <div class="filter-priority btn-group">
                         <select onchange="this.form.submit()" class="inputbox input-medium" name="filter_priority" id="filter_priority">
                             <option selected="selected" value=""><?php echo JText::_('JOPTION_SELECT_PRIORITY');?></option>
                             <?php echo JHtml::_('select.options', JHtml::_('pftasks.priorityOptions'), 'value', 'text', $this->state->get('filter.priority'), true);?>
+                        </select>
+                    </div>
+
+                    <div class="filter-complete btn-group">
+                        <select onchange="this.form.submit()" class="inputbox input-medium" name="filter_complete" id="filter_complete">
+                            <option selected="selected" value=""><?php echo JText::_('JOPTION_SELECT_COMPLETITION');?></option>
+                            <?php echo JHtml::_('select.options', JHtml::_('pftasks.completeOptions'), 'value', 'text', $this->state->get('filter.complete'), true);?>
                         </select>
                     </div>
 
@@ -156,19 +212,21 @@ jQuery(document).ready(function() {
                         ?>
                         <div class="cat-list-row<?php echo $k;?>">
                         	<?php if ($item->list_title) : ?>
-                               <?php
-                                    $this->menu->start(array('class' => 'btn-mini', 'pull' => 'right'));
+
+                               <h3>
+		                          <a class="pull-left" href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->project_slug, $item->milestone_slug, $item->list_slug));?>">
+		                              <?php echo $this->escape($item->list_title);?>
+		                          </a>
+		                          <?php
+                                    $this->menu->start(array('class' => 'btn-mini btn-link', 'pull' => 'left'));
                                     $this->menu->itemEdit('tasklistform', $item->list_id, ($can_edit || $can_edit_own));
                                     $this->menu->itemTrash('tasklists', $x, ($can_edit || $can_edit_own));
                                     $this->menu->end();
-                                    echo $this->menu->render(array('class' => 'btn-mini', 'pull' => 'right'));
-                               ?>
-                               <h3>
-		                          <a href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->project_slug, $item->milestone_slug, $item->list_slug));?>">
-		                              <?php echo $this->escape($item->list_title);?>
-		                          </a>
+                                    echo $this->menu->render(array('class' => 'btn-mini btn-link', 'pull' => 'left'));
+	                              ?>
+		                           <small><?php echo htmlspecialchars_decode($this->escape($item->list_description));?></small>
 	                           </h3>
-                               <small><?php echo $this->escape($item->list_description);?></small>
+
                                <div class="clearfix clr"></div>
                             <?php endif; ?>
                             <ul class="list-tasks list-striped list-condensed unstyled" id="tasklist_<?php echo $i;?>">
@@ -211,71 +269,97 @@ jQuery(document).ready(function() {
                             $options = array('a-class' => 'btn-mini', 'div-class' => 'pull-right');
                             $watch = JHtml::_('pfhtml.button.watch', 'tasks', $x, $item->watching, $options);
                         }
-                    ?>
-                    <li id="list-item-<?php echo $x; ?>" class="<?php echo $class;?>">
-                        <input type="hidden" name="order[]" value="<?php echo (int) $item->ordering;?>"/>
 
-                        <div id="list-toolbar-<?php echo $x; ?>" class="pull-left <?php if ($item->complete) : echo "complete"; endif;?>">
-                            <?php if ($can_change) : ?>
-                                <label for="cb<?php echo $x; ?>" class="checkbox pull-left">
-                                    <?php echo JHtml::_('pf.html.id', $x, $item->id); ?>
-                                </label>
-                            <?php endif; ?>
-                            <div class="btn-group pull-left">
-                                <?php echo JHtml::_('pftasks.complete', $x, $item->complete, $can_change, $item->dependencies, $item->users, $item->start_date); ?>
-                            </div>
-                            <div class="btn-group pull-left">
-                            	<?php
-	                                $this->menu->start(array('class' => 'btn-mini'));
-	                                $this->menu->itemEdit('taskform', $item->id, ($can_edit || $can_edit_own));
-	                                $this->menu->itemTrash('tasks', $x, ($can_edit || $can_edit_own));
-	
-	                                if (($can_edit || $can_edit_own)) {
-	                                    $itm_icon = 'icon-plus';
-	                                    $itm_txt  = 'COM_PROJECTFORK_ASSIGN_TO_USER';
-	                                    $itm_link = PFusersHelperRoute::getUsersRoute() . '&amp;layout=modal&amp;tmpl=component&amp;field=PFtaskAssignUser';
-	
+                        // Deadline and completition date
+                        $task_date = JHtml::_(
+                            'pfhtml.label.datetime',
+                            ($item->complete ? $item->completed : $item->end_date),
+                            false,
+                            ($item->complete ? array('past-class' => 'label-success', 'past-icon' => 'calendar') : array())
+                        );
+                    ?>
+                    <li id="list-item-<?php echo $x; ?>" class="<?php echo $class;?> clearfix <?php if ($item->complete) : echo "complete"; endif;?> priority-<?php echo $item->priority;?>">
+                        <div class="task-row clearfix">
+	                        <input type="hidden" name="order[]" value="<?php echo (int) $item->ordering;?>"/>
+	                        <?php if ($can_change) : ?>
+	                                <label for="cb<?php echo $x; ?>" class="checkbox pull-right hidden-phone">
+	                                    <?php echo JHtml::_('pf.html.id', $x, $item->id); ?>
+	                                </label>
+	                            <?php endif; ?>
+	                        <div id="list-toolbar-<?php echo $x; ?>" class="pull-left">
+	                            <div class="btn-group">
+	                                <?php echo JHtml::_('pftasks.complete', $x, $item->complete, $can_change, $item->dependencies, $item->users, $item->start_date); ?>
+	                            </div>
+	                        </div>
+	                        <span class="task-title">
+	                            <a href="<?php echo JRoute::_(PFtasksHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>" class="pull-left">
+	                                <?php if ($item->checked_out) : ?><span aria-hidden="true" class="icon-lock"></span> <?php endif; ?>
+	                                <?php echo $this->escape($item->title);?>
+	                            </a>
+	                            <span class="dropdown pull-left">
+	                            	<?php
+		                                $this->menu->start(array('class' => 'btn-mini btn-link'));
+		                                $itm_icon = 'icon-menu-2';
+	                                    $itm_txt  = 'COM_PROJECTFORK_DETAILS_LABEL';
+	                                    $itm_link = '#collapse-' . $x;
+	                                    $this->menu->itemCollapse($itm_icon, $itm_txt, $itm_link);
+
 	                                    $this->menu->itemDivider();
-	                                    $this->menu->itemModal($itm_icon, $itm_txt, $itm_link, "PFlist.setTarget(" . $x . ");");
-	                                }
-	
-	                                if ($can_change) {
-	                                    $itm_icon = 'icon-warning';
-	                                    $itm_pfx  = 'COM_PROJECTFORK_PRIORITY';
-	                                    $itm_ac   = 'PFtask.priority(' . $x . ',';
-	
-	                                    $this->menu->itemDivider();
-	                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_VERY_LOW', $itm_ac . ' 1, \'' . addslashes(JText::_($itm_pfx. '_VERY_LOW')) . '\')');
-	                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_LOW', $itm_ac . ' 2, \'' . addslashes(JText::_($itm_pfx. '_LOW')) . '\')');
-	                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_MEDIUM', $itm_ac . ' 3, \'' . addslashes(JText::_($itm_pfx. '_MEDIUM')) . '\')');
-	                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_HIGH', $itm_ac . ' 4, \'' . addslashes(JText::_($itm_pfx. '_HIGH')) . '\')');
-	                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_VERY_HIGH', $itm_ac . ' 5, \'' . addslashes(JText::_($itm_pfx. '_VERY_HIGH')) . '\')');
-	                                }
-	
-	                                $this->menu->end();
-	
-	                                echo $this->menu->render(array('class' => 'btn-mini'));
-	                            ?>
-                            </div>
+
+		                                $this->menu->itemEdit('taskform', $item->id, ($can_edit || $can_edit_own));
+		                                $this->menu->itemTrash('tasks', $x, ($can_edit || $can_edit_own));
+
+	                                    if ($can_track) {
+	                                        $this->menu->itemDivider();
+	                                        $this->menu->itemJavaScript('icon-clock ', 'COM_PROJECTFORK_TASKS_TRACK_TIME', 'PFtask.trackItem(' . $item->id . ');');
+	                                    }
+
+		                                if (($can_edit || $can_edit_own)) {
+		                                    $itm_icon = 'icon-plus';
+		                                    $itm_txt  = 'COM_PROJECTFORK_ASSIGN_TO_USER';
+		                                    $itm_link = PFusersHelperRoute::getUsersRoute() . '&amp;layout=modal&amp;tmpl=component&amp;field=PFtaskAssignUser';
+
+		                                    $this->menu->itemDivider();
+		                                    $this->menu->itemModal($itm_icon, $itm_txt, $itm_link, "PFlist.setTarget(" . $x . ");");
+		                                }
+
+		                                if ($can_change) {
+		                                    $itm_icon = 'icon-warning';
+		                                    $itm_pfx  = 'COM_PROJECTFORK_PRIORITY';
+		                                    $itm_ac   = 'PFtask.priority(' . $x . ',';
+
+		                                    $this->menu->itemDivider();
+		                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_VERY_LOW', $itm_ac . ' 1, \'' . addslashes(JText::_($itm_pfx. '_VERY_LOW')) . '\')');
+		                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_LOW', $itm_ac . ' 2, \'' . addslashes(JText::_($itm_pfx. '_LOW')) . '\')');
+		                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_MEDIUM', $itm_ac . ' 3, \'' . addslashes(JText::_($itm_pfx. '_MEDIUM')) . '\')');
+		                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_HIGH', $itm_ac . ' 4, \'' . addslashes(JText::_($itm_pfx. '_HIGH')) . '\')');
+		                                    $this->menu->itemJavaScript($itm_icon, $itm_pfx. '_VERY_HIGH', $itm_ac . ' 5, \'' . addslashes(JText::_($itm_pfx. '_VERY_HIGH')) . '\')');
+		                                }
+
+		                                $this->menu->end();
+
+		                                echo $this->menu->render(array('class' => 'btn-mini'));
+		                            ?>
+	                            </span>
+	                        </span>
+	                        <small class="task-description">
+                                <?php echo htmlspecialchars_decode($this->escape(JHtml::_('pf.html.truncate', $item->description, '100')));?>
+                         </small>
                         </div>
-                        <span class="task-title">
-                            <a href="<?php echo JRoute::_(PFtasksHelperRoute::getTaskRoute($item->slug, $item->project_slug, $item->milestone_slug, $item->list_slug));?>">
-                                <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
-                                <?php echo $this->escape($item->title);?>
-                            </a>
-                        </span>
-                        <?php echo $watch; ?>
-                        <small class="task-description"><?php echo $this->escape(JHtml::_('pf.html.truncate', $item->description));?></small>
-                        <?php echo JHtml::_('pftasks.assignedLabel', $item->id, $x, $item->users); ?>
-                        <?php echo JHtml::_('pftasks.priorityLabel', $item->id, $x, $item->priority); ?>
-                        <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date); ?>
-                        <?php if ($item->access != 1) {
-                        	echo JHtml::_('pfhtml.label.access', $item->access); 
-                        	}
-                        ?>
-                        <?php if ($cmnts_enabled) : echo JHtml::_('pfcomments.label', $item->comments); endif; ?>
-                        <?php if ($repo_enabled) : echo JHtml::_('pfrepo.attachmentsLabel', $item->attachments); endif; ?>
-                        <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
+                        <div id="collapse-<?php echo $x; ?>" class="collapse">
+                        	<hr />
+                        	<?php echo $watch; ?>
+                        	<?php echo JHtml::_('pftasks.assignedLabel', $item->id, $x, $item->users); ?>
+	                        <?php echo JHtml::_('pftasks.priorityLabel', $item->id, $x, $item->priority); ?>
+	                        <?php echo $task_date; ?>
+	                        <?php if ($item->access != 1) {
+	                        	echo JHtml::_('pfhtml.label.access', $item->access);
+	                        	}
+	                        ?>
+	                        <?php if ($cmnts_enabled) : echo JHtml::_('pfcomments.label', $item->comments); endif; ?>
+	                        <?php if ($repo_enabled) : echo JHtml::_('pfrepo.attachmentsLabel', $item->attachments); endif; ?>
+	                        <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
+                        </div>
                     </li>
                 <?php
                     $x++;
@@ -296,17 +380,20 @@ jQuery(document).ready(function() {
                 <?php endif; ?>
             <?php endif; ?>
 
+            <?php if ($this->pagination->get('pages.total') > 1) : ?>
+                <div class="pagination center">
+                    <?php echo $this->pagination->getPagesLinks(); ?>
+                </div>
+                <p class="counter center">
+                	<?php echo $this->pagination->getPagesCounter(); ?>
+                </p>
+            <?php endif; ?>
+
             <?php if (!$this->state->get('filter.project')) : ?>
-                <div class="filters btn-toolbar">
-                    <div class="btn-group display-limit">
+                <div class="filters center">
+                    <span class="display-limit">
                         <?php echo $this->pagination->getLimitBox(); ?>
-                    </div>
-                    <?php if ($this->pagination->get('pages.total') > 1) : ?>
-                        <div class="btn-group pagination">
-                            <p class="counter"><?php echo $this->pagination->getPagesCounter(); ?></p>
-                            <?php echo $this->pagination->getPagesLinks(); ?>
-                        </div>
-                    <?php endif; ?>
+                    </span>
                 </div>
             <?php endif; ?>
 

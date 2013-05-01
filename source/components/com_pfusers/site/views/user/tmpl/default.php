@@ -10,9 +10,11 @@
 
 defined('_JEXEC') or die();
 
-$item   = &$this->item;
-$user   = JFactory::getUser();
-$access = PFusersHelper::getActions();
+$item    = &$this->item;
+$user    = JFactory::getUser();
+$access  = PFusersHelper::getActions();
+$params  = JComponentHelper::getParams('com_projectfork');
+$cfg_img = $params->get('user_profile_avatar');
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-user">
 
@@ -37,7 +39,7 @@ $access = PFusersHelper::getActions();
                 <div id="user-details">
                     <div class="well">
                         <div class="item-description">
-	                        <?php if ($user->id == $item->id || $access->get('core.admin')) : ?>
+	                        <?php if (($user->id == $item->id || $access->get('core.admin')) && empty($cfg_img)) : ?>
                                 <div class="pull-left">
                                 <img alt="<?php echo $this->escape($this->item->name);?>"
                                      src="<?php echo JHtml::_('projectfork.avatar.path', $item->id);?>"
@@ -92,11 +94,14 @@ $access = PFusersHelper::getActions();
         </form>
 
         <!-- Begin Dashboard Modules -->
+        <?php if(count(JModuleHelper::getModules('pf-user-top'))) : ?>
         <div class="row-fluid">
         	<div class="span12">
         		<?php echo $this->modules->render('pf-user-top', array('style' => 'xhtml'), null); ?>
         	</div>
         </div>
+        <?php endif; ?>
+        <?php if(count(JModuleHelper::getModules('pf-user-left')) || count(JModuleHelper::getModules('pf-user-right'))) : ?>
         <div class="row-fluid">
         	<div class="span6">
         		<?php echo $this->modules->render('pf-user-left', array('style' => 'xhtml'), null); ?>
@@ -105,11 +110,14 @@ $access = PFusersHelper::getActions();
         		<?php echo $this->modules->render('pf-user-right', array('style' => 'xhtml'), null); ?>
         	</div>
         </div>
+        <?php endif; ?>
+        <?php if(count(JModuleHelper::getModules('pf-user-bottom'))) : ?>
         <div class="row-fluid">
         	<div class="span12">
         		<?php echo $this->modules->render('pf-user-bottom', array('style' => 'xhtml'), null); ?>
         	</div>
         </div>
+        <?php endif; ?>
         <!-- End Dashboard Modules -->
 
         <?php if($item) echo $item->event->afterDisplayContent;?>

@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -15,10 +15,10 @@ jimport('joomla.database.tableasset');
 
 
 /**
- * Reply table
+ * Repository Note Table Class
  *
  */
-class PFtableNote extends PFTable
+class PFtableNote extends JTable
 {
     /**
      * Constructor
@@ -101,8 +101,7 @@ class PFtableNote extends PFTable
      */
     protected function _getParentAccess()
     {
-        $db    = $this->getDbo();
-        $query = $db->getQuery(true);
+        $query = $this->_db->getQuery(true);
 
         $dir     = (int) $this->dir_id;
         $project = (int) $this->project_id;
@@ -110,52 +109,20 @@ class PFtableNote extends PFTable
         if ($dir > 1) {
             $query->select('access')
                   ->from('#__pf_repo_dirs')
-                  ->where('id = ' . $db->quote($dir));
+                  ->where('id = ' . $dir);
         }
         elseif ($project > 0) {
             $query->select('access')
                   ->from('#__pf_projects')
-                  ->where('id = ' . $db->quote($project));
+                  ->where('id = ' . $project);
         }
 
-        $db->setQuery($query);
-        $access = (int) $db->loadResult();
+        $this->_db->setQuery($query);
+        $access = (int) $this->_db->loadResult();
 
         if (!$access) $access = (int) JFactory::getConfig()->get('access');
 
         return $access;
-    }
-
-
-    /**
-     * Method to get the children on an asset (which are not directly connected in the assets table)
-     *
-     * @param    string    $name    The name of the parent asset
-     *
-     * @return    array    The names of the child assets
-     */
-    public function getAssetChildren($name)
-    {
-        $assets = array();
-
-        list($component, $item, $id) = explode('.', $name, 3);
-
-        // Get the project assets
-        if ($component == 'com_pfprojects' && $item == 'project') {
-            $db    = $this->getDbo();
-            $query = $db->getQuery(true);
-
-            $query->select('c.*')
-                  ->from('#__assets AS c')
-                  ->join('INNER', $this->_tbl . ' AS a ON (a.asset_id = c.id)')
-                  ->where('a.project_id = ' . $db->quote((int) $id))
-                  ->group('c.id');
-
-            $db->setQuery($query);
-            $assets = (array) $db->loadObjectList();
-        }
-
-        return $assets;
     }
 
 
@@ -226,18 +193,18 @@ class PFtableNote extends PFTable
      */
     public function store($updateNulls = false)
     {
-        $date = JFactory::getDate();
-        $user = JFactory::getUser();
+        $date = JFactory::getDate()->toSql();
+        $user = JFactory::getUser()->get('id');
 
         if ($this->id) {
             // Existing item
-            $this->modified    = $date->toSql();
-            $this->modified_by = $user->get('id');
+            $this->modified    = $date;
+            $this->modified_by = $user;
         }
         else {
-            // New item. A created_by field can be set by the user, so we don't touch it if set.
-            $this->created = $date->toSql();
-            if (empty($this->created_by)) $this->created_by = $user->get('id');
+            // New item.
+            $this->created = $date;
+            if (empty($this->created_by)) $this->created_by = $user;
         }
 
         // Store the main record
@@ -248,23 +215,48 @@ class PFtableNote extends PFTable
 
 
     /**
-     * Converts record to XML
+     * Method to delete a row from the database table by primary key value.
      *
-     * @param     boolean    $mapKeysToText    Map foreign keys to text values
-     * @return    string                       Record in XML format
+     * @param     mixed      $pk    An optional primary key value to delete.
+     *
+     * @return    boolean           True on success.
      */
-    public function toXML($mapKeysToText=false)
+    public function delete($pk = null)
     {
-        $db = JFactory::getDbo();
+        $k  = $this->_tbl_key;
+        $pk = (is_null($pk)) ? $this->$k : $pk;
 
-        if ($mapKeysToText) {
-            $query = 'SELECT name'
-            . ' FROM #__users'
-            . ' WHERE id = ' . (int) $this->created_by;
-            $db->setQuery($query);
-            $this->created_by = $db->loadResult();
-        }
+         // Call parent method
+         if (!parent::delete($pk)) {
+             return false;
+         }
 
-        return parent::toXML($mapKeysToText);
+         // Delete references
+         $this->deleteReferences($pk);
+
+         return true;
+    }
+
+
+    /**
+     * Method to delete referenced data of an item.
+     *
+     * @param     mixed      $pk    An primary key value to delete.
+     *
+     * @return    boolean
+     */
+    public function deleteReferences($pk = null)
+    {
+        if (empty($pk)) return true;
+
+        // Delete revisions
+        $query = $this->_db->getQuery(true);
+
+        $query->clear()
+              ->delete('#__pf_repo_note_revs')
+              ->where('parent_id = ' . (int) $pk);
+
+        $this->_db->setQuery($query);
+        $this->_db->execute();
     }
 }

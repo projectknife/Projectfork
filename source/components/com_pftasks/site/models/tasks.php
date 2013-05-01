@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Tasks
+ * @package      pkg_projectfork
+ * @subpackage   com_pftasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -21,7 +21,6 @@ jimport('joomla.application.component.helper');
  */
 class PFtasksModelTasks extends JModelList
 {
-
     /**
      * Constructor.
      *
@@ -68,7 +67,7 @@ class PFtasksModelTasks extends JModelList
                 'a.id, a.project_id, a.list_id, a.milestone_id, a.title, '
                 . 'a.description, a.alias, a.checked_out, a.attribs, a.priority, '
                 . 'a.checked_out_time, a.state, a.access, a.created, a.created_by, '
-                . 'a.start_date, a.end_date, a.ordering, a.complete'
+                . 'a.start_date, a.end_date, a.ordering, a.complete, a.completed, a.completed_by'
             )
         );
 
@@ -119,8 +118,8 @@ class PFtasksModelTasks extends JModelList
 
         // Join over the comments for comment count
         $query->select('COUNT(DISTINCT co.id) AS comments');
-        $query->join('LEFT', '#__pf_comments AS co ON (co.context = '
-              . $db->quote('com_pftasks.task') . ' AND co.item_id = a.id)');
+        $query->join('LEFT', '#__pf_comments AS co ON (co.context = ' . $db->quote('com_pftasks.task')
+                           . ' AND co.item_id = a.id AND co.state = 1)');
 
         // Join over the task refs for dependencies
         $query->select('COUNT(d.id) AS dependency_count');
@@ -462,51 +461,45 @@ class PFtasksModelTasks extends JModelList
     /**
      * Build a list of assigned users
      *
-     * @return    jdatabasequery
+     * @return    array
      */
     public function getAssignedUsers()
     {
-        $db     = $this->getDbo();
-        $user   = JFactory::getUser();
-        $query  = $db->getQuery(true);
-        $access = PFtasksHelper::getActions();
+        $user    = JFactory::getUser();
+        $query   = $this->_db->getQuery(true);
+        $project = (int) $this->getState('filter.project');
 
         // Return empty array if no project is select
-        $project = (int) $this->getState('filter.project');
-        if ($project < 0) {
-            return array();
-        }
+        if ($project < 0) return array();
 
         // Construct the query
-        $query->select('u.id AS value, u.name AS text');
-        $query->from('#__users AS u');
-        $query->join('INNER', '#__pf_ref_users AS a ON a.user_id = u.id');
-        $query->join('RIGHT', '#__pf_tasks AS t ON t.id = a.item_id');
-        $query->where('a.item_type = ' . $db->quote('task'));
+        $query->select('u.id AS value, u.name AS text')
+              ->from('#__users AS u')
+              ->join('INNER', '#__pf_ref_users AS a ON a.user_id = u.id')
+              ->join('INNER', '#__pf_tasks AS t ON t.id = a.item_id')
+              ->where('a.item_type = ' . $this->_db->quote('com_pftasks.task'));
 
         // Implement View Level Access
         if (!$user->authorise('core.admin', 'com_pftasks')) {
-            $groups = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('t.access IN (' . $groups . ')');
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+            $query->where('t.access IN (' . $levels . ')');
         }
 
-        // Filter fields
-        $filters = array();
-        $filters['t.project_id'] = array('INT-NOTZERO', $this->getState('filter.project'));
-
-        if (!$access->get('core.edit.state') && !$access->get('core.edit')) {
-            $filters['t.state'] = array('STATE', '1');
+        // Filter - State
+        if (!$user->authorise('core.edit.state', 'com_pftasks')) {
+            $query->where('t.state = 1');
         }
 
-        // Apply Filter
-        PFQueryHelper::buildFilter($query, $filters);
+        // Filter - Project
+        $query->where('t.project_id = ' . (int) $project);
 
-        $query->group('u.id');
-        $query->order('u.name ASC');
+        // Group and Order by clause
+        $query->group('u.id')
+              ->order('u.name ASC');
 
         // Get results
-        $db->setQuery((string) $query);
-        $items = (array) $db->loadObjectList();
+        $this->_db->setQuery($query);
+        $items = (array) $this->_db->loadObjectList();
 
         // Return the items
         return $items;

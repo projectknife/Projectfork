@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -14,7 +14,13 @@ defined('_JEXEC') or die();
 $user     = JFactory::getUser();
 $uid      = $user->get('id');
 $x        = count($this->items['directories']);
-$this_dir = $this->items['directory'];
+
+$this_dir  = $this->items['directory'];
+$this_path = (empty($this_dir) ? '' : $this_dir->path);
+
+$filter_search  = $this->state->get('filter.search');
+$filter_project = (int) $this->state->get('filter.project');
+$is_search      = empty($filter_search) ? false : true;
 
 foreach ($this->items['notes'] as $i => $item) :
     $link   = PFrepoHelperRoute::getNoteRoute($item->slug, $item->project_slug, $item->dir_slug, $item->path);
@@ -36,30 +42,50 @@ foreach ($this->items['notes'] as $i => $item) :
         </td>
         <?php endif; ?>
         <td>
-            <?php if ($item->checked_out) : ?><i class="icon-lock"></i> <?php endif; ?>
-            <i class="icon-file"></i>
-            <a href="<?php echo JRoute::_($link);?>">
-                <?php echo JText::_($this->escape($item->title)); ?>
-            </a>
-        </td>
-        <td>
-            <?php
-                $this->menu->start(array('class' => 'btn-mini'));
-                $this->menu->itemEdit('noteform', $item->id, ($can_edit || $can_edit_own));
-                $this->menu->itemDelete('repository', $x, ($can_edit || $can_edit_own));
-                $this->menu->end();
+        	<span class="item-title pull-left">
+	            <?php if ($item->checked_out) : ?><span aria-hidden="true" class="icon-lock"></span> <?php endif; ?>
+	            <a href="<?php echo JRoute::_($link);?>"  class="hasPopover" rel="popover" title="<?php echo JText::_($this->escape($item->title)); ?>" data-content="<?php echo $this->escape($item->description); ?>" data-placement="right">
+	            	<span aria-hidden="true" class="icon-pencil-2 text-warning"></span>
+	                <?php echo JText::_($this->escape($item->title)); ?>
+	            </a>
 
-                echo $this->menu->render(array('class' => 'btn-mini'));
-            ?>
+                <?php if ($item->revision_count) : ?>
+                    <span class="item-count badge badge-info"><?php echo $item->revision_count; ?></span>
+                <?php endif; ?>
+        	</span>
+
+        	<span class="dropdown pull-left">
+	        	<?php
+	                $this->menu->start(array('class' => 'btn-mini btn-link'));
+	                $this->menu->itemEdit('noteform', $item->id, ($can_edit || $can_edit_own));
+
+                    if ($item->revision_count) {
+                        $link_revs = PFrepoHelperRoute::getNoteRevisionsRoute($item->slug, $item->project_slug, $item->dir_slug, $item->path);
+
+                        $this->menu->itemLink('icon-flag', 'COM_PROJECTFORK_VIEW_REVISIONS', JRoute::_($link_revs));
+                    }
+
+	                $this->menu->itemDelete('repository', $x, ($can_edit || $can_edit_own));
+	                $this->menu->end();
+
+	                echo $this->menu->render(array('class' => 'btn-mini'));
+	            ?>
+        	</span>
+
+            <?php if ($filter_project && $is_search): ?>
+                <div class="small">
+                    <?php echo str_replace($this_path, '.', $item->path) . '/'; ?>
+                </div>
+            <?php endif; ?>
         </td>
         <td>
-            <?php echo JHtml::_('pfhtml.label.datetime', $item->created, false, $date_opts); ?>
+        	<?php echo JText::_('JGRID_HEADING_NOTE'); ?>
         </td>
         <td>
-            <?php echo JHtml::_('pf.html.truncate', $item->description); ?>
-            <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
-            <?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
-            <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
+            <?php echo $item->author_name; ?>
+        </td>
+        <td>
+            <?php echo JHtml::_('date', $item->created, JText::_('M d')); ?>
         </td>
     </tr>
 <?php $x++; endforeach; ?>

@@ -1,14 +1,17 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
 defined('_JEXEC') or die();
+
+
+jimport('joomla.filesystem.path');
 
 
 class PFrepoHelper
@@ -30,27 +33,26 @@ class PFrepoHelper
      */
     public static function addSubmenu($view)
     {
-        if (in_array($view, array('directory', 'file', 'note')) && version_compare(JVERSION, '3.0.0', 'ge')) {
-            return;
-        }
+        $is_j3 = version_compare(JVERSION, '3.0.0', 'ge');
+        $forms = array('directory', 'file', 'note');
+
+        if (in_array($view, $forms) && $is_j3) return;
 
         $components = PFApplicationHelper::getComponents();
         $option     = JFactory::getApplication()->input->get('option');
+        $class      = ($is_j3 ? 'JHtmlSidebar' : 'JSubMenuHelper');
 
         foreach ($components AS $component)
         {
-            if ($component->enabled == '0') {
-                continue;
-            }
+            if ($component->enabled == '0') continue;
 
             $title = JText::_($component->element);
             $parts = explode('-', $title, 2);
 
-            if (count($parts) == 2) {
-                $title = trim($parts[1]);
-            }
+            if (count($parts) == 2) $title = trim($parts[1]);
 
-            JSubMenuHelper::addEntry(
+            call_user_func(
+                array($class, 'addEntry'),
                 $title,
                 'index.php?option=' . $component->element,
                 ($option == $component->element)
@@ -102,33 +104,103 @@ class PFrepoHelper
      *
      * @return    string    $basepath    The upload directory
      */
-    public static function getBasePath($project = NULL)
+    public static function getBasePath($project = null)
     {
-        jimport('joomla.filesystem.path');
+        static $cache = array();
+
+        $project = (int) $project;
+
+        // Check the cache
+        if (isset($cache[$project])) return $cache[$project];
 
         $params = JComponentHelper::GetParams('com_pfrepo');
-
-        $base = JPATH_SITE . '/';
-        $dest = $params->get('repo_basepath', '/media/com_projectfork/repo/');
+        $dest   = $params->get('repo_basepath', '/media/com_projectfork/repo/');
+        $base   = JPATH_SITE . '/';
 
         $fchar = substr($dest, 0, 1);
         $lchar = substr($dest, -1, 1);
 
-        if ($fchar == '/' || $fchar == '\\') {
-            $dest = substr($dest, 1);
+        if ($fchar == '/' || $fchar == '\\') $dest = substr($dest, 1);
+        if ($lchar == '/' || $lchar == '\\') $dest = substr($dest, 0, -1);
+
+        if ($project) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('path')
+                  ->from('#__pf_repo_dirs')
+                  ->where('project_id = ' . $project)
+                  ->where('parent_id = 1');
+
+            $db->setQuery($query);
+            $path = $db->loadResult();
+
+            if (empty($path)) {
+                $query->clear()
+                      ->select('alias')
+                      ->from('#__pf_projects')
+                      ->where('id = ' . $project);
+
+                $db->setQuery($query);
+                $path = $db->loadResult();
+            }
+
+            if ($path) {
+                $dest .= '/' . $path;
+            }
         }
 
-        if ($lchar == '/' || $lchar == '\\') {
-            $dest = substr($dest, 0, -1);
+        $cache[$project] = JPath::clean($base . $dest);
+
+        return $cache[$project];
+    }
+
+
+    /**
+     * Method to get the pyhsical path location of a file
+     *
+     * @param     string     $name    The file name
+     * @param     integer    $dir     The directory id in which the file is stored
+     *
+     * @return    string              The path
+     */
+    public function getFilePath($name, $dir)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('project_id, path')
+              ->from('#__pf_repo_dirs')
+              ->where('id = ' . (int) $dir);
+
+        $db->setQuery($query);
+        $dir = $db->loadObject();
+
+        if (empty($dir)) return '';
+
+        $base = PFrepoHelper::getBasePath();
+        $file = $base . '/' . $dir->path . '/' . $name;
+
+        // Look in the directory
+        if (JFile::exists($file)) {
+            return $base . '/' . $dir->path;
         }
 
-        if (is_numeric($project)) {
-            $dest .= '/' . (int) $project;
+        // Look in the base dir (4.0 backwards compat)
+        $file = $base . '/' . $dir->project_id . '/' . $name;
+
+        if (JFile::exists($file)) {
+            return $base . '/' . $dir->project_id;
         }
 
-        $basepath = JPath::clean($base . $dest);
+        // Look in the base dir (3.0 backwards compat)
+        $file = $base . '/project_' . $dir->project_id . '/' . $name;
 
-        return $basepath;
+        if (JFile::exists($file)) {
+            return $base . '/project_' . $dir->project_id;
+        }
+
+        return '';
     }
 
 
@@ -140,7 +212,7 @@ class PFrepoHelper
      *
      * @return    string     $msg     The error message
      */
-    public static function getFileErrorMsg($num, $name)
+    public static function getFileErrorMsg($num, $name = '')
     {
         $size_limit = ini_get('upload_max_filesize');
         $name = '"' . htmlspecialchars($name, ENT_COMPAT, 'UTF-8') . '"';
@@ -172,5 +244,77 @@ class PFrepoHelper
         }
 
         return $msg;
+    }
+
+
+    /**
+     * Method to get the max upload size from the php config
+     *
+     * @return    integer    $size    Max size in bytes
+     */
+    public static function getMaxUploadSize()
+    {
+        $val  = strtolower(trim(ini_get('upload_max_filesize')));
+        $char = substr($val, -1);
+        $size = (int) substr($val, 0, -1);
+
+        switch ($char)
+        {
+            case 'g': $size *= 1024;
+            case 'm': $size *= 1024;
+            case 'k': $size *= 1024;
+        }
+
+        return $size;
+    }
+
+
+    /**
+     * Method to get the max post size from the php config
+     *
+     * @return    integer    $size    Max size in bytes
+     */
+    public static function getMaxPostSize()
+    {
+        $val  = strtolower(trim(ini_get('post_max_size')));
+        $char = substr($val, -1);
+        $size = (int) substr($val, 0, -1);
+
+        switch ($char)
+        {
+            case 'g': $size *= 1024;
+            case 'm': $size *= 1024;
+            case 'k': $size *= 1024;
+        }
+
+        return $size;
+    }
+
+
+    /**
+     * Method to get the project id of a directory
+     *
+     * @param     integer    $id    The directory id
+     *
+     * @return    integer           The project id
+     */
+    public static function getProjectFromDir($id)
+    {
+        static $cache = array();
+
+        // Check cache
+        if (isset($cache[$id])) return $cache[$id];
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('project_id')
+              ->from('#__pf_repo_dirs')
+              ->where('id = ' . (int) $id);
+
+        $db->setQuery($query);
+        $cache[$id] = (int) $db->loadResult();
+
+        return $cache[$id];
     }
 }

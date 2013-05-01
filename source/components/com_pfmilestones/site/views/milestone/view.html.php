@@ -46,6 +46,10 @@ class PFmilestonesViewMilestone extends JViewLegacy
 			return false;
 		}
 
+        // Set active project
+        if (!PFApplicationHelper::setActiveProject($item->project_id)) {
+            return false;
+        }
 
 		// Merge milestone params. If this is single-milestone view, menu params override milestone params
 		// Otherwise, milestone params override menu item params

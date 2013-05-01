@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -12,13 +12,14 @@ defined('_JEXEC') or die();
 
 
 jimport('joomla.database.tableasset');
+require_once JPATH_ADMINISTRATOR . '/components/com_pfrepo/helpers/pfrepo.php';
 
 
 /**
  * File Table Class
  *
  */
-class PFtableFile extends PFTable
+class PFtableFile extends JTable
 {
     /**
      * Constructor
@@ -33,8 +34,6 @@ class PFtableFile extends PFTable
 
     /**
      * Method to compute the default name of the asset.
-     * The default name is in the form table_name.id
-     * where id is the value of the primary key of the table.
      *
      * @return    string
      */
@@ -70,7 +69,7 @@ class PFtableFile extends PFTable
         $query    = $this->_db->getQuery(true);
 
         if ($this->dir_id) {
-            // Build the query to get the asset id for the parent topic.
+            // Build the query to get the asset id for the parent dir.
             $query->select('asset_id')
                   ->from('#__pf_repo_dirs')
                   ->where('id = ' . (int) $this->dir_id);
@@ -110,61 +109,27 @@ class PFtableFile extends PFTable
      */
     protected function _getParentAccess()
     {
-        $db    = $this->getDbo();
-        $query = $db->getQuery(true);
-
+        $query   = $this->_db->getQuery(true);
         $dir     = (int) $this->dir_id;
         $project = (int) $this->project_id;
 
         if ($dir > 1) {
             $query->select('access')
                   ->from('#__pf_repo_dirs')
-                  ->where('id = ' . $db->quote($dir));
+                  ->where('id = ' . $dir);
         }
         elseif ($project > 0) {
             $query->select('access')
                   ->from('#__pf_projects')
-                  ->where('id = ' . $db->quote($project));
+                  ->where('id = ' . $project);
         }
 
-        $db->setQuery($query);
-        $access = (int) $db->loadResult();
+        $this->_db->setQuery($query);
+        $access = (int) $this->_db->loadResult();
 
         if (!$access) $access = (int) JFactory::getConfig()->get('access');
 
         return $access;
-    }
-
-
-    /**
-     * Method to get the children on an asset (which are not directly connected in the assets table)
-     *
-     * @param    string    $name    The name of the parent asset
-     *
-     * @return    array    The names of the child assets
-     */
-    public function getAssetChildren($name)
-    {
-        $assets = array();
-
-        list($component, $item, $id) = explode('.', $name, 3);
-
-        // Get the project assets
-        if ($component == 'com_pfprojects' && $item == 'project') {
-            $db    = $this->getDbo();
-            $query = $db->getQuery(true);
-
-            $query->select('c.*')
-                  ->from('#__assets AS c')
-                  ->join('INNER', $this->_tbl . ' AS a ON (a.asset_id = c.id)')
-                  ->where('a.project_id = ' . $db->quote((int) $id))
-                  ->group('c.id');
-
-            $db->setQuery($query);
-            $assets = (array) $db->loadObjectList();
-        }
-
-        return $assets;
     }
 
 
@@ -240,18 +205,18 @@ class PFtableFile extends PFTable
      */
     public function store($updateNulls = false)
     {
-        $date = JFactory::getDate();
-        $user = JFactory::getUser();
+        $date = JFactory::getDate()->toSql();
+        $user = JFactory::getUser()->get('id');
 
         if ($this->id) {
             // Existing item
-            $this->modified    = $date->toSql();
-            $this->modified_by = $user->get('id');
+            $this->modified    = $date;
+            $this->modified_by = $user;
         }
         else {
             // New item
-            $this->created = $date->toSql();
-            if (empty($this->created_by)) $this->created_by = $user->get('id');
+            $this->created = $date;
+            if (empty($this->created_by)) $this->created_by = $user;
         }
 
         // Store the main record
@@ -262,23 +227,64 @@ class PFtableFile extends PFTable
 
 
     /**
-     * Converts record to XML
+     * Method to delete a row from the database table by primary key value.
      *
-     * @param     boolean    $mapKeysToText    Map foreign keys to text values
-     * @return    string                       Record in XML format
+     * @param     mixed      $pk    An optional primary key value to delete.
+     *
+     * @return    boolean           True on success.
      */
-    public function toXML($mapKeysToText=false)
+    public function delete($pk = null)
     {
-        $db = JFactory::getDbo();
+        $k  = $this->_tbl_key;
+        $pk = (is_null($pk)) ? $this->$k : $pk;
 
-        if ($mapKeysToText) {
-            $query = 'SELECT name'
-            . ' FROM #__users'
-            . ' WHERE id = ' . (int) $this->created_by;
-            $db->setQuery($query);
-            $this->created_by = $db->loadResult();
+         // Call parent method
+         if (!parent::delete($pk)) {
+             return false;
+         }
+
+         // Delete references
+         $this->deleteReferences($pk);
+
+         return true;
+    }
+
+
+    /**
+     * Method to delete referenced data of an item.
+     *
+     * @param     mixed      $pk    An primary key value to delete.
+     *
+     * @return    boolean
+     */
+    public function deleteReferences($pk = null)
+    {
+        if(empty($this->id) || $this->id != $pk) {
+            if (!$this->load($pk)) return false;
         }
 
-        return parent::toXML($mapKeysToText);
+        // Delete the physical file
+        $path = PFrepoHelper::getFilePath($this->file_name, $this->dir_id);
+
+        if (!empty($path)) {
+            JFile::delete($path . '/' . $this->file_name);
+        }
+
+        // Delete the revisions folder
+        $path = PFrepoHelper::getBasePath($this->project_id) . '/_revs/file_' . (int) $pk;
+
+        if (JFolder::exists($path)) {
+            JFolder::delete($path);
+        }
+
+        // Delete revisions
+        $query = $this->_db->getQuery(true);
+
+        $query->clear()
+              ->delete('#__pf_repo_file_revs')
+              ->where('parent_id = ' . (int) $pk);
+
+        $this->_db->setQuery($query);
+        $this->_db->execute();
     }
 }

@@ -4,7 +4,7 @@
  * @subpackage   Timetracking
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -165,12 +165,12 @@ class PFtimeViewTimesheet extends JViewLegacy
         $access = PFtimeHelper::getActions();
         $state  = $this->get('State');
 
-        PFToolbar::button(
-            'COM_PROJECTFORK_ACTION_NEW',
-            'form.add',
-            false,
-            array('access' => $access->get('core.create'))
-        );
+        if ($access->get('core.create')) {
+            $options   = array();
+            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_NEW', 'task' => 'form.add');
+            $options[] = array('text' => 'COM_PROJECTFORK_TIME_RECORDER_OPEN', 'task' => 'recorder');
+            PFToolbar::dropdownButton($options);
+        }
 
         $options = array();
         if ($access->get('core.edit.state')) {

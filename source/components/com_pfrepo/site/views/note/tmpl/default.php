@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -47,14 +47,12 @@ $canEditOwn	= ($user->authorise('core.edit.own', $asset_name) && $this->item->cr
 	</dl>
 	<div class="actions btn-toolbar">
 		<div class="btn-group">
-			<?php if($canEdit || $canEditOwn) : ?>
+			<?php if(($canEdit || $canEditOwn) && !$this->rev) : ?>
 			   <a class="btn" href="<?php echo JRoute::_('index.php?option=com_pfrepo&task=noteform.edit&id='.intval($item->id).':'.$item->alias);?>">
 			       <i class="icon-edit"></i> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT');?>
 			   </a>
 			<?php endif; ?>
-			<!--<a href="#" class="btn"><i class="icon-print"></i> Print</a>
-			<a href="#" class="btn"><i class="icon-envelope"></i> Email</a>
-			<a href="#comments" class="btn"><i class="icon-comment"></i> Comment <span class="badge badge-warning">4</span></a>-->
+
             <?php echo $item->event->afterDisplayTitle;?>
 		</div>
 	</div>
