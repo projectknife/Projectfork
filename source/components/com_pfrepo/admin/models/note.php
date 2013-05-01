@@ -23,7 +23,7 @@ class PFrepoModelNote extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string    
+     * @var    string
      */
     protected $text_prefix = 'COM_PROJECTFORK_NOTE';
 
@@ -450,13 +450,17 @@ class PFrepoModelNote extends JModelAdmin
      */
     public function save($data)
     {
-        // Initialise variables;
+        $dispatcher = JDispatcher::getInstance();
+
         $table  = $this->getTable();
         $pk     = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
         $date   = JFactory::getDate();
         $is_new = true;
 
         $old_path = null;
+
+        // Include the content plugins for the on save events.
+        JPluginHelper::importPlugin('content');
 
         // Load the row if saving an existing item.
         if ($pk > 0) {
@@ -494,12 +498,6 @@ class PFrepoModelNote extends JModelAdmin
         $data['title'] = $title;
         $data['alias'] = $alias;
 
-        // Bind the data.
-        if (!$table->bind($data)) {
-            $this->setError($table->getError());
-            return false;
-        }
-
         // Handle permissions and access level
         if (isset($data['rules'])) {
             $access = PFAccessHelper::getViewLevelFromRules($data['rules'], intval($data['access']));
@@ -521,8 +519,22 @@ class PFrepoModelNote extends JModelAdmin
             }
         }
 
+        // Bind the data.
+        if (!$table->bind($data)) {
+            $this->setError($table->getError());
+            return false;
+        }
+
         // Check the data.
         if (!$table->check()) {
+            $this->setError($table->getError());
+            return false;
+        }
+
+        // Trigger the onContentBeforeSave event.
+        $result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, $is_new));
+
+        if (in_array(false, $result, true)) {
             $this->setError($table->getError());
             return false;
         }
@@ -532,6 +544,9 @@ class PFrepoModelNote extends JModelAdmin
             $this->setError($table->getError());
             return false;
         }
+
+        // Trigger the onContentAfterSave event.
+        $dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $is_new));
 
         $this->setState($this->getName() . '.id', $table->id);
 
@@ -790,7 +805,7 @@ class PFrepoModelNote extends JModelAdmin
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
-     * @return    void    
+     * @return    void
      */
     protected function populateState()
     {

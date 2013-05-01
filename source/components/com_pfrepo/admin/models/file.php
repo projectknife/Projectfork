@@ -486,11 +486,15 @@ class PFrepoModelFile extends JModelAdmin
      */
     public function save($data)
     {
-        // Initialise variables;
+        $dispatcher = JDispatcher::getInstance();
+
         $table  = $this->getTable();
         $pk     = (!empty($data['id'])) ? $data['id'] : (int) $this->getState($this->getName() . '.id');
         $date   = JFactory::getDate();
         $is_new = true;
+
+        // Include the content plugins for the on save events.
+        JPluginHelper::importPlugin('content');
 
         // Load the row if saving an existing item.
         if ($pk > 0) {
@@ -581,11 +585,22 @@ class PFrepoModelFile extends JModelAdmin
             return false;
         }
 
+        // Trigger the onContentBeforeSave event.
+        $result = $dispatcher->trigger($this->event_before_save, array($this->option . '.' . $this->name, &$table, $is_new));
+
+        if (in_array(false, $result, true)) {
+            $this->setError($table->getError());
+            return false;
+        }
+
         // Store the data.
         if (!$table->store()) {
             $this->setError($table->getError());
             return false;
         }
+
+        // Trigger the onContentAfterSave event.
+        $dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $is_new));
 
         $this->setState($this->getName() . '.id', $table->id);
 
