@@ -27,19 +27,19 @@ final class PFVersion
     public $DEV_LEVEL = '0';
 
     /** @var  string  Development status. */
-    public $DEV_STATUS = 'dev';
+    public $DEV_STATUS = 'beta';
 
     /** @var  string  Build number. */
-    public $BUILD = '3';
+    public $BUILD = '1';
 
     /** @var  string  Code name. */
-    public $CODENAME = 'Intermezzo';
+    public $CODENAME = 'Barrow';
 
     /** @var  string  Release date. */
-    public $RELDATE = '21-April-2013';
+    public $RELDATE = '01-May-2013';
 
     /** @var  string  Release time. */
-    public $RELTIME = '01:00';
+    public $RELTIME = '20:00';
 
     /** @var  string  Release timezone. */
     public $RELTZ = 'CET';
