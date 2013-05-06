@@ -24,7 +24,7 @@ abstract class PFAccessHelper
      *
      * @return    array             The parent groups
      */
-    public function getGroupPath($id)
+    public static function getGroupPath($id)
     {
         static $groups;
         static $path;
@@ -71,7 +71,7 @@ abstract class PFAccessHelper
      *
      * @return    array                     The groups
      */
-    public function getGroupsByAccessLevel($access, $diagnostic = true)
+    public static function getGroupsByAccessLevel($access, $diagnostic = true)
     {
         static $cache = array();
         $cache_key    = $access . '.' . strval($diagnostic);

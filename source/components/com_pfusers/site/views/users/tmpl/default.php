@@ -16,11 +16,11 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
 $uid        = $user->get('id');
 
-$doc =& JFactory::getDocument();
+$doc   = JFactory::getDocument();
 $style = '.text-large {'
         . 'font-size: 16px;'
         . 'display: block;'
-        . '}' 
+        . '}'
         . '.row-fluid .thumbnails.thumbnails-users > li[class*="span"]:first-child,.thumbnails.thumbnails-users > li[class*="span"] {'
         . 'margin-left: 0.7em;'
         . 'margin-bottom: 0.7em;'

@@ -29,7 +29,7 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
 $time_enabled  = PFApplicationHelper::enabled('com_pftime');
 $can_track     = ($user->authorise('core.create', 'com_pftime') && $time_enabled);
 
-$doc =& JFactory::getDocument();
+$doc   = JFactory::getDocument();
 $style = '.complete {'
         . 'opacity:0.5;'
         . '}'

@@ -77,7 +77,7 @@ class JFormFieldRepodir extends JFormFieldList
      *
      * @return    array      $options      The list options markup.
      */
-    protected function getOptions($project)
+    protected function getOptions($project = 0)
     {
         $options = array();
         $user    = JFactory::getUser();

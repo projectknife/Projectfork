@@ -21,7 +21,7 @@ $uid        = $user->get('id');
 $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
 $repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
 
-$doc =& JFactory::getDocument();
+$doc   = JFactory::getDocument();
 $style = '.row-topics .well,.row-topics .btn-toolbar {'
         . 'margin-bottom: 0;'
         . '}'

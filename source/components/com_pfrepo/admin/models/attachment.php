@@ -114,9 +114,9 @@ class PFrepoModelAttachment extends JModelAdmin
      * Custom clean the cache of com_projectfork and projectfork modules
      *
      */
-    protected function cleanCache()
+    protected function cleanCache($group = 'com_pfrepo', $client = 0)
     {
-        parent::cleanCache('com_pfrepo');
+        parent::cleanCache($group);
     }
 
 

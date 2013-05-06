@@ -161,7 +161,7 @@ class PFrepoModelFileRevision extends PFrepoModelFile
      *
      * @return    void
      */
-    protected function prepareTable(&$table)
+    protected function prepareTable($table)
     {
         // Reorder the items within the category so the new item is first
         if (empty($table->id)) {
@@ -214,9 +214,9 @@ class PFrepoModelFileRevision extends PFrepoModelFile
      * Custom clean the cache of com_projectfork and projectfork modules
      *
      */
-    protected function cleanCache()
+    protected function cleanCache($group = 'com_pfrepo', $client_id = 0)
     {
-        parent::cleanCache('com_pfrepo');
+        parent::cleanCache($group);
     }
 
 

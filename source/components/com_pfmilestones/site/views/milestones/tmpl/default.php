@@ -24,7 +24,7 @@ $tasks_enabled = PFApplicationHelper::enabled('com_pftasks');
 $repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
 $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
 
-$doc =& JFactory::getDocument();
+$doc = JFactory::getDocument();
 $style = '.large {'
         . 'font-size: 20px;'
         . 'line-height: 24px;'

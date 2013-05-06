@@ -398,9 +398,9 @@ class PFforumModelTopic extends JModelAdmin
      * Custom clean the cache of com_projectfork and projectfork modules
      *
      */
-    protected function cleanCache()
+    protected function cleanCache($group = 'com_pfforum', $client = 0)
     {
-        parent::cleanCache('com_pfforum');
+        parent::cleanCache($group);
     }
 
 

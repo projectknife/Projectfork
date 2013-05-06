@@ -234,9 +234,9 @@ class PFModelLabel extends JModelAdmin
      * Custom clean the cache of com_projectfork and projectfork modules
      *
      */
-    protected function cleanCache()
+    protected function cleanCache($group = 'com_projectfork', $client = 0)
     {
-        parent::cleanCache('com_projectfork');
+        parent::cleanCache($group);
     }
 
 

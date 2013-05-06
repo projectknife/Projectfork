@@ -22,7 +22,7 @@ $dir        = $this->items['directory'];
 
 $filter_in  = ($this->state->get('filter.isset') ? 'in ' : '');
 
-$doc =& JFactory::getDocument();
+$doc   = JFactory::getDocument();
 $style = '.text-large {'
         . 'font-size: 20px;'
         . 'line-height: 24px;'

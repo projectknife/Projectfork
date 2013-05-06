@@ -16,7 +16,7 @@ $show_assigned = $params->get('show_assigned');
 $show_priority = $params->get('show_priority');
 
 if ($show_priority) :
-    $doc =& JFactory::getDocument();
+    $doc   = JFactory::getDocument();
     $style = '.complete {'
             . 'opacity:0.5;'
             . '}'
