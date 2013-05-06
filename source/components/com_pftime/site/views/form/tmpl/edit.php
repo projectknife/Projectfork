@@ -43,7 +43,7 @@ Joomla.submitbutton = function(task)
 </h1>
 <?php endif; ?>
 
-<form action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>" method="post" name="adminForm" id="item-form" class="form-validate form-inline">
+<form action="<?php echo JRoute::_('index.php?option=com_pftime&view=form&id=' . (int) $this->item->id . '&layout=edit'); ?>" method="post" name="adminForm" id="item-form" class="form-validate form-inline">
     <fieldset>
         <div class="formelm-buttons btn-toolbar">
             <?php echo $this->toolbar; ?>
