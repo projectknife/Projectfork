@@ -149,7 +149,14 @@ abstract class PFhtmlLabel
         $tooltip   = JHtml::_('date', $date, $format);
 
         if ($compact) {
-            $string = ($is_past ? '' : '+') . round($remaining / 86400);
+            $days   = round($remaining / 86400);
+
+            if ($days == 0) {
+                $string = '0';
+            }
+            else {
+                $string = ($is_past ? '' : '+') . $days;
+            }
         }
 
         $past_class   = (isset($options['past-class'])   ? $options['past-class']   : 'label-important');
