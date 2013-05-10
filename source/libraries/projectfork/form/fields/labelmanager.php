@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork.Library
- * @subpackage   Fields
+ * @package      pkg_projectfork
+ * @subpackage   lib_projectfork
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -24,7 +24,7 @@ class JFormFieldLabelManager extends JFormField
     /**
      * The form field type.
      *
-     * @var    string
+     * @var    string    
      */
     public $type = 'LabelManager';
 
@@ -32,7 +32,7 @@ class JFormFieldLabelManager extends JFormField
     /**
      * The existing label items
      *
-     * @var    array
+     * @var    array    
      */
     protected $items;
 
@@ -70,7 +70,8 @@ class JFormFieldLabelManager extends JFormField
             'com_pfforum.topic',
             'com_pfrepo.directory',
             'com_pfrepo.note',
-            'com_pfrepo.file'
+            'com_pfrepo.file',
+            'com_pfdesigns.design'
         );
 
         $html = $this->getHTML($assets);
@@ -82,7 +83,7 @@ class JFormFieldLabelManager extends JFormField
     /**
      * Method to generate the input markup.
      *
-     * @return    string              The html field markup
+     * @return    string    The html field markup
      */
     protected function getHTML($assets)
     {
@@ -97,7 +98,7 @@ class JFormFieldLabelManager extends JFormField
     /**
      * Method to generate the backend input markup.
      *
-     * @return    array     $html     The html field markup
+     * @return    array    $html    The html field markup
      */
     protected function getAdminHTML($assets)
     {
@@ -161,7 +162,7 @@ class JFormFieldLabelManager extends JFormField
     /**
      * Method to generate the frontend input markup.
      *
-     * @return    array     $html     The html field markup
+     * @return    array    $html    The html field markup
      */
     protected function getSiteHTML($assets)
     {
