@@ -33,8 +33,8 @@ abstract class PFhtmlProject
         // For all other versions and locations show the typeahead
         // return self::typeahead($value, $can_change);
 
-        // Show chosen dropdown
-        return self::chosen($value, $can_change);
+        // Show select2 dropdown
+        return self::select2($value, $can_change);
     }
 
 
@@ -147,7 +147,7 @@ abstract class PFhtmlProject
         $placehold = htmlspecialchars(JText::_('COM_PROJECTFORK_SELECT_PROJECT'), ENT_COMPAT, 'UTF-8');
 
         // Query url
-        $url = 'index.php?option=com_pfprojects&view=projects&tmpl=component&format=json&typeahead=1&filter_search=';
+        $url = 'index.php?option=com_pfprojects&view=projects&tmpl=component&format=json&typeahead=1&limit=10&filter_search=';
 
         // Prepare JS typeahead script
         $js = array();
@@ -231,14 +231,14 @@ abstract class PFhtmlProject
 
 
     /**
-     * Renders a chosen input field for selecting a project
+     * Renders a select2 input field for selecting a project
      *
      * @param     int       $value         The state value
      * @param     bool      $can_change
      *
      * @return    string                   The input field html
      */
-     public static function chosen($value = 0, $can_change = true)
+     public static function select2($value = 0, $can_change = true)
      {
         JHtml::_('pfhtml.script.jQuerySelect2');
 
@@ -270,13 +270,14 @@ abstract class PFhtmlProject
         $js[] = "{";
         $js[] = "    jQuery('#filter_project_id" . $field_id . "').select2({";
         $js[] = "        placeholder: '" . $placehold . "',";
+        $js[] = "        quietMillis: 100,";
         if ($active_id) $js[] = "        allowClear: true,";
-        $js[] = "        minimumInputLength: 1,";
+        $js[] = "        minimumInputLength: 0,";
         $js[] = "        ajax: {";
         $js[] = "            url: '" . $url . "',";
         $js[] = "            dataType: 'json',";
-        $js[] = "            data: function (term, page) {return {filter_search: term};},";
-        $js[] = "            results: function (data, page) {return {results: data};}";
+        $js[] = "            data: function (term, page) {return {filter_search: term, limit: 10, limitstart: ((page - 1) * 10)};},";
+        $js[] = "            results: function (data, page) {var more = (page * 10) < data.total;return {results: data.items, more: more};}";
         $js[] = "        },";
         $js[] = "        initSelection: function(element, callback) {";
         $js[] = "           callback({id:" . $active_id . ", text: '" . ($active_id ? $active_title : $placehold) . "'});";
