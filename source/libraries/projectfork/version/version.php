@@ -30,13 +30,13 @@ final class PFVersion
     public $DEV_STATUS = 'beta';
 
     /** @var  string  Build number. */
-    public $BUILD = '1';
+    public $BUILD = '2';
 
     /** @var  string  Code name. */
-    public $CODENAME = 'Barrow';
+    public $CODENAME = 'Klaara';
 
     /** @var  string  Release date. */
-    public $RELDATE = '01-May-2013';
+    public $RELDATE = '13-May-2013';
 
     /** @var  string  Release time. */
     public $RELTIME = '20:00';
