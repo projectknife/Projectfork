@@ -270,12 +270,12 @@ abstract class PFhtmlProject
         $js[] = "{";
         $js[] = "    jQuery('#filter_project_id" . $field_id . "').select2({";
         $js[] = "        placeholder: '" . $placehold . "',";
-        $js[] = "        quietMillis: 100,";
         if ($active_id) $js[] = "        allowClear: true,";
         $js[] = "        minimumInputLength: 0,";
         $js[] = "        ajax: {";
         $js[] = "            url: '" . $url . "',";
         $js[] = "            dataType: 'json',";
+        $js[] = "            quietMillis: 200,";
         $js[] = "            data: function (term, page) {return {filter_search: term, limit: 10, limitstart: ((page - 1) * 10)};},";
         $js[] = "            results: function (data, page) {var more = (page * 10) < data.total;return {results: data.items, more: more};}";
         $js[] = "        },";
