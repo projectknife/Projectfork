@@ -31,7 +31,10 @@ abstract class PFhtmlProject
         }
 
         // For all other versions and locations show the typeahead
-        return self::typeahead($value, $can_change);
+        // return self::typeahead($value, $can_change);
+
+        // Show select2 dropdown
+        return self::select2($value, $can_change);
     }
 
 
@@ -144,7 +147,7 @@ abstract class PFhtmlProject
         $placehold = htmlspecialchars(JText::_('COM_PROJECTFORK_SELECT_PROJECT'), ENT_COMPAT, 'UTF-8');
 
         // Query url
-        $url = 'index.php?option=com_pfprojects&view=projects&tmpl=component&format=json&typeahead=1&filter_search=';
+        $url = 'index.php?option=com_pfprojects&view=projects&tmpl=component&format=json&typeahead=1&limit=10&filter_search=';
 
         // Prepare JS typeahead script
         $js = array();
@@ -155,12 +158,12 @@ abstract class PFhtmlProject
         $js[] = "    jQuery('#filter_project_title" . $field_id . "').typeahead({";
         $js[] = "        source: function(query, process)";
         $js[] = "        {";
-        $js[] = "            if(!pta_done" . $field_id . ") return {};";
+        $js[] = "            if (!pta_done" . $field_id . ") return {};";
         $js[] = "            pta_done" . $field_id . " = false;";
         $js[] = "            jQuery.getJSON('" . $url . "' + query, {}, function(response)";
         $js[] = "            {";
         $js[] = "                var data = new Array();";
-        $js[] = "                for(var i in response) { if(response.hasOwnProperty(i)) {data.push(i+'_'+response[i]);} }";
+        $js[] = "                for(var i in response) { if (response.hasOwnProperty(i)) {data.push(i+'_'+response[i]);} }";
         $js[] = "                process(data);";
         $js[] = "                pta_done" . $field_id . " = true;";
         $js[] = "            });";
@@ -225,4 +228,75 @@ abstract class PFhtmlProject
 
         return implode("\n", $html);
     }
+
+
+    /**
+     * Renders a select2 input field for selecting a project
+     *
+     * @param     int       $value         The state value
+     * @param     bool      $can_change
+     *
+     * @return    string                   The input field html
+     */
+     public static function select2($value = 0, $can_change = true)
+     {
+        JHtml::_('pfhtml.script.jQuerySelect2');
+
+        static $field_id = 0;
+
+        $doc = JFactory::getDocument();
+        $app = JFactory::getApplication();
+
+        // Get currently active project data
+        $active_id    = (int) PFApplicationHelper::getActiveProjectId();
+        $active_title = PFApplicationHelper::getActiveProjectTitle();
+
+        $field_id++;
+
+        // Prepare title value
+        $title_val = htmlspecialchars($active_title, ENT_COMPAT, 'UTF-8');
+
+        // Prepare field attributes
+        $attr_read = ($can_change ? '' : ' readonly="readonly"');
+        $css_txt   = ($can_change ? '' : ' disabled muted') . ($active_id ? ' success' : ' warning');
+        $placehold = htmlspecialchars(JText::_('COM_PROJECTFORK_SELECT_PROJECT'), ENT_COMPAT, 'UTF-8');
+
+        // Query url
+        $url = 'index.php?option=com_pfprojects&view=projects&tmpl=component&format=json&select2=1';
+
+        // Prepare JS typeahead script
+        $js = array();
+        $js[] = "jQuery(document).ready(function()";
+        $js[] = "{";
+        $js[] = "    jQuery('#filter_project_id" . $field_id . "').select2({";
+        $js[] = "        placeholder: '" . $placehold . "',";
+        if ($active_id) $js[] = "        allowClear: true,";
+        $js[] = "        minimumInputLength: 0,";
+        $js[] = "        ajax: {";
+        $js[] = "            url: '" . $url . "',";
+        $js[] = "            dataType: 'json',";
+        $js[] = "            quietMillis: 200,";
+        $js[] = "            data: function (term, page) {return {filter_search: term, limit: 10, limitstart: ((page - 1) * 10)};},";
+        $js[] = "            results: function (data, page) {var more = (page * 10) < data.total;return {results: data.items, more: more};}";
+        $js[] = "        },";
+        $js[] = "        initSelection: function(element, callback) {";
+        $js[] = "           callback({id:" . $active_id . ", text: '" . ($active_id ? $active_title : $placehold) . "'});";
+        $js[] = "        }";
+        $js[] = "    });";
+        $js[] = "    jQuery('#filter_project_id" . $field_id . "').change(function(){this.form.submit();});";
+        $js[] = "});";
+
+        // Prepare html output
+        $html = array();
+
+        $html[] = '<input type="hidden" id="filter_project_id' . $field_id . '" name="filter_project" placeholder="' . $placehold . '"';
+        $html[] = ' value="' . $active_id . '" autocomplete="off"' . $attr_read . ' class="input-large" tabindex="-1" />';
+
+        if ($can_change) {
+            // Add script
+            JFactory::getDocument()->addScriptDeclaration(implode("\n", $js));
+        }
+
+        return implode("\n", $html);
+     }
 }

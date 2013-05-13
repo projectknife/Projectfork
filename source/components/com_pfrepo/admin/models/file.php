@@ -26,7 +26,7 @@ class PFrepoModelFile extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string
+     * @var    string    
      */
     protected $text_prefix = 'COM_PROJECTFORK_FILE';
 
@@ -51,10 +51,11 @@ class PFrepoModelFile extends JModelAdmin
      *
      * @param     array      $commands    An array of commands to perform.
      * @param     array      $pks         An array of item ids.
+     * @param     array      $contexts    An array of item contexts.
      *
      * @return    boolean                 Returns true on success, false on failure.
      */
-    public function batch($commands, $pks)
+    public function batch($commands, $pks, $contexts = array())
     {
         // Sanitize user ids.
         $pks = array_unique($pks);
@@ -179,12 +180,13 @@ class PFrepoModelFile extends JModelAdmin
     /**
      * Batch move items to a new directory
      *
-     * @param     integer    $value    The new parent ID.
-     * @param     array      $pks      An array of row IDs.
+     * @param     integer    $value       The new parent ID.
+     * @param     array      $pks         An array of row IDs.
+     * @param     array      $contexts    An array of item contexts
      *
-     * @return    boolean              True if successful, false otherwise and internal error is set.
+     * @return    boolean                 True if successful, false otherwise and internal error is set.
      */
-    protected function batchMove($value, $pks)
+    protected function batchMove($value, $pks, $contexts = array())
     {
         $dest = (int) $value;
 
@@ -291,12 +293,13 @@ class PFrepoModelFile extends JModelAdmin
     /**
      * Batch copy items to a new directory.
      *
-     * @param     integer    $value    The destination dir.
-     * @param     array      $pks      An array of row IDs.
+     * @param     integer    $value       The destination dir.
+     * @param     array      $pks         An array of row IDs.
+     * @param     array      $contexts    An array of item contexts.
      *
-     * @return    mixed                An array of new IDs on success, boolean false on failure.
+     * @return    mixed                   An array of new IDs on success, boolean false on failure.
      */
-    protected function batchCopy($value, $pks)
+    protected function batchCopy($value, $pks, $contexts = array())
     {
         $dest = (int) $value;
         $rbid = null;
@@ -944,9 +947,9 @@ class PFrepoModelFile extends JModelAdmin
      * Custom clean the cache of com_projectfork and projectfork modules
      *
      */
-    protected function cleanCache()
+    protected function cleanCache($group = 'com_pfrepo', $client_id = 0)
     {
-        parent::cleanCache('com_pfrepo');
+        parent::cleanCache($group, $client_id);
     }
 
 
@@ -1144,7 +1147,7 @@ class PFrepoModelFile extends JModelAdmin
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
-     * @return    void
+     * @return    void    
      */
     protected function populateState()
     {

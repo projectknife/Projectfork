@@ -115,7 +115,7 @@ abstract class PFToolbar
     }
 
 
-    public function dropdownButton($items, $options = array())
+    public static function dropdownButton($items, $options = array())
     {
         $list  = array();
         $html  = array();
@@ -158,7 +158,8 @@ abstract class PFToolbar
             self::button($text, $task, $lst, $opts);
         }
         else {
-            $first = array_pop(array_reverse($list));
+            $reverse = array_reverse($list);
+            $first   = array_pop($reverse);
 
             $text = $first['text'];
             $task = (isset($first['task']) ? $first['task'] : '');

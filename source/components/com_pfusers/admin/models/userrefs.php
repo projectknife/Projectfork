@@ -21,23 +21,11 @@ jimport('joomla.application.component.modellist');
 class PfusersModelUserRefs extends JModelList
 {
     /**
-     * Constructor
-     *
-     * @param    array          An optional associative array of configuration settings.
-     * @see      jcontroller
-     */
-    public function __construct($config = array())
-    {
-        parent::__construct($config);
-    }
-
-
-    /**
      * Method to get a list of user references.
      *
      * @return    mixed    An array of data items on success, false on failure.
      */
-    public function getItems($item_type, $item_id)
+    public function getItems($item_type = null, $item_id = 0)
     {
         $db    = $this->getDbo();
         $query = $db->getQuery(true);
@@ -47,7 +35,7 @@ class PfusersModelUserRefs extends JModelList
               ->from('#__pf_ref_users AS a')
               ->join('INNER', '#__users AS u ON u.id = a.user_id')
               ->where('a.item_type = ' . $db->quote($item_type))
-              ->where('a.item_id = ' . $db->quote($item_id));
+              ->where('a.item_id = ' . (int) $item_id);
 
         $db->setQuery((string) $query);
         $items = (array) $db->loadObjectList();

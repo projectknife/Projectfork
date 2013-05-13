@@ -14,7 +14,7 @@ defined('_JEXEC') or die();
 jimport('joomla.filesystem.path');
 
 
-class PFrepoHelper
+abstract class PFrepoHelper
 {
     /**
      * The component name
@@ -164,7 +164,7 @@ class PFrepoHelper
      *
      * @return    string              The path
      */
-    public function getFilePath($name, $dir)
+    public static function getFilePath($name, $dir)
     {
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);

@@ -16,7 +16,7 @@ $show_assigned = $params->get('show_assigned');
 $show_priority = $params->get('show_priority');
 
 if ($show_priority) :
-    $doc =& JFactory::getDocument();
+    $doc   = JFactory::getDocument();
     $style = '.complete {'
             . 'opacity:0.5;'
             . '}'
@@ -59,7 +59,7 @@ endif;
             'pfhtml.label.datetime',
             ($item->complete ? $item->completed : $item->end_date),
             true,
-            ($item->complete ? array('past-class' => 'label-success', 'past-icon' => 'calendar') : array())
+            ($item->complete ? array('past-class' => 'label-inverse', 'past-icon' => 'calendar') : array())
         );
         ?>
         <div class="row-fluid priority-<?php echo $item->priority; ?>">
@@ -90,7 +90,8 @@ endif;
                 </span>
                 <?php
                     if ($show_date) :
-                        echo '<span class="pull-right small muted">' . JHtml::_('date', $item->end_date, JText::_('M d')) . '</span>';
+                        // echo '<span class="pull-right small muted">' . JHtml::_('date', $item->end_date, JText::_('M d')) . '</span>';
+                        echo '<div class="pull-right">' . $date . '</div>';
                     endif;
                 ?>
                 <div class="clearfix"></div>

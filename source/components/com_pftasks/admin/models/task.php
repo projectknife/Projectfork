@@ -259,7 +259,7 @@ class PFtasksModelTask extends JModelAdmin
      *
      * @return    void
      */
-    protected function prepareTable(&$table)
+    protected function prepareTable($table)
     {
         $condition = array();
 

@@ -32,7 +32,7 @@ $editor          = JFactory::getEditor();
 $can_edit_topic     = $user->authorise('core.edit', 'com_pfforum.topic.' . $this->topic->id);
 $can_edit_own_topic = ($user->authorise('core.edit.own', 'com_pfforum.topic.' . $this->topic->id) && $uid == $this->topic->created_by);
 
-$doc =& JFactory::getDocument();
+$doc   = JFactory::getDocument();
 $style = '.row-replies .well,.row-replies .btn-toolbar {'
         . 'margin-bottom: 0;'
         . '}';

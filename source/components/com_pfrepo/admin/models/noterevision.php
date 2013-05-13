@@ -143,9 +143,9 @@ class PFrepoModelNoteRevision extends JModelAdmin
      * Custom clean the cache of com_projectfork and projectfork modules
      *
      */
-    protected function cleanCache()
+    protected function cleanCache($group = 'com_pfrepo', $client_id = 0)
     {
-        parent::cleanCache('com_pfrepo');
+        parent::cleanCache($group);
     }
 
 
@@ -156,7 +156,7 @@ class PFrepoModelNoteRevision extends JModelAdmin
      *
      * @return    void
      */
-    protected function prepareTable(&$table)
+    protected function prepareTable($table)
     {
         if (empty($table->id)) {
             $condition = 'parent_id = ' . (int) $table->parent_id;

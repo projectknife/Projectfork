@@ -2,7 +2,7 @@
 <extension type="package" version="2.5" method="upgrade">
     <name>Projectfork Project Management System</name>
     <packagename>projectfork</packagename>
-    <version>4.1.0b1</version>
+    <version>4.1.0b2</version>
     <url>http://www.projectfork.net</url>
     <creationDate>May 2013</creationDate>
     <copyright>(C) 2006 - 2013 Tobias Kuhn. All rights reserved.</copyright>

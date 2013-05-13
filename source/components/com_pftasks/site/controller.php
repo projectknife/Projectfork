@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Tasks
+ * @package      pkg_projectfork
+ * @subpackage   com_pftasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -22,14 +22,11 @@ jimport('joomla.application.component.controller');
 class PFtasksController extends JControllerLegacy
 {
     /**
-     * Constructor
+     * The default view
      *
-     * @param    array    $config    Optional config options
+     * @var    string
      */
-    function __construct($config = array())
-    {
-        parent::__construct($config);
-    }
+    protected $default_view = 'tasks';
 
 
     /**
@@ -52,24 +49,42 @@ class PFtasksController extends JControllerLegacy
 
         JHtml::_('behavior.tooltip');
 
-        // Override method arguments
+        $view      = JRequest::getCmd('view');
+        $id        = JRequest::getUInt('id');
         $cachable  = true;
-        $urlparams = array('id'               => 'INT',
-                           'cid'              => 'ARRAY',
-                           'limit'            => 'INT',
-                           'limitstart'       => 'INT',
-                           'showall'          => 'INT',
-                           'return'           => 'BASE64',
-                           'filter'           => 'STRING',
-                           'filter_order'     => 'CMD',
-                           'filter_order_Dir' => 'CMD',
-                           'filter_project'   => 'CMD',
-                           'filter_milestone' => 'CMD',
-                           'filter_tasklist'  => 'CMD',
-                           'filter_search'    => 'STRING',
-                           'filter_published' => 'CMD'
-                           );
+        $urlparams = array(
+            'id'               => 'INT',
+            'cid'              => 'ARRAY',
+            'limit'            => 'INT',
+            'limitstart'       => 'INT',
+            'showall'          => 'INT',
+            'return'           => 'BASE64',
+            'filter'           => 'STRING',
+            'filter_order'     => 'CMD',
+            'filter_order_Dir' => 'CMD',
+            'filter_project'   => 'CMD',
+            'filter_milestone' => 'CMD',
+            'filter_tasklist'  => 'CMD',
+            'filter_search'    => 'STRING',
+            'filter_published' => 'CMD'
+        );
 
+        // Inject default view if not set
+        if (empty($view)) {
+            JRequest::setVar('view', $this->default_view);
+        }
+
+        // Check for task edit form.
+		if ($view == 'taskform' && !$this->checkEditId('com_pftasks.edit.taskform', $id)) {
+			// Somehow the person just went to the form - we don't allow that.
+			return JError::raiseError(403, JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
+		}
+
+        // Check for task list edit form.
+		if ($view == 'tasklistform' && !$this->checkEditId('com_pftasks.edit.tasklistform', $id)) {
+			// Somehow the person just went to the form - we don't allow that.
+			return JError::raiseError(403, JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));
+		}
 
         // Display the view
         parent::display($cachable, $urlparams);

@@ -206,10 +206,11 @@ class PFcommentsModelComment extends JModelAdmin
      *
      * @param     integer    $item_id    The id of the context item.
      * @param     string     $context    The context.
+     * @param     mixed      $strict     Not used.
      *
      * @return    string                 Contains the new title
      */
-    protected function generateNewTitle($item_id, $context)
+    protected function generateNewTitle($item_id, $context, $strict = null)
     {
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -247,9 +248,9 @@ class PFcommentsModelComment extends JModelAdmin
      * Custom clean the cache of com_projectfork and projectfork modules
      *
      */
-    protected function cleanCache()
+    protected function cleanCache($group = 'com_pfcomments', $client = 0)
     {
-        parent::cleanCache('com_pfcomments');
+        parent::cleanCache($group);
     }
 
 

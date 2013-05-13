@@ -1,10 +1,10 @@
 <?php
 /**
-* @package      Projectfork
-* @subpackage   Library.html
+* @package      pkg_projectfork
+* @subpackage   lib_projectfork
 *
 * @author       Tobias Kuhn (eaxs)
-* @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+* @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
 * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 **/
 
@@ -107,6 +107,60 @@ abstract class PFhtmlScript
         if (JFactory::getDocument()->getType() == 'html') {
             $dispatcher	= JDispatcher::getInstance();
             $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptjQuerySortable');
+        }
+
+        self::$loaded[__METHOD__] = true;
+    }
+
+
+    /**
+     * Method to load jQuery Chosen JS
+     *
+     * @return    void
+     */
+    public static function jQueryChosen()
+    {
+        // Only load once
+        if (!empty(self::$loaded[__METHOD__])) {
+            return;
+        }
+
+        // Load dependencies
+        if (empty(self::$loaded['jQuery'])) {
+            self::jQuery();
+        }
+
+        // Load only of doc type is HTML
+        if (JFactory::getDocument()->getType() == 'html') {
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptjQueryChosen');
+        }
+
+        self::$loaded[__METHOD__] = true;
+    }
+
+
+    /**
+     * Method to load jQuery Select2 JS
+     *
+     * @return    void
+     */
+    public static function jQuerySelect2()
+    {
+        // Only load once
+        if (!empty(self::$loaded[__METHOD__])) {
+            return;
+        }
+
+        // Load dependencies
+        if (empty(self::$loaded['jQuery'])) {
+            self::jQuery();
+        }
+
+        // Load only of doc type is HTML
+        if (JFactory::getDocument()->getType() == 'html') {
+            $dispatcher	= JDispatcher::getInstance();
+            $dispatcher->register('onBeforeCompileHead', 'triggerProjectforkScriptjQuerySelect2');
         }
 
         self::$loaded[__METHOD__] = true;
@@ -417,6 +471,36 @@ function triggerProjectforkScriptjQueryUI()
     if (stripos($string, 'jquery.ui') === false) {
         JHtml::_('script', 'com_projectfork/jquery/jquery.ui.core.min.js', false, true, false, false, false);
     }
+}
+
+
+/**
+ * Stupid but necessary way of adding jQuery Chosen to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that the script is loaded after jQuery
+ *
+ */
+function triggerProjectforkScriptjQueryChosen()
+{
+    if (version_compare(JVERSION, '3', 'ge')) {
+        JHtml::_('script', 'jui/chosen.jquery.min.js', false, true, false, false, false);
+		JHtml::_('stylesheet', 'jui/chosen.css', false, true);
+    }
+    else {
+        JHtml::_('script', 'com_projectfork/chosen/chosen.jquery.min.js', false, true, false, false, false);
+        JHtml::_('stylesheet', 'com_projectfork/chosen/chosen.css', false, true);
+    }
+}
+
+
+/**
+ * Stupid but necessary way of adding jQuery Select2 to the document head.
+ * This function is called by the "onCompileHead" system event and makes sure that the script is loaded after jQuery
+ *
+ */
+function triggerProjectforkScriptjQuerySelect2()
+{
+    JHtml::_('script', 'com_projectfork/select2/select2.min.js', false, true, false, false, false);
+    JHtml::_('stylesheet', 'com_projectfork/select2/select2.css', false, true);
 }
 
 

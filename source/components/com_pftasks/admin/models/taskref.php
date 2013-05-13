@@ -83,9 +83,9 @@ class PFtasksModelTaskRef extends JModelAdmin
      * Custom clean the cache of com_projectfork and projectfork modules
      *
      */
-    protected function cleanCache()
+    protected function cleanCache($group = 'com_pftasks', $client = 0)
     {
-        parent::cleanCache('com_pftasks');
+        parent::cleanCache($group);
     }
 
 
