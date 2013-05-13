@@ -25,13 +25,14 @@ class PFprojectsViewProjects extends JViewLegacy
      *
      * @return    void
      */
-    function display()
+    function display($tpl = null)
     {
         $ta   = (int) JRequest::getUInt('typeahead');
+        $s2   = (int) JRequest::getUInt('select2');
         $resp = array();
 
         // Set the query limit if requesting data for typeahead
-        if ($ta) JRequest::setVar('limit', 5);
+        if ($ta || $s2) JRequest::setVar('limit', 5);
 
         // Get model data
         $rows = $this->get('Items');
@@ -44,6 +45,22 @@ class PFprojectsViewProjects extends JViewLegacy
                 $id = (int) $row->id;
 
                 $tmp_rows[$id] = $this->escape($row->title);
+            }
+
+            $rows = $tmp_rows;
+        }
+        elseif ($s2) {
+            $tmp_rows = array();
+
+            foreach ($rows AS &$row)
+            {
+                $id = (int) $row->id;
+
+                $item = new stdClass();
+                $item->id = $id;
+                $item->text = $this->escape($row->title);
+
+                $tmp_rows[] = $item;
             }
 
             $rows = $tmp_rows;
