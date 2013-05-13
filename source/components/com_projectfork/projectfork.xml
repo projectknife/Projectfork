@@ -56,9 +56,11 @@
     </administration>
     <media destination="com_projectfork" folder="media">
         <folder>bootstrap</folder>
+        <folder>chosen</folder>
         <folder>flot</folder>
         <folder>jquery</folder>
         <folder>projectfork</folder>
         <folder>repo</folder>
+        <folder>select2</folder>
     </media>
 </extension>
