@@ -263,6 +263,9 @@ class PFrepoModelRepository extends JModelList
             }
         }
 
+        // Only show directories of published projects
+        $query->where('p.state = 1');
+
         // Add the list ordering clause.
         $order_col = $this->state->get('list.ordering', 'a.ordering');
         $order_dir = $this->state->get('list.direction', 'asc');
