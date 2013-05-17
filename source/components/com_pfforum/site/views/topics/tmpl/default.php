@@ -28,6 +28,14 @@ $style = '.row-topics .well,.row-topics .btn-toolbar {'
         . '.list-comments img,.collapse-comments img {'
         . 'margin-right: 10px;'
         . '}'
+        . '.img-avatar {'
+        . 'max-height: 50px;'
+        . 'max-width: 50px;'
+        . 'margin-right: 10px;'
+        . '}'
+        . '.well-item {'
+        . 'margin-left: 60px;'
+        . '}'
         . '.collapse-comments blockquote {'
         . 'margin-left: 50px;'
         . '}'
@@ -119,17 +127,15 @@ $doc->addStyleDeclaration( $style );
             ?>
             	<!-- Begin Topic -->
     			<div class="row-fluid row-<?php echo $k;?>">
-    				<div class="span1">
-    					<a href="<?php echo JRoute::_(PFforumHelperRoute::getTopicRoute($item->slug, $item->project_slug));?>">
+    				<div class="span12">
+                        <a href="<?php echo JRoute::_(PFforumHelperRoute::getTopicRoute($item->slug, $item->project_slug));?>">
                         <img title="<?php echo $this->escape($item->author_name);?>"
                              src="<?php echo JHtml::_('projectfork.avatar.path', $item->created_by);?>"
-                             class="img-circle hasTooltip"
+                             class="img-circle img-avatar pull-left hasTooltip"
                              rel="tooltip"
                         />
-    					</a>
-    				</div>
-    				<div class="span11">
-    					<div class="well well-small">
+                        </a>
+    					<div class="well well-small well-item">
     						<span class="small muted pull-right"><?php echo JHtml::_('date', $item->created, $this->params->get('date_format', JText::_('DATE_FORMAT_LC2'))); ?></span>
     						<?php if ($can_change || $uid) : ?>
 		                        <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
