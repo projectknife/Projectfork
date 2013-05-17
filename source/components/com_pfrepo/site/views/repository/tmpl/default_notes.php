@@ -35,7 +35,7 @@ foreach ($this->items['notes'] as $i => $item) :
     ?>
     <tr class="row<?php echo $i % 2; ?>">
         <?php if ($this_dir->parent_id >= 1) : ?>
-        <td>
+        <td class="hidden-phone">
             <label for="cb<?php echo $x; ?>" class="checkbox">
                 <?php echo JHtml::_('pf.html.id', $x, $item->id, false, 'nid'); ?>
             </label>
@@ -78,10 +78,10 @@ foreach ($this->items['notes'] as $i => $item) :
                 </div>
             <?php endif; ?>
         </td>
-        <td>
+        <td class="hidden-phone">
         	<?php echo JText::_('JGRID_HEADING_NOTE'); ?>
         </td>
-        <td>
+        <td class="hidden-phone">
             <?php echo $item->author_name; ?>
         </td>
         <td>

@@ -58,7 +58,7 @@ foreach ($this->items['directories'] as $i => $item) :
     $date_opts    = array('past-class' => '', 'past-icon' => 'calendar');
     ?>
     <tr class="row<?php echo $i % 2; ?>">
-        <td <?php if($this_dir->id == 1) echo 'style="display:none"'; ?>>
+        <td <?php if($this_dir->id == 1) echo 'style="display:none"'; ?> class="hidden-phone">
             <label for="cb<?php echo $i; ?>" class="checkbox">
                 <?php echo JHtml::_('pf.html.id', $i, $item->id, false, 'did'); ?>
             </label>
@@ -105,10 +105,10 @@ foreach ($this->items['directories'] as $i => $item) :
                 </div>
             <?php endif; ?>
         </td>
-        <td>
+        <td class="hidden-phone">
         	<?php echo JText::_('JGRID_HEADING_DIRECTORY'); ?>
         </td>
-        <td>
+        <td class="hidden-phone">
             <?php echo $item->author_name; ?>
         </td>
         <td>
