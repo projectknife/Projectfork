@@ -139,11 +139,21 @@ $doc->addStyleDeclaration( $style );
                 <div class="row-fluid">
                 	<div class="span1 hidden-phone">
                 		<div class="thumbnail center">
-                			<div class="label">
+                			<div class="label <?php if ($progress == 100) : echo "label-success hasTooltip"; endif;?>" rel="tooltip" <?php if ($progress == 100) : echo "title=\"Completed!\""; endif;?>>
                 				<div class="large"><?php echo JHtml::_('date', $item->end_date, JText::_('d')); ?></div>
                 				<div class="medium"><?php echo JHtml::_('date', $item->end_date, JText::_('M')); ?></div>
                 			</div>
                 		</div>
+                        <hr />
+                        <?php if ($tasks_enabled) : ?>
+                            <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-milestone">
+                                <div class="bar" style="min-width:20px; width: <?php echo ($progress > 0) ? $progress . "%": "20px";?>">
+                                    <span class="">
+                                        <?php echo $progress;?>
+                                    </span>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                 	</div>
                 	<div class="span11">
                 		<div class="well well-small margin-none">
