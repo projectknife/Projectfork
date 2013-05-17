@@ -139,7 +139,7 @@ $doc->addStyleDeclaration( $style );
                 <div class="row-fluid">
                 	<div class="span1 hidden-phone">
                 		<div class="thumbnail center">
-                			<div class="label <?php if ($progress == 100) : echo "label-success hasTooltip"; endif;?>" rel="tooltip" <?php if ($progress == 100) : echo "title=\"Completed!\""; endif;?>>
+                			<div class="label <?php if ($progress == 100) : echo "label-success hasTooltip"; endif;?>" rel="tooltip" <?php if ($progress == 100) : echo "title=\"" . JText::_('COM_PROJECTFORK_FIELD_COMPLETE_LABEL') . "\""; endif;?>>
                 				<div class="large"><?php echo JHtml::_('date', $item->end_date, JText::_('d')); ?></div>
                 				<div class="medium"><?php echo JHtml::_('date', $item->end_date, JText::_('M')); ?></div>
                 			</div>
