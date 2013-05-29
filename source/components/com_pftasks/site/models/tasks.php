@@ -204,27 +204,27 @@ class PFtasksModelTasks extends JModelList
     public function getItems()
     {
         // Get a storage key.
-		$store = $this->getStoreId();
+        $store = $this->getStoreId();
 
-		// Try to load the data from internal storage.
-		if (!isset($this->cache[$store])) {
-		    // Load the list items.
+        // Try to load the data from internal storage.
+        if (!isset($this->cache[$store])) {
+            // Load the list items.
             $limit = ($this->getState('filter.project') ? 0 : $this->getState('list.limit'));
-    		$query = $this->_getListQuery();
-    		$items = $this->_getList($query, $this->getStart(), $limit);
+            $query = $this->_getListQuery();
+            $items = $this->_getList($query, $this->getStart(), $limit);
 
-    		// Check for a database error.
-    		if ($this->_db->getErrorNum()) {
-    			$this->setError($this->_db->getErrorMsg());
+            // Check for a database error.
+            if ($this->_db->getErrorNum()) {
+                $this->setError($this->_db->getErrorMsg());
                 $this->cache[$store] = false;
-    		}
+            }
             else {
                 // Add the items to the internal cache.
                 $this->cache[$store] = $items;
             }
-		}
+        }
 
-		$items  = $this->cache[$store];
+        $items  = $this->cache[$store];
         $ref    = JModelLegacy::getInstance('UserRefs', 'PFusersModel');
         $tref   = JModelLegacy::getInstance('TaskRefs', 'PFtasksModel');
         $labels = $this->getInstance('Labels', 'PFModel');
@@ -272,30 +272,120 @@ class PFtasksModelTasks extends JModelList
 
 
     /**
-	 * Method to get a JPagination object for the data set.
-	 *
-	 * @return  JPagination  A JPagination object for the data set.
-	 */
-	public function getPagination()
-	{
-		// Get a storage key.
-		$store = $this->getStoreId('getPagination');
+     * Method to calculate the aggregated progress of parent projects, milestones or lists
+     *
+     * @param     array     $pks      The parent item primary keys
+     * @param     string    $field    The parent table field
+     *
+     * @return    array               Assoc array with the pk and progress value
+     */
+    public function getAggregatedProgress($pks, $field = 'project_id')
+    {
+        $fields = array('project_id', 'milestone_id', 'list_id');
 
-		// Try to load the data from internal storage.
-		if (isset($this->cache[$store])) {
-			return $this->cache[$store];
-		}
+        if (!is_array($pks) || count($pks) == 0 || !in_array($field, $fields)) {
+            return array();
+        }
 
-		// Create the pagination object.
-		jimport('joomla.html.pagination');
-		$limit = (int) ($this->getState('filter.project') ? 0 : $this->getState('list.limit')) - (int) $this->getState('list.links');
-		$page  = new JPagination($this->getTotal(), $this->getStart(), $limit);
+        $completed = $this->getAggregatedTotal($pks, $field, 1, true);
+        $total     = $this->getAggregatedTotal($pks, $field, null, true);
+        $items     = array();
 
-		// Add the object to the internal cache.
-		$this->cache[$store] = $page;
+        foreach ($pks AS $pk)
+        {
+            $count_complete = (int) (isset($completed[$pk]) ? $completed[$pk] : 0);
+            $count_total    = (int) (isset($total[$pk])     ? $total[$pk]   : 0);
 
-		return $this->cache[$store];
-	}
+            if (!$count_total || !$count_complete) {
+                $progress = 0;
+            }
+            elseif ($count_complete == $count_total) {
+                $progress = 100;
+            }
+            else {
+                $progress = round($count_complete * (100 / $count_total));
+            }
+
+            $items[$pk] = $progress;
+        }
+
+        return $items;
+    }
+
+
+    /**
+     * Method to get the aggregated total tasks of parent projects, milestones or lists
+     *
+     * @param     array     $pks         The parent item primary keys
+     * @param     string    $field       The parent table field
+     * @param     mixed     $complete    Optionally filter by completition state
+     *
+     * @return    array                  Assoc array with the pk and total value
+     */
+    public function getAggregatedTotal($pks, $field = 'project_id', $complete = null)
+    {
+        static $cache = array();
+
+        $fields = array('project_id', 'milestone_id', 'list_id');
+
+        if (!is_array($pks) || count($pks) == 0 || !in_array($field, $fields)) {
+            return array();
+        }
+
+        // Check the cache
+        $key = md5($field . $complete . implode('.', $pks));
+        if (isset($cache[$key])) return $cache[$key];
+
+        $query = $this->_db->getQuery(true);
+        $query->select($field . ', COUNT(id) AS total')
+              ->from('#__pf_tasks')
+              ->where($field . ' IN(' . implode(',', $pks) . ') ')
+              ->where('state != -2');
+
+        if ($complete === 0) {
+            $query->where('complete = 0');
+        }
+        elseif ($complete === 1) {
+            $query->where('complete = 1');
+        }
+
+        $query->group($field)
+              ->order('id ASC');
+
+        $this->_db->setQuery($query);
+        $cache[$key] = $this->_db->loadAssocList($field, 'total');
+
+        if (!is_array($cache[$key])) $cache[$key] = array();
+
+        return $cache[$key];
+    }
+
+
+    /**
+     * Method to get a JPagination object for the data set.
+     *
+     * @return    jpagination    A JPagination object for the data set.
+     */
+    public function getPagination()
+    {
+        // Get a storage key.
+        $store = $this->getStoreId('getPagination');
+
+        // Try to load the data from internal storage.
+        if (isset($this->cache[$store])) {
+            return $this->cache[$store];
+        }
+
+        // Create the pagination object.
+        jimport('joomla.html.pagination');
+        $limit = (int) ($this->getState('filter.project') ? 0 : $this->getState('list.limit')) - (int) $this->getState('list.links');
+        $page  = new JPagination($this->getTotal(), $this->getStart(), $limit);
+
+        // Add the object to the internal cache.
+        $this->cache[$store] = $page;
+
+        return $this->cache[$store];
+    }
 
 
     /**
