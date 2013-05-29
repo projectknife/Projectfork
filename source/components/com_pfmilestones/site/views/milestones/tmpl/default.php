@@ -113,15 +113,15 @@ $doc->addStyleDeclaration( $style );
                 // Calculate milestone progress
                 $task_count = (int) $item->tasks;
                 $completed  = (int) $item->completed_tasks;
-                $progress   = ($task_count == 0) ? 0 : round($completed * (100 / $task_count));
+                $progress   = $item->progress;
 
                 // Repo directory
                 $repo_dir = (int) $this->params->get('repo_dir');
 
-                if ($progress >= 67)  $progress_class = 'info';
-                if ($progress == 100) $progress_class = 'success';
-                if ($progress < 67)   $progress_class = 'warning';
-                if ($progress < 34)   $progress_class = 'danger label-important';
+                if ($item->progress >= 67)  $progress_class = 'info';
+                if ($item->progress == 100) $progress_class = 'success';
+                if ($item->progress < 67)   $progress_class = 'warning';
+                if ($item->progress < 34)   $progress_class = 'danger label-important';
 
                 // Prepare the watch button
                 $watch = '';
@@ -149,7 +149,7 @@ $doc->addStyleDeclaration( $style );
                             <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-milestone">
                                 <div class="bar" style="min-width:20px; width: <?php echo ($progress > 0) ? $progress . "%": "20px";?>">
                                     <span class="">
-                                        <?php echo $progress;?>
+                                        <?php echo $progress;?>%
                                     </span>
                                 </div>
                             </div>
