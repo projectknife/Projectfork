@@ -13,16 +13,39 @@ defined('_JEXEC') or die();
 
 abstract class PFDate
 {
-    public static function relative($date = null)
+    public static function relative($date = null, $tz = true)
     {
         static $today_day_of_week;
+        static $time_offset = null;
+        static $time_format = null;
 
         if (!$today_day_of_week) {
             $today_day_of_week = date('N');
         }
 
+        if (is_null($time_offset)) {
+            $config = JFactory::getConfig();
+		    $user   = JFactory::getUser();
+
+            $time_offset = $user->getParam('timezone', $config->get('offset'));
+        }
+
+        if (is_null($time_format)) {
+            $time_format = JText::_('DATE_FORMAT_LC1');
+        }
+
         if (!$date || $date == JFactory::getDbo()->getNullDate()) {
             return false;
+        }
+
+        if ($tz) {
+            // Get a date object based on UTC.
+			$dateObj = JFactory::getDate($date, 'UTC');
+
+			// Set the correct time zone based on the user configuration.
+			$dateObj->setTimeZone(new DateTimeZone($time_offset));
+
+            $date = $dateObj->calendar($time_format, true);
         }
 
         $timestamp = strtotime($date);

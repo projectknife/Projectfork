@@ -126,6 +126,7 @@ abstract class PFhtmlLabel
     public static function datetime($date, $compact = false, $options = array())
     {
         static $format = null;
+        static $time_offset = null;
 
         if (is_null($format)) {
             $params = JComponentHelper::getParams('com_projectfork');
@@ -136,17 +137,35 @@ abstract class PFhtmlLabel
             }
         }
 
-        $string = PFDate::relative($date);
+        if (is_null($time_offset)) {
+            $config = JFactory::getConfig();
+		    $user   = JFactory::getUser();
 
-        if ($string == false) {
-            return '';
+            $time_offset = $user->getParam('timezone', $config->get('offset'));
+        }
+
+        if (!isset($options['tz'])) {
+            $options['tz'] = true;
+        }
+
+        $string = PFDate::relative($date);
+        if ($string == false) return '';
+
+        if ($options['tz']) {
+            // Get a date object based on UTC.
+			$dateObj = JFactory::getDate($date, 'UTC');
+
+			// Set the correct time zone based on the user configuration.
+			$dateObj->setTimeZone(new DateTimeZone($time_offset));
+
+            $date = $dateObj->calendar($format, true);
         }
 
         $timestamp = strtotime($date);
         $now       = time();
         $remaining = $timestamp - $now;
         $is_past   = ($remaining < 0) ? true : false;
-        $tooltip   = JHtml::_('date', $date, $format);
+        $tooltip   = JHtml::_('date', $date, $format, ($options['tz'] ? false : true));
 
         if ($compact) {
             $days   = round($remaining / 86400);
