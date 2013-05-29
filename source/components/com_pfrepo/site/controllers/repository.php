@@ -120,6 +120,68 @@ class PFrepoControllerRepository extends JControllerAdmin
 
 
     /**
+	 * Check in of one or more records.
+	 *
+	 * @return  boolean  True on success
+	 */
+	public function checkin()
+	{
+		// Check for request forgeries.
+		JSession::checkToken() or jexit(JText::_('JINVALID_TOKEN'));
+
+		$parent_id = (int) JRequest::getUInt('filter_parent_id', 0);
+
+        // Get items to remove from the request.
+        $did = (array) JRequest::getVar('did', array(), '', 'array');
+        $nid = (array) JRequest::getVar('nid', array(), '', 'array');
+        $fid = (array) JRequest::getVar('fid', array(), '', 'array');
+
+        if ((!is_array($did) && !is_array($nid) && !is_array($fid)) || (count($did) < 1 && count($nid) < 1 && count($fid) < 1)) {
+            JError::raiseWarning(500, JText::_($this->text_prefix . '_NO_ITEM_SELECTED'));
+        }
+        else {
+            jimport('joomla.utilities.arrayhelper');
+            $app = JFactory::getApplication();
+
+            // Check-in directories
+            if (is_array($did) && count($did) > 0) {
+                $model = $this->getModel('DirectoryForm');
+
+                JArrayHelper::toInteger($did);
+
+                if ($model->checkin($did) === false) {
+                    $app->enqueueMessage($model->getError(), 'error');
+                }
+            }
+
+            // Check-in notes
+            if (is_array($nid) && count($nid) > 0) {
+                $model = $this->getModel('NoteForm');
+
+                JArrayHelper::toInteger($nid);
+
+                if ($model->checkin($nid) === false) {
+                    $app->enqueueMessage($model->getError(), 'error');
+                }
+            }
+
+            // Check-in files
+            if (is_array($fid) && count($fid) > 0) {
+                $model = $this->getModel('FileForm');
+
+                JArrayHelper::toInteger($fid);
+
+                if ($model->checkin($fid) === false) {
+                    $app->enqueueMessage($model->getError(), 'error');
+                }
+            }
+        }
+
+        $this->setRedirect(JRoute::_('index.php?option=' . $this->option . '&view=' . $this->view_list . ($parent_id > 1 ? '&filter_parent_id=' . $parent_id : ''), false));
+	}
+
+
+    /**
      * Method to run batch operations.
      *
      * @return    void
