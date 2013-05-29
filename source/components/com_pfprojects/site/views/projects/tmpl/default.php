@@ -28,6 +28,8 @@ $repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
 $forum_enabled = PFApplicationHelper::enabled('com_pfforum');
 $users_enabled = PFApplicationHelper::enabled('com_pfusers');
 $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
+
+$is_ssl = JFactory::getURI()->isSSL();
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects">
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -131,7 +133,9 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
 	    	    	    		<?php if (!empty($item->logo_img)) : ?>
 	    	    	    		        <img src="<?php echo $item->logo_img;?>" width="100" class="thumbnail pull-left" alt="<?php echo $this->escape($item->title);?>" />
 	    	    	    		<?php else : ?>
-	    	    	    		        <img src="http://placehold.it/100x100&text=<?php echo $this->escape($item->title);?>"  class="thumbnail pull-left" alt="<?php echo $this->escape($item->title);?>" />
+                                        <?php if (!$is_ssl) : ?>
+	    	    	    		           <img src="http://placehold.it/100x100&text=<?php echo $this->escape($item->title);?>"  class="thumbnail pull-left" alt="<?php echo $this->escape($item->title);?>" />
+                                        <?php endif; ?>
 	    	    	    		<?php endif ; ?>
 	    	    	    		</a>
     	    	    		<h2 class="item-title">

@@ -214,10 +214,12 @@ if (!class_exists('ProjectforkAvatar'))
         {
             static $db;
             static $query;
+            static $ssl;
 
             if (!$db) {
                 $db    = JFactory::getDbo();
                 $query = $db->getQuery(true);
+                $ssl   = JFactory::getURI()->isSSL();
             }
 
             $query->clear()
@@ -232,7 +234,7 @@ if (!class_exists('ProjectforkAvatar'))
 
             if (empty($email)) return $default;
 
-            $path = 'http://www.gravatar.com/avatar/'
+            $path = 'http' . ($ssl ? 's' : '') . '://www.gravatar.com/avatar/'
                   . md5(strtolower(trim($email)))
                   . '?d=' . urlencode($default)
                   . '&s=200';
