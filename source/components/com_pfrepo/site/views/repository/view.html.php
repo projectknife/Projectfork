@@ -105,6 +105,7 @@ class PFrepoViewRepository extends JViewLegacy
      */
     public function display($tpl = null)
     {
+        $user   = JFactory::getUser();
         $app    = JFactory::getApplication();
         $active = $app->getMenu()->getActive();
 
@@ -118,6 +119,12 @@ class PFrepoViewRepository extends JViewLegacy
         $this->toolbar       = $this->getToolbar();
         $this->sort_options  = $this->getSortOptions();
         $this->order_options = $this->getOrderOptions();
+
+        // Check the view access to the current directory
+		if ($this->items['directory']->params->get('access-view') != true && (($this->items['directory']->params->get('show_noauth') != true && $user->get('guest')))) {
+		    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+			return;
+		}
 
         // Escape strings for HTML output
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
