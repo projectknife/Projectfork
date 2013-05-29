@@ -220,6 +220,7 @@ class PFtimeModelRecorder extends JModelList
         $descriptions = $app->input->post->get('description', array(), 'array');
         $rates        = $app->input->post->get('rate', array(), 'array');
         $billables    = $app->input->post->get('billable', array(), 'array');
+        $filter       = JFilterInput::getInstance();
 
         JArrayHelper::toInteger($cid);
 
@@ -227,8 +228,8 @@ class PFtimeModelRecorder extends JModelList
         {
             $upd = new stdClass();
             $upd->id = $id;
-            $upd->description = JFilterInput::clean((isset($descriptions[$i]) ? $descriptions[$i] : ''));
-            $upd->rate        = JFilterInput::clean((isset($rates[$i]) ? $rates[$i] : '0.00'));
+            $upd->description = $filter->clean((isset($descriptions[$i]) ? $descriptions[$i] : ''));
+            $upd->rate        = $filter->clean((isset($rates[$i]) ? $rates[$i] : '0.00'));
             $upd->billable    = (isset($billables[$i]) ? (int) $billables[$i] : 0);
 
             if (!$this->_db->updateObject('#__pf_timesheet', $upd, 'id', false)) {
