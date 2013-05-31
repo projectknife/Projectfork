@@ -24,7 +24,7 @@ class JFormFieldLabelManager extends JFormField
     /**
      * The form field type.
      *
-     * @var    string    
+     * @var    string
      */
     public $type = 'LabelManager';
 
@@ -32,7 +32,7 @@ class JFormFieldLabelManager extends JFormField
     /**
      * The existing label items
      *
-     * @var    array    
+     * @var    array
      */
     protected $items;
 
@@ -254,7 +254,7 @@ class JFormFieldLabelManager extends JFormField
             $script[] = '          + "' . JText::_('COM_PROJECTFORK_LABEL_PREVIEW') . ': "';
             $script[] = '          + "<span class=\"label\"><i class=\"icon-bookmark\"></i> ' . JText::_('COM_PROJECTFORK_LABEL_TITLE_PLACEHOLDER') . '</span>"';
             $script[] = '          + "<input type=\"hidden\" name=\"' . $this->name . '["+name+"][id][]\" value=\"0\"/>"';
-            $script[] = '          + "</div></li>"';
+            $script[] = '          + "</div></li>";';
             $script[] = '    ';
             $script[] = '    l.append(c);';
             $script[] = '    ' . $onchange;
@@ -305,7 +305,7 @@ class JFormFieldLabelManager extends JFormField
             $script[] = '          + "<a href=\"javascript:void(0);\" onclick=\"pfRemoveLabel_' . $this->id . '(this)\">' . JText::_('JACTION_DELETE') . '</a>"';
             $script[] = '          + "</div></div>"';
             $script[] = '          + "<input type=\"hidden\" name=\"' . $this->name . '["+name+"][id][]\" value=\"0\"/>"';
-            $script[] = '          + "<div class=\"clr\"></div></li>"';
+            $script[] = '          + "<div class=\"clr\"></div></li>";';
             $script[] = '    ';
             $script[] = '    l.append(c);';
             $script[] = '    ' . $onchange;
