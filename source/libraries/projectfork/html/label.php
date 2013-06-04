@@ -148,23 +148,28 @@ abstract class PFhtmlLabel
             $options['tz'] = true;
         }
 
-        $string = PFDate::relative($date);
+        $string = PFDate::relative($date, $options['tz']);
         if ($string == false) return '';
 
         if ($options['tz']) {
             // Get a date object based on UTC.
-			$dateObj = JFactory::getDate($date, 'UTC');
+			$dateObj  = JFactory::getDate($date, 'UTC');
+            $now_date = JFactory::getDate('now', 'UTC');
 
 			// Set the correct time zone based on the user configuration.
 			$dateObj->setTimeZone(new DateTimeZone($time_offset));
+            $now_date->setTimeZone(new DateTimeZone($time_offset));
 
-            $date = $dateObj->calendar($format, true);
+            $timestamp = strtotime($dateObj->calendar('Y-m-d H:i:s', true));
+            $now       = strtotime($now_date->format('Y-m-d H:i:s', true, false));
+        }
+        else {
+            $timestamp = strtotime($date);
+            $now = time();
         }
 
-        $timestamp = strtotime($date);
-        $now       = time();
         $remaining = $timestamp - $now;
-        $is_past   = ($remaining < 0) ? true : false;
+        $is_past   = ($remaining <= 0) ? true : false;
         $tooltip   = JHtml::_('date', $date, $format, ($options['tz'] ? false : true));
 
         if ($compact) {

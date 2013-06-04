@@ -15,26 +15,34 @@ abstract class PFDate
 {
     public static function relative($date = null, $tz = true)
     {
-        static $today_day_of_week;
+        static $today_day_of_week = null;
         static $time_offset = null;
         static $time_format = null;
-
-        if (!$today_day_of_week) {
-            $today_day_of_week = date('N');
-        }
+        static $nulldate    = null;
 
         if (is_null($time_offset)) {
             $config = JFactory::getConfig();
 		    $user   = JFactory::getUser();
 
+            $today_day_of_week = date('N');
+
             $time_offset = $user->getParam('timezone', $config->get('offset'));
+            $time_format = 'Y-m-d H:i:s';
+            $nulldate    = JFactory::getDbo()->getNullDate();
         }
 
-        if (is_null($time_format)) {
-            $time_format = JText::_('DATE_FORMAT_LC1');
+        if ($tz) {
+            $now_date = JFactory::getDate('now', 'UTC');
+
+            $now_date->setTimeZone(new DateTimeZone($time_offset));
+
+            $now = strtotime($now_date->format($time_format, true, false));
+        }
+        else {
+            $now = time();
         }
 
-        if (!$date || $date == JFactory::getDbo()->getNullDate()) {
+        if (!$date || $date == $nulldate) {
             return false;
         }
 
@@ -45,13 +53,14 @@ abstract class PFDate
 			// Set the correct time zone based on the user configuration.
 			$dateObj->setTimeZone(new DateTimeZone($time_offset));
 
-            $date = $dateObj->calendar($time_format, true);
+            $timestamp = strtotime($dateObj->format($time_format, true, false));
+        }
+        else {
+            $timestamp = strtotime($date);
         }
 
-        $timestamp = strtotime($date);
-        $now       = time();
         $remaining = $timestamp - $now;
-        $is_past   = ($remaining < 0) ? true : false;
+        $is_past   = ($remaining <= 0) ? true : false;
         $format    = '';
 
         if ($is_past) {
