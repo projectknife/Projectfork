@@ -155,7 +155,8 @@ class PFtasksModelTasklist extends JModelAdmin
     protected function loadFormData()
     {
         // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState('com_pftasks.edit.' . $this->getName() . '.data', array());
+        $app  = JFactory::getApplication();
+        $data = $app->getUserState('com_pftasks.edit.' . $this->getName() . '.data', array());
 
         if (empty($data)) {
 			$data = $this->getItem();
@@ -163,9 +164,13 @@ class PFtasksModelTasklist extends JModelAdmin
             // Set default values
             if ($this->getState($this->getName() . '.id') == 0) {
                 $active_id = PFApplicationHelper::getActiveProjectId();
+                $milestone = $app->getUserStateFromRequest('com_pftasks.tasks.filter.milestone', 'milestone_id', '');
+                $state     = $app->getUserStateFromRequest('com_pftasks.tasks.filter.published', 'filter_published', '');
 
                 $data->set('project_id', $active_id);
-                $data->set('milestone_id', JRequest::getUInt('milestone_id'));
+
+                if (!empty($milestone)) $data->set('milestone_id', (int) $milestone);
+                if (!empty($state) || $state === '0') $data->set('state', (int) $state);
             }
         }
 
