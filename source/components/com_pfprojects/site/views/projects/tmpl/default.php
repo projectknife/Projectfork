@@ -263,7 +263,7 @@ $is_ssl = JFactory::getURI()->isSSL();
     	    	    				<div class="btn-group">
     	    	    			        <a class="btn btn-mini" href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($item->slug, $repo_dir));?>">
     	    	    			            <span aria-hidden="true" class="icon-flag-2"></span>
-    	    	    			            <?php echo (int) $item->attachments;?> <?php echo JText::_('JGRID_HEADING_FILES'); ?>
+    	    	    			            <?php echo (int) $item->attachments;?> <?php echo JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'); ?>
     	    	    			        </a>
     	    	    				</div>
     	    	    			<?php endif; ?>
