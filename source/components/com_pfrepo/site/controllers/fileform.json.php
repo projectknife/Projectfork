@@ -20,7 +20,7 @@ jimport('projectfork.controller.form.json');
  */
 class PFrepoControllerFileForm extends PFControllerFormJson
 {
-    public function save()
+    public function save($key = null, $urlVar = null)
     {
         $rdata = array();
         $rdata['success']  = true;
