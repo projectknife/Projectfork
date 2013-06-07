@@ -169,6 +169,10 @@ class PFprojectsModelProjects extends JModelList
      */
     public function getItems()
     {
+        if (JDEBUG) {
+            JProfiler::getInstance('Application')->mark('onBeforeGetProjects');
+        }
+
         $items     = parent::getItems();
         $base_path = JPATH_ROOT . '/media/com_projectfork/repo/0/logo';
         $base_url  = JURI::root(true) . '/media/com_projectfork/repo/0/logo';
@@ -227,6 +231,10 @@ class PFprojectsModelProjects extends JModelList
 
             // Inject progress
             $items[$i]->progress = (isset($progress[$item->id]) ? $progress[$item->id] : 0);
+        }
+
+        if (JDEBUG) {
+            JProfiler::getInstance('Application')->mark('onAfterGetProjects');
         }
 
         return $items;
