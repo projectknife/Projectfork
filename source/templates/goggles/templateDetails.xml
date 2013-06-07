@@ -58,6 +58,11 @@
   			<field name="logoFile" class="" type="media" default=""
 					label="TPL_GOGGLES_LOGO_LABEL"
 					description="TPL_GOGGLES_LOGO_DESC" />
+            <field name="nameDisplay" type="list" default="username" label="TPL_GOGGLES_DISPLAY_NAME_LABEL" description="TPL_GOGGLES_DISPLAY_NAME_DESC">
+              <option value="username">TPL_GOGGLES_DISPLAY_NAME_USERNAME</option>
+              <option value="full">TPL_GOGGLES_DISPLAY_NAME_FULL_NAME</option>
+              <option value="email">TPL_GOGGLES_DISPLAY_NAME_EMAIL</option>
+            </field>
 			<field name="createButton" type="radio" class="btn-group" default="1" label="TPL_GOGGLES_CREATE_BUTTON_LABEL" description="TPL_GOGGLES_CREATE_BUTTON_DESC">
   			  <option value="0">JNO</option>
   			  <option value="1">JYES</option>
