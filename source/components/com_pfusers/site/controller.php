@@ -22,17 +22,6 @@ jimport('joomla.application.component.controller');
 class PFusersController extends JControllerLegacy
 {
     /**
-     * Constructor
-     *
-     * @param    array    $config    Optional config options
-     */
-    function __construct($config = array())
-    {
-        parent::__construct($config);
-    }
-
-
-    /**
      * Displays the current view
      *
      * @param     boolean    $cachable    If true, the view output will be cached  (Not Used!)
@@ -53,7 +42,6 @@ class PFusersController extends JControllerLegacy
         JHtml::_('behavior.tooltip');
 
         // Override method arguments
-        $cachable  = true;
         $urlparams = array('id'               => 'INT',
                            'cid'              => 'ARRAY',
                            'limit'            => 'INT',

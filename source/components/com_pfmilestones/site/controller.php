@@ -51,7 +51,6 @@ class PFmilestonesController extends JControllerLegacy
 
         $view      = JRequest::getCmd('view');
         $id        = JRequest::getUInt('id');
-        $cachable  = true;
         $urlparams = array(
             'id'               => 'INT',
             'cid'              => 'ARRAY',
