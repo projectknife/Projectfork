@@ -53,7 +53,7 @@ $access      = PFrepoHelper::getActions('directory', $dir->id);
 
             <div class="clearfix"> </div>
 
-            <?php if ($access->get('core.create')) : ?>
+            <?php if ($access->get('core.create') && !defined('PFDEMO')) : ?>
                 <fieldset id="upload-form">
                     <div class="well btn-toolbar">
                         <div class="btn-group">

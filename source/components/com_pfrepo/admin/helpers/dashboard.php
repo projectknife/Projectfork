@@ -30,7 +30,7 @@ abstract class PFrepoHelperDashboard
 
         $buttons = array();
 
-        if (!$pid) return $buttons;
+        if (!$pid || defined('PFDEMO')) return $buttons;
 
         // Get the project root dir
         $db    = JFactory::getDbo();

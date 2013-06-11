@@ -97,6 +97,16 @@ class PFrepoControllerFileForm extends JControllerForm
             return false;
         }
 
+        // Check general access
+        if (!$user->authorise('core.create', 'com_pfrepo') || defined('PFDEMO')) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_CREATE_FILE_DENIED'));
+            $this->setMessage($this->getError(), 'error');
+
+            $this->setRedirect(JRoute::_(($layout != 'modal' ? $link_item : $link_list), false));
+
+            return false;
+        }
+
         // Get file info
         $files = $this->getFormFiles($file_form);
 
@@ -252,7 +262,7 @@ class PFrepoControllerFileForm extends JControllerForm
         $dir_id  = JArrayHelper::getValue($data, 'dir_id', JRequest::getInt('filter_parent_id'), 'int');
 
         // Check general access
-        if (!$user->authorise('core.create', 'com_pfrepo')) {
+        if (!$user->authorise('core.create', 'com_pfrepo') || defined('PFDEMO')) {
             $this->setError(JText::_('COM_PROJECTFORK_WARNING_CREATE_FILE_DENIED'));
             return false;
         }

@@ -98,7 +98,7 @@ $doc->addStyleDeclaration( $style );
                 </div>
             </div>
 
-            <?php if ($dir->id > 1 && $user->authorise('core.create', 'com_pfrepo.directory.' . $dir->id)) :
+            <?php if ($dir->id > 1 && $user->authorise('core.create', 'com_pfrepo.directory.' . $dir->id) && !defined('PFDEMO')) :
                 echo $this->loadTemplate('upload');
             endif; ?>
 

@@ -243,7 +243,7 @@ class PFrepoViewRepository extends JViewLegacy
             $items = array();
             $items[] = array('text'    => 'COM_PROJECTFORK_ACTION_NEW_FILE',
                              'task'    => 'fileform.add',
-                             'options' => array('access' => $access->get('core.create')));
+                             'options' => array('access' => ($access->get('core.create') && !defined('PFDEMO'))));
 
             $items[] = array('text'    => 'COM_PROJECTFORK_ACTION_NEW_DIRECTORY',
                              'task'    => 'directoryform.add',
