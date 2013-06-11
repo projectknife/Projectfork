@@ -28,6 +28,27 @@
                     <option value="0">JNO</option>
                     <option value="1">JYES</option>
                 </field>
+                <field name="reset" type="radio"
+                    class="btn-group"
+                    default="0"
+                    label="PLG_PFDEMO_FIELD_RESET_LABEL"
+                    description="PLG_PFDEMO_FIELD_RESET_DESC"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="interval" type="text"
+                    class="input-small"
+                    default="1440"
+                    label="PLG_PFDEMO_FIELD_INTERVAL_LABEL"
+                    description="PLG_PFDEMO_FIELD_INTERVAL_DESC"
+                />
+                <field name="next_reset" type="text"
+                    readonly="true"
+                    label="PLG_PFDEMO_FIELD_NEXT_RESET_LABEL"
+                    description="PLG_PFDEMO_FIELD_NEXT_RESET_DESC"
+                    default=""
+                />
             </fieldset>
         </fields>
     </config>
