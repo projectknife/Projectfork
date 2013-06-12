@@ -71,6 +71,7 @@ class PFrepoControllerFileForm extends JControllerForm
         $file_form = JRequest::getVar('jform', '', 'files', 'array');
         $context   = $this->option . ".edit." . $this->context;
         $layout    = JRequest::getVar('layout');
+        $user      = JFactory::getUser();
         $files     = array();
 
         if (empty($urlVar)) $urlVar = $key;
