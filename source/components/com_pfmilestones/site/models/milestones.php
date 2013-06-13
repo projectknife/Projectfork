@@ -84,14 +84,6 @@ class PFmilestonesModelMilestones extends JModelList
         $query->select('p.title AS project_title, p.alias AS project_alias');
         $query->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id');
 
-        // Join over the tasks for task count
-        $query->select('COUNT(DISTINCT ta.id) AS tasks');
-        $query->join('LEFT', '#__pf_tasks AS ta ON (ta.milestone_id = a.id)');
-
-        // Join over the tasks again for completed task count
-        $query->select('COUNT(DISTINCT tc.id) AS completed_tasks');
-        $query->join('LEFT', '#__pf_tasks AS tc ON (tc.milestone_id = a.id AND tc.complete = 1)');
-
         // Join over the task lists for task list count
         $query->select('COUNT(DISTINCT tl.id) AS tasklists');
         $query->join('LEFT', '#__pf_task_lists AS tl ON tl.milestone_id = a.id');
@@ -182,8 +174,23 @@ class PFmilestonesModelMilestones extends JModelList
         $items  = parent::getItems();
         $labels = $this->getInstance('Labels', 'PFModel');
 
-        // Get the global params
-        $global_params = JComponentHelper::getParams('com_pfmilestones', true);
+        $tasks_exists = PFApplicationHelper::enabled('com_pftasks');
+
+        $pks = JArrayHelper::getColumn($items, 'id');
+
+        // Get aggregate data
+        $progress        = array();
+        $total_tasks     = array();
+        $completed_tasks = array();
+
+        if ($tasks_exists) {
+            JLoader::register('PFtasksModelTasks', JPATH_SITE . '/components/com_pftasks/models/tasks.php');
+
+            $tmodel      = JModelLegacy::getInstance('Tasks', 'PFtasksModel', array('ignore_request' => true));
+            $progress    = $tmodel->getAggregatedProgress($pks, 'milestone_id');
+            $total_tasks = $tmodel->getAggregatedTotal($pks, 'milestone_id');
+            $completed_tasks = $tmodel->getAggregatedTotal($pks, 'milestone_id', 1);
+        }
 
         foreach ($items as $i => &$item)
         {
@@ -205,6 +212,15 @@ class PFmilestonesModelMilestones extends JModelList
             if (!isset($items[$i]->watching)) {
                 $items[$i]->watching = 0;
             }
+
+            // Inject task count
+            $items[$i]->tasks = (isset($total_tasks[$item->id]) ? $total_tasks[$item->id] : 0);
+
+            // Inject completed task count
+            $items[$i]->completed_tasks = (isset($completed_tasks[$item->id]) ? $completed_tasks[$item->id] : 0);
+
+            // Inject progress
+            $items[$i]->progress = (isset($progress[$item->id]) ? $progress[$item->id] : 0);
         }
 
         return $items;

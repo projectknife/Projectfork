@@ -263,7 +263,12 @@ class PFtasksControllerTaskForm extends JControllerForm
         $return = JRequest::getVar('return', null, 'default', 'base64');
 
         if (empty($return) || !JUri::isInternal(base64_decode($return))) {
-            return JRoute::_(PFtasksHelperRoute::getTasksRoute(), false);
+            $app       = JFactory::getApplication();
+            $project   = PFApplicationHelper::getActiveProjectId();
+            $milestone = (int) $app->getUserStateFromRequest('com_pftasks.tasks.filter.milestone', 'milestone_id', '');
+            $list      = (int) $app->getUserStateFromRequest('com_pftasks.tasks.filter.tasklist', 'list_id', '');
+
+            return JRoute::_(PFtasksHelperRoute::getTasksRoute($project, $milestone, $list), false);
         }
         else {
             return base64_decode($return);

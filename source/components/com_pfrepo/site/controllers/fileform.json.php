@@ -20,7 +20,7 @@ jimport('projectfork.controller.form.json');
  */
 class PFrepoControllerFileForm extends PFControllerFormJson
 {
-    public function save()
+    public function save($key = null, $urlVar = null)
     {
         $rdata = array();
         $rdata['success']  = true;
@@ -51,7 +51,7 @@ class PFrepoControllerFileForm extends PFControllerFormJson
         }
 
         // Access check.
-        if (!$this->allowSave($d = array())) {
+        if (!$this->allowSave($d = array()) || defined('PFDEMO')) {
             $rdata['success'] = false;
             $rdata['messages'][] = JText::_('JLIB_APPLICATION_ERROR_SAVE_NOT_PERMITTED');
 
@@ -125,6 +125,12 @@ class PFrepoControllerFileForm extends PFControllerFormJson
         $user    = JFactory::getUser();
         $project = JArrayHelper::getValue($data, 'project_id', JRequest::getInt('filter_project'), 'int');
         $dir_id  = JArrayHelper::getValue($data, 'dir_id', JRequest::getInt('filter_parent_id'), 'int');
+
+        // Demo mode check
+        if (defined('PFDEMO')) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_CREATE_FILE_DENIED'));
+            return false;
+        }
 
         // Check general access
         if (!$user->authorise('core.create', 'com_pfrepo')) {

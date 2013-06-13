@@ -39,7 +39,7 @@ $cfg_img = $params->get('user_profile_avatar');
                 <div id="user-details">
                     <div class="well">
                         <div class="item-description">
-	                        <?php if (($user->id == $item->id || $access->get('core.admin')) && empty($cfg_img)) : ?>
+	                        <?php if (($user->id == $item->id || $access->get('core.admin')) && empty($cfg_img) && !defined('PFDEMO')) : ?>
                                 <div class="pull-left">
                                 <img alt="<?php echo $this->escape($this->item->name);?>"
                                      src="<?php echo JHtml::_('projectfork.avatar.path', $item->id);?>"

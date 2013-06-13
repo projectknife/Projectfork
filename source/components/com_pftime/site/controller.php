@@ -17,14 +17,14 @@ jimport('joomla.application.component.controller');
 /**
  * Component main controller
  *
- * @see    jcontroller    
+ * @see    jcontroller
  */
 class PFtimeController extends JControllerLegacy
 {
     /**
      * The default view
      *
-     * @var    string    
+     * @var    string
      */
     protected $default_view = 'timesheet';
 
@@ -51,7 +51,6 @@ class PFtimeController extends JControllerLegacy
 
         $view      = JRequest::getCmd('view');
         $id        = JRequest::getUInt('id');
-        $cachable  = true;
         $urlparams = array(
             'id'               => 'INT',
             'cid'              => 'ARRAY',

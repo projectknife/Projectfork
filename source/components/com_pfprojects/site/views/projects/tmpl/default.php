@@ -28,6 +28,8 @@ $repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
 $forum_enabled = PFApplicationHelper::enabled('com_pfforum');
 $users_enabled = PFApplicationHelper::enabled('com_pfusers');
 $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
+
+$is_ssl = JFactory::getURI()->isSSL();
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects">
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -103,15 +105,14 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
                     // Calculate project progress
                     $task_count = (int) $item->tasks;
                     $completed  = (int) $item->completed_tasks;
-                    $progress   = ($task_count == 0) ? 0 : round($completed * (100 / $task_count));
-                    
+
                     // Repo directory
                     $repo_dir = (int) $this->params->get('repo_dir');
 
-                    if ($progress >= 67)  $progress_class = 'info';
-                    if ($progress == 100) $progress_class = 'success';
-                    if ($progress < 67)   $progress_class = 'warning';
-                    if ($progress < 34)   $progress_class = 'danger label-important';
+                    if ($item->progress >= 67)  $progress_class = 'info';
+                    if ($item->progress == 100) $progress_class = 'success';
+                    if ($item->progress < 67)   $progress_class = 'warning';
+                    if ($item->progress < 34)   $progress_class = 'danger label-important';
 
                     // Prepare the watch button
                     $watch = '';
@@ -124,7 +125,7 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
                 <?php if ($item->category_title != $current_cat && !is_numeric($this->state->get('filter.category'))) : ?>
                     <h3><?php echo $this->escape($item->category_title);?></h3>
                     <hr />
-                
+
                 <?php $current_cat = $item->category_title; endif; ?>
                 	<div class="row-fluid">
     	    	    	<div class="span7">
@@ -132,7 +133,9 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
 	    	    	    		<?php if (!empty($item->logo_img)) : ?>
 	    	    	    		        <img src="<?php echo $item->logo_img;?>" width="100" class="thumbnail pull-left" alt="<?php echo $this->escape($item->title);?>" />
 	    	    	    		<?php else : ?>
-	    	    	    		        <img src="http://placehold.it/100x100&text=<?php echo $this->escape($item->title);?>"  class="thumbnail pull-left" alt="<?php echo $this->escape($item->title);?>" />
+                                        <?php if (!$is_ssl) : ?>
+	    	    	    		           <img src="http://placehold.it/100x100&text=<?php echo $this->escape($item->title);?>"  class="thumbnail pull-left" alt="<?php echo $this->escape($item->title);?>" />
+                                        <?php endif; ?>
 	    	    	    		<?php endif ; ?>
 	    	    	    		</a>
     	    	    		<h2 class="item-title">
@@ -152,14 +155,14 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
                             </h2>
                             <hr />
 	    	    	    	<div class="project-description"><?php echo JHtml::_('pf.html.truncate', $item->description, 200); ?></div>
-    	    	    		
-    	    	    		
+
+
     	    	    	</div>
     	    	    	<div class="span5">
     	    	    		<hr class="visible-phone" />
     	    	    		<div class="progress progress-<?php echo $progress_class;?> progress-striped progress-project">
-    	    	    		    <div class="bar" style="width: <?php echo ($progress > 0) ? $progress."%": "24px";?>">
-    	    	    		        <span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $progress;?>%</span>
+    	    	    		    <div class="bar" style="width: <?php echo ($item->progress > 0) ? $item->progress . "%" : "24px"; ?>">
+    	    	    		        <span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $item->progress; ?>%</span>
     	    	    		    </div>
     	    	    		</div>
     	    	    		<dl class="article-info dl-horizontal">
@@ -224,7 +227,7 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
     	    	    			    </a>
     	    	    			</div>
     	    	    			<?php endif; ?>
-    	    	    			
+
 	    	    				<?php if ($cmnts_enabled) : ?>
 	    	    				<div class="btn-group">
 	    	    					<a class="btn btn-mini" href="<?php echo JRoute::_($link);?>#comments">
@@ -235,7 +238,7 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
 	    	    				<?php if ($milestones_enabled) : ?>
     	    	    				<div class="btn-group">
     	    	    			        <a class="btn btn-mini" href="<?php echo JRoute::_(PFmilestonesHelperRoute::getMilestonesRoute($item->slug, $item->slug));?>">
-    	    	    			            <span aria-hidden="true" class="icon-location"></span> 
+    	    	    			            <span aria-hidden="true" class="icon-location"></span>
     	    	    			            <?php echo (int) $item->milestones;?> <?php echo JText::_('JGRID_HEADING_MILESTONES'); ?>
     	    	    			        </a>
     	    	    				</div>
@@ -243,7 +246,7 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
     	    	    			<?php if ($tasks_enabled) : ?>
     	    	    				<div class="btn-group">
     	    	    			        <a class="btn btn-mini" href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->slug));?>">
-    	    	    			            <span aria-hidden="true" class="icon-list-view"></span> 
+    	    	    			            <span aria-hidden="true" class="icon-list-view"></span>
     	    	    			            <?php echo (int) $item->tasklists;?> <?php echo JText::_('JGRID_HEADING_TASKLISTS'); ?>
     	    	    			        </a>
     	    	    				</div>
@@ -251,7 +254,7 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
     	    	    			<?php if ($tasks_enabled) : ?>
 	    	    	    			<div class="btn-group">
 	                                    <a class="btn btn-mini" href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->slug));?>">
-	                                        <span aria-hidden="true" class="icon-checkmark"></span> 
+	                                        <span aria-hidden="true" class="icon-checkmark"></span>
 	                                        <?php echo (int) $item->tasks;?> <?php echo JText::_('JGRID_HEADING_TASKS'); ?>
 	                                    </a>
 	    	    	    			</div>
@@ -259,22 +262,22 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
     	    	    			<?php if ($repo_enabled) : ?>
     	    	    				<div class="btn-group">
     	    	    			        <a class="btn btn-mini" href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($item->slug, $repo_dir));?>">
-    	    	    			            <span aria-hidden="true" class="icon-flag-2"></span> 
-    	    	    			            <?php echo (int) $item->attachments;?> <?php echo JText::_('JGRID_HEADING_FILES'); ?>
+    	    	    			            <span aria-hidden="true" class="icon-flag-2"></span>
+    	    	    			            <?php echo (int) $item->attachments;?> <?php echo JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'); ?>
     	    	    			        </a>
     	    	    				</div>
     	    	    			<?php endif; ?>
     	    	    			<?php echo $watch; ?>
     	    	    		</div>
     	    	    	</div>
-    	    	    </div> 
-    	    	    
+    	    	    </div>
+
                 <?php
                     $k = 1 - $k;
                     endforeach;
                 ?>
                 </div>
-            
+
         	<?php if ($this->pagination->get('pages.total') > 1) : ?>
         	    <div class="pagination center">
         	        <?php echo $this->pagination->getPagesLinks(); ?>

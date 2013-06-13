@@ -26,7 +26,7 @@ class PFrepoModelFile extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string    
+     * @var    string
      */
     protected $text_prefix = 'COM_PROJECTFORK_FILE';
 
@@ -573,6 +573,18 @@ class PFrepoModelFile extends JModelAdmin
                 if (isset($data['access'])) {
                     unset($data['access']);
                 }
+            }
+        }
+
+        $new_dir = (isset($data['dir_id']) ? (int) $data['dir_id'] : 0);
+
+        // Move file to new location?
+        if ($new_dir > 0 && !$is_new && $new_dir != $table->dir_id) {
+            $pks      = array($table->id);
+            $contexts = array();
+
+            if(!$this->batchMove($new_dir, $pks, $contexts)) {
+                return false;
             }
         }
 
@@ -1147,7 +1159,7 @@ class PFrepoModelFile extends JModelAdmin
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
-     * @return    void    
+     * @return    void
      */
     protected function populateState()
     {

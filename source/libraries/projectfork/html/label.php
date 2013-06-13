@@ -1,10 +1,10 @@
 <?php
 /**
-* @package      Projectfork
-* @subpackage   Library.html
+* @package      pkg_projectfork
+* @subpackage   lib_projectfork
 *
 * @author       Tobias Kuhn (eaxs)
-* @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+* @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
 * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 **/
 
@@ -23,17 +23,10 @@ abstract class PFhtmlLabel
      */
     public static function filter($asset, $project = 0, $selected = array(), $filter_style = '')
     {
-        if (!$project) {
-            $project = ProjectforkHelper::getActiveProjectId();
-        }
+        if (!$project) $project = ProjectforkHelper::getActiveProjectId();
+        if (!$project) return '';
 
-        if (!$project) {
-            return '';
-        }
-
-        if (!is_array($selected)) {
-            $selected = array();
-        }
+        if (!is_array($selected)) $selected = array();
 
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -50,7 +43,7 @@ abstract class PFhtmlLabel
         $query->select('a.id, a.title, a.style')
               ->from('#__pf_labels AS a')
               ->where('a.project_id = ' . $db->quote((int) $project))
-              ->where('(a.asset_group = ' . $db->quote('project') . ' OR a.asset_group = ' . $asset . ')')
+              ->where('(a.asset_group = ' . $db->quote('com_pfprojects.project') . ' OR a.asset_group = ' . $asset . ')')
               ->order('a.style, a.title ASC');
 
         $db->setQuery($query);
@@ -126,6 +119,7 @@ abstract class PFhtmlLabel
     public static function datetime($date, $compact = false, $options = array())
     {
         static $format = null;
+        static $time_offset = null;
 
         if (is_null($format)) {
             $params = JComponentHelper::getParams('com_projectfork');
@@ -136,17 +130,40 @@ abstract class PFhtmlLabel
             }
         }
 
-        $string = PFDate::relative($date);
+        if (is_null($time_offset)) {
+            $config = JFactory::getConfig();
+		    $user   = JFactory::getUser();
 
-        if ($string == false) {
-            return '';
+            $time_offset = $user->getParam('timezone', $config->get('offset'));
         }
 
-        $timestamp = strtotime($date);
-        $now       = time();
+        if (!isset($options['tz'])) {
+            $options['tz'] = true;
+        }
+
+        $string = PFDate::relative($date, $options['tz']);
+        if ($string == false) return '';
+
+        if ($options['tz']) {
+            // Get a date object based on UTC.
+			$dateObj  = JFactory::getDate($date, 'UTC');
+            $now_date = JFactory::getDate('now', 'UTC');
+
+			// Set the correct time zone based on the user configuration.
+			$dateObj->setTimeZone(new DateTimeZone($time_offset));
+            $now_date->setTimeZone(new DateTimeZone($time_offset));
+
+            $timestamp = strtotime($dateObj->calendar('Y-m-d H:i:s', true));
+            $now       = strtotime($now_date->format('Y-m-d H:i:s', true, false));
+        }
+        else {
+            $timestamp = strtotime($date);
+            $now = time();
+        }
+
         $remaining = $timestamp - $now;
-        $is_past   = ($remaining < 0) ? true : false;
-        $tooltip   = JHtml::_('date', $date, $format);
+        $is_past   = ($remaining <= 0) ? true : false;
+        $tooltip   = JHtml::_('date', $date, $format, ($options['tz'] ? false : true));
 
         if ($compact) {
             $days   = round($remaining / 86400);

@@ -94,8 +94,8 @@ class PFusersControllerUser extends JControllerForm
         $model  = $this->getModel();
 
         // Access check
-        if ($user->id != $id) {
-            if (!$access->get('core.admin')) {
+        if ($user->id != $id || defined('PFDEMO')) {
+            if (!$access->get('core.admin') || defined('PFDEMO')) {
                 $this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
 			    $this->setMessage($this->getError(), 'error');
 
@@ -160,8 +160,8 @@ class PFusersControllerUser extends JControllerForm
         $model  = $this->getModel();
 
         // Access check
-        if ($user->id != $id) {
-            if (!$access->get('core.admin')) {
+        if ($user->id != $id || defined('PFDEMO')) {
+            if (!$access->get('core.admin') || defined('PFDEMO')) {
                 $this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
 			    $this->setMessage($this->getError(), 'error');
 

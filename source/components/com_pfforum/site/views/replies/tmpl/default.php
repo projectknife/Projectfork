@@ -35,6 +35,14 @@ $can_edit_own_topic = ($user->authorise('core.edit.own', 'com_pfforum.topic.' . 
 $doc   = JFactory::getDocument();
 $style = '.row-replies .well,.row-replies .btn-toolbar {'
         . 'margin-bottom: 0;'
+        . '}'
+        . '.img-avatar {'
+        . 'max-height: 50px;'
+        . 'max-width: 50px;'
+        . 'margin-right: 10px;'
+        . '}'
+        . '.well-item {'
+        . 'margin-left: 60px;'
         . '}';
 $doc->addStyleDeclaration( $style );
 ?>
@@ -99,29 +107,27 @@ Joomla.submitbutton = function(task)
 	        <div class="row-striped row-replies">
             <!-- Begin Topic -->
     			<div class="row-fluid">
-    				<div class="span1">
+    				<div class="span12">
                         <img title="<?php echo $this->escape($this->topic->author_name);?>"
                              src="<?php echo JHtml::_('projectfork.avatar.path', $this->topic->created_by);?>"
-                             class="img-circle hasTooltip"
+                             class="img-circle img-avatar pull-left hasTooltip"
                              rel="tooltip"
                         />
-    				</div>
-    				<div class="span11">
-    					<div class="well well-small">
+    					<div class="well well-small well-item">
     						<span class="small muted pull-right"><?php echo JHtml::_('date', $this->topic->created, $this->params->get('date_format', JText::_('DATE_FORMAT_LC2'))); ?></span>
     						<div class="well-description">
     							<?php echo $this->topic->description; ?>
     						</div>
-    						<div class="btn-toolbar margin-none">
-	                			<?php if ($can_edit_topic || $can_edit_own_topic) : ?>
-	    	    	    			<div class="btn-group">
-	    	    	    			    <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_pfforum&task=topicform.edit&id=' . $this->topic->id);?>">
-	    	    	    			        <span aria-hidden="true" class="icon-pencil"></span> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT'); ?>
-	    	    	    			    </a>
-	    	    	    			</div>
-		    	    			<?php endif; ?>
-	                		</div>
     					</div>
+                        <div class="btn-toolbar margin-none">
+                            <?php if ($can_edit_topic || $can_edit_own_topic) : ?>
+                                <div class="btn-group">
+                                    <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_pfforum&task=topicform.edit&id=' . $this->topic->id);?>">
+                                        <span aria-hidden="true" class="icon-pencil"></span> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT'); ?>
+                                    </a>
+                                </div>
+                            <?php endif; ?>
+                        </div>
     				</div>
     			</div>
 			<!-- End Topic -->
@@ -141,15 +147,13 @@ Joomla.submitbutton = function(task)
                 $date_opts = array('past-class' => '', 'past-icon' => 'calendar');
             ?>
             	<div class="row-fluid">
-    				<div class="span1">
+    				<div class="span12">
                         <img title="<?php echo $this->escape($item->author_name);?>"
                              src="<?php echo JHtml::_('projectfork.avatar.path', $item->created_by);?>"
-                             class="img-circle hasTooltip"
+                             class="img-circle img-avatar pull-left hasTooltip"
                              rel="tooltip"
                         />
-    				</div>
-    				<div class="span11">
-    					<div class="well well-small">
+    					<div class="well well-small well-item">
     						<?php if ($can_change || $uid) : ?>
 		                        <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
 		                            <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>

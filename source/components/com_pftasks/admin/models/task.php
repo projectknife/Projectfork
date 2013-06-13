@@ -210,7 +210,8 @@ class PFtasksModelTask extends JModelAdmin
     protected function loadFormData()
     {
         // Check the session for previously entered form data.
-        $data = JFactory::getApplication()->getUserState('com_pftasks.edit.' . $this->getName() . '.data', array());
+        $app  = JFactory::getApplication();
+        $data = $app->getUserState('com_pftasks.edit.' . $this->getName() . '.data', array());
 
         if (empty($data)) {
 			$data = $this->getItem();
@@ -219,9 +220,19 @@ class PFtasksModelTask extends JModelAdmin
             if ($this->getState($this->getName() . '.id') == 0) {
                 $active_id = PFApplicationHelper::getActiveProjectId();
 
+                $milestone = $app->getUserStateFromRequest('com_pftasks.tasks.filter.milestone', 'milestone_id', '');
+                $list      = $app->getUserStateFromRequest('com_pftasks.tasks.filter.tasklist', 'list_id', '');
+                $priority  = $app->getUserStateFromRequest('com_pftasks.tasks.filter.priority', 'filter_priority', '');
+                $complete  = $app->getUserStateFromRequest('com_pftasks.tasks.filter.complete', 'filter_complete', '');
+                $state     = $app->getUserStateFromRequest('com_pftasks.tasks.filter.published', 'filter_published', '');
+
                 $data->set('project_id', $active_id);
-                $data->set('milestone_id', JRequest::getUInt('milestone_id'));
-                $data->set('list_id', JRequest::getUInt('list_id'));
+
+                if (!empty($milestone)) $data->set('milestone_id', (int) $milestone);
+                if (!empty($list)) $data->set('list_id', (int) $list);
+                if (!empty($priority)) $data->set('priority', (int) $priority);
+                if (!empty($complete)) $data->set('complete', (int) $complete);
+                if (!empty($state) || $state === '0') $data->set('state', (int) $state);
             }
         }
 

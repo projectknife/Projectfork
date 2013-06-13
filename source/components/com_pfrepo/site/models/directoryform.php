@@ -47,6 +47,22 @@ class PFrepoModelDirectoryForm extends PFrepoModelDirectory
         $item->params->set('access-edit',   ($can_edit || $can_edit_own));
         $item->params->set('access-change', $can_edit_state);
 
+        // Compute view access permissions.
+		if ($access = $this->getState('filter.access')) {
+			// If the access filter has been set, we already know this user can view.
+			$item->params->set('access-view', true);
+		}
+		else {
+			// If no access filter is set, the layout takes some responsibility for display of limited information.
+            if ($item->id == 1) {
+                $item->params->set('access-view', true);
+            }
+            else {
+                $levels = $user->getAuthorisedViewLevels();
+                $item->params->set('access-view', in_array($item->access, $levels));
+            }
+		}
+
         return $item;
     }
 
@@ -66,7 +82,7 @@ class PFrepoModelDirectoryForm extends PFrepoModelDirectory
      * Method to auto-populate the model state.
      * Note. Calling getState in this method will result in recursion.
      *
-     * @return    void    
+     * @return    void
      */
     protected function populateState()
     {

@@ -71,6 +71,7 @@ class PFrepoControllerFileForm extends JControllerForm
         $file_form = JRequest::getVar('jform', '', 'files', 'array');
         $context   = $this->option . ".edit." . $this->context;
         $layout    = JRequest::getVar('layout');
+        $user      = JFactory::getUser();
         $files     = array();
 
         if (empty($urlVar)) $urlVar = $key;
@@ -90,6 +91,16 @@ class PFrepoControllerFileForm extends JControllerForm
         if (!$this->checkEditId($context, $record_id)) {
             // Somehow the person just went to the form and tried to save it. We don't allow that.
             $this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $record_id));
+            $this->setMessage($this->getError(), 'error');
+
+            $this->setRedirect(JRoute::_(($layout != 'modal' ? $link_item : $link_list), false));
+
+            return false;
+        }
+
+        // Check general access
+        if (!$user->authorise('core.create', 'com_pfrepo') || defined('PFDEMO')) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_CREATE_FILE_DENIED'));
             $this->setMessage($this->getError(), 'error');
 
             $this->setRedirect(JRoute::_(($layout != 'modal' ? $link_item : $link_list), false));
@@ -252,7 +263,7 @@ class PFrepoControllerFileForm extends JControllerForm
         $dir_id  = JArrayHelper::getValue($data, 'dir_id', JRequest::getInt('filter_parent_id'), 'int');
 
         // Check general access
-        if (!$user->authorise('core.create', 'com_pfrepo')) {
+        if (!$user->authorise('core.create', 'com_pfrepo') || defined('PFDEMO')) {
             $this->setError(JText::_('COM_PROJECTFORK_WARNING_CREATE_FILE_DENIED'));
             return false;
         }

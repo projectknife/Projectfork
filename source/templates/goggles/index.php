@@ -29,14 +29,14 @@
 	        if (!$isset_bsjs) {
 	            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/bootstrap.min.js');
 	        }
-	        
+
 	    }
-	    
+
 	    // Add 2.5 System Stylesheets
 		$doc->addStyleSheet('templates/system/css/general.css');
 		$doc->addStyleSheet('templates/system/css/system.css');
 	}
-	
+
 	$doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/application.js');
 
 	// Add Template Stylesheet
@@ -101,7 +101,9 @@
 	<jdoc:include type="head" />
     <?php
     // Detecting Home
-    $menu = & JSite::getMenu();
+    $site_app = JFactory::getApplication('Site');
+    $menu     = $site_app->getMenu();
+
     if ($menu->getActive() == $menu->getDefault()) :
     $siteHome = 1;
     else:
@@ -109,7 +111,7 @@
     endif;
 
     // Add current user information
-    $user =& JFactory::getUser();
+    $user = JFactory::getUser();
 
     // Grad the Itemid
     $itemid = JRequest::getint( 'Itemid' );
@@ -126,7 +128,20 @@
     else:
     $fullWidth = 0;
     endif;
-    $document =& JFactory::getDocument();
+
+    // Added by jseliga
+    // Determine Name to Display
+    if ($this->params->get('nameDisplay') == "full") {
+        $displayName = $user->name;
+    }
+    elseif ($this->params->get('nameDisplay') == "email") {
+        $displayName = $user->email;
+    }
+    else {
+        $displayName = $user->username;
+    }
+
+    $document = JFactory::getDocument();
 
     // Adjusting content width
     if ($this->countModules('position-7') && $this->countModules('right')) :
@@ -138,7 +153,7 @@
     else :
     	$span = "span12";
     endif;
-    
+
     // Logo file or site title param
 	if ($this->params->get('logoFile'))
 	{
@@ -171,7 +186,7 @@
 					<ul class="nav pull-right">
 						<?php if($user->id):?>
 						<li class="dropdown"> <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-							<?php echo $user->username; ?> <b class="caret"></b></a>
+							<?php echo $displayName; ?> <b class="caret"></b></a>
 							<ul class="dropdown-menu">
 								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_users&view=profile&Itemid='. $itemid);?>"><?php echo JText::_('TPL_GOGGLES_PROFILE');?></a></li>
 								<li class="">
@@ -261,7 +276,7 @@
 					  <hr />
 				</div>
                 <?php endif; ?>
-                
+
                 <?php if ($user->id && $this->params->get('createButton')) : ?>
                 <div class="visible-phone">
                   <a href="#" data-target=".create-collapse" class="btn btn-large btn-info btn-wide dropdown-toggle" data-toggle="collapse">

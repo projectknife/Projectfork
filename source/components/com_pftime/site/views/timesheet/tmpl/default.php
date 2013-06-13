@@ -161,15 +161,15 @@ Joomla.submitbutton = function(task)
             <table class="table table-striped table-condensed">
             	<thead>
             		<tr>
-            			<th width="1%"></th>
+            			<th width="1%" class="hidden-phone"></th>
                         <th><?php echo JText::_('JGRID_HEADING_TASK');?></th>
                         <th width="1%"></th>
             			<th width="10%"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TIME');?></th>
-            			<th width="10%"></th>
-            			<th width="10%"><?php echo JText::_('JGRID_HEADING_AUTHOR');?></th>
-            			<th width="10%"><?php echo JText::_('JGRID_HEADING_DATE');?></th>
-            			<th width="10%"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_RATE');?></th>
-            			<th width="10%"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE');?></th>
+            			<th width="10%" class="hidden-phone"></th>
+            			<th width="10%" class="hidden-phone"><?php echo JText::_('JGRID_HEADING_AUTHOR');?></th>
+            			<th width="10%" class="hidden-phone"><?php echo JText::_('JGRID_HEADING_DATE');?></th>
+            			<th width="10%" class="hidden-phone"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_RATE');?></th>
+            			<th width="10%" class="hidden-phone"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE');?></th>
             		</tr>
             	</thead>
             	<tbody>
@@ -205,7 +205,7 @@ Joomla.submitbutton = function(task)
                         $exists = ((int) $item->task_exists > 0);
 			        ?>
 			        <tr>
-                        <td>
+                        <td class="hidden-phone">
                             <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
 			        	</td>
 			        	<td>
@@ -234,21 +234,21 @@ Joomla.submitbutton = function(task)
 			        	<td>
 			        		<?php echo JHtml::_('time.format', $item->log_time); ?>
 			        	</td>
-			        	<td>
+			        	<td class="hidden-phone">
 							<div class="<?php echo $percentage_class;?>" style="margin: 0;">
 								<div class="bar" style="width: <?php echo $percentage;?>%;"></div>
 							</div>
 			        	</td>
-			        	<td>
+			        	<td class="hidden-phone">
 			        		<?php echo $item->author_name; ?>
 			        	</td>
-			        	<td>
+			        	<td class="hidden-phone">
 			        		<?php echo JHtml::_('date', $item->log_date, JText::_('DATE_FORMAT_LC4')); ?>
 			        	</td>
-			        	<td>
+			        	<td class="hidden-phone">
                             <?php echo JHtml::_('pfhtml.format.money', $item->rate);?>
 			        	</td>
-			        	<td>
+			        	<td class="hidden-phone">
                             <?php echo JHtml::_('pfhtml.format.money', $item->billable_total);?>
 			        	</td>
 			        </tr>
@@ -260,14 +260,14 @@ Joomla.submitbutton = function(task)
             	</tbody>
             	<tfoot>
             		<tr>
-            			<th><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTALS');?></th>
-            			<th></th>
-            			<th></th>
+            			<th class="hidden-phone"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_TOTALS');?></th>
+            			<th class="hidden-phone"></th>
+            			<th class="hidden-phone"></th>
             			<th><?php echo JHtml::_('time.format', $list_total_time); ?></th>
-            			<th></th>
-            			<th></th>
-            			<th></th>
-	            		<th></th>
+            			<th class="hidden-phone"></th>
+            			<th class="hidden-phone"></th>
+            			<th class="hidden-phone"></th>
+	            		<th ></th>
 	            		<th><?php echo JHtml::_('pfhtml.format.money', $list_total_billable);?></th>
             		</tr>
             	</tfoot>

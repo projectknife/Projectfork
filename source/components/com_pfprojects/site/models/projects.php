@@ -92,14 +92,6 @@ class PFprojectsModelProjects extends JModelList
         $query->select('COUNT(DISTINCT tl.id) AS tasklists');
         $query->join('LEFT', '#__pf_task_lists AS tl ON tl.project_id = a.id');
 
-        // Join over the tasks for task count
-        $query->select('COUNT(DISTINCT ta.id) AS tasks');
-        $query->join('LEFT', '#__pf_tasks AS ta ON ta.project_id = a.id');
-
-        // Join over the tasks again for completed task count
-        $query->select('COUNT(DISTINCT tc.id) AS completed_tasks');
-        $query->join('LEFT', '#__pf_tasks AS tc ON (tc.project_id = a.id AND tc.complete = 1)');
-
         // Join over the observer table for email notification status
         if ($user->get('id') > 0) {
             $query->select('COUNT(DISTINCT obs.user_id) AS watching');
@@ -177,13 +169,33 @@ class PFprojectsModelProjects extends JModelList
      */
     public function getItems()
     {
+        if (JDEBUG) {
+            JProfiler::getInstance('Application')->mark('onBeforeGetProjects');
+        }
+
         $items     = parent::getItems();
         $base_path = JPATH_ROOT . '/media/com_projectfork/repo/0/logo';
         $base_url  = JURI::root(true) . '/media/com_projectfork/repo/0/logo';
 
-        // Get the global params
-        $global_params = JComponentHelper::getParams('com_pfprojects', true);
+        $tasks_exists = PFApplicationHelper::enabled('com_pftasks');
 
+        $pks = JArrayHelper::getColumn($items, 'id');
+
+        // Get aggregate data
+        $progress        = array();
+        $total_tasks     = array();
+        $completed_tasks = array();
+
+        if ($tasks_exists) {
+            JLoader::register('PFtasksModelTasks', JPATH_SITE . '/components/com_pftasks/models/tasks.php');
+
+            $tmodel      = JModelLegacy::getInstance('Tasks', 'PFtasksModel', array('ignore_request' => true));
+            $progress    = $tmodel->getAggregatedProgress($pks, 'project_id');
+            $total_tasks = $tmodel->getAggregatedTotal($pks, 'project_id');
+            $completed_tasks = $tmodel->getAggregatedTotal($pks, 'project_id', 1);
+        }
+
+        // Loop over each row to inject data
         foreach ($items as $i => &$item)
         {
             $params = new JRegistry;
@@ -198,18 +210,31 @@ class PFprojectsModelProjects extends JModelList
             // Try to find the logo img
             $items[$i]->logo_img = null;
 
-            if (JFile::exists($base_path . '/' . $items[$i]->id . '.jpg')) {
-                $items[$i]->logo_img = $base_url . '/' . $items[$i]->id . '.jpg';
+            if (JFile::exists($base_path . '/' . $item->id . '.jpg')) {
+                $items[$i]->logo_img = $base_url . '/' . $item->id . '.jpg';
             }
-            elseif (JFile::exists($base_path . '/' . $items[$i]->id . '.jpeg')) {
-                $items[$i]->logo_img = $base_url . '/' . $items[$i]->id . '.jpeg';
+            elseif (JFile::exists($base_path . '/' . $item->id . '.jpeg')) {
+                $items[$i]->logo_img = $base_url . '/' . $item->id . '.jpeg';
             }
-            elseif (JFile::exists($base_path . '/' . $items[$i]->id . '.png')) {
-                $items[$i]->logo_img = $base_url . '/' . $items[$i]->id . '.png';
+            elseif (JFile::exists($base_path . '/' . $item->id . '.png')) {
+                $items[$i]->logo_img = $base_url . '/' . $item->id . '.png';
             }
-            elseif (JFile::exists($base_path . '/' . $items[$i]->id . '.gif')) {
-                $items[$i]->logo_img = $base_url . '/' . $items[$i]->id . '.gif';
+            elseif (JFile::exists($base_path . '/' . $item->id . '.gif')) {
+                $items[$i]->logo_img = $base_url . '/' . $item->id . '.gif';
             }
+
+            // Inject task count
+            $items[$i]->tasks = (isset($total_tasks[$item->id]) ? $total_tasks[$item->id] : 0);
+
+            // Inject completed task count
+            $items[$i]->completed_tasks = (isset($completed_tasks[$item->id]) ? $completed_tasks[$item->id] : 0);
+
+            // Inject progress
+            $items[$i]->progress = (isset($progress[$item->id]) ? $progress[$item->id] : 0);
+        }
+
+        if (JDEBUG) {
+            JProfiler::getInstance('Application')->mark('onAfterGetProjects');
         }
 
         return $items;

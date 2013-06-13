@@ -23,77 +23,77 @@ class PFrepoViewRepository extends JViewLegacy
     /**
      * CSS page class suffix
      *
-     * @var    string    
+     * @var    string
      */
     protected $pageclass_sfx;
 
     /**
      * List of items to display
      *
-     * @var    array    
+     * @var    array
      */
     protected $items;
 
     /**
      * Sql "null" date (0000-00-00 00:00:00)
      *
-     * @var    string    
+     * @var    string
      */
     protected $nulldate;
 
     /**
      * Model parameters
      *
-     * @var    object    
+     * @var    object
      */
     protected $params;
 
     /**
      * Model state object
      *
-     * @var    object    
+     * @var    object
      */
     protected $state;
 
     /**
      * Toolbar html code
      *
-     * @var    string    
+     * @var    string
      */
     protected $toolbar;
 
     /**
      * Object holding user permissions
      *
-     * @var    object    
+     * @var    object
      */
     protected $access;
 
     /**
      * Context menu instance
      *
-     * @var    object    
+     * @var    object
      */
     protected $menu;
 
     /**
      * JPagination instance object
      *
-     * @var    object    
+     * @var    object
      */
     protected $pagination;
 
     /**
      * Select list sorting options
      *
-     * @var    array    
+     * @var    array
      */
     protected $sort_options;
 
     /**
      * Select list ordering options
      *
-     * @var    array    
+     * @var    array
      */
     protected $order_options;
 
@@ -101,10 +101,11 @@ class PFrepoViewRepository extends JViewLegacy
     /**
      * Display the view
      *
-     * @return    void    
+     * @return    void
      */
     public function display($tpl = null)
     {
+        $user   = JFactory::getUser();
         $app    = JFactory::getApplication();
         $active = $app->getMenu()->getActive();
 
@@ -118,6 +119,12 @@ class PFrepoViewRepository extends JViewLegacy
         $this->toolbar       = $this->getToolbar();
         $this->sort_options  = $this->getSortOptions();
         $this->order_options = $this->getOrderOptions();
+
+        // Check the view access to the current directory
+		if ($this->items['directory']->params->get('access-view') != true && (($this->items['directory']->params->get('show_noauth') != true && $user->get('guest')))) {
+		    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+			return;
+		}
 
         // Escape strings for HTML output
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
@@ -236,7 +243,7 @@ class PFrepoViewRepository extends JViewLegacy
             $items = array();
             $items[] = array('text'    => 'COM_PROJECTFORK_ACTION_NEW_FILE',
                              'task'    => 'fileform.add',
-                             'options' => array('access' => $access->get('core.create')));
+                             'options' => array('access' => ($access->get('core.create') && !defined('PFDEMO'))));
 
             $items[] = array('text'    => 'COM_PROJECTFORK_ACTION_NEW_DIRECTORY',
                              'task'    => 'directoryform.add',
@@ -253,6 +260,11 @@ class PFrepoViewRepository extends JViewLegacy
                 'text' => 'COM_PROJECTFORK_ACTION_DELETE',
                 'task' => $this->getName() . '.delete',
                 'options' => array('access' => $access->get('core.delete')));
+
+            $items[] = array(
+                'text' => 'COM_PROJECTFORK_ACTION_CHECKIN',
+                'task' => $this->getName() . '.checkin'
+            );
 
             if (count($items)) {
                 PFToolbar::listButton($items);

@@ -24,37 +24,55 @@ abstract class PFrepoHelperDashboard
      */
     public static function getSiteButtons()
     {
-        $user    = JFactory::getUser();
-        $app     = JFactory::getApplication();
-        $pid = (int) $app->getUserState('com_projectfork.project.active.id');
-        if ($pid) {
-            $db = JFactory::getDbo();
-            $query = $db->getQuery(true);
-    
-            $query->select('attribs')
-                  ->from('#__pf_projects')
-                  ->where('id = ' . $db->quote($pid));
-    
-            $db->setQuery($query);
-            $project_attribs = $db->loadResult();
-    
-            $project_params = new JRegistry;
-            $project_params->loadString($project_attribs);
-    
-            $repo_dir = (int) $project_params->get('repo_dir');
-        }
-        else {
-            $repo_dir = 1;
-        }
-        
+        $user = JFactory::getUser();
+        $app  = JFactory::getApplication();
+        $pid  = (int) $app->getUserState('com_projectfork.project.active.id');
+
         $buttons = array();
-		if ($user->authorise('core.create', 'com_pfrepo') && $app->getUserState('com_projectfork.project.active.id')) {
-            $buttons[] = array(
-                'title' => 'MOD_PF_DASH_BUTTONS_ADD_FILE',
-                'link'  => PFrepoHelperRoute::getRepositoryRoute($pid, $repo_dir) . '&task=fileform.add',
-                'icon'  => JHtml::image('com_projectfork/projectfork/header/icon-48-repoform.add.png', JText::_('MOD_PF_DASH_BUTTONS_ADD_FILE'), null, true)
-            );
+
+        if (!$pid || defined('PFDEMO')) return $buttons;
+
+        // Get the project root dir
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('attribs')
+              ->from('#__pf_projects')
+              ->where('id = ' . $pid);
+
+        $db->setQuery($query);
+        $project_attribs = $db->loadResult();
+
+        $project_params = new JRegistry;
+        $project_params->loadString($project_attribs);
+
+        $repo_dir = (int) $project_params->get('repo_dir');
+        if (!$repo_dir) return $buttons;
+
+        // Get the access of the dir
+        $query->clear()
+              ->select('access')
+              ->from('#__pf_repo_dirs')
+              ->where('id = ' . $repo_dir);
+
+        $db->setQuery($query);
+        $access = (int) $db->loadResult();
+
+        // Check viewing access
+        if (!in_array($access, $user->getAuthorisedViewLevels()) && !$user->authorise('core.admin')) {
+            return $buttons;
         }
+
+        // Check permission
+        if (!$user->authorise('core.create', 'com_pfrepo.directory.' . $repo_dir)) {
+            return $buttons;
+        }
+
+		$buttons[] = array(
+            'title' => 'MOD_PF_DASH_BUTTONS_ADD_FILE',
+            'link'  => PFrepoHelperRoute::getRepositoryRoute($pid, $repo_dir) . '&task=fileform.add',
+            'icon'  => JHtml::image('com_projectfork/projectfork/header/icon-48-repoform.add.png', JText::_('MOD_PF_DASH_BUTTONS_ADD_FILE'), null, true)
+        );
 
         return $buttons;
     }

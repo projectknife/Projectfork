@@ -80,11 +80,6 @@ $doc->addStyleDeclaration( $style );
                             </select>
                         </div>
                     <?php endif; ?>
-                    <?php if ($pid) : ?>
-                        <div class="filter-labels btn-group pull-left">
-                            <?php echo JHtml::_('pfhtml.label.filter', 'com_pfmilestones.milestone', $pid, $this->state->get('filter.labels'));?>
-                        </div>
-                    <?php endif; ?>
                     <div class="btn-group filter-order pull-left">
                         <select name="filter_order" class="inputbox input-small" onchange="this.form.submit()">
                             <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
@@ -95,6 +90,13 @@ $doc->addStyleDeclaration( $style );
                             <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
                         </select>
                     </div>
+                    <?php if ($pid) : ?>
+                        <div class="clearfix clr"></div>
+                        <hr />
+                        <div class="filter-labels">
+                            <?php echo JHtml::_('pfhtml.label.filter', 'com_pfmilestones.milestone', $pid, $this->state->get('filter.labels'));?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
 
@@ -113,15 +115,15 @@ $doc->addStyleDeclaration( $style );
                 // Calculate milestone progress
                 $task_count = (int) $item->tasks;
                 $completed  = (int) $item->completed_tasks;
-                $progress   = ($task_count == 0) ? 0 : round($completed * (100 / $task_count));
+                $progress   = $item->progress;
 
                 // Repo directory
                 $repo_dir = (int) $this->params->get('repo_dir');
 
-                if ($progress >= 67)  $progress_class = 'info';
-                if ($progress == 100) $progress_class = 'success';
-                if ($progress < 67)   $progress_class = 'warning';
-                if ($progress < 34)   $progress_class = 'danger label-important';
+                if ($item->progress >= 67)  $progress_class = 'info';
+                if ($item->progress == 100) $progress_class = 'success';
+                if ($item->progress < 67)   $progress_class = 'warning';
+                if ($item->progress < 34)   $progress_class = 'danger label-important';
 
                 // Prepare the watch button
                 $watch = '';
@@ -139,11 +141,21 @@ $doc->addStyleDeclaration( $style );
                 <div class="row-fluid">
                 	<div class="span1 hidden-phone">
                 		<div class="thumbnail center">
-                			<div class="label">
+                			<div class="label <?php if ($progress == 100) : echo "label-success hasTooltip"; endif;?>" rel="tooltip" <?php if ($progress == 100) : echo "title=\"" . JText::_('COM_PROJECTFORK_FIELD_COMPLETE_LABEL') . "\""; endif;?>>
                 				<div class="large"><?php echo JHtml::_('date', $item->end_date, JText::_('d')); ?></div>
                 				<div class="medium"><?php echo JHtml::_('date', $item->end_date, JText::_('M')); ?></div>
                 			</div>
                 		</div>
+                        <hr />
+                        <?php if ($tasks_enabled) : ?>
+                            <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-milestone">
+                                <div class="bar" style="min-width:20px; width: <?php echo ($progress > 0) ? $progress . "%": "20px";?>">
+                                    <span class="">
+                                        <?php echo $progress;?>%
+                                    </span>
+                                </div>
+                            </div>
+                        <?php endif; ?>
                 	</div>
                 	<div class="span11">
                 		<div class="well well-small margin-none">
@@ -201,7 +213,7 @@ $doc->addStyleDeclaration( $style );
 	    	    				<div class="btn-group">
 	    	    			        <a href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($item->project_slug, $repo_dir));?>" class="btn btn-mini">
 	    	    			            <span aria-hidden="true" class="icon-flag-2"></span>
-	    	    			            <?php echo (int) $item->attachments;?> <?php echo JText::_('JGRID_HEADING_FILES'); ?>
+	    	    			            <?php echo (int) $item->attachments;?> <?php echo JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'); ?>
 	    	    			        </a>
 	    	    				</div>
 	    	    			<?php endif; ?>

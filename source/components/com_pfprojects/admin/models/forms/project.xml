@@ -2,7 +2,7 @@
 <form>
     <fieldset>
         <field name="title" type="text"
-            label="JGLOBAL_TITLE" description="JFIELD_TITLE_DESC"
+            label="JGLOBAL_TITLE"
             class="inputbox" size="30" required="true"
         />
         <field name="description" type="editor"

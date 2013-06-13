@@ -53,7 +53,6 @@ class ProjectforkController extends JControllerLegacy
         JHtml::_('behavior.tooltip');
 
         // Override method arguments
-        $cachable  = true;
         $urlparams = array('id'               => 'INT',
                            'filter_project'   => 'CMD'
                            );
