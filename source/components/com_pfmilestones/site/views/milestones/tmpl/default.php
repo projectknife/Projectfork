@@ -80,11 +80,6 @@ $doc->addStyleDeclaration( $style );
                             </select>
                         </div>
                     <?php endif; ?>
-                    <?php if ($pid) : ?>
-                        <div class="filter-labels btn-group pull-left">
-                            <?php echo JHtml::_('pfhtml.label.filter', 'com_pfmilestones.milestone', $pid, $this->state->get('filter.labels'));?>
-                        </div>
-                    <?php endif; ?>
                     <div class="btn-group filter-order pull-left">
                         <select name="filter_order" class="inputbox input-small" onchange="this.form.submit()">
                             <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
@@ -95,6 +90,13 @@ $doc->addStyleDeclaration( $style );
                             <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
                         </select>
                     </div>
+                    <?php if ($pid) : ?>
+                        <div class="clearfix clr"></div>
+                        <hr />
+                        <div class="filter-labels">
+                            <?php echo JHtml::_('pfhtml.label.filter', 'com_pfmilestones.milestone', $pid, $this->state->get('filter.labels'));?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </div>
 

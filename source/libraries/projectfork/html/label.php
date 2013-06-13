@@ -1,10 +1,10 @@
 <?php
 /**
-* @package      Projectfork
-* @subpackage   Library.html
+* @package      pkg_projectfork
+* @subpackage   lib_projectfork
 *
 * @author       Tobias Kuhn (eaxs)
-* @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+* @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
 * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 **/
 
@@ -23,17 +23,10 @@ abstract class PFhtmlLabel
      */
     public static function filter($asset, $project = 0, $selected = array(), $filter_style = '')
     {
-        if (!$project) {
-            $project = ProjectforkHelper::getActiveProjectId();
-        }
+        if (!$project) $project = ProjectforkHelper::getActiveProjectId();
+        if (!$project) return '';
 
-        if (!$project) {
-            return '';
-        }
-
-        if (!is_array($selected)) {
-            $selected = array();
-        }
+        if (!is_array($selected)) $selected = array();
 
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
@@ -50,7 +43,7 @@ abstract class PFhtmlLabel
         $query->select('a.id, a.title, a.style')
               ->from('#__pf_labels AS a')
               ->where('a.project_id = ' . $db->quote((int) $project))
-              ->where('(a.asset_group = ' . $db->quote('project') . ' OR a.asset_group = ' . $asset . ')')
+              ->where('(a.asset_group = ' . $db->quote('com_pfprojects.project') . ' OR a.asset_group = ' . $asset . ')')
               ->order('a.style, a.title ASC');
 
         $db->setQuery($query);
