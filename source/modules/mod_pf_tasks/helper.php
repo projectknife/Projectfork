@@ -58,6 +58,12 @@ abstract class modPFtasksHelper
         $model->setState('list.ordering', $params->get('sort'));
 		$model->setState('list.direction', $params->get('order'));
 
+		//Set assigned filter
+		if ((int) $params->get('filter_assigned')) {		
+			$user   = JFactory::getUser()->get('id');
+			$model->setState('filter.assigned',$user);
+		}
+		
         $items = $model->getItems();
 
         return $items;
