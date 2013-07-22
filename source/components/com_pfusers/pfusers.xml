@@ -24,6 +24,7 @@
             <folder>helpers</folder>
             <folder>models</folder>
             <folder>tables</folder>
+            <folder>views</folder>
             <filename>pfusers.php</filename>
         </files>
         <languages folder="admin">

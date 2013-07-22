@@ -13,7 +13,7 @@ defined('_JEXEC') or die();
 
 jimport('joomla.database.tableasset');
 jimport('joomla.database.table');
-
+jimport('projectfork.library');
 
 /**
  * Projectfork Project Table
@@ -21,6 +21,9 @@ jimport('joomla.database.table');
  */
 class PFtableProject extends JTable
 {
+    protected $asset_rules;
+
+
     /**
      * Constructor
      *
@@ -107,6 +110,18 @@ class PFtableProject extends JTable
             $this->setRules($rules);
         }
 
+        // Bind the component rules
+        if (isset($array['component_rules']) && is_array($array['component_rules'])) {
+
+            foreach ($array['component_rules'] AS $component => $rules)
+            {
+                $input = new JRules($rules);
+                $this->setComponentRules($component, $input);
+            }
+
+            unset($array['component_rules']);
+        }
+
         return parent::bind($array, $ignore);
     }
 
@@ -173,8 +188,8 @@ class PFtableProject extends JTable
      */
     public function store($updateNulls = false)
     {
-        $date = JFactory::getDate();
-        $user = JFactory::getUser();
+        $date   = JFactory::getDate();
+        $user   = JFactory::getUser();
 
         if ($this->id) {
             // Existing item
@@ -195,9 +210,109 @@ class PFtableProject extends JTable
             return false;
         }
 
-        return parent::store($updateNulls);
+        $success = parent::store($updateNulls);
+
+        if (!$success) return false;
+
+        return $this->storeComponentAssets();
     }
 
+
+    /**
+     * Method to store the project asset for the other PF components
+     *
+     * @param     mixed      $pk    An optional primary key value to delete.
+     *
+     * @return    boolean           True on success.
+     */
+    public function storeComponentAssets($pk = null)
+    {
+        $k  = $this->_tbl_key;
+        $pk = (is_null($pk)) ? $this->$k : $pk;
+
+        if (!$pk) return false;
+
+        $components = PFApplicationHelper::getComponents();
+        $query      = $this->_db->getQuery(true);
+        $ignore     = array('com_projectfork', 'com_pfprojects');
+
+        // First, find the asset id's of each component
+        // Then, search for corresponding project asset
+        // And lastly, create the project asset if it does not exist
+        foreach ($components AS $name => $item)
+        {
+            if (!PFApplicationHelper::usesProjectAsset($name)) continue;
+
+            // Search component asset
+            $query->clear();
+            $query->select('id')
+                  ->from('#__assets')
+                  ->where('name = ' . $this->_db->quote($name))
+                  ->order('id ASC');
+
+            $this->_db->setQuery($query, 0, 1);
+            $com_asset = (int) $this->_db->loadResult();
+
+            if (!$com_asset) continue;
+
+            // Search project asset
+            $query->clear();
+            $query->select('id')
+                  ->from('#__assets')
+                  ->where('parent_id = ' . $com_asset)
+                  ->where('name = ' . $this->_db->quote($name . '.project.' . $pk))
+                  ->order('id ASC');
+
+            $this->_db->setQuery($query, 0, 1);
+            $project_asset = (int) $this->_db->loadResult();
+
+            if ($project_asset) {
+                // Update asset
+                $asset = self::getInstance('Asset', 'JTable', array('dbo' => $this->getDbo()));
+                $asset->loadByName($name . '.project.' . $pk);
+
+                if (isset($this->asset_rules[$name])) {
+                    if ($this->asset_rules[$name] instanceof JAccessRules) {
+                        $asset->rules = (string) $this->asset_rules[$name];
+                    }
+                    else {
+                        $asset->rules = '{}';
+                    }
+                }
+                else {
+                    $asset->rules = '{}';
+                }
+
+                if (!$asset->check() || !$asset->store(false)) {
+                    $this->setError($asset->getError());
+                    return false;
+                }
+            }
+            else {
+                // Create asset
+                $asset = self::getInstance('Asset', 'JTable', array('dbo' => $this->getDbo()));
+
+                $asset->setLocation($com_asset, 'last-child');
+
+                $asset->parent_id = $com_asset;
+                $asset->name      = $name . '.project.' . $pk;
+                $asset->title     = (empty($this->title) ? $asset->name : $this->title);
+
+                if (isset($this->asset_rules[$name])) {
+                    if ($this->asset_rules[$name] instanceof JAccessRules) {
+            			$asset->rules = (string) $this->asset_rules[$name];
+            		}
+                }
+
+                if (!$asset->check() || !$asset->store(false)) {
+                    $this->setError($asset->getError());
+                    return false;
+                }
+            }
+        }
+
+        return true;
+    }
 
     /**
      * Method to delete a row from the database table by primary key value.
@@ -346,4 +461,27 @@ class PFtableProject extends JTable
 
         return true;
     }
+
+
+    /**
+	 * Method to set rules for the record.
+	 *
+     * @param string $component The component name
+	 * @param   mixed  $input  A JAccessRules object, JSON string, or array.
+	 *
+	 * @return  void
+	 */
+	public function setComponentRules($component, $input)
+	{
+	    if (!is_array($this->asset_rules)) {
+	       $this->asset_rules = array();
+	    }
+
+		if ($input instanceof JAccessRules) {
+			$this->asset_rules[$component] = $input;
+		}
+		else {
+			$this->asset_rules[$component] = new JAccessRules($input);
+		}
+	}
 }

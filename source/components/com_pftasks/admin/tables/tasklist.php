@@ -68,15 +68,29 @@ class PFtableTasklist extends JTable
         $db       = $this->getDbo();
         $query    = $db->getQuery(true);
 
-        $query->select($this->_db->quoteName('id'))
-              ->from($this->_db->quoteName('#__assets'))
-              ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pftasks"));
+        // Get the asset id of the component project asset
+        $query->select('id')
+              ->from('#__assets')
+              ->where('name' . ' = ' . $this->_db->quote("com_pftasks.project." . (int) $this->project_id));
 
-        // Get the asset id from the database.
         $this->_db->setQuery($query);
         $result = $this->_db->loadResult();
 
         if ($result) $asset_id = (int) $result;
+
+        if (!$result) {
+            $query->clear();
+            $query->select($this->_db->quoteName('id'))
+                  ->from($this->_db->quoteName('#__assets'))
+                  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pftasks"));
+
+            // Get the asset id from the database.
+            $this->_db->setQuery($query);
+            $result = $this->_db->loadResult();
+
+            if ($result) $asset_id = (int) $result;
+        }
+
 
         // Return the asset id.
         if ($asset_id) return $asset_id;

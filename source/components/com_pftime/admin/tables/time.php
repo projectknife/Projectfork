@@ -60,15 +60,27 @@ class PFtableTime extends JTable
 
         $query = $this->_db->getQuery(true);
 
-        $query->select($this->_db->quoteName('id'))
-              ->from($this->_db->quoteName('#__assets'))
-              ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pftime"));
+        // Get the asset id of the component project asset
+        $query->select('id')
+              ->from('#__assets')
+              ->where('name' . ' = ' . $this->_db->quote("com_pftime.project." . (int) $this->project_id));
 
-        // Get the asset id from the database.
         $this->_db->setQuery($query);
         $result = $this->_db->loadResult();
 
         if ($result) $asset_id = (int) $result;
+
+        if (!$result) {
+            $query->clear();
+            $query->select($this->_db->quoteName('id'))
+                  ->from($this->_db->quoteName('#__assets'))
+                  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pftime"));
+
+            $this->_db->setQuery($query);
+            $result = $this->_db->loadResult();
+
+            if ($result) $asset_id = (int) $result;
+        }
 
         // Return the asset id.
         if ($asset_id) return $asset_id;

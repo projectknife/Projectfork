@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork.Library
- * @subpackage   Application
+ * @package      pkg_projectfork
+ * @subpackage   lib_projectfork
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -113,6 +113,35 @@ abstract class PFApplicationHelper
         }
 
         return true;
+    }
+
+
+    /**
+     * Method to check if a component uses the project asset
+     *
+     * @param     string     $name    The name of the component
+     *
+     * @return    boolean             True if it does
+     */
+    public static function usesProjectAsset($name)
+    {
+        $name = str_replace('com_', '', $name);
+
+        if (!class_exists($name . 'Helper')) {
+            $helper_file = JPATH_ADMINISTRATOR . '/components/com_' . $name . '/helpers/' . $name . '.php';
+
+            if (!file_exists($helper_file)) return false;
+
+            require_once $helper_file;
+
+            if (!class_exists($name . 'Helper')) return false;
+        }
+
+        $vars = get_class_vars($name . 'Helper');
+
+        if (!isset($vars['project_asset'])) return false;
+
+        return $vars['project_asset'];
     }
 
 

@@ -56,6 +56,11 @@ class plgContentPFforum extends JPlugin
         // Update publishing state
         $this->updatePubState($context, $table->id, $table->state);
 
+        if ($context == 'com_pfprojects.project') {
+            // Update parent asset
+            $this->updateParentAsset($table->id);
+        }
+
         return true;
     }
 
@@ -108,6 +113,10 @@ class plgContentPFforum extends JPlugin
         $context = $this->unalias($context);
 
         $this->deleteFromContext($context, $table->id);
+
+        if ($context == 'com_pfprojects.project') {
+            $this->deleteProjectAsset($table->id);
+        }
 
         return true;
     }
@@ -310,5 +319,94 @@ class plgContentPFforum extends JPlugin
 
         $db->setQuery($query);
         $db->execute();
+    }
+
+
+    /**
+     * Method to change the hierarchy of all topic assets
+     *
+     * @param     integer    $project    The project id
+     *
+     * @return    boolean                True on success
+     */
+    protected function updateParentAsset($project)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        // Find the component asset id
+        $query->select('id')
+              ->from('#__assets')
+              ->where('name = ' . $db->quote('com_pfforum'));
+
+        $db->setQuery($query);
+        $com_asset = (int) $db->loadResult();
+
+        if (!$com_asset) return false;
+
+        // Find the project asset id
+        $query->clear();
+        $query->select('id')
+              ->from('#__assets')
+              ->where('name = ' . $db->quote('com_pfforum.project.' . $project));
+
+        $db->setQuery($query);
+        $project_asset = (int) $db->loadResult();
+
+        if (!$project_asset) return false;
+
+        // Find all assets that need to be updated
+        $query->clear();
+        $query->select('a.asset_id')
+              ->from('#__pf_topics AS a')
+              ->join('INNER', '#__assets AS s ON s.id = a.asset_id')
+              ->where('a.project_id = ' . (int) $project)
+              ->where('s.parent_id != ' . (int) $project_asset)
+              ->order('a.id ASC');
+
+        $db->setQuery($query);
+        $pks = $db->loadColumn();
+
+        if (empty($pks) || !is_array($pks)) return true;
+
+        // Update each asset
+        foreach ($pks AS $pk)
+        {
+            $asset = JTable::getInstance('Asset', 'JTable', array('dbo' => $db));
+
+            $asset->load($pk);
+
+            $asset->setLocation($project_asset, 'last-child');
+            $asset->parent_id = $project_asset;
+
+            if (!$asset->check() || !$asset->store(false)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Method to delete a component project asset
+     *
+     * @param     integer    $project    The project id
+     *
+     * @return    boolean                True on success
+     */
+    protected function deleteProjectAsset($project)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->delete('#__assets')
+              ->where('name = ' . $db->quote('com_pfforum.project.' . (int) $project));
+
+        $db->setQuery($query);
+
+        if (!$db->execute()) return false;
+
+        return true;
     }
 }
