@@ -160,7 +160,7 @@ class JFormFieldGroupAccess extends JFormField
         $html   = array();
         $html[] = '<div>';
         $html[] = '    <div class="form-horizontal">';
-        $html[] = '        <select id="aclm-add-group" autocomplete="off" class="inputbox input-large"/>';
+        $html[] = '        <select id="aclm-add-group" autocomplete="off" class="inputbox input-large">';
         $html[] = '            <option value="">' . JText::_('JOPTION_SELECT_GROUP') . '</option>';
         $html[] = implode("\n", $this->getGroupOptions());
         $html[] = '        </select>';
