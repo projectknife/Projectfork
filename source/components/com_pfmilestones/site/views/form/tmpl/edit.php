@@ -94,10 +94,10 @@ Joomla.submitbutton = function(task)
                 </div>
             </div>
             <div class="formelm control-group">
-                <div id="jform_start_date_reload" class="control-label">
+                <div class="control-label">
                     <?php echo $this->form->getLabel('start_date'); ?>
                 </div>
-                <div class="controls">
+                <div id="jform_start_date_reload" class="controls">
                     <?php echo $this->form->getInput('start_date'); ?>
                 </div>
             </div>
