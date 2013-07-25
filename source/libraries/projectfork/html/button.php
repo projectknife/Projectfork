@@ -18,17 +18,10 @@ abstract class PFhtmlButton
         static $enabled = null;
 
         if (is_null($enabled)) {
-            if (!JPluginHelper::isEnabled('content', 'pfnotifications')) {
-                $enabled = false;
-            }
-            else {
-                $enabled = true;
-            }
+            $enabled = JPluginHelper::isEnabled('content', 'pfnotifications');
         }
 
-        if (!$enabled) {
-            return '';
-        }
+        if (!$enabled) return '';
 
         $html      = array();
         $div_class = (isset($options['div-class']) ? ' ' . $options['div-class'] : '');

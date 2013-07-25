@@ -395,19 +395,11 @@ class PFprojectsModelProject extends JModelAdmin
 
                 // Store the attachments
                 if (isset($data['attachment']) && !$is_new) {
-                    $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+                    $attachments = $this->getInstance('Attachments', 'PFrepoModel', array('ignore_request' => true));
 
-                    if (!$attachments->getState('item.type')) {
-                        $attachments->setState('item.type', 'com_pfprojects.project');
-                    }
-
-                    if ((int) $attachments->getState('item.id') == 0) {
-                        $attachments->setState('item.id', $id);
-                    }
-
-                    if ((int) $attachments->getState('item.project') == 0) {
-                        $attachments->setState('item.project', $id);
-                    }
+                    $attachments->setState('item.type', 'com_pfprojects.project');
+                    $attachments->setState('item.id', $id);
+                    $attachments->setState('item.project', $id);
 
                     if (!$attachments->save($data['attachment'])) {
                         $this->setError($attachments->getError());

@@ -65,34 +65,48 @@ class PFprojectsControllerForm extends JControllerForm
 
 
     /**
-     * Method to cancel an edit.
+     * Method to save a record.
      *
-     * @param     string    $key    The name of the primary key of the URL variable.
+     * @param     string     $key       The name of the primary key of the URL variable.
+     * @param     string     $urlVar    The name of the URL variable if different from the primary key.
      *
-     * @return    void
+     * @return    boolean               True if successful, false otherwise.
      */
-    public function cancel($key = 'id')
+    public function save($key = null, $urlVar = null)
     {
-        parent::cancel($key);
+        $data = JRequest::getVar('jform', array(), 'post', 'array');
+        $task = $this->getTask();
 
-        // Redirect to the return page.
-        $this->setRedirect($this->getReturnPage());
-    }
+        // Separate the different component rules before passing on the data
+        if (isset($data['rules'])) {
+            $rules = $data['rules'];
 
+            if (isset($data['rules']['com_pfprojects'])) {
+                $data['rules'] = $data['rules']['com_pfprojects'];
 
-    /**
-     * Method to edit an existing record.
-     *
-     * @param     string     $key        The name of the primary key of the URL variable.
-     * @param     string     $url_var    The name of the URL variable if different from the primary key.
-     *
-     * @return    boolean                True if access level check and checkout passes, false otherwise.
-     */
-    public function edit($key = null, $url_var = 'id')
-    {
-        $result = parent::edit($key, $url_var);
+                unset($rules['com_pfprojects']);
+            }
 
-        return $result;
+            $data['component_rules'] = $rules;
+        }
+
+        // Reset the repo dir when saving as copy
+        if ($task == 'save2copy' && isset($data['attribs']['repo_dir'])) {
+            $dir = (int) $data['attribs']['repo_dir'];
+
+            if ($dir) {
+                $data['attribs']['repo_dir'] = 0;
+            }
+        }
+
+        if (version_compare(JVERSION, '3.0.0', 'ge')) {
+            $this->input->post->set('jform', $data);
+        }
+        else {
+            JRequest::setVar('jform', $data, 'post');
+        }
+
+        return parent::save($key, $urlVar);
     }
 
 
