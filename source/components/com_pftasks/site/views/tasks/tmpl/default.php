@@ -19,6 +19,7 @@ $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
 $uid        = $user->get('id');
+$own		= (int)$this->params->get('filter_assigned');
 
 $action_count = count($this->actions);
 $filter_in    = ($this->state->get('filter.isset') ? 'in ' : '');
@@ -131,6 +132,7 @@ jQuery(document).ready(function() {
                                 <?php echo JHtml::_('select.options', $this->lists, 'value', 'text', $this->state->get('filter.tasklist'));?>
                             </select>
                         </div>
+						<?php if (intval($own) == 0) :?>
                         <div class="filter-author btn-group">
                             <select id="filter_author" name="filter_author" class="inputbox input-medium" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
@@ -143,6 +145,7 @@ jQuery(document).ready(function() {
                                     <?php echo JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned'));?>
                             </select>
                         </div>
+						<?php endif; ?>
                     <?php  else : ?>
                         <input type="hidden" name="filter_assigned" id="filter_assigned" value="<?php echo $this->escape($this->state->get('filter.assigned'));?>"/>
                     <?php endif; ?>

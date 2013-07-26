@@ -102,6 +102,12 @@ class PFtimeModelTimesheet extends JModelList
         if (!$user->authorise('core.admin')) {
             $groups = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $groups . ')');
+			
+			// Filter by assigned user
+			$params = JComponentHelper::getParams('com_pftime', true);
+			if ((int)$params->get('filter_own') > 0){
+				$this->setState('filter.author',$user->get('id'));
+			}
         }
 
         // Calculate billable amount
@@ -342,6 +348,11 @@ class PFtimeModelTimesheet extends JModelList
         if ((int) $this->getState('filter.project') == 0) {
             return 0.00;
         }
+		 
+		$access = PFtimeHelper::getActions();
+		if (!$access->get('time.project.monetary.summary')){
+			return null;
+		}
 
         // Construct the query
         $query->select('SUM((a.log_time / 60) * (a.rate / 60))')
@@ -413,7 +424,11 @@ class PFtimeModelTimesheet extends JModelList
         if ((int) $this->getState('filter.project') == 0) {
             return 0.00;
         }
-
+		
+		$access = PFtimeHelper::getActions();
+		if (!$access->get('time.project.monetary.summary')){
+			return null;
+		}
         // Construct the query
         $query->select('SUM((a.estimate / 60) * (a.rate / 60))')
               ->from('#__pf_tasks AS a')
@@ -453,7 +468,8 @@ class PFtimeModelTimesheet extends JModelList
         if ($layout) $this->context .= '.' . $layout;
 
         // Params
-        $value = $app->getParams();
+        //$value = $app->getParams();
+		$value = JComponentHelper::getParams('com_pftime', true);
         $this->setState('params', $value);
 
         // State

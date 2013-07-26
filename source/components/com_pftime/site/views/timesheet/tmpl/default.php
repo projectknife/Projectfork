@@ -17,6 +17,7 @@ $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
 $uid        = $user->get('id');
+$own		= (int)$this->params->get('filter_own');
 
 $list_total_time = 0;
 $list_total_billable = 0.00;
@@ -25,7 +26,11 @@ $list_total_billable = 0.00;
 $billable_percent   = ($this->total_time == 0) ? 0 : round($this->total_time_billable * (100 / $this->total_time));
 $unbillable_percent = ($this->total_time == 0) ? 0 : round($this->total_time_unbillable * (100 / $this->total_time));
 
+$can_view_totals	= $this->access->get('time.monetary');
+$can_view_summary	= $this->access->get('time.project.monetary.summary');
+
 $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
+
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task)
@@ -78,6 +83,7 @@ Joomla.submitbutton = function(task)
                         </div>
                     <?php endif; ?>
                     <?php if (intval($this->state->get('filter.project')) > 0) : ?>
+							<?php if (intval($own) == 0) :?>
                         <div class="filter-author btn-group pull-left">
                             <select id="filter_author" name="filter_author" class="inputbox input-small" onchange="this.form.submit()">
                                 <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
@@ -90,6 +96,7 @@ Joomla.submitbutton = function(task)
                                 <?php echo JHtml::_('select.options', $this->tasks, 'value', 'text', $this->state->get('filter.task'), true);?>
                             </select>
                         </div>
+                    	<?php endif; ?>
                     <?php endif; ?>
                     <div class="btn-group filter-order pull-left">
                         <select name="filter_order" class="inputbox input-small" onchange="this.form.submit()">
@@ -140,6 +147,7 @@ Joomla.submitbutton = function(task)
 							</div>
             			</fieldset>
                 	</div>
+					<?php if ($can_view_summary) : ?>
                 	<div class="span3">
                 		<fieldset>
                 			<legend><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE_TOTAL');?></legend>
@@ -152,8 +160,9 @@ Joomla.submitbutton = function(task)
                 				<?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_ESTIMATED');?> (<?php echo JHtml::_('pfhtml.format.money', $this->total_estimated_cost);?>)
                 			</div>
                 		</fieldset>
-                	</div>
-                </div>
+                	</div><?php endif; ?>
+            </div>
+				
             <?php endif; ?>
 
             <hr />
@@ -168,8 +177,10 @@ Joomla.submitbutton = function(task)
             			<th width="10%" class="hidden-phone"></th>
             			<th width="10%" class="hidden-phone"><?php echo JText::_('JGRID_HEADING_AUTHOR');?></th>
             			<th width="10%" class="hidden-phone"><?php echo JText::_('JGRID_HEADING_DATE');?></th>
+						<?php if ($this->access->get('time.monetary')) : ?>
             			<th width="10%" class="hidden-phone"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_RATE');?></th>
             			<th width="10%" class="hidden-phone"><?php echo JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE');?></th>
+						<?php endif; ?>
             		</tr>
             	</thead>
             	<tbody>
@@ -245,12 +256,14 @@ Joomla.submitbutton = function(task)
 			        	<td class="hidden-phone">
 			        		<?php echo JHtml::_('date', $item->log_date, JText::_('DATE_FORMAT_LC4')); ?>
 			        	</td>
+						<?php if ($can_view_totals) : ?>
 			        	<td class="hidden-phone">
                             <?php echo JHtml::_('pfhtml.format.money', $item->rate);?>
 			        	</td>
 			        	<td class="hidden-phone">
                             <?php echo JHtml::_('pfhtml.format.money', $item->billable_total);?>
 			        	</td>
+						<?php endif; ?>
 			        </tr>
 
 			        <?php
@@ -267,8 +280,10 @@ Joomla.submitbutton = function(task)
             			<th class="hidden-phone"></th>
             			<th class="hidden-phone"></th>
             			<th class="hidden-phone"></th>
+						<?php if ($can_view_totals) : ?>
 	            		<th ></th>
 	            		<th><?php echo JHtml::_('pfhtml.format.money', $list_total_billable);?></th>
+						<?php endif; ?>
             		</tr>
             	</tfoot>
             </table>

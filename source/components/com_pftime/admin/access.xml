@@ -8,11 +8,14 @@
 		<action name="core.edit.state" title="JACTION_EDITSTATE" description="JACTION_EDITSTATE_COMPONENT_DESC" />
 		<action name="core.edit.own" title="JACTION_EDITOWN" description="JACTION_EDITOWN_COMPONENT_DESC" />
         <action name="core.delete" title="JACTION_DELETE" description="JACTION_DELETE_COMPONENT_DESC" />
+		<action name="time.monetary" title="COM_PFTIME_ACTION_SHOWMONETARY" description="COM_PFTIME_ACTION_SHOWMONETARY_DESC" />		
+		<action name="time.project.monetary.summary" title="COM_PFTIME_ACTION_SHOWPROJECTMONETARYSUMMARIES" description="COM_PFTIME_ACTION_SHOWPROJECTMONETARYSUMMARIES_DESC" />		
 	</section>
     <section name="time">
 		<action name="core.edit" title="JACTION_EDIT" description="COM_PFTIME_ACCESS_EDIT_DESC" />
 		<action name="core.edit.state" title="JACTION_EDITSTATE" description="COM_PFTIME_ACCESS_EDITSTATE_DESC" />
         <action name="core.delete" title="JACTION_DELETE" description="COM_PFTIME_ACCESS_DELETE_DESC" />
+       
     </section>
     <section name="project">
 		<action name="core.create" title="JACTION_CREATE" description="JACTION_CREATE_COMPONENT_DESC" />

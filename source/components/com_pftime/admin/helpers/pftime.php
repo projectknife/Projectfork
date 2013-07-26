@@ -87,7 +87,8 @@ class PFtimeHelper
             'core.admin', 'core.manage',
             'core.create', 'core.edit',
             'core.edit.own', 'core.edit.state',
-            'core.delete'
+            'core.delete', 'time.monetary',
+			'time.project.monetary.summary'
         );
 
         foreach ($actions as $action)

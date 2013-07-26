@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
+    <fieldset name="general" label="COM_PFTIME_CONFIG_GENERAL_LABEL" description="COM_PFTIME_CONFIG_GENERAL_DESC">
+		<field type="radio" name="filter_own" default="0" class="btn-group"
+                    label="COM_PFTIME_CONFIG_FILTER_OWN_LABEL" description="COM_PFTIME_CONFIG_FILTER_OWN_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
+	</fieldset>
     <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules"
 			label="JCONFIG_PERMISSIONS_LABEL"
