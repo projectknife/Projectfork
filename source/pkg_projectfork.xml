@@ -42,6 +42,7 @@
         <!-- Install modules -->
         <file type="module" id="mod_pf_dash_buttons" client="site">modules/mod_pf_dash_buttons</file>
         <file type="module" id="mod_pf_tasks" client="site">modules/mod_pf_tasks</file>
+        <file type="module" id="mod_pf_time" client="site">modules/mod_pf_time</file>
     </files>
     <updateservers>
         <server type="extension" priority="1" name="Projectfork 4 Update"><![CDATA[http://projectfork.net/index.php?option=com_ars&view=update&task=stream&format=xml&id=1&dummy=extension.xml]]></server>
