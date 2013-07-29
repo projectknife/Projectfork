@@ -96,6 +96,35 @@ class PFrepoModelAttachment extends JModelAdmin
             if ($table) {
                 if ($table->load($id)) {
                     $item->repo_data = $table;
+
+                    $query = $this->_db->getQuery(true);
+
+                    $query->select('alias')
+                          ->from('#__pf_projects')
+                          ->where('id = ' . (int) $item->repo_data->project_id);
+
+                    $this->_db->setQuery($query);
+                    $item->repo_data->project_alias = $this->_db->loadResult();
+
+                    if ($type == 'note' || $type == 'file') {
+                        $query = $this->_db->getQuery(true);
+
+                        $query->select('alias, path')
+                              ->from('#__pf_repo_dirs')
+                              ->where('id = ' . (int) $item->repo_data->dir_id);
+
+                        $this->_db->setQuery($query);
+                        $dir = $this->_db->loadObject();
+
+                        if (!empty($dir)) {
+                            $item->repo_data->path      = $dir->path;
+                            $item->repo_data->dir_alias = $dir->alias;
+                        }
+                        else {
+                            $item->repo_data->path = '';
+                            $item->repo_data->dir_alias = '';
+                        }
+                    }
                 }
                 else {
                     $item->repo_data = null;
