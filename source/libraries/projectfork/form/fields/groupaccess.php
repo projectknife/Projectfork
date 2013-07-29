@@ -242,7 +242,19 @@ class JFormFieldGroupAccess extends JFormField
         $view = new PFusersViewGroupRules($config);
 
         // Get the groups assigned to the item access level
-        $groups = $this->getViewingAccessGroups();
+        if (!$this->inherit && !$this->project_id) {
+            $cfg = JComponentHelper::getParams('com_pfprojects');
+
+            if ($cfg->get('create_group')) {
+                $groups = array('0');
+            }
+            else {
+                $groups = $this->getViewingAccessGroups();
+            }
+        }
+        else {
+            $groups = $this->getViewingAccessGroups();
+        }
 
         $html = array();
 

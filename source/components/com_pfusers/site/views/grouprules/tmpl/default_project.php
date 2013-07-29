@@ -15,6 +15,9 @@ if (count($this->item->children) > 5) {
     $this->item->children = array_slice($this->item->children, 0, 5);
     $this->item->children[] = JText::_('COM_PROJECTFORK_AND_MORE') . '...';
 }
+
+$rule_group_id = $this->item->id;
+if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
 ?>
 <div class="well well-small" id="alcm-group-<?php echo (int) $this->item->id; ?>">
     <div class="pull-right">
@@ -70,7 +73,7 @@ if (count($this->item->children) > 5) {
                         $title = JText::_($action->title);
                         $desc  = htmlspecialchars($title . '::' . JText::_($action->description), ENT_COMPAT, 'UTF-8');
 
-                        $rule       = $rules->allow($action->name, $this->item->id);
+                        $rule       = $rules->allow($action->name, $rule_group_id);
                         $calculated = JAccess::checkGroup($this->item->id, $action->name, $asset_id);
 
                         if ($rule === true) {

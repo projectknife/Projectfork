@@ -28,7 +28,7 @@ class PFprojectsModelProject extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string
+     * @var    string    
      */
     protected $text_prefix = 'COM_PROJECTFORK_PROJECT';
 
@@ -245,13 +245,13 @@ class PFprojectsModelProject extends JModelAdmin
             $form->setFieldAttribute('end_date', 'disabled', 'true');
 
             // Disable fields while saving.
-			$form->setFieldAttribute('state', 'filter', 'unset');
-			$form->setFieldAttribute('start_date', 'filter', 'unset');
-			$form->setFieldAttribute('end_date', 'filter', 'unset');
+            $form->setFieldAttribute('state', 'filter', 'unset');
+            $form->setFieldAttribute('start_date', 'filter', 'unset');
+            $form->setFieldAttribute('end_date', 'filter', 'unset');
         }
 
         // Always disable these fields while saving
-		$form->setFieldAttribute('alias', 'filter', 'unset');
+        $form->setFieldAttribute('alias', 'filter', 'unset');
 
         // Disable these fields if not an admin
         if (!$user->authorise('core.admin', 'com_pfprojects')) {
@@ -290,6 +290,13 @@ class PFprojectsModelProject extends JModelAdmin
         JPluginHelper::importPlugin('content');
         $dispatcher = JDispatcher::getInstance();
 
+        $cfg = JComponentHelper::getParams('com_pfprojects');
+        $create_group   = (int) $cfg->get('create_group');
+        $group_location = (int) $cfg->get('group_location');
+        $group_id       = 0;
+
+        if (!$group_location) $group_location = 1;
+
         // Allow an exception to be thrown.
         try {
             // Load the row if saving an existing record.
@@ -307,8 +314,93 @@ class PFprojectsModelProject extends JModelAdmin
             $data['title'] = $title;
             $data['alias'] = $alias;
 
+            // Create new user group?
+            if ($is_new && $create_group) {
+                $group_users = array(JFactory::getUser()->get('id'));
+                $group_id = $this->createUserGroup($data['title'], $group_location, $group_users);
+
+                if ($group_id) {
+                    if (!isset($data['attribs'])) $data['attribs'] = array();
+                    $data['attribs']['usergroup'] = $group_id;
+                }
+            }
+
+            // Inject group into component rules
+            if (isset($data['component_rules']) && $is_new && $create_group) {
+                foreach ($data['component_rules'] AS $component => $rules)
+                {
+                    foreach ($rules AS $action => $groups)
+                    {
+                        if (!is_numeric($action) && is_array($groups)) {
+                            foreach ($groups AS $gid => $v)
+                            {
+                                if ($gid == 0) {
+                                    if ($group_id) {
+                                        unset($data['component_rules'][$component][$action][$gid]);
+                                        $data['component_rules'][$component][$action][$group_id] = $v;
+                                    }
+                                    else {
+                                        unset($data['component_rules'][$component][$action][$gid]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // Rename project group
+            if (!$is_new && $create_group) {
+                $reg = new JRegistry();
+                $reg->loadString($table->attribs);
+
+                $group_id = (int) $reg->get('usergroup');
+
+                if ($group_id) {
+                    // Re-inject the group and other attribs
+                    if (!isset($data['attribs'])) {
+                        $data['attribs'] = $reg->toArray();
+                    }
+                    else {
+                        $data['attribs']['usergroup'] = $group_id;
+                    }
+
+                    // Rename
+                    $this->renameUserGroup($group_id, $data['title']);
+                }
+            }
+
             // Handle permissions and access level
             if (isset($data['rules'])) {
+                // Inject newly created group
+                if ($is_new && $create_group) {
+                    foreach ($data['rules'] AS $action => $groups)
+                    {
+                        if (is_numeric($action) && is_numeric($groups) && $groups == 0) {
+                            unset($data['rules'][$action]);
+
+                            if ($group_id) {
+                                $data['rules'][$action] = $group_id;
+                            }
+                        }
+
+                        if (!is_numeric($action) && is_array($groups)) {
+                            foreach ($groups AS $gid => $v)
+                            {
+                                if ($gid == 0) {
+                                    if ($group_id) {
+                                        unset($data['rules'][$action][$gid]);
+                                        $data['rules'][$action][$group_id] = $v;
+                                    }
+                                    else {
+                                        unset($data['rules'][$action][$gid]);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+
                 $prev_access = ($is_new ? 0 : $table->access);
                 $access = PFAccessHelper::getViewLevelFromRules($data['rules'], $prev_access);
 
@@ -866,6 +958,188 @@ class PFprojectsModelProject extends JModelAdmin
         }
 
         return array($title, $alias);
+    }
+
+
+    /**
+     * Method to generate a unique group title.
+     *
+     * @param     string     $title        The title
+     * @param     integer    $parent_id    The parent group id
+     * @param     integer    $id           The group id
+     *
+     * @return    array                    Contains the modified title
+     */
+    protected function generateNewGroupTitle($title, $parent_id, $id = 0)
+    {
+        $table = $this->getTable('UserGroup', 'JTable');
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('COUNT(id)')
+              ->from($table->getTableName())
+              ->where('parent_id = ' . (int) $parent_id);
+
+        if ($id) {
+            $query->where('id != ' . intval($id));
+        }
+
+        $db->setQuery($query);
+        $count = (int) $db->loadResult();
+
+        if ($id > 0 && $count == 0) {
+            return $title;
+        }
+        elseif ($id == 0 && $count == 0) {
+            return $title;
+        }
+        else {
+            while ($table->load(array('title' => $title, 'parent_id' => $parent_id)))
+            {
+                $m = null;
+
+                if (preg_match('#\((\d+)\)$#', $title, $m)) {
+                    $title = preg_replace('#\(\d+\)$#', '('.($m[1] + 1).')', $title);
+                }
+                else {
+                    $title .= ' (2)';
+                }
+            }
+        }
+
+        return $title;
+    }
+
+
+    /**
+     * Method to create a new user group
+     *
+     * @param     string     $title        the name of the group
+     * @param     integer    $parent_id    The parenting group
+     * @param     array      $users        The users to add to the group
+     *
+     * @return    integer    $id           The id of the new group
+     */
+    protected function createUserGroup($title, $parent_id, $users = array())
+    {
+        $dispatcher = JDispatcher::getInstance();
+
+        $table = $this->getTable('Usergroup', 'JTable');
+
+        // Include the content plugins for the on save events.
+        JPluginHelper::importPlugin('content');
+
+        // Generate unique title
+        $title = $this->generateNewGroupTitle($title, $parent_id);
+
+        $data = array();
+        $data['title']     = $title;
+        $data['parent_id'] = (int) $parent_id;
+
+        // Allow an exception to be thrown.
+        try
+        {
+            // Bind the data.
+            if (!$table->bind($data)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Check the data.
+            if (!$table->check()) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Trigger the onContentBeforeSave event.
+            $result = $dispatcher->trigger($this->event_before_save, array('com_users.group', $table, true));
+
+            if (in_array(false, $result, true)) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Store the data.
+            if (!$table->store()) {
+                $this->setError($table->getError());
+                return false;
+            }
+
+            // Clean the cache.
+            $this->cleanCache();
+
+            // Trigger the onContentAfterSave event.
+            $dispatcher->trigger($this->event_after_save, array('com_users.group', $table, true));
+        }
+        catch (Exception $e)
+        {
+            $this->setError($e->getMessage());
+
+            return false;
+        }
+
+        $pkName = $table->getKeyName();
+
+        if (!isset($table->$pkName)) {
+            return false;
+        }
+
+        $gid = (int) $table->$pkName;
+
+        // Add users to the group
+        $looped = array();
+
+        foreach ($users AS $uid)
+        {
+            if (in_array($uid, $looped)) continue;
+
+            $looped[] = $uid;
+
+            $obj = new stdClass();
+            $obj->user_id  = (int) $uid;
+            $obj->group_id = (int) $gid;
+
+            $this->_db->insertObject('#__user_usergroup_map', $obj);
+        }
+
+        return false;
+    }
+
+
+    /**
+     * Method to rename a user group
+     *
+     * @param     integer    $id       The group id to rename
+     * @param     string     $title    The new group title
+     *
+     * @return    boolean              True on success.
+     */
+    protected function renameUserGroup($id, $title)
+    {
+        $query = $this->_db->getQuery(true);
+
+        $query->select('id, title, parent_id')
+              ->from('#__usergroups')
+              ->where('id = ' . (int) $id);
+
+        $this->_db->setQuery($query);
+        $group = $this->_db->loadObject();
+
+        if (empty($group)) return false;
+
+        if ($title != $group->title) {
+            $title = $this->generateNewGroupTitle($title, $group->parent_id, $group->id);
+
+            $query->clear()
+                  ->update('#__usergroups')
+                  ->set('title = ' . $db->quote($title))
+                  ->where('id = ' . (int) $id);
+
+            $this->_db->setQuery($query);
+            $this->_db->execute();
+        }
+
+        return true;
     }
 
 

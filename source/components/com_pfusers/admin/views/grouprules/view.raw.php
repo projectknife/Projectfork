@@ -101,6 +101,9 @@ class PFusersViewGroupRules extends JViewLegacy
 
     protected function getAssetRules($component = null, $asset_id = null)
     {
+        static $cache  = array();
+        static $assets = array();
+
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -108,27 +111,40 @@ class PFusersViewGroupRules extends JViewLegacy
         if (is_null($asset_id))  $asset_id  = $this->asset_id;
 
         if (!$asset_id) {
-            // This is a new item, get the asset id of the component
-            $query->select($db->quoteName('id'))
-                  ->from($db->quoteName('#__assets'))
-                  ->where($db->quoteName('name') . ' = ' . $db->quote($component));
+            if (isset($assets[$component])) {
+                $asset_id = (int) $assets[$component];
+            }
+            else {
+                // This is a new item, get the asset id of the component
+                $query->select($db->quoteName('id'))
+                      ->from($db->quoteName('#__assets'))
+                      ->where($db->quoteName('name') . ' = ' . $db->quote($component));
 
-            $db->setQuery($query);
-            $result = $db->loadResult();
+                $db->setQuery($query);
+                $assets[$component] = $db->loadResult();
 
-            if ($result) {
-                $asset_id = (int) $result;
+                $asset_id = (int) $assets[$component];
             }
         }
 
         if (!$asset_id) $asset_id = 1;
 
-        return JAccess::getAssetRules($asset_id);
+        if (isset($cache[$asset_id])) return $cache[$asset_id];
+
+        $cache[$asset_id] = JAccess::getAssetRules($asset_id);
+
+        return $cache[$asset_id];
     }
 
 
     protected function getComponentProjectAssetId($component, $project = 0)
     {
+        static $cache = array();
+
+        $cache_key = $component . '.' . $project;
+
+        if (isset($cache[$cache_key])) return $cache[$cache_key];
+
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -137,7 +153,9 @@ class PFusersViewGroupRules extends JViewLegacy
               ->where('name = ' . $db->quote($component . '.project.' . (int) $project));
 
         $db->setQuery($query);
-        return (int) $db->loadResult();
+        $cache[$cache_key] = (int) $db->loadResult();
+
+        return $cache[$cache_key];
     }
 
 

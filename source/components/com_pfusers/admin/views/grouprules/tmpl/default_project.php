@@ -15,16 +15,20 @@ if (count($this->item->children) > 5) {
     $this->item->children = array_slice($this->item->children, 0, 5);
     $this->item->children[] = JText::_('COM_PROJECTFORK_AND_MORE') . '...';
 }
+
+$rule_group_id = $this->item->id;
+if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
 ?>
 <div class="well well-small" id="alcm-group-<?php echo (int) $this->item->id; ?>">
-    <div class="pull-right">
-        <button type="button" class="btn btn-small btn-danger" onclick="PFform.alcmRemoveGroup(<?php echo $this->item->id; ?>)">
-            <?php echo JText::_('COM_PROJECTFORK_REMOVE'); ?>
-        </button>
-    </div>
+    <?php if ($this->item->id > 0) : ?>
+        <div class="pull-right">
+            <button type="button" class="btn btn-small btn-danger" onclick="PFform.alcmRemoveGroup(<?php echo $this->item->id; ?>)">
+                <?php echo JText::_('COM_PROJECTFORK_REMOVE'); ?>
+            </button>
+        </div>
+    <?php endif; ?>
     <a href="javascript:void(0);" onclick="PFform.alcmToggleActions(<?php echo $this->item->id; ?>)" style="font-weight: bold;">
         <?php echo $this->escape($this->item->title); ?>
-
     </a>
     <?php if (count($this->item->children)) : ?>
         <p class="small">
@@ -71,8 +75,8 @@ if (count($this->item->children) > 5) {
                         $title = JText::_($action->title);
                         $desc  = htmlspecialchars($title . '::' . JText::_($action->description), ENT_COMPAT, 'UTF-8');
 
-                        $rule       = $rules->allow($action->name, $this->item->id);
-                        $calculated = JAccess::checkGroup($this->item->id, $action->name, $asset_id);
+                        $rule       = $rules->allow($action->name, $rule_group_id);
+                        $calculated = JAccess::checkGroup($rule_group_id, $action->name, $asset_id);
 
                         if ($rule === true) {
                             $selected = '1';
