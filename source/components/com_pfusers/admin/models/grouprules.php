@@ -64,7 +64,7 @@ class PFusersModelGroupRules extends JModelItem
                 $item->parent_id = $group_location;
                 $item->lft   = 0;
                 $item->rgt   = 0;
-                $item->title = 'Default Group';
+                $item->title = JText::_('COM_PFUSERS_DEFAULT_GROUP');
             }
             else {
                 $query->select('id, parent_id, lft, rgt, title')
