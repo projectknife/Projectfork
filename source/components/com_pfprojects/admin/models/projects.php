@@ -228,11 +228,11 @@ class PFprojectsModelProjects extends JModelList
                 $query->where('a.id = '. (int) substr($filter_search, 3));
             }
             elseif (stripos($filter_search, 'author:') === 0) {
-                $search = $this->_db->quote($this->_db->escape(substr($filter_search, 7), true) . '%');
+                $search = $this->_db->quote('%' . $this->_db->escape(substr($filter_search, 7), true) . '%');
                 $query->where('(ua.name LIKE ' . $search . ' OR ua.username LIKE ' . $search . ')');
             }
             else {
-                $search = $this->_db->quote($this->_db->escape($filter_search, true) . '%');
+                $search = $this->_db->quote('%' . $this->_db->escape($filter_search, true) . '%');
                 $query->where('(a.title LIKE ' . $search . ' OR a.alias LIKE ' . $search . ')');
             }
         }

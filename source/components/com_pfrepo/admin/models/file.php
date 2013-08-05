@@ -663,6 +663,25 @@ class PFrepoModelFile extends JModelAdmin
             return false;
         }
 
+        // Check allowed file extension
+        $allowed = PFrepoHelper::getAllowedFileExtensions();
+        $config  = JComponentHelper::getParams('com_pfrepo');
+        $user    = JFactory::getUser();
+
+        $filter_admin = $config->get('filter_ext_admin');
+        $is_admin     = $user->authorise('core.admin');
+
+        if ($is_admin && !$filter_admin) $allowed = array();
+
+        if (count($allowed)) {
+            $ext = strtolower(JFile::getExt($file['name']));
+
+            if (!in_array($ext, $allowed)) {
+                $this->setError(JText::_('COM_PROJECTFORK_WARNING_INVALID_FILE_EXT'));
+                return false;
+            }
+        }
+
         $query = $this->_db->getQuery(true);
 
         $query->select('project_id, path')

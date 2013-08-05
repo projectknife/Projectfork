@@ -22,9 +22,7 @@ class JFormRuleGroupAccess extends JFormRule
      *
      * @param     simplexmlelement    $element    The SimpleXMLElement object representing the <field /> tag for the form field object.
      * @param     mixed               $value      The form field value to validate.
-     * @param     string              $group      The field name group control value. This acts as as an array container for the field.
-     * For example if the field has name="foo" and the group value is set to "bar" then the
-     * full field name would end up being "bar[foo]".
+     * @param     string              $group      The field name group control value.
      * @param     object              $input      An optional JRegistry object with the entire data set to validate against the entire form.
      * @param     object              $form       The form object for which the field is being tested.
      *
@@ -87,7 +85,7 @@ class JFormRuleGroupAccess extends JFormRule
         $actions = array();
 
         // Initialise some field attributes.
-        $section  = $element['section'] ? (string) $element['section'] : '';
+        $section   = $element['section'] ? (string) $element['section'] : '';
         $component = $element['component'] ? (string) $element['component'] : 'com_projectfork';
 
         // Get the asset actions for the element.

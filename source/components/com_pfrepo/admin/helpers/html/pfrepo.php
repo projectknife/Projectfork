@@ -67,16 +67,16 @@ abstract class JHtmlPFrepo
 
             if ($asset == 'directory') {
                 $icon = '<i class="icon-folder"></i> ';
-                $link = PFrepoHelperRoute::getRepositoryRoute($data->project_id, $data->id . ':' . $data->title, $data->path);
+                $link = PFrepoHelperRoute::getRepositoryRoute($data->project_id . ':' . $data->project_alias, $data->id . ':' . $data->alias, $data->path);
             }
 
             if ($asset == 'note') {
                 $icon = '<i class="icon-pencil"></i> ';
-                $link = PFrepoHelperRoute::getNoteRoute($data->id . ':' . $data->title, $data->project_id, $data->dir_id);
+                $link = PFrepoHelperRoute::getNoteRoute($data->id . ':' . $data->alias, $data->project_id . ':' . $data->project_alias, $data->dir_id . ':' . $data->dir_alias, $data->path);
             }
 
             if ($asset == 'file') {
-                $link = PFrepoHelperRoute::getFileRoute($data->id . ':' . $data->title, $data->project_id, $data->dir_id);
+                $link = PFrepoHelperRoute::getFileRoute($data->id . ':' . $data->alias, $data->project_id . ':' . $data->project_alias, $data->dir_id . ':' . $data->dir_alias, $data->path);
             }
 
             $html[] = '<li>';

@@ -67,8 +67,13 @@ class PFforumModelReplyForm extends PFforumModelReply
         $value->params->loadString($value->attribs);
 
         // Get the attachments
-        $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-        $value->attachment = $attachments->getItems('reply', $value->id);
+        if (PFApplicationHelper::exists('com_pfrepo')) {
+            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+            $value->attachment = $attachments->getItems('com_pfforum.reply', $value->id);
+        }
+        else {
+            $value->attachment = array();
+        }
 
         // Compute selected asset permissions.
         $uid    = JFactory::getUser()->get('id');

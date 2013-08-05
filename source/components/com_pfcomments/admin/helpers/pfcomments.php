@@ -20,6 +20,13 @@ class PFcommentsHelper
      */
     public static $extension = 'com_pfcomments';
 
+    /**
+     * Indicates whether this component uses a project asset or not
+     *
+     * @var    boolean
+     */
+    public static $project_asset = true;
+
 
     /**
      * Configure the Linkbar.

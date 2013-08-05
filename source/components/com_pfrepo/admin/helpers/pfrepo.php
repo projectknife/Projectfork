@@ -23,6 +23,13 @@ abstract class PFrepoHelper
      */
     public static $extension = 'com_pfrepo';
 
+    /**
+     * Indicates whether this component uses a project asset or not
+     *
+     * @var    boolean
+     */
+    public static $project_asset = true;
+
 
     /**
      * Configure the Linkbar.
@@ -316,5 +323,37 @@ abstract class PFrepoHelper
         $cache[$id] = (int) $db->loadResult();
 
         return $cache[$id];
+    }
+
+
+    /**
+     * Method to get the allowed file extensions for upload
+     *
+     * @return    array    $allowed    The allowed file extensions
+     */
+    public static function getAllowedFileExtensions()
+    {
+        $config      = JComponentHelper::getParams('com_pfrepo');
+        $allowed_str = trim($config->get('filter_ext'));
+        $allowed     = array();
+
+        if (empty($allowed_str)) return $allowed;
+
+        $extensions = explode(',', $allowed_str);
+
+        foreach ($extensions AS $ext)
+        {
+            $clean_ext = strtolower(trim($ext));
+
+            if (strpos($clean_ext, '.') === 0) {
+                $clean_ext = substr($clean_ext, 1);
+            }
+
+            $allowed[] = $clean_ext;
+        }
+
+        sort($allowed);
+
+        return $allowed;
     }
 }

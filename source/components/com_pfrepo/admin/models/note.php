@@ -379,7 +379,7 @@ class PFrepoModelNote extends JModelAdmin
      */
     public function delete(&$pks, $ignore_access = false)
     {
-        $dispatcher = JEventDispatcher::getInstance();
+        $dispatcher = JDispatcher::getInstance();
         $pks = (array) $pks;
         $table = $this->getTable();
 

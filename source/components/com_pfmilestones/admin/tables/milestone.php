@@ -64,14 +64,25 @@ class PFtableMilestone extends JTable
         $asset_id = null;
         $query    = $this->_db->getQuery(true);
 
-        // Get the asset id of the component
+        // Get the asset id of the component project asset
         $query->select('id')
               ->from('#__assets')
-              ->where('name' . ' = ' . $this->_db->quote("com_pfmilestones"));
+              ->where('name' . ' = ' . $this->_db->quote("com_pfmilestones.project." . (int) $this->project_id));
 
-        // Get the asset id from the database.
         $this->_db->setQuery($query);
         $result = $this->_db->loadResult();
+
+        // Get the asset id of the component
+        if (!$result) {
+            $query->clear();
+            $query->select('id')
+                  ->from('#__assets')
+                  ->where('name' . ' = ' . $this->_db->quote("com_pfmilestones"));
+
+            $this->_db->setQuery($query);
+            $result = $this->_db->loadResult();
+        }
+
 
         if ($result) $asset_id = (int) $result;
 

@@ -132,12 +132,25 @@ class PFforumModelReplies extends JModelList
 
         // Get the global params
         $global_params = JComponentHelper::getParams('com_pfforum', true);
+        $repo_exists   = PFApplicationHelper::exists('com_pfrepo');
+
+        if ($repo_exists) {
+            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+        }
 
         foreach ($items as $i => &$item)
         {
             // Convert the parameter fields into objects.
             $params = new JRegistry;
             $params->loadString($item->attribs);
+
+            // Get Attachments
+            if ($repo_exists && $attachments) {
+                $item->attachment = $attachments->getItems('com_pfforum.reply', $item->id);
+            }
+            else {
+                $item->attachment = array();
+            }
 
             $items[$i]->params = clone $this->getState('params');
 

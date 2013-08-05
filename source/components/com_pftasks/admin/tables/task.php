@@ -78,15 +78,28 @@ class PFtableTask extends JTable
             if ($result) $asset_id = (int) $result;
         }
         else {
-            // No asset found, fall back to the component
+            // Get the asset id of the component project asset
             $query->clear();
-            $query->select($this->_db->quoteName('id'))
-                  ->from($this->_db->quoteName('#__assets'))
-                  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pftasks"));
+            $query->select('id')
+                  ->from('#__assets')
+                  ->where('name' . ' = ' . $this->_db->quote("com_pftasks.project." . (int) $this->project_id));
 
-            // Get the asset id from the database.
             $this->_db->setQuery($query);
             $result = $this->_db->loadResult();
+
+            if ($result) $asset_id = (int) $result;
+
+            // No asset found, fall back to the component
+            if (!$result) {
+                $query->clear();
+                $query->select($this->_db->quoteName('id'))
+                      ->from($this->_db->quoteName('#__assets'))
+                      ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pftasks"));
+
+                // Get the asset id from the database.
+                $this->_db->setQuery($query);
+                $result = $this->_db->loadResult();
+            }
 
             if ($result) $asset_id = (int) $result;
         }

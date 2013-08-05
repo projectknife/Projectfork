@@ -376,12 +376,14 @@ class PFrepoControllerFileForm extends JControllerForm
         $project = JRequest::getUint('filter_project');
         $parent  = JRequest::getUint('filter_parent_id');
         $func    = JRequest::getCmd('function');
+        $layout  = JRequest::getCmd('layout');
         $append  = '';
 
         // Setup redirect info.
         if ($project) $append .= '&filter_project=' . $project;
         if ($parent)  $append .= '&filter_parent_id=' . $parent;
         if ($tmpl)    $append .= '&tmpl=' . $tmpl;
+        if ($layout)  $append .= '&layout=' . $layout;
         if ($func)    $append .= '&function=' . $func;
 
         return $append;

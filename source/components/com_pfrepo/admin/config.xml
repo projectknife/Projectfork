@@ -6,6 +6,14 @@
         <field type="repopath" name="repo_basepath" default=""
             label="COM_PFREPO_CONFIG_REPO_BASEPATH_LABEL" description="COM_PFREPO_CONFIG_REPO_BASEPATH_DESC"
         />
+        <field type="text" name="filter_ext" default=""
+            label="COM_PFREPO_CONFIG_FILTER_EXT_LABEL" description="COM_PFREPO_CONFIG_FILTER_EXT_DESC"
+        />
+        <field name="filter_ext_admin" type="radio" class="btn-group" default="0"
+			label="COM_REPO_CONFIG_FILTER_EXT_ADMIN_LABEL" description="COM_REPO_CONFIG_FILTER_EXT_ADMIN_DESC">
+			<option value="0">JNO</option>
+			<option value="1">JYES</option>
+		</field>
         <field name="show_element_count" type="radio" class="btn-group" default="0"
 			label="COM_REPO_CONFIG_SHOW_ELEMENT_COUNT_LABEL" description="COM_REPO_CONFIG_SHOW_ELEMENT_COUNT_DESC">
 			<option value="0">JNO</option>

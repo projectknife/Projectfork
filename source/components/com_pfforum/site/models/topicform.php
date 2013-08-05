@@ -67,14 +67,13 @@ class PFforumModelTopicForm extends PFforumModelTopic
         $value->params->loadString($value->attribs);
 
         // Get the attachments
-        if (PFApplicationHelper::exists('com_pfforum')) {
+        if (PFApplicationHelper::exists('com_pfrepo')) {
             $attachments = $this->getInstance('Attachments', 'PFrepoModel');
             $value->attachment = $attachments->getItems('com_pfforum.topic', $value->id);
         }
         else {
-            $value->attachment = array();
+            $value->attachment  = array();
         }
-
 
         // Get the labels
         $labels = $this->getInstance('Labels', 'PFModel');

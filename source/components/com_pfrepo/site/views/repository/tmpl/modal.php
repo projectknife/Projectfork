@@ -20,6 +20,20 @@ $dir        = $this->items['directory'];
 
 $link_append = '&layout=modal&tmpl=component&function=' . $function;
 $access      = PFrepoHelper::getActions('directory', $dir->id);
+
+$allowed      = PFrepoHelper::getAllowedFileExtensions();
+$config       = JComponentHelper::getParams('com_pfrepo');
+$filter_admin = $config->get('filter_ext_admin');
+$is_admin     = $user->authorise('core.admin');
+
+// Restrict file extensions?
+$txt_upload = '';
+
+if ($is_admin && !$filter_admin) $allowed = array();
+
+if (count($allowed)) {
+    $txt_upload = JText::_('COM_PROJECTFORK_UPLOAD_ALLOWED_EXT') . ' ' . implode(', ', $allowed);
+}
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-repository">
 
@@ -62,6 +76,11 @@ $access      = PFrepoHelper::getActions('directory', $dir->id);
                         <div class="btn-group">
                             <button type="button" class="btn" onclick="Joomla.submitbutton('fileform.save');"><?php echo JText::_('JACTION_UPLOAD'); ?></button>
                         </div>
+                        <?php if (count($allowed)) : ?>
+                            <div class="small">
+                                <?php echo $txt_upload; ?>
+                            </div>
+                        <?php endif; ?>
                         <input type="hidden" name="jform[dir_id]" id="jform_dir_id" value="<?php echo $this->escape((int) $dir->id);?>"/>
                         <input type="hidden" name="jform[project_id]" id="jform_dir_id" value="<?php echo $this->escape((int) $this->state->get('filter.project'));?>"/>
                         <input type="hidden" name="jform[access]" id="jform_access" value="<?php echo $this->escape((int) $dir->access);?>"/>
