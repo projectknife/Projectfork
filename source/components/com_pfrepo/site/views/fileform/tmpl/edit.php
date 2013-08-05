@@ -20,6 +20,20 @@ JHtml::_('pfhtml.script.form');
 // Create shortcut to parameters.
 $params = $this->state->get('params');
 $user   = JFactory::getUser();
+
+$allowed      = PFrepoHelper::getAllowedFileExtensions();
+$config       = JComponentHelper::getParams('com_pfrepo');
+$filter_admin = $config->get('filter_ext_admin');
+$is_admin     = $user->authorise('core.admin');
+
+// Restrict file extensions?
+$txt_upload = '';
+
+if ($is_admin && !$filter_admin) $allowed = array();
+
+if (count($allowed)) {
+    $txt_upload = JText::_('COM_PROJECTFORK_UPLOAD_ALLOWED_EXT') . ' ' . implode(', ', $allowed);
+}
 ?>
 <script type="text/javascript">
 jQuery(document).ready(function()
@@ -64,6 +78,9 @@ Joomla.submitbutton = function(task)
                 <?php echo $this->form->getInput('file'); ?>
             </div>
         </div>
+        <?php if (count($allowed)) : ?>
+            <div class="formelm control-group small"><?php echo $txt_upload; ?></div>
+        <?php endif; ?>
         <div class="formelm control-group">
             <div class="control-label">
                 <?php echo $this->form->getLabel('title'); ?>
