@@ -60,6 +60,8 @@
         <field name="created" type="hidden" readonly="true"/>
         <field name="checked_out" type="hidden" filter="unset" />
         <field name="checked_out_time" type="hidden" filter="unset" />
+        <field name="add_groupuser" type="hidden" readonly="true" />
+        <field name="rm_groupuser" type="hidden" readonly="true" />
     </fieldset>
 
     <fields name="attribs">

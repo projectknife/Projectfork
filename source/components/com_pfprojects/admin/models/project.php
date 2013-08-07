@@ -349,6 +349,24 @@ class PFprojectsModelProject extends JModelAdmin
                 }
             }
 
+            // Inject group into "add_groupuser" field
+            if (isset($data['add_groupuser']) && $is_new && $create_group) {
+                if (isset($data['add_groupuser'][0])) {
+                    $data['add_groupuser'][$group_id] = $data['add_groupuser'][0];
+                    unset($data['add_groupuser'][0]);
+                }
+            }
+
+            // Add users to groups
+            if (isset($data['add_groupuser'])) {
+                $this->addGroupUsers($data['add_groupuser']);
+            }
+
+            // Remove users from groups
+            if (isset($data['rm_groupuser'])) {
+                $this->removeGroupUsers($data['rm_groupuser']);
+            }
+
             // Rename project group
             if (!$is_new && $create_group) {
                 $reg = new JRegistry();
@@ -1141,6 +1159,105 @@ class PFprojectsModelProject extends JModelAdmin
 
         return true;
     }
+
+
+    /**
+     * Method to add users to groups
+     *
+     * @param     array      $data    Assoc array (group => users)
+     *
+     * @return    boolean             True on success
+     */
+    protected function addGroupUsers($data)
+    {
+        $query = $this->_db->getQuery(true);
+
+        foreach($data AS $gid => $users)
+        {
+            $gid = (int) $gid;
+
+            if (empty($users)) continue;
+
+            $users = explode(',', $users);
+
+            // Loop through the users
+            foreach ($users AS $uid)
+            {
+                $uid = (int) $uid;
+
+                if (!$uid) continue;
+
+                // Check if the users is already in the group
+                $query->clear()
+                      ->select('user_id')
+                      ->from('#__user_usergroup_map')
+                      ->where('user_id = ' . $uid)
+                      ->where('group_id = ' . $gid);
+
+                $this->_db->setQuery($query);
+                $exists = (int) $this->_db->loadResult();
+
+                if ($exists) continue;
+
+                $obj = new stdClass();
+                $obj->user_id = $uid;
+                $obj->group_id = $gid;
+
+                // Add user to group
+                $this->_db->insertObject('#__user_usergroup_map', $obj);
+            }
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Method to remove users from groups
+     *
+     * @param     array      $data    Assoc array (group => users)
+     *
+     * @return    boolean             True on success
+     */
+    protected function removeGroupUsers($data)
+    {
+        $query = $this->_db->getQuery(true);
+
+        foreach($data AS $gid => $users)
+        {
+            $gid = (int) $gid;
+
+            if (empty($users)) continue;
+
+            $users = explode(',', $users);
+            $clean = array();
+
+            // Loop through the users
+            foreach ($users AS $uid)
+            {
+                $uid = (int) $uid;
+
+                if (!$uid) continue;
+
+                $clean[] = $uid;
+            }
+
+            if (!count($clean)) continue;
+
+            $query->clear()
+                  ->delete('#__user_usergroup_map')
+                  ->where('group_id = ' . $gid)
+                  ->where('user_id IN(' . implode(', ', $clean) . ')');
+
+            $this->_db->setQuery($query);
+            $this->_db->execute();
+        }
+
+        return true;
+    }
+
+
+
 
 
     /**

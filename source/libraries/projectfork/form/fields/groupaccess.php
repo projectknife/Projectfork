@@ -12,6 +12,8 @@ defined('JPATH_PLATFORM') or die;
 
 
 jimport('joomla.form.formfield');
+JHtml::_('pfhtml.script.jQuerySelect2');
+
 JModelLegacy::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_pfusers/models', 'PFusersModel');
 
 /**
@@ -199,8 +201,8 @@ class JFormFieldGroupAccess extends JFormField
             $count = count($groups);
 
             for ($i = 0; $i < $count; $i++)
-    		{
-    		    $query->clear();
+            {
+                $query->clear();
                 $query->select('COUNT(distinct a.id)')
                       ->from($db->quoteName('#__usergroups') . ' AS a, ' . $db->quoteName('#__usergroups') . ' AS b')
                       ->where('b.lft > a.lft AND b.rgt < a.rgt')
@@ -209,8 +211,8 @@ class JFormFieldGroupAccess extends JFormField
                 $db->setQuery((string) $query);
                 $groups[$i]->level = (int) $db->loadResult();
 
-    			$groups[$i]->text = str_repeat('- ', $groups[$i]->level) . $groups[$i]->text;
-    		}
+                $groups[$i]->text = str_repeat('- ', $groups[$i]->level) . $groups[$i]->text;
+            }
         }
         else {
             $groups = JHtml::_('user.groups', true);

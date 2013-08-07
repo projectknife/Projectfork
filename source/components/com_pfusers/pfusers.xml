@@ -26,6 +26,7 @@
             <folder>tables</folder>
             <folder>views</folder>
             <filename>pfusers.php</filename>
+            <filename>controller.php</filename>
         </files>
         <languages folder="admin">
             <language tag="en-GB">language/en-GB/en-GB.com_pfusers.ini</language>
