@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Projects
+ * @package      pkg_projectfork
+ * @subpackage   com_pfprojects
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -20,20 +20,6 @@ JLoader::register('PFprojectsModelProject', JPATH_ADMINISTRATOR . '/components/c
  */
 class PFprojectsModelForm extends PFprojectsModelProject
 {
-
-    /**
-     * Constructor.
-     *
-     * @param    array          $config    An optional associative array of configuration settings.
-     *
-     * @see      jcontroller
-     */
-    public function __construct($config = array())
-    {
-       parent::__construct($config);
-    }
-
-
     /**
      * Method to get item data.
      *
@@ -87,7 +73,6 @@ class PFprojectsModelForm extends PFprojectsModelProject
         else {
             $access = PFprojectsHelper::getActions();
         }
-
 
         // Check general edit permission first.
         if ($access->get('core.edit')) {

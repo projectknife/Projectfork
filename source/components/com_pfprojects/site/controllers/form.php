@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Projects
+ * @package      pkg_projectfork
+ * @subpackage   com_pfprojects
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -136,9 +136,7 @@ class PFprojectsControllerForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $access = PFprojectsHelper::getActions();
-
-        return $access->get('core.create', 'com_pfprojects');
+        return JFactory::getUser()->authorise('core.create', 'com_pfprojects');
     }
 
 
@@ -152,36 +150,38 @@ class PFprojectsControllerForm extends JControllerForm
      */
     protected function allowEdit($data = array(), $key = 'id')
     {
-        // Initialise variables.
-        $id     = (int) isset($data[$key]) ? $data[$key] : 0;
-        $uid    = JFactory::getUser()->get('id');
-        $access = PFprojectsHelper::getActions($id);
+        $id    = (int) isset($data[$key]) ? $data[$key] : 0;
+        $user  = JFactory::getUser();
+        $uid   = $user->get('id');
+        $asset = 'com_pfprojects.project.' . $id;
 
         // Check general edit permission first.
-        if ($access->get('core.edit', 'com_pfprojects')) {
+        if ($user->authorise('core.edit', $asset)) {
             return true;
         }
 
-        // Fallback on edit.own.
+        // Fall back on edit.own.
         // First test if the permission is available.
-        if ($access->get('core.edit.own', 'com_pfprojects')) {
-            // Now test the owner is the user.
-            $owner = (int) isset($data['created_by']) ? $data['created_by'] : 0;
-
-            if (empty($owner) && $id) {
-                // Need to do a lookup from the model.
-                $record = $this->getModel()->getItem($id);
-
-                if (empty($record)) return false;
-
-                $owner = $record->created_by;
-            }
-
-            // If the owner matches 'me' then do the test.
-            if ($owner == $uid) return true;
+        if (!$user->authorise('core.edit.own', $asset)) {
+            return false;
         }
 
-        // Since there is no asset tracking, revert to the component permissions.
+        // Now test the owner is the user.
+        $owner = (int) isset($data['created_by']) ? (int) $data['created_by'] : 0;
+
+        if (!$owner && $id) {
+            // Need to do a lookup from the model.
+            $record = $this->getModel()->getItem($id);
+
+            if (empty($record)) return false;
+
+            $owner = $record->created_by;
+        }
+
+        // If the owner matches 'me' then do the test.
+        if ($owner == $uid && $uid > 0) return true;
+
+        // Fall back to the component permissions.
         return parent::allowEdit($data, $key);
     }
 

@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Projects
+ * @package      pkg_projectfork
+ * @subpackage   com_pfprojects
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
@@ -187,7 +187,7 @@ class PFprojectsModelProjects extends JModelList
         }
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin', 'com_pfprojects')) {
+        if (!$user->authorise('core.admin')) {
             $levels = implode(',', $user->getAuthorisedViewLevels());
             $query->where('a.access IN (' . $levels . ')');
         }
