@@ -132,34 +132,91 @@ class PFrepoControllerFileForm extends PFControllerFormJson
             return false;
         }
 
-        // Check general access
-        if (!$user->authorise('core.create', 'com_pfrepo')) {
-            $this->setError(JText::_('COM_PROJECTFORK_WARNING_CREATE_FILE_DENIED'));
-            return false;
-        }
+        // Make sure the directory exists
+        $model    = $this->getModel('Directory', 'PFrepoModel');
+        $item_dir = $model->getItem($dir_id);
 
-        // Validate directory access
-        $model = $this->getModel('Directory', 'PFrepoModel');
-        $item  = $model->getItem($dir_id);
-
-        if ($item == false || empty($item->id) || $dir_id <= 1) {
+        if (empty($item_dir) || !$dir_id) {
             $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_NOT_FOUND'));
+        }
+
+        // Check super admin permission
+        if ($user->authorise('core.admin')) {
+            return true;
+        }
+
+        // Check if the user has viewing access when not a super admin
+        if (!in_array($item_dir->access, $user->getAuthorisedViewLevels())) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_ACCESS_DENIED'));
             return false;
         }
 
-        $access = PFrepoHelper::getActions('directory', $item->id);
-
-        if (!$user->authorise('core.admin')) {
-            if (!in_array($item->access, $user->getAuthorisedViewLevels())) {
-                $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_ACCESS_DENIED'));
-                return false;
-            }
-            elseif (!$access->get('core.create')) {
-                $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_CREATE_FILE_DENIED'));
-                return false;
-            }
+        // Check create permission
+        if (!$user->authorise('core.create', 'com_pfrepo.directory.' . $dir_id)) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_CREATE_FILE_DENIED'));
+            return false;
         }
 
         return true;
+    }
+
+
+    /**
+     * Method override to check if you can edit an existing record.
+     *
+     * @param     array      $data    An array of input data.
+     * @param     string     $key     The name of the key for the primary key.
+     *
+     * @return    boolean
+     */
+    protected function allowEdit($data = array(), $key = 'id')
+    {
+        // Get form input
+        $id = (int) (isset($data[$key]) ? $data[$key] : 0);
+
+        $user   = JFactory::getUser();
+        $uid    = JFactory::getUser()->get('id');
+        $asset  = 'com_pfrepo.file.' . $id;
+        $access = true;
+
+        // Check if the user has viewing access when not a super admin
+        if (!$user->authorise('core.admin')) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('access')
+                  ->from('#__pf_repo_files')
+                  ->where('id = ' . $id);
+
+            $db->setQuery($query);
+            $lvl = $db->loadResult();
+
+            if (!in_array($lvl, $user->getAuthorisedViewLevels())) {
+                return false;
+            }
+        }
+
+        // Check general edit permission first.
+        if ($access->get('core.edit', $asset)) {
+            return true;
+        }
+
+        // Fallback on edit.own.
+        // First test if the permission is available.
+        if (!$user->authorise('core.edit.own', $asset)) {
+            return false;
+        }
+
+        // Load the item
+        $record = $this->getModel()->getItem($id);
+
+        // Abort if not found
+        if (empty($record)) return false;
+
+        // Now test the owner is the user.
+        $owner = (int) isset($data['created_by']) ? (int) $data['created_by'] : $record->created_by;
+
+        // If the owner matches 'me' then do the test.
+        return ($owner == $uid && $uid > 0);
     }
 }

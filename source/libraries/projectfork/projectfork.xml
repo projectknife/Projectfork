@@ -25,6 +25,7 @@
         <folder>object</folder>
         <folder>table</folder>
         <folder>toolbar</folder>
+        <folder>user</folder>
         <folder>version</folder>
         <file>framework.php</file>
         <file>library.php</file>

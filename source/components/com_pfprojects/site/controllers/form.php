@@ -51,6 +51,23 @@ class PFprojectsControllerForm extends JControllerForm
 
 
     /**
+     * Method to get a model object, loading it if required.
+     *
+     * @param     string    $name      The model name. Optional.
+     * @param     string    $prefix    The class prefix. Optional.
+     * @param     array     $config    Configuration array for model. Optional.
+     *
+     * @return    object               The model.
+     */
+    public function &getModel($name = 'Form', $prefix = '', $config = array('ignore_request' => true))
+    {
+        $model = parent::getModel($name, $prefix, $config);
+
+        return $model;
+    }
+
+
+    /**
      * Method to add a new record.
      *
      * @return    boolean    True if the article can be added, false if not.
@@ -111,23 +128,6 @@ class PFprojectsControllerForm extends JControllerForm
 
 
     /**
-     * Method to get a model object, loading it if required.
-     *
-     * @param     string    $name      The model name. Optional.
-     * @param     string    $prefix    The class prefix. Optional.
-     * @param     array     $config    Configuration array for model. Optional.
-     *
-     * @return    object               The model.
-     */
-    public function &getModel($name = 'Form', $prefix = '', $config = array('ignore_request' => true))
-    {
-        $model = parent::getModel($name, $prefix, $config);
-
-        return $model;
-    }
-
-
-    /**
      * Method to check if you can add a new record.
      *
      * @param     array      $data    An array of input data.
@@ -150,12 +150,31 @@ class PFprojectsControllerForm extends JControllerForm
      */
     protected function allowEdit($data = array(), $key = 'id')
     {
-        $id    = (int) isset($data[$key]) ? $data[$key] : 0;
+        // Get form input
+        $id = (int) isset($data[$key]) ? $data[$key] : 0;
+
         $user  = JFactory::getUser();
         $uid   = $user->get('id');
         $asset = 'com_pfprojects.project.' . $id;
 
-        // Check general edit permission first.
+        // Check if the user has viewing access when not a super admin
+        if (!$user->authorise('core.admin')) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('access')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . $id);
+
+            $db->setQuery($query);
+            $lvl = $db->loadResult();
+
+            if (!in_array($lvl, $user->getAuthorisedViewLevels())) {
+                return false;
+            }
+        }
+
+        // Check edit permission first
         if ($user->authorise('core.edit', $asset)) {
             return true;
         }
@@ -179,10 +198,7 @@ class PFprojectsControllerForm extends JControllerForm
         }
 
         // If the owner matches 'me' then do the test.
-        if ($owner == $uid && $uid > 0) return true;
-
-        // Fall back to the component permissions.
-        return parent::allowEdit($data, $key);
+        return ($owner == $uid && $uid > 0);
     }
 
 
