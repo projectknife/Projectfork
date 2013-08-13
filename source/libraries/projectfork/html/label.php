@@ -291,7 +291,9 @@ abstract class PFhtmlLabel
         }
         else {
             $count = $count - 1;
-            $name  = trim(array_pop(array_reverse($titles)));
+            $name  = array_reverse($titles);
+            $name  = array_pop($name);
+            $name  = trim($name);
 
             $tooltip = JText::_('JGRID_HEADING_ACCESS') . '::' . htmlspecialchars(implode('<br/>', $titles), ENT_COMPAT, 'UTF-8');
 
