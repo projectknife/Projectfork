@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Milestones
+ * @package      pkg_projectfork
+ * @subpackage   com_pfmilestones
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
@@ -76,8 +76,9 @@ class PFmilestonesHelper
         $user   = JFactory::getUser();
         $result = new JObject;
 
-        if ((int) $id <= 0) {
-            $asset = self::$extension;
+        if (empty($id)) {
+            $pid   = PFApplicationHelper::getActiveProjectId();
+            $asset = (empty($project) ? self::$extension : 'com_pfmilestones.project.' . $pid);
         }
         else {
             $asset = 'com_pfmilestones.milestone.' . (int) $id;

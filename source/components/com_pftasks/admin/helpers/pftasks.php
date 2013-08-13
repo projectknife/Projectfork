@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Tasks
+ * @package      pkg_projectfork
+ * @subpackage   com_pftasks
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
@@ -87,14 +87,15 @@ class PFtasksHelper
         $user   = JFactory::getUser();
         $result = new JObject;
 
-        if ((int) $id > 0) {
+        if (!empty($id)) {
             $asset = 'com_pftasks.task.' . (int) $id;
         }
-        elseif ((int) $list > 0) {
+        elseif (!empty($list)) {
             $asset = 'com_pftasks.tasklist.' . (int) $list;
         }
         else {
-            $asset = self::$extension;
+            $pid   = PFApplicationHelper::getActiveProjectId();
+            $asset = (empty($project) ? self::$extension : 'com_pftasks.project.' . $pid);
         }
 
         $actions = array(
@@ -125,11 +126,12 @@ class PFtasksHelper
         $user   = JFactory::getUser();
         $result = new JObject;
 
-        if ((int) $id > 0) {
-            $asset = 'com_pftasks.tasklist.' . (int) $id;
+        if (empty($id)) {
+            $pid   = PFApplicationHelper::getActiveProjectId();
+            $asset = (empty($project) ? self::$extension : 'com_pftasks.project.' . $pid);
         }
         else {
-            $asset = self::$extension;
+            $asset = 'com_pftasks.tasklist.' . (int) $id;
         }
 
         $actions = array(

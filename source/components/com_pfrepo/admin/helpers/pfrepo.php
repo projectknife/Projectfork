@@ -81,8 +81,9 @@ abstract class PFrepoHelper
         $user   = JFactory::getUser();
         $result = new JObject;
 
-        if (empty($id) || $id == 0) {
-            $asset = self::$extension;
+        if (empty($id)) {
+            $pid   = PFApplicationHelper::getActiveProjectId();
+            $asset = (empty($project) ? self::$extension : 'com_pfrepo.project.' . $pid);
         }
         else {
             $asset = self::$extension . '.' . $name . '.' . (int) $id;
