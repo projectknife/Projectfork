@@ -409,11 +409,12 @@ class PFrepoModelFile extends JModelAdmin
     /**
      * Method to get a single record.
      *
-     * @param     integer    The id of the primary key.
-     * @return    mixed      Object on success, false on failure.
+     * @param     integer    $pk      The id of the primary key.
+     * @return    mixed      $item    Object on success, false on failure.
      */
     public function getItem($pk = null)
     {
+        // Get the record from the parent class method
         $item = parent::getItem($pk);
 
         if ($item == false) return false;
@@ -437,7 +438,7 @@ class PFrepoModelFile extends JModelAdmin
         }
         else {
             // New record
-            $item->labels   = array();
+            $item->labels = array();
             $item->revision_count = $this->getRevisionCount($pk);
         }
 
@@ -583,7 +584,7 @@ class PFrepoModelFile extends JModelAdmin
             $pks      = array($table->id);
             $contexts = array();
 
-            if(!$this->batchMove($new_dir, $pks, $contexts)) {
+            if (!$this->batchMove($new_dir, $pks, $contexts)) {
                 return false;
             }
         }

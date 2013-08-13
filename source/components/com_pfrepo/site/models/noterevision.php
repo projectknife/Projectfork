@@ -22,20 +22,6 @@ require_once dirname(__FILE__) . '/noteform.php';
 class PFrepoModelNoteRevision extends PFrepoModelNoteForm
 {
     /**
-     * Constructor.
-     *
-     * @param    array          $config    An optional associative array of configuration settings.
-     *
-     * @see      jcontroller
-     */
-    public function __construct($config = array())
-    {
-       // Call parent constructor
-       parent::__construct($config);
-    }
-
-
-    /**
      * Returns a Table object, always creating it.
      *
      * @param     string    The table type to instantiate
@@ -304,10 +290,10 @@ class PFrepoModelNoteRevision extends PFrepoModelNoteForm
                 $this->setState($this->getName() . '.project', $project);
                 PFApplicationHelper::setActiveProject($project);
             }
-            elseif ($parent_id) {
+            elseif ($dir_id) {
                 $table = $this->getTable('Directory');
 
-                if ($table->load($parent_id)) {
+                if ($table->load($dir_id)) {
                     $project = (int) $table->project_id;
 
                     $this->setState($this->getName() . '.project', $project);

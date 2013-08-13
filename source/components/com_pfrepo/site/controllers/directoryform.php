@@ -107,7 +107,7 @@ class PFrepoControllerDirectoryForm extends JControllerForm
         $id = (int) isset($data[$key]) ? $data[$key] : 0;
 
         $user   = JFactory::getUser();
-        $uid    = JFactory::getUser()->get('id');
+        $uid    = $user->get('id');
         $asset  = 'com_pfrepo.directory.' . $id;
         $access = true;
 
@@ -129,7 +129,7 @@ class PFrepoControllerDirectoryForm extends JControllerForm
         }
 
         // Check general edit permission first.
-        if ($access->get('core.edit', $asset)) {
+        if ($user->authorise('core.edit', $asset)) {
             return true;
         }
 

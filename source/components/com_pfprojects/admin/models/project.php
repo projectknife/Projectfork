@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Projects
+ * @package      pkg_projectfork
+ * @subpackage   com_pfprojects
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -28,7 +28,7 @@ class PFprojectsModelProject extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string    
+     * @var    string
      */
     protected $text_prefix = 'COM_PROJECTFORK_PROJECT';
 
@@ -51,31 +51,47 @@ class PFprojectsModelProject extends JModelAdmin
     /**
      * Method to get a single record.
      *
-     * @param     integer    The id of the primary key.
+     * @param     integer $pk    The id of the primary key.
      *
-     * @return    mixed      Object on success, false on failure.
+     * @return    mixed   $item   Object on success, false on failure.
      */
     public function getItem($pk = null)
     {
-        if ($item = parent::getItem($pk)) {
-            // Convert the params field to an array.
-            $registry = new JRegistry;
-            $registry->loadString($item->attribs);
-            $item->attribs = $registry->toArray();
+        $pk    = (!empty($pk)) ? (int) $pk : (int) $this->getState($this->getName() . '.id');
+        $table = $this->getTable();
 
-            // Get the attachments
-            if (PFApplicationHelper::exists('com_pfrepo')) {
-                $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-                $item->attachment = $attachments->getItems('com_pfprojects.project', $item->id);
-            }
-            else {
-                $item->attachment = array();
-            }
+        if ($pk > 0) {
+            // Attempt to load the row.
+            $return = $table->load($pk);
 
-            // Get the labels
-            $labels = $this->getInstance('Labels', 'PFmodel');
-            $item->labels = $labels->getItems($item->id);
+            // Check for a table object error.
+            if ($return === false && $table->getError()) {
+                $this->setError($table->getError());
+                return false;
+            }
         }
+
+        // Convert to the JObject before adding other data.
+        $properties = $table->getProperties(1);
+        $item = JArrayHelper::toObject($properties, 'JObject');
+
+        // Convert attributes to JRegistry params
+        $item->params = new JRegistry();
+
+        $item->params->loadString($item->attribs);
+        $item->attribs = $item->params->toArray();
+
+        // Get the attachments
+        $item->attachment = array();
+
+        if (PFApplicationHelper::exists('com_pfrepo')) {
+            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+            $item->attachment = $attachments->getItems('com_pfprojects.project', $item->id);
+        }
+
+        // Get the labels
+        $model_labels = $this->getInstance('Labels', 'PFModel');
+        $item->labels = $model_labels->getItems($item->id);
 
         return $item;
     }

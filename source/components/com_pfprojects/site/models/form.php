@@ -23,73 +23,51 @@ class PFprojectsModelForm extends PFprojectsModelProject
     /**
      * Method to get item data.
      *
-     * @param     integer    $id    The id of the item.
-     * @return    mixed             Item data object on success, false on failure.
+     * @param     integer    $pk      The id of the item.
+     *
+     * @return    mixed      $item    Item data object on success, false on failure.
      */
-    public function getItem($id = null)
+    public function getItem($pk = null)
     {
-        // Initialise variables.
-        $id = (int) (!empty($id)) ? $id : $this->getState($this->getName() . '.id');
+        // Get the record from the parent class method
+        $item = parent::getItem($pk);
 
-        // Get a row instance.
-        $table = $this->getTable();
-
-        // Attempt to load the row.
-        $return = $table->load($id);
-
-        // Check for a table object error.
-        if ($return === false && $table->getError()) {
-            $this->setError($table->getError());
-            return false;
-        }
-
-        $properties = $table->getProperties(1);
-        $value = JArrayHelper::toObject($properties, 'JObject');
-
-        // Convert attrib field to Registry.
-        $value->params = new JRegistry;
-        $value->params->loadString($value->attribs);
-        $value->attribs = $value->params->toArray();
-
-        // Get the attachments
-        if (PFApplicationHelper::exists('com_pfrepo')) {
-            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-            $value->attachment = $attachments->getItems('com_pfprojects.project', $value->id);
-        }
-        else {
-            $value->attachment = array();
-        }
-
-        // Get the labels
-        $labels = $this->getInstance('Labels', 'PFModel');
-        $value->labels = $labels->getItems($value->id);
+        if ($item === false) return false;
 
         // Compute selected asset permissions.
-        $uid = JFactory::getUser()->get('id');
+        $user   = JFactory::getUser();
+        $uid    = $user->get('id');
+        $access = PFprojectsHelper::getActions($item->id);
 
-        if ($id) {
-            $access = PFprojectsHelper::getActions($value->id);
+        $view_access = true;
+
+        if ($item->access && !$user->authorise('core.admin')) {
+            $view_access = in_array($item->access, $user->getAuthorisedViewLevels());
+        }
+
+        $item->params->set('access-view', $view_access);
+
+        if (!$view_access) {
+            $item->params->set('access-edit', false);
+            $item->params->set('access-change', false);
         }
         else {
-            $access = PFprojectsHelper::getActions();
-        }
-
-        // Check general edit permission first.
-        if ($access->get('core.edit')) {
-            $value->params->set('access-edit', true);
-        }
-        elseif (!empty($uid) &&  $access->get('core.edit.own')) {
-            // Now check if edit.own is available.
-            // Check for a valid user and that they are the owner.
-            if ($uid == $value->created_by) {
-                $value->params->set('access-edit', true);
+            // Check general edit permission first.
+            if ($access->get('core.edit')) {
+                $item->params->set('access-edit', true);
             }
+            elseif (!empty($uid) &&  $access->get('core.edit.own')) {
+                // Check for a valid user and that they are the owner.
+                if ($uid == $item->created_by) {
+                    $item->params->set('access-edit', true);
+                }
+            }
+
+            // Check edit state permission.
+            $item->params->set('access-change', $access->get('core.edit.state'));
         }
 
-        // Check edit state permission.
-        $value->params->set('access-change', $access->get('core.edit.state'));
-
-        return $value;
+        return $item;
     }
 
 

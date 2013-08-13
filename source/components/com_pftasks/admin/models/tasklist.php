@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Tasks
+ * @package      pkg_projectfork
+ * @subpackage   com_pftasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -23,7 +23,7 @@ class PFtasksModelTasklist extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string
+     * @var    string    
      */
     protected $text_prefix = 'COM_PROJECTFORK_TASKLIST';
 
@@ -33,7 +33,7 @@ class PFtasksModelTasklist extends JModelAdmin
      *
      * @param    array          $config    An optional associative array of configuration settings.
      *
-     * @see      jcontroller
+     * @see      jcontroller               
      */
     public function __construct($config = array())
     {
@@ -59,19 +59,35 @@ class PFtasksModelTasklist extends JModelAdmin
     /**
      * Method to get a single record.
      *
-     * @param     integer    The id of the primary key.
+     * @param     integer    $pk      The id of the primary key.
      *
-     * @return    mixed      Object on success, false on failure.
+     * @return    mixed      $item    Object on success, false on failure.
      */
     public function getItem($pk = null)
     {
-        if ($item = parent::getItem($pk)) {
-            // Convert the params field to an array.
-            $registry = new JRegistry;
-            $registry->loadString($item->attribs);
+        $pk    = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
+        $table = $this->getTable();
 
-            $item->attribs = $registry->toArray();
+        if ($pk > 0) {
+            // Attempt to load the row.
+            $return = $table->load($pk);
+
+            // Check for a table object error.
+            if ($return === false && $table->getError()) {
+                $this->setError($table->getError());
+                return false;
+            }
         }
+
+        // Convert to the JObject before adding other data.
+        $properties = $table->getProperties(1);
+        $item = JArrayHelper::toObject($properties, 'JObject');
+
+        // Convert attributes to JRegistry params
+        $item->params = new JRegistry();
+
+        $item->params->loadString($item->attribs);
+        $item->attribs = $item->params->toArray();
 
         return $item;
     }
@@ -104,11 +120,11 @@ class PFtasksModelTasklist extends JModelAdmin
             $form->setFieldAttribute('state', 'disabled', 'true');
 
             // Disable fields while saving.
-			$form->setFieldAttribute('state', 'filter', 'unset');
+            $form->setFieldAttribute('state', 'filter', 'unset');
         }
 
         // Always disable these fields while saving
-		$form->setFieldAttribute('alias', 'filter', 'unset');
+        $form->setFieldAttribute('alias', 'filter', 'unset');
 
         // Disable these fields if not an admin
         if (!$user->authorise('core.admin', 'com_pfprojects')) {
@@ -159,7 +175,7 @@ class PFtasksModelTasklist extends JModelAdmin
         $data = $app->getUserState('com_pftasks.edit.' . $this->getName() . '.data', array());
 
         if (empty($data)) {
-			$data = $this->getItem();
+            $data = $this->getItem();
 
             // Set default values
             if ($this->getState($this->getName() . '.id') == 0) {
@@ -267,14 +283,14 @@ class PFtasksModelTasklist extends JModelAdmin
      * Method to change the title & alias.
      * Overloaded from JModelAdmin class
      *
-     * @param     string     $title      The title
-     * @param     integer    $project    The project id
+     * @param     string     $title        The title
+     * @param     integer    $project      The project id
      * @param     integer    $milestone    The milestone id
-     * @param     string     $alias      The alias
-     * @param     integer    $id         The item id
+     * @param     string     $alias        The alias
+     * @param     integer    $id           The item id
      *
      *
-     * @return    array                  Contains the modified title and alias
+     * @return    array                    Contains the modified title and alias
      */
     protected function generateNewTitle($title, $project, $milestone = 0, $alias = '', $id = 0)
     {
@@ -369,14 +385,14 @@ class PFtasksModelTasklist extends JModelAdmin
     {
         $user = JFactory::getUser();
 
-		// Check for existing item.
-		if (!empty($record->id)) {
-			return $user->authorise('core.edit.state', 'com_pftasks.tasklist.' . (int) $record->id);
-		}
-		else {
-		    // Default to component settings.
-			return parent::canEditState('com_pftasks');
-		}
+        // Check for existing item.
+        if (!empty($record->id)) {
+            return $user->authorise('core.edit.state', 'com_pftasks.tasklist.' . (int) $record->id);
+        }
+        else {
+            // Default to component settings.
+            return parent::canEditState('com_pftasks');
+        }
     }
 
 

@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -275,8 +275,8 @@ class PFrepoModelNote extends JModelAdmin
     /**
      * Method to get a single record.
      *
-     * @param     integer    The id of the primary key.
-     * @return    mixed      Object on success, false on failure.
+     * @param     integer $pk   The id of the primary key.
+     * @return    mixed   $item   Object on success, false on failure.
      */
     public function getItem($pk = null)
     {

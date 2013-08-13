@@ -51,15 +51,17 @@ class PFrepoModelNoteRevision extends JModelAdmin
      */
     public function getItem($pk = null)
     {
-        if ($item = parent::getItem($pk)) {
-            // Convert the params field to an array.
-            $registry = new JRegistry;
+        $item = parent::getItem($pk)
 
-            $registry->loadString($item->attribs);
+        if ($item === false) return false;
 
-            $item->params  = $registry;
-            $item->attribs = $registry->toArray();
-        }
+        // Convert the params field to an array.
+        $registry = new JRegistry;
+
+        $registry->loadString($item->attribs);
+
+        $item->params  = $registry;
+        $item->attribs = $registry->toArray();
 
         return $item;
     }
@@ -367,7 +369,7 @@ class PFrepoModelNoteRevision extends JModelAdmin
                 $this->setState($this->getName() . '.project', $project);
                 PFApplicationHelper::setActiveProject($project);
             }
-            elseif ($parent_id) {
+            elseif ($dir_id) {
                 $table = $this->getTable('Directory');
 
                 if ($table->load($parent_id)) {

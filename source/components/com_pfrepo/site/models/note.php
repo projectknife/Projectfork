@@ -34,7 +34,7 @@ class PFrepoModelNote extends JModelItem
      * @param     integer    The id of the item.
      * @return    mixed      Menu item data object on success, false on failure.
      */
-    public function &getItem($pk = null)
+    public function getItem($pk = null)
     {
         // Initialise variables.
         $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');

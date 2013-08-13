@@ -24,44 +24,49 @@ class PFrepoModelDirectoryForm extends PFrepoModelDirectory
     /**
      * Method to get item data.
      *
-     * @param     integer    $id       The id of the item.
+     * @param     integer    $pk      The id of the item.
      *
-     * @return    mixed      $value    Item data object on success, false on failure.
+     * @return    mixed      $item    Item data object on success, false on failure.
      */
-    public function getItem($id = null)
+    public function getItem($pk = null)
     {
-        $item = parent::getItem($id);
+        // Get the record from the parent class method
+        $item = parent::getItem($pk);
 
         if ($item === false) return false;
 
         // Compute selected asset permissions.
-        $asset = 'com_pfrepo.directory' . ($item->id > 0 ? '.' . (int) $item->id : '');
-        $user  = JFactory::getUser();
-        $uid   = (int) $user->get('id');
+        $user   = JFactory::getUser();
+        $uid    = $user->get('id');
+        $access = PFrepoHelper::getActions('directory', $item->id);
 
-        $can_edit       = $user->authorise('core.edit', $asset);
-        $can_edit_own   = $user->authorise('core.edit.own', $asset);
-        $can_edit_own   = ($can_edit_own && $uid == $item->created_by && $uid > 0);
-        $can_edit_state = $user->authorise('core.edit.state', $asset);
+        $view_access = true;
 
-        $item->params->set('access-edit',   ($can_edit || $can_edit_own));
-        $item->params->set('access-change', $can_edit_state);
+        if ($item->access && !$user->authorise('core.admin')) {
+            $view_access = in_array($item->access, $user->getAuthorisedViewLevels());
+        }
 
-        // Compute view access permissions.
-		if ($access = $this->getState('filter.access')) {
-			// If the access filter has been set, we already know this user can view.
-			$item->params->set('access-view', true);
-		}
-		else {
-			// If no access filter is set, the layout takes some responsibility for display of limited information.
-            if ($item->id == 1) {
-                $item->params->set('access-view', true);
+        $item->params->set('access-view', $view_access);
+
+        if (!$view_access) {
+            $item->params->set('access-edit', false);
+            $item->params->set('access-change', false);
+        }
+        else {
+            // Check general edit permission first.
+            if ($access->get('core.edit')) {
+                $item->params->set('access-edit', true);
             }
-            else {
-                $levels = $user->getAuthorisedViewLevels();
-                $item->params->set('access-view', in_array($item->access, $levels));
+            elseif (!empty($uid) &&  $access->get('core.edit.own')) {
+                // Check for a valid user and that they are the owner.
+                if ($uid == $item->created_by) {
+                    $item->params->set('access-edit', true);
+                }
             }
-		}
+
+            // Check edit state permission.
+            $item->params->set('access-change', $access->get('core.edit.state'));
+        }
 
         return $item;
     }

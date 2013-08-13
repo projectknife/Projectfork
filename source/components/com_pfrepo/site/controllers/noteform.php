@@ -185,7 +185,7 @@ class PFrepoControllerNoteForm extends JControllerForm
         }
 
         // Check general edit permission first.
-        if ($access->get('core.edit', $asset)) {
+        if ($user->authorise('core.edit', $asset)) {
             return true;
         }
 
