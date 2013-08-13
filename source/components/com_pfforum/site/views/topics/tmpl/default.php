@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Forum
+ * @package      pkg_projectfork
+ * @subpackage   com_pfforum
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -114,7 +114,6 @@ $doc->addStyleDeclaration( $style );
             foreach($this->items AS $i => $item) :
                 $access = PFforumHelper::getActions($item->id);
 
-                $can_create   = $access->get('core.create');
                 $can_edit     = $access->get('core.edit');
                 $can_change   = $access->get('core.edit.state');
                 $can_edit_own = ($access->get('core.edit.own') && $item->created_by == $uid);
@@ -164,7 +163,7 @@ $doc->addStyleDeclaration( $style );
 	    	    			<?php endif; ?>
     	    				<div class="btn-group">
     	    					<a class="btn btn-mini" href="<?php echo JRoute::_(PFforumHelperRoute::getTopicRoute($item->slug, $item->project_slug));?>">
-    	    			       	 <span aria-hidden="true" class="icon-comment"></span> <?php echo JText::plural('COM_PROJECTFORK_N_REPLIES', (int) $item->replies); ?>
+    	    			       	    <span aria-hidden="true" class="icon-comment"></span> <?php echo JText::plural('COM_PROJECTFORK_N_REPLIES', (int) $item->replies); ?>
     	    			        </a>
     	    			    </div>
 

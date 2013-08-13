@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Timetracking
+ * @package      pkg_projectfork
+ * @subpackage   com_pftime
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
@@ -76,8 +76,9 @@ class PFtimeHelper
         $user   = JFactory::getUser();
         $result = new JObject;
 
-        if (empty($id) || $id == 0) {
-            $asset = self::$extension;
+        if (empty($id)) {
+            $pid   = PFApplicationHelper::getActiveProjectId();
+            $asset = (empty($project) ? self::$extension : 'com_pftime.project.' . $pid);
         }
         else {
             $asset = 'com_pftime.time.' . (int) $id;

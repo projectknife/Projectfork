@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Timetracking
+ * @package      pkg_projectfork
+ * @subpackage   com_pftime
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
