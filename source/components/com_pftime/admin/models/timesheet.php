@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Timetracking
+ * @package      pkg_projectfork
+ * @subpackage   com_pftime
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
@@ -235,8 +235,9 @@ class PFtimeModelTimesheet extends JModelList
         }
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin', 'com_pftime')) {
+        if (!$user->authorise('core.admin')) {
             $levels = implode(',', $user->getAuthorisedViewLevels());
+
             $query->where('a.access IN (' . $levels . ')');
         }
 

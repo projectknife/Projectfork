@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Milestones
+ * @package      pkg_projectfork
+ * @subpackage   com_pfmilestones
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
@@ -198,9 +198,10 @@ class PFmilestonesModelMilestones extends JModelList
         }
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin', 'com_pfmilestones')) {
+        if (!$user->authorise('core.admin')) {
             $levels = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('a.access IN (' . $groups . ')');
+
+            $query->where('a.access IN (' . $levels . ')');
         }
 
         // Filter by published state

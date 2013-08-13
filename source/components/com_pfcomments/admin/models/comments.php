@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Comments
+ * @package      pkg_projectfork
+ * @subpackage   com_pfcomments
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
@@ -52,7 +52,7 @@ class PFcommentsModelComments extends JModelList
     /**
      * Build a list of authors
      *
-     * @return    array    
+     * @return    array
      */
     public function getAuthors()
     {
@@ -82,7 +82,7 @@ class PFcommentsModelComments extends JModelList
     /**
      * Build a list of contexts
      *
-     * @return    array    
+     * @return    array
      */
     public function getContexts()
     {
@@ -119,7 +119,7 @@ class PFcommentsModelComments extends JModelList
     /**
      * Build a list of context items
      *
-     * @return    array    
+     * @return    array
      */
     public function getContextItems()
     {
@@ -150,7 +150,7 @@ class PFcommentsModelComments extends JModelList
     /**
      * Build an SQL query to load the list data.
      *
-     * @return    jdatabasequery    
+     * @return    jdatabasequery
      */
     protected function getListQuery()
     {
@@ -257,7 +257,7 @@ class PFcommentsModelComments extends JModelList
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
-     * @return    void    
+     * @return    void
      */
     protected function populateState($ordering = 'a.created', $direction = 'desc')
     {

@@ -126,9 +126,10 @@ class PFtasksModelTasks extends JModelList
         $query->join('LEFT', '#__pf_ref_tasks AS d ON (d.task_id = a.id)');
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin', 'com_pftasks')) {
-            $groups = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('a.access IN (' . $groups . ')');
+        if (!$user->authorise('core.admin')) {
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+
+            $query->where('a.access IN (' . $levels . ')');
         }
 
         // Filter by assigned user

@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Forum
+ * @package      pkg_projectfork
+ * @subpackage   com_pfforum
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -90,8 +90,9 @@ class PFforumModelReplies extends JModelList
 
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
-            $groups = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('a.access IN (' . $groups . ')');
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+
+            $query->where('a.access IN (' . $levels . ')');
         }
 
         // Join over the attachments for attachment count
