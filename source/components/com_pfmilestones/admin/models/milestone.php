@@ -23,7 +23,7 @@ class PFmilestonesModelMilestone extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string    
+     * @var    string
      */
     protected $text_prefix = 'COM_PROJECTFORK_MILESTONE';
 
@@ -33,7 +33,7 @@ class PFmilestonesModelMilestone extends JModelAdmin
      *
      * @param    array          $config    An optional associative array of configuration settings.
      *
-     * @see      jcontroller               
+     * @see      jcontroller
      */
     public function __construct($config = array())
     {
@@ -559,16 +559,21 @@ class PFmilestonesModelMilestone extends JModelAdmin
      */
     protected function canDelete($record)
     {
-        if (!empty($record->id)) {
-            if ($record->state != -2) return false;
-
-            $user  = JFactory::getUser();
-            $asset = $this->option . '.milestone.' . (int) $record->id;
-
-            return $user->authorise('core.delete', $asset);
+        if (empty($record->id)) {
+            return parent::canDelete($record);
         }
 
-        return parent::canDelete($record);
+        if ($record->state != -2) {
+            return false;
+        }
+
+        $user = JFactory::getUser();
+
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return $user->authorise('core.delete', 'com_pfmilestones.milestone.' . (int) $record->id);
     }
 
 
@@ -582,15 +587,17 @@ class PFmilestonesModelMilestone extends JModelAdmin
      */
     protected function canEditState($record)
     {
-        $user = JFactory::getUser();
-
-        // Check for existing item.
-        if (!empty($record->id)) {
-            return $user->authorise('core.edit.state', $this->option . '.milestone.' . (int) $record->id);
+        if (empty($record->id)) {
+            return parent::canEditState($record);
         }
 
-        // Default to component settings.
-        return parent::canEditState($record);
+        $user = JFactory::getUser();
+
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return $user->authorise('core.edit.state', 'com_pfmilestones.milestone.' . (int) $record->id);
     }
 
 
@@ -604,15 +611,17 @@ class PFmilestonesModelMilestone extends JModelAdmin
      */
     protected function canEdit($record)
     {
-        $user = JFactory::getUser();
-
-        // Check for existing item.
-        if (!empty($record->id)) {
-            $asset = $this->option . '.milestone.' . (int) $record->id;
-
-            return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
+        if (empty($record->id)) {
+            return $user->authorise('core.edit', 'com_pfmilestones');
         }
 
-        return $user->authorise('core.edit', $this->option);
+        $user  = JFactory::getUser();
+        $asset = 'com_pfmilestones.milestone.' . (int) $record->id;
+
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
     }
 }

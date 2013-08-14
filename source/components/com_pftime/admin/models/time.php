@@ -23,7 +23,7 @@ class PFtimeModelTime extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string    
+     * @var    string
      */
     protected $text_prefix = 'COM_PROJECTFORK_TIME';
 
@@ -303,16 +303,21 @@ class PFtimeModelTime extends JModelAdmin
      */
     protected function canDelete($record)
     {
-        if (!empty($record->id)) {
-            if ($record->state != -2) return false;
-
-            $user  = JFactory::getUser();
-            $asset = 'com_pftime.time.' . (int) $record->id;
-
-            return $user->authorise('core.delete', $asset);
+        if (empty($record->id)) {
+            return parent::canDelete($record);
         }
 
-        return parent::canDelete($record);
+        if ($record->state != -2) {
+            return false;
+        }
+
+        $user = JFactory::getUser();
+
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return $user->authorise('core.delete', 'com_pftime.time.' . (int) $record->id);
     }
 
 
@@ -326,16 +331,17 @@ class PFtimeModelTime extends JModelAdmin
      */
     protected function canEditState($record)
     {
+        if (empty($record->id)) {
+            return parent::canEditState($record);
+        }
+
         $user = JFactory::getUser();
 
-        // Check for existing item.
-        if (!empty($record->id)) {
-            return $user->authorise('core.edit.state', 'com_pftime.time.' . (int) $record->id);
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
         }
-        else {
-            // Default to component settings if neither article nor category known.
-            return parent::canEditState('com_pftime');
-        }
+
+        return $user->authorise('core.edit.state', 'com_pftime.time.' . (int) $record->id);
     }
 
 
@@ -349,15 +355,17 @@ class PFtimeModelTime extends JModelAdmin
      */
     protected function canEdit($record)
     {
-        $user = JFactory::getUser();
-
-        // Check for existing item.
-        if (!empty($record->id)) {
-            $asset = 'com_pftime.time.' . (int) $record->id;
-
-            return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
+        if (empty($record->id)) {
+            return $user->authorise('core.edit', 'com_pftime');
         }
 
-        return $user->authorise('core.edit', 'com_pftime');
+        $user  = JFactory::getUser();
+        $asset = 'com_pftime.time.' . (int) $record->id;
+
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
     }
 }

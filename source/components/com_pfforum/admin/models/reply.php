@@ -322,16 +322,21 @@ class PFforumModelReply extends JModelAdmin
      */
     protected function canDelete($record)
     {
-        if (!empty($record->id)) {
-            if ($record->state != -2) return false;
-
-            $user  = JFactory::getUser();
-            $asset = 'com_pfforum.reply.' . (int) $record->id;
-
-            return $user->authorise('core.delete', $asset);
+        if (empty($record->id)) {
+            return parent::canDelete($record);
         }
 
-        return parent::canDelete($record);
+        if ($record->state != -2) {
+            return false;
+        }
+
+        $user = JFactory::getUser();
+
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return $user->authorise('core.delete', 'com_pfforum.reply.' . (int) $record->id);
     }
 
 
@@ -345,20 +350,17 @@ class PFforumModelReply extends JModelAdmin
      */
     protected function canEditState($record)
     {
+        if (empty($record->id)) {
+            return parent::canEditState($record);
+        }
+
         $user = JFactory::getUser();
 
-        // Check for existing item.
-        if (!empty($record->id)) {
-            return $user->authorise('core.edit.state', 'com_pfforum.reply.' . (int) $record->id);
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
         }
-        elseif (!empty($record->topic_id)) {
-            // New item, so check against the topic.
-            return $user->authorise('core.edit.state', 'com_pfforum.topic.' . (int) $record->topic_id);
-        }
-        else {
-            // Default to component settings if neither article nor category known.
-            return parent::canEditState('com_pfforum');
-        }
+
+        return $user->authorise('core.edit.state', 'com_pfforum.reply.' . (int) $record->id);
     }
 
 
@@ -372,16 +374,18 @@ class PFforumModelReply extends JModelAdmin
      */
     protected function canEdit($record)
     {
-        $user = JFactory::getUser();
-
-        // Check for existing item.
-        if (!empty($record->id)) {
-            $asset = 'com_pfforum.reply.' . (int) $record->id;
-
-            return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
+        if (empty($record->id)) {
+            return $user->authorise('core.edit', 'com_pfforum');
         }
 
-        return $user->authorise('core.edit', 'com_pfforum');
+        $user  = JFactory::getUser();
+        $asset = 'com_pfforum.reply.' . (int) $record->id;
+
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
     }
 
 

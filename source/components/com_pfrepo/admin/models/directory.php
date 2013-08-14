@@ -24,7 +24,7 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string    
+     * @var    string
      */
     protected $text_prefix = 'COM_PROJECTFORK_DIRECTORY';
 
@@ -1122,7 +1122,7 @@ class PFrepoModelDirectory extends JModelAdmin
     /**
      * Custom clean the cache of com_projectfork and projectfork modules
      *
-     * @return    void    
+     * @return    void
      */
     protected function cleanCache($group = 'com_pfrepo', $client_id = 0)
     {
@@ -1147,7 +1147,7 @@ class PFrepoModelDirectory extends JModelAdmin
         $levels = $user->getAuthorisedViewLevels();
 
         // Check if admin first
-        if ($user->authorise('core.admin', 'com_pfrepo')) {
+        if ($user->authorise('core.admin')) {
             return true;
         }
 
@@ -1257,16 +1257,18 @@ class PFrepoModelDirectory extends JModelAdmin
      */
     protected function canEdit($record)
     {
-        $user = JFactory::getUser();
-
-        // Check for existing item.
-        if (!empty($record->id)) {
-            $asset = 'com_pfrepo.directory.' . (int) $record->id;
-
-            return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
+        if (empty($record->id)) {
+            return $user->authorise('core.edit', 'com_pfrepo');
         }
 
-        return $user->authorise('core.edit', 'com_pfrepo');
+        $user  = JFactory::getUser();
+        $asset = 'com_pfrepo.directory.' . (int) $record->id;
+
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
     }
 
 
@@ -1300,7 +1302,7 @@ class PFrepoModelDirectory extends JModelAdmin
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
-     * @return    void    
+     * @return    void
      */
     protected function populateState()
     {

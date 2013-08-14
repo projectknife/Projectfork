@@ -23,7 +23,7 @@ class PFtasksModelTasklist extends JModelAdmin
     /**
      * The prefix to use with controller messages.
      *
-     * @var    string    
+     * @var    string
      */
     protected $text_prefix = 'COM_PROJECTFORK_TASKLIST';
 
@@ -33,7 +33,7 @@ class PFtasksModelTasklist extends JModelAdmin
      *
      * @param    array          $config    An optional associative array of configuration settings.
      *
-     * @see      jcontroller               
+     * @see      jcontroller
      */
     public function __construct($config = array())
     {
@@ -360,16 +360,21 @@ class PFtasksModelTasklist extends JModelAdmin
      */
     protected function canDelete($record)
     {
-        if (!empty($record->id)) {
-            if ($record->state != -2) return false;
-
-            $user  = JFactory::getUser();
-            $asset = 'com_pftasks.tasklist.' . (int) $record->id;
-
-            return $user->authorise('core.delete', $asset);
+        if (empty($record->id)) {
+            return parent::canDelete($record);
         }
 
-        return parent::canDelete($record);
+        if ($record->state != -2) {
+            return false;
+        }
+
+        $user = JFactory::getUser();
+
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return $user->authorise('core.delete', 'com_pftasks.tasklist.' . (int) $record->id);
     }
 
 
@@ -383,16 +388,17 @@ class PFtasksModelTasklist extends JModelAdmin
      */
     protected function canEditState($record)
     {
+        if (empty($record->id)) {
+            return parent::canEditState($record);
+        }
+
         $user = JFactory::getUser();
 
-        // Check for existing item.
-        if (!empty($record->id)) {
-            return $user->authorise('core.edit.state', 'com_pftasks.tasklist.' . (int) $record->id);
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
         }
-        else {
-            // Default to component settings.
-            return parent::canEditState('com_pftasks');
-        }
+
+        return $user->authorise('core.edit.state', 'com_pftasks.tasklist.' . (int) $record->id);
     }
 
 
@@ -406,15 +412,17 @@ class PFtasksModelTasklist extends JModelAdmin
      */
     protected function canEdit($record)
     {
-        $user = JFactory::getUser();
-
-        // Check for existing item.
-        if (!empty($record->id)) {
-            $asset = 'com_pftasks.tasklist.' . (int) $record->id;
-
-            return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
+        if (empty($record->id)) {
+            return $user->authorise('core.edit', 'com_pftasks');
         }
 
-        return $user->authorise('core.edit', 'com_pftasks');
+        $user  = JFactory::getUser();
+        $asset = 'com_pftasks.tasklist.' . (int) $record->id;
+
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
     }
 }
