@@ -351,51 +351,6 @@ class PFrepoControllerFileForm extends JControllerForm
 
 
     /**
-     * Method to check if you can add a new record.
-     *
-     * @param     array      $data    An array of input data.
-     *
-     * @return    boolean
-     */
-    protected function allowAdd($data = array())
-    {
-        $user    = JFactory::getUser();
-        $project = JArrayHelper::getValue($data, 'project_id', JRequest::getInt('filter_project'), 'int');
-        $dir_id  = JArrayHelper::getValue($data, 'dir_id', JRequest::getInt('filter_parent_id'), 'int');
-
-        // Check general access
-        if (!$user->authorise('core.create', 'com_pfrepo') || defined('PFDEMO')) {
-            $this->setError(JText::_('COM_PROJECTFORK_WARNING_CREATE_FILE_DENIED'));
-            return false;
-        }
-
-        // Validate directory access
-        $model = $this->getModel('Directory', 'PFrepoModel');
-        $item  = $model->getItem($dir_id);
-
-        if ($item == false || empty($item->id) || $dir_id <= 1) {
-            $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_NOT_FOUND'));
-            return false;
-        }
-
-        $access = PFrepoHelper::getActions('directory', $item->id);
-
-        if (!$user->authorise('core.admin')) {
-            if (!in_array($item->access, $user->getAuthorisedViewLevels())) {
-                $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_ACCESS_DENIED'));
-                return false;
-            }
-            elseif (!$access->get('core.create')) {
-                $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_CREATE_FILE_DENIED'));
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
-    /**
      * Gets the URL arguments to append to an item redirect.
      *
      * @param     int       $id         The primary key id for the item.
