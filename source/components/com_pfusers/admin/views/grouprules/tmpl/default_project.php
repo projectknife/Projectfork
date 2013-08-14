@@ -51,6 +51,7 @@ if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
                     </div>
                 </div>
             </div>
+            <?php if ($this->item->id) : ?>
             <div class="span6">
                 <div class="formelm control-group">
                     <div class="control-label">
@@ -61,6 +62,7 @@ if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
                     </div>
                 </div>
             </div>
+            <?php endif; ?>
         </fieldset>
         <hr />
         <fieldset>
@@ -87,11 +89,11 @@ if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
             <table class="group-rules table table-striped table-condensed">
                 <thead>
                     <tr>
-                        <th width="10%" nowrap="nowrap" class="nowrap"><?php echo $com_title; ?></th>
+                        <th width="20%" nowrap="nowrap" class="nowrap"><?php echo $com_title; ?></th>
                         <th width="20%"><?php echo JText::_('JLIB_RULES_ACTION'); ?></th>
                         <th width="30%"><?php echo JText::_('JLIB_RULES_SELECT_SETTING'); ?></th>
                         <?php if ($this->item->parent_id > 0) : ?>
-                            <th><?php echo JText::_('JLIB_RULES_CALCULATED_SETTING'); ?></th>
+                            <th class="hidden-phone"><?php echo JText::_('JLIB_RULES_CALCULATED_SETTING'); ?></th>
                         <?php endif; ?>
                     </tr>
                 </thead>
@@ -124,7 +126,7 @@ if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
                             </td>
                             <td><?php echo $this->getActionHTML($action, $com, $selected); ?></td>
                             <?php if ($this->item->parent_id > 0) : ?>
-                                <td>
+                                <td class="hidden-phone">
                                     <?php echo $this->getCalculated($action, $calculated, $rule); ?>
                                 </td>
                             <?php endif; ?>
@@ -162,6 +164,7 @@ if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
             }
         }
     });
+    <?php if ($this->item->id) : ?>
     jQuery('#rm_user_group_<?php echo (int) $this->item->id; ?>').select2(
     {
         allowClear: true,
@@ -183,8 +186,6 @@ if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
             }
         }
     });
-
-    // jQuery('#filter_project_id" . $field_id . "').change(function(){this.form.submit();});
-
+    <?php endif; ?>
     </script>
 </div>
