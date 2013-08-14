@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Tasks
+ * @package      pkg_projectfork
+ * @subpackage   com_pftasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -48,8 +48,15 @@ class PFtasksViewTask extends JViewLegacy
 			return false;
 		}
 
+        // Check the view access.
+		if (!$this->item->params->get('access-view')) {
+		    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+			return false;
+		}
+
         // Set active project
         if (!PFApplicationHelper::setActiveProject($this->item->project_id)) {
+            JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
 
@@ -86,12 +93,6 @@ class PFtasksViewTask extends JViewLegacy
 		}
 
 		$offset = $this->state->get('list.offset');
-
-		// Check the view access to the milestone (the model has already computed the values).
-		if ($this->item->params->get('access-view') != true && (($this->item->params->get('show_noauth') != true &&  $user->get('guest') ))) {
-		    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
-			return;
-		}
 
         // Fake some content item properties to avoid plugin issues
         $this->item->introtext = '';

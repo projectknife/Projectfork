@@ -51,7 +51,7 @@ class PFrepoModelNoteRevision extends JModelAdmin
      */
     public function getItem($pk = null)
     {
-        $item = parent::getItem($pk)
+        $item = parent::getItem($pk);
 
         if ($item === false) return false;
 

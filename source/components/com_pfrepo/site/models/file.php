@@ -39,90 +39,118 @@ class PFrepoModelFile extends JModelItem
         // Initialise variables.
         $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
 
-        if ($this->_item === null) $this->_item = array();
+        if ($this->_item === null) {
+            $this->_item = array();
+        }
 
-        if (!isset($this->_item[$pk])) {
-            try {
-                $db    = $this->getDbo();
-                $query = $db->getQuery(true);
+        // Check cache
+        if (isset($this->_item[$pk])) {
+            return $this->_item[$pk];
+        }
 
-                $query->select($this->getState(
-                        'item.select',
-                        'a.id, a.asset_id, a.project_id, a.title, a.alias, a.description, '
-                        . 'a.created, a.created_by, a.modified_by, a.checked_out, a.checked_out_time, '
-                        . 'a.attribs, a.access, a.file_name, a.file_extension, a.file_size, a.dir_id'
-                    )
-                );
-                $query->from('#__pf_repo_files AS a');
+        try {
+            $db    = $this->getDbo();
+            $query = $db->getQuery(true);
 
-                // Join on project table.
-                $query->select('p.title AS project_title, p.alias AS project_alias');
-                $query->join('LEFT', '#__pf_projects AS p on p.id = a.project_id');
+            $query->select($this->getState(
+                    'item.select',
+                    'a.id, a.asset_id, a.project_id, a.title, a.alias, a.description, '
+                    . 'a.created, a.created_by, a.modified_by, a.checked_out, a.checked_out_time, '
+                    . 'a.attribs, a.access, a.file_name, a.file_extension, a.file_size, a.dir_id'
+                )
+            );
 
-                // Join on directories table.
-                $query->select('d.title AS dir_title, d.alias AS dir_alias, d.path');
-                $query->join('LEFT', '#__pf_repo_dirs AS d on d.id = a.dir_id');
+            $query->from('#__pf_repo_files AS a');
 
-                // Join on user table.
-                $query->select('u.name AS author');
-                $query->join('LEFT', '#__users AS u on u.id = a.created_by');
+            // Join on project table.
+            $query->select('p.title AS project_title, p.alias AS project_alias');
+            $query->join('LEFT', '#__pf_projects AS p on p.id = a.project_id');
 
-                $query->where('a.id = ' . (int) $pk);
+            // Join on directories table.
+            $query->select('d.title AS dir_title, d.alias AS dir_alias, d.path');
+            $query->join('LEFT', '#__pf_repo_dirs AS d on d.id = a.dir_id');
 
-                $db->setQuery($query);
-                $data = $db->loadObject();
+            // Join on user table.
+            $query->select('u.name AS author');
+            $query->join('LEFT', '#__users AS u on u.id = a.created_by');
 
-                if ($error = $db->getErrorMsg()) throw new Exception($error);
+            $query->where('a.id = ' . (int) $pk);
 
-                if (empty($data)) {
-                    return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_FILE_NOT_FOUND'));
-                }
+            $db->setQuery($query);
+            $item = $db->loadObject();
 
-                // Generate slugs
-                $data->slug         = $data->alias         ? ($data->id . ':' . $data->alias)                 : $data->id;
-                $data->project_slug = $data->project_alias ? ($data->project_id . ':' . $data->project_alias) : $data->project_id;
-                $data->dir_slug     = $data->dir_alias     ? ($data->dir_id . ':' . $data->dir_alias)         : $data->dir_id;
+            if ($error = $db->getErrorMsg()) throw new Exception($error);
 
-                // Convert parameter fields to objects.
-                $registry = new JRegistry;
-                $registry->loadString($data->attribs);
-
-                $params = $this->getState('params');
-
-                if ($params) {
-                    $data->params = clone $this->getState('params');
-                    $data->params->merge($registry);
-                }
-                else {
-                    $data->params = $registry;
-                }
-
-                // Get the pyhsical location
-                $data->physical_path = PFrepoHelper::getFilePath($data->file_name, $data->dir_id);
-
-                // Compute view access permissions.
-                if ($access = $this->getState('filter.access')) {
-                    // If the access filter has been set, we already know this user can view.
-                    $data->params->set('access-view', true);
-                }
-                else {
-                    // If no access filter is set, the layout takes some responsibility for display of limited information.
-                    $groups = JFactory::getUser()->getAuthorisedViewLevels();
-                    $data->params->set('access-view', in_array($data->access, $groups));
-                }
-
-                $this->_item[$pk] = $data;
+            if (empty($item)) {
+                return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_FILE_NOT_FOUND'));
             }
-            catch (JException $e)
-            {
-                if ($e->getCode() == 404) {
-                    // Need to go thru the error handler to allow Redirect to work.
-                    JError::raiseError(404, $e->getMessage());
+
+            // Convert parameter fields to objects.
+            $registry = new JRegistry;
+            $registry->loadString($item->attribs);
+
+            $params = $this->getState('params');
+
+            if ($params) {
+                $item->params = clone $this->getState('params');
+                $item->params->merge($registry);
+            }
+            else {
+                $item->params = $registry;
+            }
+
+            // Get the pyhsical location
+            $item->physical_path = PFrepoHelper::getFilePath($item->file_name, $item->dir_id);
+
+            // Generate slugs
+            $item->slug         = $item->alias         ? ($item->id . ':' . $item->alias)                 : $item->id;
+            $item->project_slug = $item->project_alias ? ($item->project_id . ':' . $item->project_alias) : $item->project_id;
+            $item->dir_slug     = $item->dir_alias     ? ($item->dir_id . ':' . $item->dir_alias)         : $item->dir_id;
+
+            // Compute selected asset permissions.
+            $user   = JFactory::getUser();
+            $uid    = $user->get('id');
+            $access = PFrepoHelper::getActions('file', $item->id);
+
+            $view_access = true;
+
+            if ($item->access && !$user->authorise('core.admin')) {
+                $view_access = in_array($item->access, $user->getAuthorisedViewLevels());
+            }
+
+            $item->params->set('access-view', $view_access);
+
+            if (!$view_access) {
+                $item->params->set('access-edit', false);
+                $item->params->set('access-change', false);
+            }
+            else {
+                // Check general edit permission first.
+                if ($access->get('core.edit')) {
+                    $item->params->set('access-edit', true);
                 }
-                else {
-                    $this->setError($e);
-                    $this->_item[$pk] = false;
+                elseif (!empty($uid) &&  $access->get('core.edit.own')) {
+                    // Check for a valid user and that they are the owner.
+                    if ($uid == $item->created_by) {
+                        $item->params->set('access-edit', true);
+                    }
                 }
+
+                // Check edit state permission.
+                $item->params->set('access-change', $access->get('core.edit.state'));
+            }
+
+            $this->_item[$pk] = $item;
+        }
+        catch (JException $e)
+        {
+            if ($e->getCode() == 404) {
+                // Need to go thru the error handler to allow Redirect to work.
+                JError::raiseError(404, $e->getMessage());
+            }
+            else {
+                $this->setError($e);
+                $this->_item[$pk] = false;
             }
         }
 

@@ -50,12 +50,29 @@ class PFrepoModelFileRevision extends PFrepoModelFileForm
      */
     public function getItem($pk = null)
     {
-        if ($item = parent::getItem($pk)) {
-            // Convert the params field to an array.
-            $registry = new JRegistry;
-            $registry->loadString($item->attribs);
-            $item->attribs = $registry->toArray();
+        $pk    = (!empty($pk)) ? (int) $pk : (int) $this->getState($this->getName() . '.id');
+        $table = $this->getTable();
+
+        if ($pk > 0) {
+            // Attempt to load the row.
+            $return = $table->load($pk);
+
+            // Check for a table object error.
+            if ($return === false && $table->getError()) {
+                $this->setError($table->getError());
+                return false;
+            }
         }
+
+        // Convert to the JObject before adding other data.
+        $properties = $table->getProperties(1);
+        $item = JArrayHelper::toObject($properties, 'JObject');
+
+        // Convert attributes to JRegistry params
+        $item->params = new JRegistry();
+
+        $item->params->loadString($item->attribs);
+        $item->attribs = $item->params->toArray();
 
         return $item;
     }

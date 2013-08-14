@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Repository
+ * @package      pkg_projectfork
+ * @subpackage   com_pfrepo
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -39,131 +39,145 @@ class PFrepoModelNote extends JModelItem
         // Initialise variables.
         $pk = (!empty($pk)) ? $pk : (int) $this->getState($this->getName() . '.id');
 
-        if ($this->_item === null) $this->_item = array();
+        if ($this->_item === null) {
+            $this->_item = array();
+        }
 
-        if (!isset($this->_item[$pk])) {
-            try {
-                $db    = $this->getDbo();
-                $query = $db->getQuery(true);
+        if (isset($this->_item[$pk])) {
+            return $this->_item[$pk];
+        }
 
-                $query->select($this->getState(
-                        'item.select',
-                        'a.id, a.asset_id, a.project_id, a.dir_id, a.title, a.alias, a.description AS text, '
-                        . 'a.created, a.created_by, a.modified_by, a.checked_out, a.checked_out_time, '
-                        . 'a.attribs, a.access'
-                    )
-                );
-                $query->from('#__pf_repo_notes AS a');
+        try {
+            $db    = $this->getDbo();
+            $query = $db->getQuery(true);
 
-                // Join on project table.
-                $query->select('p.title AS project_title, p.alias AS project_alias');
-                $query->join('LEFT', '#__pf_projects AS p on p.id = a.project_id');
+            $query->select($this->getState(
+                    'item.select',
+                    'a.id, a.asset_id, a.project_id, a.dir_id, a.title, a.alias, a.description AS text, '
+                    . 'a.created, a.created_by, a.modified_by, a.checked_out, a.checked_out_time, '
+                    . 'a.attribs, a.access'
+                )
+            );
 
-                // Join on directories table.
-                $query->select('d.title AS dir_title, d.alias AS dir_alias, d.path');
-                $query->join('LEFT', '#__pf_repo_dirs AS d on d.id = a.dir_id');
+            $query->from('#__pf_repo_notes AS a');
 
-                // Join on user table.
-                $query->select('u.name AS author');
-                $query->join('LEFT', '#__users AS u on u.id = a.created_by');
+            // Join on project table.
+            $query->select('p.title AS project_title, p.alias AS project_alias');
+            $query->join('LEFT', '#__pf_projects AS p on p.id = a.project_id');
 
-                $query->where('a.id = ' . (int) $pk);
+            // Join on directories table.
+            $query->select('d.title AS dir_title, d.alias AS dir_alias, d.path');
+            $query->join('LEFT', '#__pf_repo_dirs AS d on d.id = a.dir_id');
 
-                $db->setQuery($query);
-                $data = $db->loadObject();
+            // Join on user table.
+            $query->select('u.name AS author');
+            $query->join('LEFT', '#__users AS u on u.id = a.created_by');
 
-                if ($error = $db->getErrorMsg()) throw new Exception($error);
+            $query->where('a.id = ' . (int) $pk);
 
-                if (empty($data)) {
+            $db->setQuery($query);
+            $item = $db->loadObject();
+
+            if ($error = $db->getErrorMsg()) throw new Exception($error);
+
+            if (empty($item)) {
+                return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_NOTE_NOT_FOUND'));
+            }
+
+            // Convert parameter fields to objects.
+            $registry = new JRegistry;
+            $registry->loadString($item->attribs);
+
+            $params = $this->getState('params');
+
+            if ($params) {
+                $item->params = clone $this->getState('params');
+                $item->params->merge($registry);
+            }
+            else {
+                $item->params = $registry;
+            }
+
+            // Generate slugs
+            $item->slug         = $item->alias         ? ($item->id . ':' . $item->alias)                 : $item->id;
+            $item->project_slug = $item->project_alias ? ($item->project_id . ':' . $item->project_alias) : $item->project_id;
+            $item->dir_slug     = $item->dir_alias     ? ($item->dir_id . ':' . $item->dir_alias)         : $item->dir_id;
+
+            // Compute selected asset permissions.
+            $user   = JFactory::getUser();
+            $uid    = $user->get('id');
+            $access = PFrepoHelper::getActions('note', $item->id);
+
+            $view_access = true;
+
+            if ($item->access && !$user->authorise('core.admin')) {
+                $view_access = in_array($item->access, $user->getAuthorisedViewLevels());
+            }
+
+            $item->params->set('access-view', $view_access);
+
+            if (!$view_access) {
+                $item->params->set('access-edit', false);
+                $item->params->set('access-change', false);
+            }
+            else {
+                // Check general edit permission first.
+                if ($access->get('core.edit')) {
+                    $item->params->set('access-edit', true);
+                }
+                elseif (!empty($uid) &&  $access->get('core.edit.own')) {
+                    // Check for a valid user and that they are the owner.
+                    if ($uid == $item->created_by) {
+                        $item->params->set('access-edit', true);
+                    }
+                }
+
+                // Check edit state permission.
+                $item->params->set('access-change', $access->get('core.edit.state'));
+            }
+
+            // Get the revision if requested
+            $rev = (int) $this->getState($this->getName() . '.rev');
+
+            if ($rev) {
+                $cfg       = array('ignore_request' => true);
+                $rev_model = $this->getInstance('NoteRevision', 'PFrepoModel', $cfg);
+                $rev_item  = $rev_model->getItem($rev);
+
+                // Check for error
+                if ($error = $rev_model->getError()) throw new Exception($error);
+
+                if (empty($rev_item)) {
                     return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_NOTE_NOT_FOUND'));
                 }
 
-                // Generate slugs
-                $data->slug         = $data->alias           ? ($data->id . ':' . $data->alias)                     : $data->id;
-                $data->project_slug = $data->project_alias   ? ($data->project_id . ':' . $data->project_alias)     : $data->project_id;
-                $data->dir_slug     = $data->dir_alias     ? ($data->dir_id . ':' . $data->dir_alias)         : $data->dir_id;
-
-                // Convert parameter fields to objects.
-                $registry = new JRegistry;
-                $registry->loadString($data->attribs);
-
-                $params = $this->getState('params');
-
-                if ($params) {
-                    $data->params = clone $this->getState('params');
-                    $data->params->merge($registry);
+                if (!$rev_item || $rev_item->parent_id != $item->id) {
+                    $item->params->set('access-view', false);
                 }
                 else {
-                    $data->params = $registry;
-                }
+                    // Override properties of item
+                    $props = array('title', 'description', 'created', 'created_by');
 
-                // Compute selected asset permissions.
-                // Technically guest could edit an article, but lets not check that to improve performance a little.
-                if (!JFactory::getUser()->get('guest')) {
-                    $uid    = JFactory::getUser()->get('id');
-                    $access = PFrepoHelper::getActions('note', $data->id);
-
-                    // Check general edit permission first.
-                    if ($access->get('core.edit')) {
-                        $data->params->set('access-edit', true);
+                    foreach ($props AS $prop)
+                    {
+                        $item->$prop = $rev_item->$prop;
                     }
-                    // Now check if edit.own is available.
-                    elseif (!empty($uid) && $access->get('core.edit.own')) {
-                        // Check for a valid user and that they are the owner.
-                        if ($uid == $data->created_by) {
-                            $data->params->set('access-edit', true);
-                        }
-                    }
+
+                    $item->text = $rev_item->description;
                 }
-
-                // Compute view access permissions.
-                if ($access = $this->getState('filter.access')) {
-                    // If the access filter has been set, we already know this user can view.
-                    $data->params->set('access-view', true);
-                }
-                else {
-                    // If no access filter is set, the layout takes some responsibility for display of limited information.
-                    $groups = JFactory::getUser()->getAuthorisedViewLevels();
-                    $data->params->set('access-view', in_array($data->access, $groups));
-                }
-
-                // Get the revision if requested
-                $rev = (int) $this->getState($this->getName() . '.rev');
-
-                if ($rev) {
-                    $cfg = array('ignore_request' => true);
-                    $rev_model = $this->getInstance('NoteRevision', 'PFrepoModel', $cfg);
-
-                    $rev_item = $rev_model->getItem($rev);
-
-                    if (!$rev_item || $rev_item->parent_id != $data->id) {
-                        $data->params->set('access-view', false);
-                    }
-                    else {
-                        // Override properties of item
-                        $props = array('title', 'description', 'created', 'created_by');
-
-                        foreach ($props AS $prop)
-                        {
-                            $data->$prop = $rev_item->$prop;
-                        }
-
-                        $data->text = $rev_item->description;
-                    }
-                }
-
-                $this->_item[$pk] = $data;
             }
-            catch (JException $e)
-            {
-                if ($e->getCode() == 404) {
-                    // Need to go thru the error handler to allow Redirect to work.
-                    JError::raiseError(404, $e->getMessage());
-                }
-                else {
-                    $this->setError($e);
-                    $this->_item[$pk] = false;
-                }
+
+            $this->_item[$pk] = $item;
+        }
+        catch (JException $e)
+        {
+            if ($e->getCode() == 404) {
+                // Need to go thru the error handler to allow Redirect to work.
+                JError::raiseError(404, $e->getMessage());
+            }
+            else {
+                $this->setError($e);
+                $this->_item[$pk] = false;
             }
         }
 

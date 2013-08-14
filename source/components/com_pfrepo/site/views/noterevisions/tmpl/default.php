@@ -102,7 +102,7 @@ $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
                             $desc   = $item->description;
                         }
 
-                        if (empty($dl_link)) {
+                        if (empty($link)) {
                             $link = PFrepoHelperRoute::getNoteRoute($file->slug, $file->project_slug, $file->dir_slug, $file->path, $item->id);
                         }
                         ?>

@@ -121,7 +121,7 @@ class PFrepoViewRepository extends JViewLegacy
         $this->order_options = $this->getOrderOptions();
 
         // Check the view access to the current directory
-		if ($this->items['directory']->params->get('access-view') != true && (($this->items['directory']->params->get('show_noauth') != true && $user->get('guest')))) {
+		if ($this->items['directory']->params->get('access-view') != true) {
 		    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
 			return;
 		}
