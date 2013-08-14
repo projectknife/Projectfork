@@ -32,6 +32,8 @@ class PFusersViewGroupRules extends JViewLegacy
 
     protected $rules;
 
+    protected $public_groups;
+
 
     /**
      * Generates a list of JSON items.
@@ -54,7 +56,8 @@ class PFusersViewGroupRules extends JViewLegacy
             $this->asset_id = $this->getComponentProjectAssetId($this->component, $this->project_id);
         }
 
-        $this->rules = $this->getAssetRules();
+        $this->rules         = $this->getAssetRules();
+        $this->public_groups = array('1', JComponentHelper::getParams('com_users')->get('guest_usergroup', 1));
 
         if (!JFactory::getUser()->authorise('core.admin', $this->component)) {
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));

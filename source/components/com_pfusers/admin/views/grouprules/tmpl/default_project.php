@@ -39,32 +39,34 @@ if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
 
     <div id="alcm-actions-<?php echo (int) $this->item->id; ?>" style="display: none;">
         <hr />
-        <fieldset>
-            <legend><?php echo JText::_('COM_PROJECTFORK_MANAGE_GROUP_MEMBERS'); ?></legend>
-            <div class="span6">
-                <div class="formelm control-group">
-                    <div class="control-label">
-                        <?php echo JText::_('COM_PROJECTFORK_ADD_USERS'); ?>
-                    </div>
-                    <div class="controls">
-                        <input type="hidden" id="add_user_group_<?php echo (int) $this->item->id; ?>" class="input-xlarge" size="80" name="jform[add_groupuser][<?php echo (int) $this->item->id; ?>]"/>
-                    </div>
-                </div>
-            </div>
-            <?php if ($this->item->id) : ?>
-            <div class="span6">
-                <div class="formelm control-group">
-                    <div class="control-label">
-                        <?php echo JText::_('COM_PROJECTFORK_REMOVE_USERS'); ?>
-                    </div>
-                    <div class="controls">
-                        <input type="hidden" id="rm_user_group_<?php echo (int) $this->item->id; ?>" class="input-xlarge" size="80" name="jform[rm_groupuser][<?php echo (int) $this->item->id; ?>]"/>
+        <?php if (!in_array($this->item->id, $this->public_groups)) : ?>
+            <fieldset>
+                <legend><?php echo JText::_('COM_PROJECTFORK_MANAGE_GROUP_MEMBERS'); ?></legend>
+                <div class="span6">
+                    <div class="formelm control-group">
+                        <div class="control-label">
+                            <?php echo JText::_('COM_PROJECTFORK_ADD_USERS'); ?>
+                        </div>
+                        <div class="controls">
+                            <input type="hidden" id="add_user_group_<?php echo (int) $this->item->id; ?>" class="input-xlarge" size="80" name="jform[add_groupuser][<?php echo (int) $this->item->id; ?>]"/>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <?php endif; ?>
-        </fieldset>
-        <hr />
+                <?php if ($this->item->id > 0) : ?>
+                <div class="span6">
+                    <div class="formelm control-group">
+                        <div class="control-label">
+                            <?php echo JText::_('COM_PROJECTFORK_REMOVE_USERS'); ?>
+                        </div>
+                        <div class="controls">
+                            <input type="hidden" id="rm_user_group_<?php echo (int) $this->item->id; ?>" class="input-xlarge" size="80" name="jform[rm_groupuser][<?php echo (int) $this->item->id; ?>]"/>
+                        </div>
+                    </div>
+                </div>
+                <?php endif; ?>
+            </fieldset>
+            <hr />
+        <?php endif; ?>
         <fieldset>
             <legend><?php echo JText::_('COM_PROJECTFORK_MANAGE_GROUP_PERMISSIONS'); ?></legend>
 
@@ -142,50 +144,52 @@ if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
         </fieldset>
     </div>
     <input type="hidden" name="jform[rules][<?php echo $this->component; ?>][]" value="<?php echo (int) $this->item->id; ?>" />
-    <script type="text/javascript">
-    jQuery('#add_user_group_<?php echo (int) $this->item->id; ?>').select2(
-    {
-        allowClear: true,
-        minimumInputLength: 0,
-        multiple: true,
-        ajax:
+    <?php if (!in_array($this->item->id, $this->public_groups)) : ?>
+        <script type="text/javascript">
+        jQuery('#add_user_group_<?php echo (int) $this->item->id; ?>').select2(
         {
-            url: 'index.php?option=com_pfusers&view=groupusers&id=<?php echo (int) $this->item->id; ?>&filter_type=exclude&tmpl=component&layout=select2&format=json',
-            dataType: 'json',
-            quietMillis: 200,
-            data: function (term, page)
+            allowClear: true,
+            minimumInputLength: 0,
+            multiple: true,
+            ajax:
             {
-                return {filter_search: term, limit: 10, limitstart: ((page - 1) * 10)};
-            },
-            results: function (data, page)
-            {
-                var more = (page * 10) < data.total;
-                return {results: data.items, more: more};
+                url: 'index.php?option=com_pfusers&view=groupusers&id=<?php echo (int) $this->item->id; ?>&filter_type=exclude&tmpl=component&layout=select2&format=json',
+                dataType: 'json',
+                quietMillis: 200,
+                data: function (term, page)
+                {
+                    return {filter_search: term, limit: 10, limitstart: ((page - 1) * 10)};
+                },
+                results: function (data, page)
+                {
+                    var more = (page * 10) < data.total;
+                    return {results: data.items, more: more};
+                }
             }
-        }
-    });
-    <?php if ($this->item->id) : ?>
-    jQuery('#rm_user_group_<?php echo (int) $this->item->id; ?>').select2(
-    {
-        allowClear: true,
-        minimumInputLength: 0,
-        multiple: true,
-        ajax:
-        {
-            url: 'index.php?option=com_pfusers&view=groupusers&id=<?php echo (int) $this->item->id; ?>&filter_type=include&tmpl=component&layout=select2&format=json',
-            dataType: 'json',
-            quietMillis: 200,
-            data: function (term, page)
+        });
+        <?php if ($this->item->id > 0) : ?>
+            jQuery('#rm_user_group_<?php echo (int) $this->item->id; ?>').select2(
             {
-                return {filter_search: term, limit: 10, limitstart: ((page - 1) * 10)};
-            },
-            results: function (data, page)
-            {
-                var more = (page * 10) < data.total;
-                return {results: data.items, more: more};
-            }
-        }
-    });
+                allowClear: true,
+                minimumInputLength: 0,
+                multiple: true,
+                ajax:
+                {
+                    url: 'index.php?option=com_pfusers&view=groupusers&id=<?php echo (int) $this->item->id; ?>&filter_type=include&tmpl=component&layout=select2&format=json',
+                    dataType: 'json',
+                    quietMillis: 200,
+                    data: function (term, page)
+                    {
+                        return {filter_search: term, limit: 10, limitstart: ((page - 1) * 10)};
+                    },
+                    results: function (data, page)
+                    {
+                        var more = (page * 10) < data.total;
+                        return {results: data.items, more: more};
+                    }
+                }
+            });
+        <?php endif; ?>
+        </script>
     <?php endif; ?>
-    </script>
 </div>

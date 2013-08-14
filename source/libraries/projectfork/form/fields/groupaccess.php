@@ -181,6 +181,10 @@ class JFormFieldGroupAccess extends JFormField
     protected function getGroupOptions()
     {
         $html = array();
+        $user = JFactory::getUser();
+
+        $is_sa          = $user->authorise('core.admin');
+        $allowed_groups = $user->getAuthorisedGroups();
 
         if ($this->inherit) {
             $pks   = $this->getViewingAccessGroups();
@@ -220,6 +224,11 @@ class JFormFieldGroupAccess extends JFormField
 
         foreach ($groups AS $group)
         {
+            // Skip groups we are not allowed to access when not a super admin
+            if (!$is_sa) {
+                if (!in_array($group->value, $allowed_groups)) continue;
+            }
+
             $html[] = '<option value="' . $group->value . '">' . $group->text . '</option>';
         }
 
@@ -230,7 +239,12 @@ class JFormFieldGroupAccess extends JFormField
     protected function getGroupsHTML()
     {
         // Include the view class
-        require_once JPATH_ADMINISTRATOR . '/components/com_pfusers/views/grouprules/view.raw.php';
+        if (JFactory::getApplication()->isSite()) {
+            require_once JPATH_SITE . '/components/com_pfusers/views/grouprules/view.raw.php';
+        }
+        else {
+            require_once JPATH_ADMINISTRATOR . '/components/com_pfusers/views/grouprules/view.raw.php';
+        }
 
         $db     = JFactory::getDBO();
         $query  = $db->getQuery(true);

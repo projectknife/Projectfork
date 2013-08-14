@@ -12,6 +12,9 @@ defined('_JEXEC') or die();
 
 
 jimport('joomla.application.component.view');
+jimport('projectfork.framework');
+
+JFactory::getLanguage()->load('joomla', JPATH_ADMINISTRATOR);
 
 
 /**
@@ -31,6 +34,8 @@ class PFusersViewGroupRules extends JViewLegacy
     protected $inherit;
 
     protected $rules;
+
+    protected $public_groups;
 
 
     /**
@@ -54,7 +59,8 @@ class PFusersViewGroupRules extends JViewLegacy
             $this->asset_id = $this->getComponentProjectAssetId($this->component, $this->project_id);
         }
 
-        $this->rules = $this->getAssetRules();
+        $this->rules         = $this->getAssetRules();
+        $this->public_groups = array('1', JComponentHelper::getParams('com_users')->get('guest_usergroup', 1));
 
         if (!JFactory::getUser()->authorise('core.admin', $this->component)) {
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
