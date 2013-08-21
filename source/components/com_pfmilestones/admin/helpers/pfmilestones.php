@@ -78,7 +78,7 @@ class PFmilestonesHelper
 
         if (empty($id)) {
             $pid   = PFApplicationHelper::getActiveProjectId();
-            $asset = (empty($project) ? self::$extension : 'com_pfmilestones.project.' . $pid);
+            $asset = (empty($pid) ? self::$extension : 'com_pfmilestones.project.' . $pid);
         }
         else {
             $asset = 'com_pfmilestones.milestone.' . (int) $id;

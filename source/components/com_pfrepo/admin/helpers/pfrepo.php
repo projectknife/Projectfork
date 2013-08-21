@@ -83,7 +83,7 @@ abstract class PFrepoHelper
 
         if (empty($id)) {
             $pid   = PFApplicationHelper::getActiveProjectId();
-            $asset = (empty($project) ? self::$extension : 'com_pfrepo.project.' . $pid);
+            $asset = (empty($pid) ? self::$extension : 'com_pfrepo.project.' . $pid);
         }
         else {
             $asset = self::$extension . '.' . $name . '.' . (int) $id;

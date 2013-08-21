@@ -77,7 +77,8 @@ class PFcommentsHelper
         $result = new JObject;
 
         if ((empty($id) || $id == 0)) {
-            $asset = self::$extension;
+            $pid   = PFApplicationHelper::getActiveProjectId();
+            $asset = (empty($pid) ? self::$extension : 'com_pfcomments.project.' . $pid);
         }
         else {
             $asset = 'com_pfcomments.comment.' . (int) $id;

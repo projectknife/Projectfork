@@ -78,7 +78,7 @@ class PFtimeHelper
 
         if (empty($id)) {
             $pid   = PFApplicationHelper::getActiveProjectId();
-            $asset = (empty($project) ? self::$extension : 'com_pftime.project.' . $pid);
+            $asset = (empty($pid) ? self::$extension : 'com_pftime.project.' . $pid);
         }
         else {
             $asset = 'com_pftime.time.' . (int) $id;

@@ -95,7 +95,7 @@ class PFtasksHelper
         }
         else {
             $pid   = PFApplicationHelper::getActiveProjectId();
-            $asset = (empty($project) ? self::$extension : 'com_pftasks.project.' . $pid);
+            $asset = (empty($pid) ? self::$extension : 'com_pftasks.project.' . $pid);
         }
 
         $actions = array(
@@ -128,7 +128,7 @@ class PFtasksHelper
 
         if (empty($id)) {
             $pid   = PFApplicationHelper::getActiveProjectId();
-            $asset = (empty($project) ? self::$extension : 'com_pftasks.project.' . $pid);
+            $asset = (empty($pid) ? self::$extension : 'com_pftasks.project.' . $pid);
         }
         else {
             $asset = 'com_pftasks.tasklist.' . (int) $id;

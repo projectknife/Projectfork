@@ -80,7 +80,7 @@ class PFforumHelper
 
         if (empty($id)) {
             $pid   = PFApplicationHelper::getActiveProjectId();
-            $asset = (empty($project) ? self::$extension : 'com_pfforum.project.' . $pid);
+            $asset = (empty($pid) ? self::$extension : 'com_pfforum.project.' . $pid);
         }
         else {
             $asset = 'com_pfforum.topic.' . (int) $id;
@@ -123,7 +123,7 @@ class PFforumHelper
         }
         else {
             $pid   = PFApplicationHelper::getActiveProjectId();
-            $asset = (empty($project) ? self::$extension : 'com_pfforum.project.' . $pid);
+            $asset = (empty($pid) ? self::$extension : 'com_pfforum.project.' . $pid);
         }
 
         $actions = array(
