@@ -247,6 +247,43 @@ var PFform =
     },
 
 
+    alcmAddPredefinedGroups: function(gids, com, sec, inh, aid, pid, i)
+    {
+        if (typeof i == 'undefined') i = 0;
+
+        var t = gids.length;
+
+        if (t == 0 || i >= t) return true;
+
+        var container = jQuery('#aclm-groups');
+        var params    = '&inherit=' + inh + '&component=' + com + '&section=' + sec + '&asset_id=' + aid + '&project_id=' + pid;
+
+        jQuery.ajax(
+        {
+            url: 'index.php',
+            data: 'option=com_pfusers&view=grouprules&id=' + gids[i] + 'tmpl=component&format=raw&' + params,
+            type: 'POST',
+            processData: true,
+            cache: false,
+            dataType: 'html',
+            success: function(resp)
+            {
+                var d = jQuery(resp);
+
+                container.append(d);
+
+                i += 1;
+
+                PFform.alcmAddPredefinedGroups(gids, com, sec, inh, aid, pid, i);
+            },
+            error: function(resp, e, msg)
+            {
+                Projectfork.displayMsg(resp, msg);
+            }
+        });
+    },
+
+
     alcmToggleActions: function(gid)
     {
         var container = jQuery('#alcm-actions-' + gid);
@@ -263,7 +300,6 @@ var PFform =
     alcmRemoveGroup: function(gid)
     {
         jQuery('#alcm-group-' + gid).remove();
-
     }
 }
 

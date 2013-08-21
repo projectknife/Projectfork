@@ -401,6 +401,38 @@ class JFormFieldGroupAccess extends JFormField
             $groups = $this->getViewingAccessGroups();
         }
 
+        // Start - Experimental ajax loading of groups
+        $json_groups = json_encode($groups);
+
+        $js   = array();
+        $task = JRequest::getVar('task');
+
+        if ($task != 'reload') {
+            $js[] = "jQuery(document).ready(function()";
+            $js[] = "{";
+        }
+        $js[] = "PFform.alcmAddPredefinedGroups(";
+        $js[] = "" . $json_groups . ", ";
+        $js[] = "'" . $this->component . "', ";
+        $js[] = "'" . $this->section . "', ";
+        $js[] = "'" . $this->inherit . "', ";
+        $js[] = $this->asset_id . ", ";
+        $js[] = $this->project_id;
+        $js[] = ");";
+
+        if ($task != 'reload') {
+            $js[] = "});";
+        }
+
+        if ($task == 'reload') {
+            return '<script type="text/javascript">' . implode("\n", $js) . '</script>';
+        }
+        else {
+            JFactory::getDocument()->addScriptDeclaration(implode("\n", $js));
+            return '';
+        }
+        // End - Experimental ajax loading of groups
+
         $html = array();
 
         foreach ($groups AS $group)

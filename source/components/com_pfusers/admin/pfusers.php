@@ -26,6 +26,7 @@ if ($format == 'html') {
 // Include dependencies
 jimport('joomla.application.component.controller');
 jimport('joomla.application.component.helper');
+jimport('projectfork.framework');
 
 $controller = JControllerLegacy::getInstance('PFusers');
 $controller->execute(JFactory::getApplication()->input->get('task'));
