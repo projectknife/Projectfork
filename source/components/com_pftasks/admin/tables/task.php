@@ -88,21 +88,21 @@ class PFtableTask extends JTable
             $result = $this->_db->loadResult();
 
             if ($result) $asset_id = (int) $result;
-
-            // No asset found, fall back to the component
-            if (!$result) {
-                $query->clear();
-                $query->select($this->_db->quoteName('id'))
-                      ->from($this->_db->quoteName('#__assets'))
-                      ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pftasks"));
-
-                // Get the asset id from the database.
-                $this->_db->setQuery($query);
-                $result = $this->_db->loadResult();
-            }
-
-            if ($result) $asset_id = (int) $result;
         }
+
+        // No asset found, fall back to the component
+        if (!$result) {
+            $query->clear();
+            $query->select($this->_db->quoteName('id'))
+                  ->from($this->_db->quoteName('#__assets'))
+                  ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pftasks"));
+
+            // Get the asset id from the database.
+            $this->_db->setQuery($query);
+            $result = $this->_db->loadResult();
+        }
+
+        if ($result) $asset_id = (int) $result;
 
         // Return the asset id.
         if ($asset_id) return $asset_id;
