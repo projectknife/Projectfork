@@ -86,6 +86,7 @@
         <field name="users" type="userref" multiple="true" label="COM_PROJECTFORK_FIELD_REFUSER_LABEL" description="COM_PROJECTFORK_FIELD_REFUSER_TASK_DESC"/>
         <field name="rules" type="groupaccess"
             component="com_pftasks" section="task" inheritonly="true" filter="PFFormHelper::filterRules" validate="groupaccess"
+            version="4.2"
         />
         <field name="id" type="hidden" readonly="true"/>
         <field name="access" type="inheritaccess" hidden="true" readonly="true"/>

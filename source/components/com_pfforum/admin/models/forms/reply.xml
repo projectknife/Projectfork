@@ -30,6 +30,7 @@
         />
         <field name="rules" type="groupaccess"
             component="com_pfforum" section="reply" inheritonly="true" filter="PFFormHelper::filterRules" validate="groupaccess"
+            version="4.2"
         />
         <field name="id" type="hidden" readonly="true"/>
         <field name="project_id" type="hidden" readonly="true"/>

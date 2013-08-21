@@ -54,6 +54,7 @@
         />
         <field name="rules" type="groupaccess"
             component="com_pftime" section="time" inheritonly="true" filter="PFFormHelper::filterRules" validate="groupaccess"
+            version="4.2"
         />
         <field name="id" type="hidden" readonly="true"/>
         <field name="access" type="inheritaccess" hidden="true" readonly="true"/>

@@ -47,6 +47,7 @@
         />
         <field name="rules" type="groupaccess"
             component="com_pfprojects" section="project" inheritonly="false" filter="PFFormHelper::filterRules" validate="groupaccess"
+            version="4.2"
         />
         <field name="component_rules" type="hidden" filter="PFFormHelper::filterComponentRules"/>
         <field name="labels" type="labelmanager"
