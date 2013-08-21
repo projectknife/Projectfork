@@ -43,7 +43,9 @@
             <folder>_install</folder>
             <folder>_uninstall</folder>
             <folder>_update</folder>
+            <folder>controllers</folder>
             <folder>helpers</folder>
+            <folder>models</folder>
             <folder>views</folder>
             <filename>config.xml</filename>
             <filename>projectfork.php</filename>
