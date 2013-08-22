@@ -338,6 +338,11 @@ class PFprojectsModelProject extends JModelAdmin
                 if ($group_id) {
                     if (!isset($data['attribs'])) $data['attribs'] = array();
                     $data['attribs']['usergroup'] = $group_id;
+
+                    // Inject non-existant group if no rules are set
+                    if (!isset($data['rules'])) {
+                        $data['rules'] = array(0 => 0);
+                    }
                 }
             }
 
@@ -440,6 +445,17 @@ class PFprojectsModelProject extends JModelAdmin
 
                 if ($access) {
                     $data['access'] = $access;
+
+                    // If we created a new group, we must inject the new access level
+                    if ($create_group) {
+                        $user   = JFactory::getUser();
+                        $levels = $user->getAuthorisedViewLevels();
+
+                        if (!in_array($access, $user->getAuthorisedViewLevels())) {
+                            $levels[] = (int) $access;
+                            $user->set('_authLevels', $levels);
+                        }
+                    }
                 }
             }
             else {
@@ -694,7 +710,7 @@ class PFprojectsModelProject extends JModelAdmin
                 return false;
             }
 
-            if (!$user->authorise('core.admin', 'com_pfprojects')) {
+            if (!$user->authorise('core.admin')) {
                 if (!in_array($table->access, $user->getAuthorisedViewLevels())) {
                     $this->setError(JText::_('COM_PROJECTFORK_ERROR_PROJECT_ACCESS_DENIED'));
                     return false;
@@ -1136,7 +1152,7 @@ class PFprojectsModelProject extends JModelAdmin
             $this->_db->insertObject('#__user_usergroup_map', $obj);
         }
 
-        return false;
+        return $gid;
     }
 
 
