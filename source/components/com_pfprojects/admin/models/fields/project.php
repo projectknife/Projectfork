@@ -63,12 +63,79 @@ class JFormFieldProject extends JFormField
     protected function getHTML($title)
     {
         if (JFactory::getApplication()->isSite() || version_compare(JVERSION, '3.0.0', 'ge')) {
-            return $this->getSiteHTML($title);
+            return $this->getHTMLSelect2($title);
+            // return $this->getSiteHTML($title);
         }
 
         return $this->getAdminHTML($title);
     }
 
+
+    protected function getHTMLSelect2($title)
+    {
+        JHtml::_('pfhtml.script.jQuerySelect2');
+
+        static $field_id = 0;
+
+        $field_id++;
+
+        $doc = JFactory::getDocument();
+        $app = JFactory::getApplication();
+
+
+
+
+        // Prepare field attributes
+        $can_change = isset($this->element['readonly']) ? (bool) $this->element['readonly'] : true;
+        $onchange   = isset($this->element['onchange']) ? $this->element['onchange'] : '';
+        $attr_read  = ($can_change ? '' : ' readonly="readonly"');
+        $css_txt    = ($can_change ? '' : ' disabled muted') . (!empty($value) ? ' success' : ' warning');
+        $value      = (int) $this->value;
+        $placehold  = htmlspecialchars(JText::_('COM_PROJECTFORK_SELECT_PROJECT'), ENT_COMPAT, 'UTF-8');
+        $title      = htmlspecialchars($title, ENT_COMPAT, 'UTF-8');
+
+        if (empty($title)) {
+            $title = $placehold;
+        }
+
+        // Query url
+        $url = 'index.php?option=com_pfprojects&view=projects&tmpl=component&format=json&select2=1';
+
+        // Prepare JS select2 script
+        $js = array();
+        $js[] = "jQuery(document).ready(function()";
+        $js[] = "{";
+        $js[] = "    jQuery('#" . $this->id . "_id').select2({";
+        $js[] = "        placeholder: '" . $placehold . "',";
+        if ($value) $js[] = "        allowClear: true,";
+        $js[] = "        minimumInputLength: 0,";
+        $js[] = "        ajax: {";
+        $js[] = "            url: '" . $url . "',";
+        $js[] = "            dataType: 'json',";
+        $js[] = "            quietMillis: 200,";
+        $js[] = "            data: function (term, page) {return {filter_search: term, limit: 10, limitstart: ((page - 1) * 10)};},";
+        $js[] = "            results: function (data, page) {var more = (page * 10) < data.total;return {results: data.items, more: more};}";
+        $js[] = "        },";
+        $js[] = "        initSelection: function(element, callback) {";
+        $js[] = "           callback({id:" . $value . ", text: '" . $title . "'});";
+        $js[] = "        }";
+        $js[] = "    });";
+        $js[] = "    jQuery('#" . $this->id . "_id').change(function(){" . $onchange . "});";
+        $js[] = "});";
+
+        // Prepare html output
+        $html = array();
+
+        $html[] = '<input type="hidden" id="' . $this->id . '_id" name="' . $this->name . '" placeholder="' . $title . '"';
+        $html[] = ' value="' . $value . '" autocomplete="off"' . $attr_read . ' class="input-large" tabindex="-1" />';
+
+        if ($can_change) {
+            // Add script
+            JFactory::getDocument()->addScriptDeclaration(implode("\n", $js));
+        }
+
+        return $html;
+    }
 
     /**
      * Method to generate the backend input markup.
