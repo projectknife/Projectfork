@@ -24,12 +24,12 @@ if (!JFolder::exists($folder)) {
 
 // Get all script files
 $files = (array) str_replace('.php', '', JFolder::files($folder, '\.php$'));
-usort($script_files, 'version_compare');
+usort($files, 'version_compare');
 
 // Iterate through all scripts
 foreach($files AS $file)
 {
-    if (version_compare($file, $prev_version, 'ge')) {
+    if (version_compare($file, $prev_version, '>')) {
         // Run the script
         if (file_exists($folder . '/' . $file . '.php')) {
             require_once $folder . '/' . $file . '.php';

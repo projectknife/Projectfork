@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="content" method="upgrade">
 	<name>plg_content_pfprojects</name>
-	<creationDate>June 2013</creationDate>
+	<creationDate>August 2013</creationDate>
 	<author>Tobias Kuhn</author>
 	<copyright>(C) 2006 - 2013 Tobias Kuhn. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>support@projectfork.net</authorEmail>
 	<authorUrl>www.projectfork.net</authorUrl>
-	<version>4.1.0</version>
+	<version>4.2.0b1</version>
 	<description>PLG_CONTENT_PFPROJECTS_XML_DESCRIPTION</description>
     <published>1</published>
     <scriptfile>script.php</scriptfile>

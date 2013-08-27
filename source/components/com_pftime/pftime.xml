@@ -2,12 +2,12 @@
 <extension type="component" version="2.5" method="upgrade">
     <name>com_pftime</name>
     <author>Tobias Kuhn</author>
-    <creationDate>June 2013</creationDate>
+    <creationDate>August 2013</creationDate>
     <copyright>(C) 2006 - 2013 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>support@projectfork.net</authorEmail>
     <authorUrl>www.projectfork.net</authorUrl>
-    <version>4.1.0</version>
+    <version>4.2.0b1</version>
     <description>COM_PFTIME_XML_DESCRIPTION</description>
     <scriptfile>script.php</scriptfile>
     <files folder="site">

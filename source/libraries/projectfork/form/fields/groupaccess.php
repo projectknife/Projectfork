@@ -216,6 +216,12 @@ class JFormFieldGroupAccess extends JFormField
                 // Get possible parent field values
                 // Note that the order of the array elements matter!
                 $parents = array();
+
+                if ($this->component == 'com_pfdesigns') {
+                    $parents['design'] = (int) $this->form->getValue('parent_id');
+                    $parents['album']  = (int) $this->form->getValue('album_id');
+                }
+
                 $parents['project']   = (int) $this->form->getValue('project_id');
                 $parents['milestone'] = (int) $this->form->getValue('milestone_id');
                 $parents['tasklist']  = (int) $this->form->getValue('list_id');
@@ -235,9 +241,14 @@ class JFormFieldGroupAccess extends JFormField
                 }
 
                 if ($parent_id) {
+                    if ($this->component == 'com_pfdesigns') {
+                        JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_pfdesigns/tables');
+                    }
+
                     JTable::addIncludePath(JPATH_ADMINISTRATOR . '/components/com_projectfork/tables');
 
                     $table = JTable::getInstance($parent_el, 'PFTable');
+
                     if (!$table) {
                         $this->access = (int) $this->form->getValue('access');
                     }

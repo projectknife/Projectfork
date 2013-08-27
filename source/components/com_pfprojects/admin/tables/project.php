@@ -71,15 +71,29 @@ class PFtableProject extends JTable
         $query    = $this->_db->getQuery(true);
         $asset_id = null;
 
-        $query->select('id')
-              ->from('#__assets')
-              ->where('name = ' . $this->_db->quote("com_pfprojects"));
+        if ($this->catid) {
+            $query->select('id')
+                  ->from('#__assets')
+                  ->where('name = ' . $this->_db->quote("com_pfprojects.category." . (int) $this->catid));
 
-        // Get the asset id from the database.
-        $this->_db->setQuery($query);
-        $result = $this->_db->loadResult();
+            // Get the asset id from the database.
+            $this->_db->setQuery($query);
+            $result = $this->_db->loadResult();
 
-        if ($result) $asset_id = (int) $result;
+            if ($result) $asset_id = (int) $result;
+        }
+
+        if (!$asset_id) {
+            $query->select('id')
+                  ->from('#__assets')
+                  ->where('name = ' . $this->_db->quote("com_pfprojects"));
+
+            // Get the asset id from the database.
+            $this->_db->setQuery($query);
+            $result = $this->_db->loadResult();
+
+            if ($result) $asset_id = (int) $result;
+        }
 
         // Return the asset id.
         if ($asset_id) return $asset_id;

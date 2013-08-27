@@ -21,22 +21,22 @@ final class PFVersion
     public $PRODUCT = 'Projectfork';
 
     /** @var  string  Release version. */
-    public $RELEASE = '4.1';
+    public $RELEASE = '4.2';
 
     /** @var  string  Maintenance version. */
     public $DEV_LEVEL = '0';
 
     /** @var  string  Development status. */
-    public $DEV_STATUS = 'Stable';
+    public $DEV_STATUS = 'Beta';
 
     /** @var  string  Build number. */
-    public $BUILD = '0';
+    public $BUILD = '1';
 
     /** @var  string  Code name. */
-    public $CODENAME = 'Ashes';
+    public $CODENAME = 'Vault';
 
     /** @var  string  Release date. */
-    public $RELDATE = '13-June-2013';
+    public $RELDATE = '27-August-2013';
 
     /** @var  string  Release time. */
     public $RELTIME = '21:00';

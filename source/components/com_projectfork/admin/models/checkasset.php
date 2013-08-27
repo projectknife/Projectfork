@@ -36,6 +36,8 @@ class ProjectforkModelCheckAsset extends JModelLegacy
 
         $this->getRootAssets();
 
+        if (!$this->checkProjectCategory()) return false;
+
         if (!$this->checkProjectAssets()) return false;
 
         foreach ($this->components AS $name => $item)
@@ -70,6 +72,38 @@ class ProjectforkModelCheckAsset extends JModelLegacy
     }
 
 
+    protected function checkProjectCategory()
+    {
+        if ($this->project->catid == 0) return true;
+
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        // Find the category asset
+        $cat_asset = JTable::getInstance('Asset', 'JTable', array('dbo' => $db));
+
+        if (!$cat_asset->loadbyName('com_pfprojects.category.' . (int) $this->project->catid)) {
+            return true;
+        }
+
+        // Get the project asset
+        $asset = JTable::getInstance('Asset', 'JTable', array('dbo' => $db));
+
+        if (!$asset->load($this->project->asset_id)) {
+            return true;
+        }
+
+        $asset->setLocation($cat_asset->id, 'last-child');
+        $asset->parent_id = $cat_asset->id;
+
+        if (!$asset->check() || !$asset->store(false)) {
+            return true;
+        }
+
+        return true;
+    }
+
+
     protected function checkProjectAssets()
     {
         $this->project_assets = array();
@@ -89,8 +123,6 @@ class ProjectforkModelCheckAsset extends JModelLegacy
                   ->select('*')
                   ->from('#__assets')
                   ->where('name = ' . $db->quote($name . '.project.' . $this->project->id));
-
-
 
             $db->setQuery($query);
             $asset = $db->loadObject();
