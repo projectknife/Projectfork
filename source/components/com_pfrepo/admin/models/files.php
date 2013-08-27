@@ -181,6 +181,7 @@ class PFrepoModelFiles extends JModelList
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
             $levels = implode(',', $user->getAuthorisedViewLevels());
+
             $query->where('a.access IN (' . $levels . ')');
         }
 

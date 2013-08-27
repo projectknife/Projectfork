@@ -409,11 +409,12 @@ class PFrepoModelFile extends JModelAdmin
     /**
      * Method to get a single record.
      *
-     * @param     integer    The id of the primary key.
-     * @return    mixed      Object on success, false on failure.
+     * @param     integer    $pk      The id of the primary key.
+     * @return    mixed      $item    Object on success, false on failure.
      */
     public function getItem($pk = null)
     {
+        // Get the record from the parent class method
         $item = parent::getItem($pk);
 
         if ($item == false) return false;
@@ -437,7 +438,7 @@ class PFrepoModelFile extends JModelAdmin
         }
         else {
             // New record
-            $item->labels   = array();
+            $item->labels = array();
             $item->revision_count = $this->getRevisionCount($pk);
         }
 
@@ -583,7 +584,7 @@ class PFrepoModelFile extends JModelAdmin
             $pks      = array($table->id);
             $contexts = array();
 
-            if(!$this->batchMove($new_dir, $pks, $contexts)) {
+            if (!$this->batchMove($new_dir, $pks, $contexts)) {
                 return false;
             }
         }
@@ -661,6 +662,25 @@ class PFrepoModelFile extends JModelAdmin
         if ((int) $dir <= 1) {
             $this->setError(JText::_('COM_PROJECTFORK_WARNING_SELECT_DIRECTORY'));
             return false;
+        }
+
+        // Check allowed file extension
+        $allowed = PFrepoHelper::getAllowedFileExtensions();
+        $config  = JComponentHelper::getParams('com_pfrepo');
+        $user    = JFactory::getUser();
+
+        $filter_admin = $config->get('filter_ext_admin');
+        $is_admin     = $user->authorise('core.admin');
+
+        if ($is_admin && !$filter_admin) $allowed = array();
+
+        if (count($allowed)) {
+            $ext = strtolower(JFile::getExt($file['name']));
+
+            if (!in_array($ext, $allowed)) {
+                $this->setError(JText::_('COM_PROJECTFORK_WARNING_INVALID_FILE_EXT'));
+                return false;
+            }
         }
 
         $query = $this->_db->getQuery(true);
@@ -975,14 +995,17 @@ class PFrepoModelFile extends JModelAdmin
      */
     protected function canDelete($record)
     {
-        if (!empty($record->id)) {
-            $user  = JFactory::getUser();
-            $asset = 'com_pfrepo.file.' . (int) $record->id;
-
-            return $user->authorise('core.delete', $asset);
+        if (empty($record->id)) {
+            return parent::canDelete($record);
         }
 
-        return parent::canDelete($record);
+        $user = JFactory::getUser();
+
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return $user->authorise('core.delete', 'com_pfrepo.file.' . (int) $record->id);
     }
 
 
@@ -1115,20 +1138,17 @@ class PFrepoModelFile extends JModelAdmin
      */
     protected function canEditState($record)
     {
+        if (empty($record->id)) {
+            return parent::canEditState($record);
+        }
+
         $user = JFactory::getUser();
 
-        // Check for existing item.
-        if (!empty($record->id)) {
-            return $user->authorise('core.edit.state', 'com_pfrepo.file.' . (int) $record->id);
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
         }
-        elseif (!empty($record->dir_id)) {
-            // New item, so check against the directory.
-            return $user->authorise('core.edit.state', 'com_pfrepo.directory.' . (int) $record->dir_id);
-        }
-        else {
-            // Default to component settings.
-            return parent::canEditState('com_pfrepo');
-        }
+
+        return $user->authorise('core.edit.state', 'com_pfrepo.file.' . (int) $record->id);
     }
 
 
@@ -1142,16 +1162,18 @@ class PFrepoModelFile extends JModelAdmin
      */
     protected function canEdit($record)
     {
-        $user = JFactory::getUser();
-
-        // Check for existing item.
-        if (!empty($record->id)) {
-            $asset = 'com_pfrepo.file.' . (int) $record->id;
-
-            return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
+        if (empty($record->id)) {
+            return $user->authorise('core.edit', 'com_pfrepo');
         }
 
-        return $user->authorise('core.edit', 'com_pfrepo');
+        $user  = JFactory::getUser();
+        $asset = 'com_pfrepo.file.' . (int) $record->id;
+
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
     }
 
 

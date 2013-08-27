@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Forum
+ * @package      pkg_projectfork
+ * @subpackage   com_pfforum
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
@@ -199,8 +199,9 @@ class PFforumModelTopics extends JModelList
         }
 
         // Implement View Level Access
-        if (!$user->authorise('core.admin', 'com_pfmilestones')) {
+        if (!$user->authorise('core.admin')) {
             $levels = implode(',', $user->getAuthorisedViewLevels());
+
             $query->where('a.access IN (' . $groups . ')');
         }
 

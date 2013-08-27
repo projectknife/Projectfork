@@ -38,7 +38,7 @@ class PFrepoViewFile extends JViewLegacy
         }
 
         // Check access
-		if ($this->item->params->get('access-view') != true && (($this->item->params->get('show_noauth') != true && $user->get('guest') ))) {
+		if ($this->item->params->get('access-view') != true) {
 		    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
 			return false;
 		}

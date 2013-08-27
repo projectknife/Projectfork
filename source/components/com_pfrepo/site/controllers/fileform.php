@@ -53,6 +53,107 @@ class PFrepoControllerFileForm extends JControllerForm
 
 
     /**
+     * Method to check if you can add a new record.
+     *
+     * @param     array      $data    An array of input data.
+     *
+     * @return    boolean
+     */
+    protected function allowAdd($data = array())
+    {
+        // Get form input
+        $dir = isset($data['parent_id'])  ? (int) $data['parent_id']  : JRequest::getUint('filter_parent_id');
+
+        $user   = JFactory::getUser();
+        $asset  = 'com_pfrepo.directory.' . $dir;
+        $access = true;
+
+        // Deny if no parent directory is given
+        if (!$dir) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_NOT_FOUND'));
+            return false;
+        }
+
+        // Check if the user has viewing access when not a super admin
+        if (!$user->authorise('core.admin')) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('access')
+                  ->from('#__pf_repo_dirs')
+                  ->where('id = ' . $dir);
+
+            $db->setQuery($query);
+            $lvl = $db->loadResult();
+
+            $access = in_array($lvl, $user->getAuthorisedViewLevels());
+        }
+
+        return ($user->authorise('core.create', $asset) && $access);
+    }
+
+
+    /**
+     * Method override to check if you can edit an existing record.
+     *
+     * @param     array      $data    An array of input data.
+     * @param     string     $key     The name of the key for the primary key.
+     *
+     * @return    boolean
+     */
+    protected function allowEdit($data = array(), $key = 'id')
+    {
+        // Get form input
+        $id = (int) (isset($data[$key]) ? $data[$key] : 0);
+
+        $user   = JFactory::getUser();
+        $uid    = JFactory::getUser()->get('id');
+        $asset  = 'com_pfrepo.file.' . $id;
+        $access = true;
+
+        // Check if the user has viewing access when not a super admin
+        if (!$user->authorise('core.admin')) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('access')
+                  ->from('#__pf_repo_files')
+                  ->where('id = ' . $id);
+
+            $db->setQuery($query);
+            $lvl = $db->loadResult();
+
+            if (!in_array($lvl, $user->getAuthorisedViewLevels())) {
+                return false;
+            }
+        }
+
+        // Check general edit permission first.
+        if ($user->authorise('core.edit', $asset)) {
+            return true;
+        }
+
+        // Fallback on edit.own.
+        // First test if the permission is available.
+        if (!$user->authorise('core.edit.own', $asset)) {
+            return false;
+        }
+
+        // Load the item
+        $record = $this->getModel()->getItem($id);
+
+        // Abort if not found
+        if (empty($record)) return false;
+
+        // Now test the owner is the user.
+        $owner = (int) isset($data['created_by']) ? (int) $data['created_by'] : $record->created_by;
+
+        // If the owner matches 'me' then do the test.
+        return ($owner == $uid && $uid > 0);
+    }
+
+
+    /**
      * Method to save a record.
      *
      * @param     string     $key       The name of the primary key of the URL variable.
@@ -250,90 +351,6 @@ class PFrepoControllerFileForm extends JControllerForm
 
 
     /**
-     * Method to check if you can add a new record.
-     *
-     * @param     array      $data    An array of input data.
-     *
-     * @return    boolean
-     */
-    protected function allowAdd($data = array())
-    {
-        $user    = JFactory::getUser();
-        $project = JArrayHelper::getValue($data, 'project_id', JRequest::getInt('filter_project'), 'int');
-        $dir_id  = JArrayHelper::getValue($data, 'dir_id', JRequest::getInt('filter_parent_id'), 'int');
-
-        // Check general access
-        if (!$user->authorise('core.create', 'com_pfrepo') || defined('PFDEMO')) {
-            $this->setError(JText::_('COM_PROJECTFORK_WARNING_CREATE_FILE_DENIED'));
-            return false;
-        }
-
-        // Validate directory access
-        $model = $this->getModel('Directory', 'PFrepoModel');
-        $item  = $model->getItem($dir_id);
-
-        if ($item == false || empty($item->id) || $dir_id <= 1) {
-            $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_NOT_FOUND'));
-            return false;
-        }
-
-        $access = PFrepoHelper::getActions('directory', $item->id);
-
-        if (!$user->authorise('core.admin')) {
-            if (!in_array($item->access, $user->getAuthorisedViewLevels())) {
-                $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_ACCESS_DENIED'));
-                return false;
-            }
-            elseif (!$access->get('core.create')) {
-                $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_CREATE_FILE_DENIED'));
-                return false;
-            }
-        }
-
-        return true;
-    }
-
-
-    /**
-     * Method override to check if you can edit an existing record.
-     *
-     * @param     array      $data    An array of input data.
-     * @param     string     $key     The name of the key for the primary key.
-     *
-     * @return    boolean
-     */
-    protected function allowEdit($data = array(), $key = 'id')
-    {
-        $user  = JFactory::getUser();
-        $uid   = $user->get('id');
-        $id    = (int) isset($data[$key]) ? $data[$key] : 0;
-        $owner = (int) isset($data['created_by']) ? $data['created_by'] : 0;
-
-        // Check general edit permission first.
-        if ($user->authorise('core.edit', 'com_pfrepo.file.' . $id)) {
-            return true;
-        }
-
-        // Fallback on edit.own.
-        if ($user->authorise('core.edit.own', 'com_pfrepo.file.' . $id)) {
-            // Now test the owner is the user.
-            if (!$owner && $id) {
-                $record = $this->getModel()->getItem($id);
-
-                if (empty($record)) return false;
-
-                $owner = $record->created_by;
-            }
-
-            if ($owner == $uid) return true;
-        }
-
-        // Fall back to the component permissions.
-        return parent::allowEdit($data, $key);
-    }
-
-
-    /**
      * Gets the URL arguments to append to an item redirect.
      *
      * @param     int       $id         The primary key id for the item.
@@ -376,12 +393,14 @@ class PFrepoControllerFileForm extends JControllerForm
         $project = JRequest::getUint('filter_project');
         $parent  = JRequest::getUint('filter_parent_id');
         $func    = JRequest::getCmd('function');
+        $layout  = JRequest::getCmd('layout');
         $append  = '';
 
         // Setup redirect info.
         if ($project) $append .= '&filter_project=' . $project;
         if ($parent)  $append .= '&filter_parent_id=' . $parent;
         if ($tmpl)    $append .= '&tmpl=' . $tmpl;
+        if ($layout)  $append .= '&layout=' . $layout;
         if ($func)    $append .= '&function=' . $func;
 
         return $append;

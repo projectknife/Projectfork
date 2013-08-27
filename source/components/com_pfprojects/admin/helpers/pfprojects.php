@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Projects
+ * @package      pkg_projectfork
+ * @subpackage   com_pfprojects
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
@@ -19,7 +19,7 @@ class PFprojectsHelper
     /**
      * The component name
      *
-     * @var    string
+     * @var    string    
      */
     public static $extension = 'com_pfprojects';
 
@@ -29,7 +29,7 @@ class PFprojectsHelper
      *
      * @param     string    $view    The name of the active view.
      *
-     * @return    void
+     * @return    void               
      */
     public static function addSubmenu($view)
     {
@@ -73,21 +73,15 @@ class PFprojectsHelper
     /**
      * Gets a list of actions that can be performed.
      *
-     * @param     int        The item id
+     * @param     int       $id        The item id
      *
-     * @return    jobject
+     * @return    object    $result    
      */
     public static function getActions($id = 0)
     {
         $user   = JFactory::getUser();
         $result = new JObject;
-
-        if (empty($id) || $id == 0) {
-            $asset = self::$extension;
-        }
-        else {
-            $asset = 'com_pfprojects.project.' . (int) $id;
-        }
+        $asset  = (empty($id) ? self::$extension : 'com_pfprojects.project.' . (int) $id);
 
         $actions = array(
             'core.admin', 'core.manage',

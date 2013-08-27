@@ -250,9 +250,7 @@ abstract class PFAccessHelper
     {
         JLoader::register('UsersModelLevel', JPATH_ADMINISTRATOR . '/components/com_users/models/level.php');
 
-        if (!is_array($rules)) {
-            return false;
-        }
+        if (!is_array($rules)) return false;
 
         $db     = JFactory::getDbo();
         $query  = $db->getQuery(true);
@@ -267,7 +265,9 @@ abstract class PFAccessHelper
             unset($rules[$key]);
         }
 
-        if (!count($groups)) {
+        $group_count = count($groups);
+
+        if (!$group_count) {
             if ($access && $inherit) {
                 $query->clear();
                 $query->select('rules')
@@ -277,11 +277,10 @@ abstract class PFAccessHelper
                 $db->setQuery($query);
                 $access_rules = $db->loadResult();
 
-                $groups = (array) json_decode($access_rules);
+                $groups      = json_decode($access_rules, true);
+                $group_count = count($groups);
 
-                if (!count($groups)) {
-                    return false;
-                }
+                if (!$group_count) return false;
             }
             else {
                 return false;
@@ -298,36 +297,57 @@ abstract class PFAccessHelper
             $db->setQuery($query);
             $access_rules = $db->loadResult();
 
-            if (json_encode($groups) == $access_rules) {
-                return (int) $access;
+            $json_rules = json_decode($access_rules, true);
+
+            if (count($json_rules) == count($groups)) {
+                $is_equal = true;
+
+                foreach ($json_rules AS $gid)
+                {
+                    if (!in_array($gid, $groups)) $is_equal = false;
+                }
             }
+
+            if ($is_equal) return (int) $access;
         }
 
         // Try to find the access levels that are connecting to the groups
-        $query->clear();
-        $query->select('id')
+        $query->select('id, rules')
               ->from('#__viewlevels')
-              ->where('rules = ' . $db->quote(json_encode($groups)));
+              ->order('id ASC');
 
         $db->setQuery($query);
-        $results = (array) $db->loadColumn();
-        $count   = count($results);
+        $levels = $db->loadAssocList('id', 'rules');
 
-        // Return the 1st access level found
-        if ($count >= 1) {
-            return $results[0];
+        foreach ($levels AS $lvl_id => $lvl_rules)
+        {
+            $json_rules = json_decode($lvl_rules, true);
+
+            if (count($json_rules) == $group_count) {
+                $is_equal = true;
+
+                foreach ($json_rules AS $gid)
+                {
+                    if (!in_array($gid, $groups)) $is_equal = false;
+                }
+
+                if ($is_equal) {
+                    return (int) $lvl_id;
+                }
+            }
         }
 
         // Create the access level if none is found
         $query->clear();
         $query->select('title')
               ->from('#__usergroups')
-              ->where('id IN(' . implode(', ', $groups) . ')');
+              ->where('id IN(' . implode(', ', $groups) . ')')
+              ->order('title ASC');
 
         $db->setQuery($query);
-        $group_names = (array) $db->loadColumn();
+        $group_names = $db->loadColumn();
 
-        if (!count($group_names)) {
+        if (empty($group_names) || !count($group_names)) {
             return false;
         }
 
@@ -336,22 +356,29 @@ abstract class PFAccessHelper
         $model      = new UsersModelLevel(array('ignore_request' => true));
         $table      = $model->getTable();
 
-        $x = 100 - strlen($level_name);
-        if ($x >= 0) $x = -3;
-
-        while (strlen($level_name) > 100 || $table->load(array('title' => $level_name)))
-        {
-            $level_name = substr($level_name, 0, $x) . '...';
-            $x--;
+        // Truncate the title if need be
+        if (strlen($level_name) > 92) {
+            $level_name = substr($level_name, 0, 92) . '...';
         }
 
-        $data  = array('id' => 0, 'title' => $level_name, 'rules' => $groups);
+        // Make sure the title is unique
+        while ($table->load(array('title' => $level_name)))
+        {
+            $m = null;
+
+            if (preg_match('#\((\d+)\)$#', $level_name, $m)) {
+                $level_name = preg_replace('#\(\d+\)$#', '('.($m[1] + 1).')', $level_name);
+            }
+            else {
+                $level_name .= ' (2)';
+            }
+        }
+
+        $data = array('id' => 0, 'title' => $level_name, 'rules' => $groups);
 
         // Store access level
-        if (!$model->save($data)) {
-            return false;
-        }
+        if (!$model->save($data)) return false;
 
-        return $model->getState('level.id');
+        return (int) $model->getState('level.id');
     }
 }

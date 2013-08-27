@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Milestones
+ * @package      pkg_projectfork
+ * @subpackage   com_pfmilestones
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -15,7 +15,7 @@ jimport('joomla.application.component.modelitem');
 
 
 /**
- * Component Milestone Model
+ * Projectfork Milestone Item Model
  *
  */
 class PFmilestonesModelMilestone extends JModelItem
@@ -31,136 +31,148 @@ class PFmilestonesModelMilestone extends JModelItem
     /**
      * Method to get item data.
      *
-     * @param     integer    The id of the item.
+     * @param     integer $pk    The id of the item.
      *
-     * @return    mixed      Menu item data object on success, false on failure.
+     * @return    mixed   $item   Item data object on success, false on failure.
      */
     public function &getItem($pk = null)
     {
         // Initialise variables.
         $pk = (!empty($pk)) ? $pk : (int) $this->getState('milestone.id');
 
-        if ($this->_item === null) $this->_item = array();
+        if ($this->_item === null) {
+            $this->_item = array();
+        }
 
-        if (!isset($this->_item[$pk])) {
+        // Check if cached
+        if (isset($this->_item[$pk])) {
+            return $this->_item[$pk];
+        }
 
-            try {
-                $db    = $this->getDbo();
-                $query = $db->getQuery(true);
+        // Load item
+        try {
+            $db    = $this->getDbo();
+            $query = $db->getQuery(true);
 
-                $query->select($this->getState(
-                        'item.select',
-                        'a.id, a.asset_id, a.project_id, a.title, a.alias, a.description AS text, '
-                        . 'a.created, a.created_by, a.modified_by, a.checked_out, a.checked_out_time, '
-                        . 'a.attribs, a.access, a.state, a.ordering, a.start_date, a.end_date'
-                    )
-                );
-                $query->from('#__pf_milestones AS a');
+            $query->select($this->getState(
+                    'item.select',
+                    'a.id, a.asset_id, a.project_id, a.title, a.alias, a.description AS text, '
+                    . 'a.created, a.created_by, a.modified_by, a.checked_out, a.checked_out_time, '
+                    . 'a.attribs, a.access, a.state, a.ordering, a.start_date, a.end_date'
+                )
+            );
 
-                // Join on project table.
-                $query->select('p.title AS project_title, p.alias AS project_alias');
-                $query->join('LEFT', '#__pf_projects AS p on p.id = a.project_id');
+            $query->from('#__pf_milestones AS a');
 
-                // Join on tasks table.
-                $query->select('COUNT(DISTINCT t.id) AS tasks');
-                $query->join('LEFT', '#__pf_tasks AS t on t.milestone_id = a.id');
+            // Join on project table.
+            $query->select('p.title AS project_title, p.alias AS project_alias');
+            $query->join('LEFT', '#__pf_projects AS p on p.id = a.project_id');
 
-                // Join on task lists table.
-                $query->select('COUNT(DISTINCT l.id) AS lists');
-                $query->join('LEFT', '#__pf_task_lists AS l on l.milestone_id = a.id');
+            // Join on tasks table.
+            $query->select('COUNT(DISTINCT t.id) AS tasks');
+            $query->join('LEFT', '#__pf_tasks AS t on t.milestone_id = a.id');
 
-                // Join on user table.
-                $query->select('u.name AS author');
-                $query->join('LEFT', '#__users AS u on u.id = a.created_by');
+            // Join on task lists table.
+            $query->select('COUNT(DISTINCT l.id) AS lists');
+            $query->join('LEFT', '#__pf_task_lists AS l on l.milestone_id = a.id');
 
-                $query->where('a.id = ' . (int) $pk);
+            // Join on user table.
+            $query->select('u.name AS author');
+            $query->join('LEFT', '#__users AS u on u.id = a.created_by');
 
-                // Filter by published state.
-                $published = $this->getState('filter.published');
-                $archived  = $this->getState('filter.archived');
+            $query->where('a.id = ' . (int) $pk);
 
-                if (is_numeric($published)) {
-                    $query->where('(a.state = ' . (int) $published . ' OR a.state =' . (int) $archived . ')');
-                }
+            // Filter by published state.
+            $published = $this->getState('filter.published');
+            $archived  = $this->getState('filter.archived');
 
-                $db->setQuery($query);
-
-                $data = $db->loadObject();
-
-                if ($error = $db->getErrorMsg()) throw new Exception($error);
-
-                if (empty($data)) {
-                    return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_MILESTONE_NOT_FOUND'));
-                }
-
-                // Check for published state if filter set.
-                if (((is_numeric($published)) || (is_numeric($archived))) && (($data->state != $published) && ($data->state != $archived))) {
-                    return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_MILESTONE_NOT_FOUND'));
-                }
-
-                // Generate slugs
-                $data->slug = $data->id.':' . $data->alias;
-                $data->project_slug = $data->project_id.':' . $data->project_alias;
-
-                // Convert parameter fields to objects.
-                $registry = new JRegistry;
-                $registry->loadString($data->attribs);
-
-                $data->params = clone $this->getState('params');
-                $data->params->merge($registry);
-
-                // Get the attachments
-                if (PFApplicationHelper::exists('com_pfrepo')) {
-                    $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-                    $data->attachments = $attachments->getItems('com_pfmilestones.milestone', $data->id);
-                }
-                else {
-                    $data->attachments = array();
-                }
-
-                // Compute selected asset permissions.
-                // Technically guest could edit an article, but lets not check that to improve performance a little.
-                if (!JFactory::getUser()->get('guest')) {
-                    $uid    = JFactory::getUser()->get('id');
-                    $access = PFmilestonesHelper::getActions($data->id);
-
-                    // Check general edit permission first.
-                    if ($access->get('core.edit')) {
-                        $data->params->set('access-edit', true);
-                    }
-                    elseif (!empty($uid) && $access->get('core.edit.own')) {
-                        // Now check if edit.own is available.
-                        // Check for a valid user and that they are the owner.
-                        if ($uid == $data->created_by) {
-                            $data->params->set('access-edit', true);
-                        }
-                    }
-                }
-
-                // Compute view access permissions.
-                if ($access = $this->getState('filter.access')) {
-                    // If the access filter has been set, we already know this user can view.
-                    $data->params->set('access-view', true);
-                }
-                else {
-                    // If no access filter is set, the layout takes some responsibility for display of limited information.
-                    $levels = JFactory::getUser()->getAuthorisedViewLevels();
-
-                    $data->params->set('access-view', in_array($data->access, $levels));
-                }
-
-                $this->_item[$pk] = $data;
+            if (is_numeric($published)) {
+                $query->where('(a.state = ' . (int) $published . ' OR a.state =' . (int) $archived . ')');
             }
-            catch (JException $e)
-            {
-                if ($e->getCode() == 404) {
-                    // Need to go thru the error handler to allow Redirect to work.
-                    JError::raiseError(404, $e->getMessage());
+
+            $db->setQuery($query);
+            $item = $db->loadObject();
+
+            // Check for error
+            if ($error = $db->getErrorMsg()) throw new Exception($error);
+
+            // Check if we have a record
+            if (empty($item)) {
+                return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_MILESTONE_NOT_FOUND'));
+            }
+
+            // Check for published state if filter set.
+            if (((is_numeric($published)) || (is_numeric($archived))) && (($item->state != $published) && ($item->state != $archived))) {
+                return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_MILESTONE_NOT_FOUND'));
+            }
+
+            // Convert parameter fields to objects.
+            $registry = new JRegistry;
+            $registry->loadString($item->attribs);
+
+            $item->params = clone $this->getState('params');
+            $item->params->merge($registry);
+
+            // Get the attachments
+            if (PFApplicationHelper::exists('com_pfrepo')) {
+                $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+                $item->attachments = $attachments->getItems('com_pfmilestones.milestone', $item->id);
+                $item->attachment  = $item->attachments;
+            }
+            else {
+                $item->attachments = array();
+                $item->attachment  = array();
+            }
+
+            // Generate slugs
+            $item->slug         = $item->id . ':' . $item->alias;
+            $item->project_slug = $item->project_id . ':' . $item->project_alias;
+
+            // Compute selected asset permissions.
+            $user   = JFactory::getUser();
+            $uid    = $user->get('id');
+            $access = PFmilestonesHelper::getActions($item->id);
+
+            $view_access = true;
+
+            if ($item->access && !$user->authorise('core.admin')) {
+                $view_access = in_array($item->access, $user->getAuthorisedViewLevels());
+            }
+
+            $item->params->set('access-view', $view_access);
+
+            if (!$view_access) {
+                $item->params->set('access-edit', false);
+                $item->params->set('access-change', false);
+            }
+            else {
+                // Check general edit permission first.
+                if ($access->get('core.edit')) {
+                    $item->params->set('access-edit', true);
                 }
-                else {
-                    $this->setError($e);
-                    $this->_item[$pk] = false;
+                elseif (!empty($uid) &&  $access->get('core.edit.own')) {
+                    // Check for a valid user and that they are the owner.
+                    if ($uid == $item->created_by) {
+                        $item->params->set('access-edit', true);
+                    }
                 }
+
+                // Check edit state permission.
+                $item->params->set('access-change', $access->get('core.edit.state'));
+            }
+
+            // Cache the result
+            $this->_item[$pk] = $item;
+        }
+        catch (JException $e)
+        {
+            if ($e->getCode() == 404) {
+                // Need to go thru the error handler to allow Redirect to work.
+                JError::raiseError(404, $e->getMessage());
+            }
+            else {
+                $this->setError($e);
+                $this->_item[$pk] = false;
             }
         }
 
@@ -188,6 +200,7 @@ class PFmilestonesModelMilestone extends JModelItem
 
         // Adjust the state filter based on permissions
         $access = PFmilestonesHelper::getActions();
+
         if (!$access->get('core.edit.state') && !$access->get('core.edit')) {
             $this->setState('filter.published', 1);
             $this->setState('filter.archived', 2);

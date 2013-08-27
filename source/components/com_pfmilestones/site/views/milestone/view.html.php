@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Milestones
+ * @package      pkg_projectfork
+ * @subpackage   com_pfmilestones
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -46,8 +46,15 @@ class PFmilestonesViewMilestone extends JViewLegacy
 			return false;
 		}
 
+        // Check the view access.
+		if (!$item->params->get('access-view')) {
+		    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+			return false;
+		}
+
         // Set active project
         if (!PFApplicationHelper::setActiveProject($item->project_id)) {
+            JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
 
@@ -86,13 +93,6 @@ class PFmilestonesViewMilestone extends JViewLegacy
 		}
 
 		$offset = $state->get('list.offset');
-
-		// Check the view access to the milestone (the model has already computed the values).
-		if ($item->params->get('access-view') != true && (($item->params->get('show_noauth') != true &&  $user->get('guest') ))) {
-		    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
-			return false;
-		}
-
 
         // Fake some content item properties to avoid plugin issues
         PFObjectHelper::toContentItem($item);

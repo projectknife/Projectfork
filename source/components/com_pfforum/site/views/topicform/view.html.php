@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Forum
+ * @package      pkg_projectfork
+ * @subpackage   com_pfforum
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -40,6 +40,12 @@ class PFforumViewTopicForm extends JViewLegacy
         $this->return_page = $this->get('ReturnPage');
         $this->toolbar     = $this->getToolbar();
 
+        // Check for errors.
+        if (count($errors = $this->get('Errors'))) {
+            JError::raiseWarning(500, implode("\n", $errors));
+            return false;
+        }
+
         // Permission check.
         if ($this->item->id <= 0) {
             $access = PFforumHelper::getActions();
@@ -51,12 +57,6 @@ class PFforumViewTopicForm extends JViewLegacy
 
         if ($authorised !== true) {
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
-            return false;
-        }
-
-        // Check for errors.
-        if (count($errors = $this->get('Errors'))) {
-            JError::raiseWarning(500, implode("\n", $errors));
             return false;
         }
 

@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Tasks
+ * @package      pkg_projectfork
+ * @subpackage   com_pftasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -40,6 +40,12 @@ class PFtasksViewTasklistForm extends JViewLegacy
         $this->return_page = $this->get('ReturnPage');
         $this->toolbar     = $this->getToolbar();
 
+        // Check for errors.
+        if (count($errors = $this->get('Errors'))) {
+            JError::raiseWarning(500, implode("\n", $errors));
+            return false;
+        }
+
         // Permission check.
         if ($this->item->id <= 0) {
             $access = PFtasksHelper::getListActions();
@@ -53,13 +59,6 @@ class PFtasksViewTasklistForm extends JViewLegacy
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
-
-        // Check for errors.
-        if (count($errors = $this->get('Errors'))) {
-            JError::raiseWarning(500, implode("\n", $errors));
-            return false;
-        }
-
         //Escape strings for HTML output
         $this->pageclass_sfx = htmlspecialchars($this->state->params->get('pageclass_sfx'));
 

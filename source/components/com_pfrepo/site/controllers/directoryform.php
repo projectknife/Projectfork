@@ -61,51 +61,35 @@ class PFrepoControllerDirectoryForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $user  = JFactory::getUser();
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        // Get form input
+        $dir = isset($data['parent_id'])  ? (int) $data['parent_id']  : JRequest::getUint('filter_parent_id');
 
-        $access  = true;
-        $levels  = $user->getAuthorisedViewLevels();
-        $dir     = isset($data['parent_id'])  ? (int) $data['parent_id'] : 0;
-        $project = isset($data['project_id']) ? (int) $data['project_id'] : 0;
+        $user   = JFactory::getUser();
+        $asset  = 'com_pfrepo.directory.' . $dir;
+        $access = true;
 
-        if (empty($data)) {
-            $dir     = JRequest::getUint('filter_parent_id');
-            $project = JRequest::getUint('filter_project');
-
-            // Do not allow if no dir or project is given
-            if ($dir == 0 || $project == 0) {
-                return false;
-            }
+        // Deny if no parent directory is given
+        if (!$dir) {
+            $this->setError(JText::_('COM_PROJECTFORK_WARNING_DIRECTORY_NOT_FOUND'));
+            return false;
         }
 
-        // Check if the user has access to the parent directory
-        if (!$user->authorise('core.admin', 'com_pfrepo')) {
-            if ($dir) {
-                $query->select('access')
-                      ->from('#__pf_repo_dirs')
-                      ->where('id = ' . $dir);
+        // Check if the user has viewing access when not a super admin
+        if (!$user->authorise('core.create')) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-                $db->setQuery($query);
-                $access = (in_array((int) $db->loadResult(), $levels) && $user->authorise('core.create', 'com_pfrepo.directory.' . $dir));
-            }
+            $query->select('access')
+                  ->from('#__pf_repo_dirs')
+                  ->where('id = ' . $dir);
+
+            $db->setQuery($query);
+            $lvl = $db->loadResult();
+
+            $access = in_array($lvl, $user->getAuthorisedViewLevels());
         }
 
-        // Check if the user has access to the project
-        if (!$user->authorise('core.admin', 'com_pfprojects')) {
-            if ($project && $access) {
-                $query->clear();
-                $query->select('access')
-                      ->from('#__pf_projects')
-                      ->where('id = ' . $db->quote((int) $project));
-
-                $db->setQuery($query);
-                $access = in_array((int) $db->loadResult(), $levels);
-            }
-        }
-
-        return ($user->authorise('core.create', 'com_pfrepo') && $access);
+        return ($user->authorise('core.create', $asset) && $access);
     }
 
 
@@ -119,37 +103,53 @@ class PFrepoControllerDirectoryForm extends JControllerForm
      */
     protected function allowEdit($data = array(), $key = 'id')
     {
-        // Initialise variables.
-        $id     = (int) isset($data[$key]) ? $data[$key] : 0;
-        $uid    = JFactory::getUser()->get('id');
-        $access = PFrepoHelper::getActions('directory', $id);
+        // Get form input
+        $id = (int) isset($data[$key]) ? $data[$key] : 0;
+
+        $user   = JFactory::getUser();
+        $uid    = $user->get('id');
+        $asset  = 'com_pfrepo.directory.' . $id;
+        $access = true;
+
+        // Check if the user has viewing access when not a super admin
+        if (!$user->authorise('core.admin')) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('access')
+                  ->from('#__pf_repo_dirs')
+                  ->where('id = ' . $id);
+
+            $db->setQuery($query);
+            $lvl = $db->loadResult();
+
+            if (!in_array($lvl, $user->getAuthorisedViewLevels())) {
+                return false;
+            }
+        }
 
         // Check general edit permission first.
-        if ($access->get('core.edit')) {
+        if ($user->authorise('core.edit', $asset)) {
             return true;
         }
 
         // Fallback on edit.own.
         // First test if the permission is available.
-        if ($access->get('core.edit.own')) {
-            // Now test the owner is the user.
-            $owner = (int) isset($data['created_by']) ? $data['created_by'] : 0;
-
-            if (empty($owner) && $id) {
-                // Need to do a lookup from the model.
-                $record = $this->getModel()->getItem($id);
-
-                if (empty($record)) return false;
-
-                $owner = $record->created_by;
-            }
-
-            // If the owner matches 'me' then do the test.
-            if ($owner == $uid) return true;
+        if (!$user->authorise('core.edit.own', $asset)) {
+            return false;
         }
 
-        // Since there is no asset tracking, revert to the component permissions.
-        return parent::allowEdit($data, $key);
+        // Load the item
+        $record = $this->getModel()->getItem($id);
+
+        // Abort if not found
+        if (empty($record)) return false;
+
+        // Now test the owner is the user.
+        $owner = (int) isset($data['created_by']) ? (int) $data['created_by'] : $record->created_by;
+
+        // If the owner matches 'me' then do the test.
+        return ($owner == $uid && $uid > 0);
     }
 
 

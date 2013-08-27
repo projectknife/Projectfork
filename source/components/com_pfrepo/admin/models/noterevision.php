@@ -51,15 +51,17 @@ class PFrepoModelNoteRevision extends JModelAdmin
      */
     public function getItem($pk = null)
     {
-        if ($item = parent::getItem($pk)) {
-            // Convert the params field to an array.
-            $registry = new JRegistry;
+        $item = parent::getItem($pk);
 
-            $registry->loadString($item->attribs);
+        if ($item === false) return false;
 
-            $item->params  = $registry;
-            $item->attribs = $registry->toArray();
-        }
+        // Convert the params field to an array.
+        $registry = new JRegistry;
+
+        $registry->loadString($item->attribs);
+
+        $item->params  = $registry;
+        $item->attribs = $registry->toArray();
 
         return $item;
     }
@@ -203,14 +205,11 @@ class PFrepoModelNoteRevision extends JModelAdmin
      */
     protected function canDelete($record)
     {
-        if (!empty($record->parent_id)) {
-            $user  = JFactory::getUser();
-            $asset = 'com_pfrepo.note.' . (int) $record->parent_id;
-
-            return $user->authorise('core.delete', $asset);
+        if (empty($record->id)) {
+            return parent::canDelete($record);
         }
 
-        return parent::canDelete($record);
+        return JFactory::getUser()->authorise('core.delete', 'com_pfrepo.note.' . (int) $record->parent_id);
     }
 
 
@@ -292,16 +291,11 @@ class PFrepoModelNoteRevision extends JModelAdmin
      */
     protected function canEditState($record)
     {
-        $user = JFactory::getUser();
+        if (empty($record->id)) {
+            return parent::canEditState($record);
+        }
 
-		// Check for existing item.
-		if (!empty($record->parent_id)) {
-			return $user->authorise('core.edit.state', 'com_pfrepo.note.' . (int) $record->parent_id);
-		}
-		else {
-		    // Default to component settings.
-			return parent::canEditState('com_pfrepo');
-		}
+        return JFactory::getUser()->authorise('core.edit.state', 'com_pfrepo.note.' . (int) $record->parent_id);
     }
 
 
@@ -315,16 +309,14 @@ class PFrepoModelNoteRevision extends JModelAdmin
      */
     protected function canEdit($record)
     {
-        $user = JFactory::getUser();
-
-        // Check for existing item.
-        if (!empty($record->parent_id)) {
-            $asset = 'com_pfrepo.note.' . (int) $record->parent_id;
-
-            return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
+        if (empty($record->id)) {
+            return $user->authorise('core.edit', 'com_pfrepo');
         }
 
-        return $user->authorise('core.edit', 'com_pfrepo');
+        $user  = JFactory::getUser();
+        $asset = 'com_pfrepo.note.' . (int) $record->parent_id;
+
+        return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
     }
 
 
@@ -367,7 +359,7 @@ class PFrepoModelNoteRevision extends JModelAdmin
                 $this->setState($this->getName() . '.project', $project);
                 PFApplicationHelper::setActiveProject($project);
             }
-            elseif ($parent_id) {
+            elseif ($dir_id) {
                 $table = $this->getTable('Directory');
 
                 if ($table->load($parent_id)) {

@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Forum
+ * @package      pkg_projectfork
+ * @subpackage   com_pfforum
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -117,6 +117,12 @@ Joomla.submitbutton = function(task)
     						<span class="small muted pull-right"><?php echo JHtml::_('date', $this->topic->created, $this->params->get('date_format', JText::_('DATE_FORMAT_LC2'))); ?></span>
     						<div class="well-description">
     							<?php echo $this->topic->description; ?>
+                                <?php if (count($this->topic->attachment)) : ?>
+                                    <fieldset>
+                                        <legend class="small" style="font-weight: bold;"><?php echo JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'); ?></legend>
+                                        <?php echo JHtml::_('pfrepo.attachments', $this->topic->attachment); ?>
+                                    </fieldset>
+                                <?php endif; ?>
     						</div>
     					</div>
                         <div class="btn-toolbar margin-none">
@@ -162,6 +168,12 @@ Joomla.submitbutton = function(task)
     						<span class="small muted pull-right"><?php echo JHtml::_('date', $item->created, $this->params->get('date_format', JText::_('DATE_FORMAT_LC2'))); ?></span>
     						<div class="well-description">
     							<?php echo $item->description;?>
+                                <?php if (count($item->attachment)) : ?>
+                                    <fieldset>
+                                        <legend class="small" style="font-weight: bold;"><?php echo JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'); ?></legend>
+                                        <?php echo JHtml::_('pfrepo.attachments', $item->attachment); ?>
+                                    </fieldset>
+                                <?php endif; ?>
     						</div>
     					</div>
     					<div class="btn-toolbar margin-none">

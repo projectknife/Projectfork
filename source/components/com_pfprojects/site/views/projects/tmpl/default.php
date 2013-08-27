@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Projects
+ * @package      pkg_projectfork
+ * @subpackage   com_pfprojects
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -96,10 +96,9 @@ $is_ssl = JFactory::getURI()->isSSL();
                     $access = PFprojectsHelper::getActions($item->id);
                     $link   = PfprojectsHelperRoute::getDashboardRoute($item->slug);
 
-                    $can_create   = $access->get('core.create');
                     $can_edit     = $access->get('core.edit');
                     $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
-                    $can_edit_own = ($access->get('core.edit.own') && $item->created_by == $uid);
+                    $can_edit_own = ($access->get('core.edit.own')   && $item->created_by == $uid);
                     $can_change   = ($access->get('core.edit.state') && $can_checkin);
 
                     // Calculate project progress
@@ -115,11 +114,12 @@ $is_ssl = JFactory::getURI()->isSSL();
                     if ($item->progress < 34)   $progress_class = 'danger label-important';
 
                     // Prepare the watch button
-                    $watch = '';
-
                     if ($uid) {
                         $options = array('div-class' => '', 'a-class' => 'btn-mini');
-                        $watch = JHtml::_('pfhtml.button.watch', 'projects', $i, $item->watching, $options);
+                        $watch   = JHtml::_('pfhtml.button.watch', 'projects', $i, $item->watching, $options);
+                    }
+                    else {
+                        $watch = '';
                     }
                 ?>
                 <?php if ($item->category_title != $current_cat && !is_numeric($this->state->get('filter.category'))) : ?>
@@ -223,7 +223,7 @@ $is_ssl = JFactory::getURI()->isSSL();
     	    	    			<?php if ($can_edit || $can_edit_own) : ?>
     	    	    			<div class="btn-group">
     	    	    			    <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_pfprojects&task=form.edit&id=' . $item->slug);?>">
-    	    	    			        <span aria-hidden="true" class="icon-pencil"></span> Edit
+    	    	    			        <span aria-hidden="true" class="icon-pencil"></span> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT'); ?>
     	    	    			    </a>
     	    	    			</div>
     	    	    			<?php endif; ?>

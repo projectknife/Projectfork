@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Forum
+ * @package      pkg_projectfork
+ * @subpackage   com_pfforum
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -90,8 +90,9 @@ class PFforumModelReplies extends JModelList
 
         // Implement View Level Access
         if (!$user->authorise('core.admin')) {
-            $groups = implode(',', $user->getAuthorisedViewLevels());
-            $query->where('a.access IN (' . $groups . ')');
+            $levels = implode(',', $user->getAuthorisedViewLevels());
+
+            $query->where('a.access IN (' . $levels . ')');
         }
 
         // Join over the attachments for attachment count
@@ -132,12 +133,25 @@ class PFforumModelReplies extends JModelList
 
         // Get the global params
         $global_params = JComponentHelper::getParams('com_pfforum', true);
+        $repo_exists   = PFApplicationHelper::exists('com_pfrepo');
+
+        if ($repo_exists) {
+            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+        }
 
         foreach ($items as $i => &$item)
         {
             // Convert the parameter fields into objects.
             $params = new JRegistry;
             $params->loadString($item->attribs);
+
+            // Get Attachments
+            if ($repo_exists && $attachments) {
+                $item->attachment = $attachments->getItems('com_pfforum.reply', $item->id);
+            }
+            else {
+                $item->attachment = array();
+            }
 
             $items[$i]->params = clone $this->getState('params');
 

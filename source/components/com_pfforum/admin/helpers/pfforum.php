@@ -1,7 +1,7 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Forum
+ * @package      pkg_projectfork
+ * @subpackage   com_pfforum
  *
  * @author       Tobias Kuhn (eaxs)
  * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
@@ -19,6 +19,13 @@ class PFforumHelper
      * @var    string
      */
     public static $extension = 'com_pfforum';
+
+    /**
+     * Indicates whether this component uses a project asset or not
+     *
+     * @var    boolean
+     */
+    public static $project_asset = true;
 
 
     /**
@@ -71,8 +78,9 @@ class PFforumHelper
         $user   = JFactory::getUser();
         $result = new JObject;
 
-        if (empty($id) || $id == 0) {
-            $asset = self::$extension;
+        if (empty($id)) {
+            $pid   = PFApplicationHelper::getActiveProjectId();
+            $asset = (empty($pid) ? self::$extension : 'com_pfforum.project.' . $pid);
         }
         else {
             $asset = 'com_pfforum.topic.' . (int) $id;
@@ -107,14 +115,15 @@ class PFforumHelper
         $user   = JFactory::getUser();
         $result = new JObject;
 
-        if ((empty($id) || $id == 0) && (empty($topic) || $topic == 0)) {
-            $asset = self::$extension;
+        if (!empty($id)) {
+            $asset = 'com_pfforum.reply.' . (int) $id;
         }
-        elseif (empty($id) || $id == 0) {
+        elseif(!empty($topic)) {
             $asset = 'com_pfforum.topic.' . (int) $topic;
         }
         else {
-            $asset = 'com_pfforum.reply.' . (int) $id;
+            $pid   = PFApplicationHelper::getActiveProjectId();
+            $asset = (empty($pid) ? self::$extension : 'com_pfforum.project.' . $pid);
         }
 
         $actions = array(

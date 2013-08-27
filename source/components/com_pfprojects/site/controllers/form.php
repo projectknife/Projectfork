@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Projects
+ * @package      pkg_projectfork
+ * @subpackage   com_pfprojects
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -51,52 +51,6 @@ class PFprojectsControllerForm extends JControllerForm
 
 
     /**
-     * Method to add a new record.
-     *
-     * @return    boolean    True if the article can be added, false if not.
-     */
-    public function add()
-    {
-        if (!parent::add()) {
-            // Redirect to the return page.
-            $this->setRedirect($this->getReturnPage());
-        }
-    }
-
-
-    /**
-     * Method to cancel an edit.
-     *
-     * @param     string    $key    The name of the primary key of the URL variable.
-     *
-     * @return    void
-     */
-    public function cancel($key = 'id')
-    {
-        parent::cancel($key);
-
-        // Redirect to the return page.
-        $this->setRedirect($this->getReturnPage());
-    }
-
-
-    /**
-     * Method to edit an existing record.
-     *
-     * @param     string     $key        The name of the primary key of the URL variable.
-     * @param     string     $url_var    The name of the URL variable if different from the primary key.
-     *
-     * @return    boolean                True if access level check and checkout passes, false otherwise.
-     */
-    public function edit($key = null, $url_var = 'id')
-    {
-        $result = parent::edit($key, $url_var);
-
-        return $result;
-    }
-
-
-    /**
      * Method to get a model object, loading it if required.
      *
      * @param     string    $name      The model name. Optional.
@@ -114,6 +68,66 @@ class PFprojectsControllerForm extends JControllerForm
 
 
     /**
+     * Method to add a new record.
+     *
+     * @return    boolean    True if the article can be added, false if not.
+     */
+    public function add()
+    {
+        if (!parent::add()) {
+            // Redirect to the return page.
+            $this->setRedirect($this->getReturnPage());
+        }
+    }
+
+
+    /**
+     * Method to save a record.
+     *
+     * @param     string     $key       The name of the primary key of the URL variable.
+     * @param     string     $urlVar    The name of the URL variable if different from the primary key.
+     *
+     * @return    boolean               True if successful, false otherwise.
+     */
+    public function save($key = null, $urlVar = null)
+    {
+        $data = JRequest::getVar('jform', array(), 'post', 'array');
+        $task = $this->getTask();
+
+        // Separate the different component rules before passing on the data
+        if (isset($data['rules'])) {
+            $rules = $data['rules'];
+
+            if (isset($data['rules']['com_pfprojects'])) {
+                $data['rules'] = $data['rules']['com_pfprojects'];
+
+                unset($rules['com_pfprojects']);
+            }
+
+            $data['component_rules'] = $rules;
+        }
+
+        // Reset the repo dir when saving as copy
+        if ($task == 'save2copy' && isset($data['attribs']['repo_dir'])) {
+            $dir = (int) $data['attribs']['repo_dir'];
+
+            if ($dir) {
+                $data['attribs']['repo_dir'] = 0;
+            }
+        }
+
+        if (version_compare(JVERSION, '3.0.0', 'ge')) {
+            $this->input->post->set('jform', $data);
+        }
+        else {
+            JRequest::setVar('jform', $data, 'post');
+        }
+
+        return parent::save($key, $urlVar);
+    }
+
+
+    /**
      * Method to check if you can add a new record.
      *
      * @param     array      $data    An array of input data.
@@ -122,9 +136,7 @@ class PFprojectsControllerForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $access = PFprojectsHelper::getActions();
-
-        return $access->get('core.create', 'com_pfprojects');
+        return JFactory::getUser()->authorise('core.create', 'com_pfprojects');
     }
 
 
@@ -138,37 +150,55 @@ class PFprojectsControllerForm extends JControllerForm
      */
     protected function allowEdit($data = array(), $key = 'id')
     {
-        // Initialise variables.
-        $id     = (int) isset($data[$key]) ? $data[$key] : 0;
-        $uid    = JFactory::getUser()->get('id');
-        $access = PFprojectsHelper::getActions($id);
+        // Get form input
+        $id = (int) isset($data[$key]) ? $data[$key] : 0;
 
-        // Check general edit permission first.
-        if ($access->get('core.edit', 'com_pfprojects')) {
+        $user  = JFactory::getUser();
+        $uid   = $user->get('id');
+        $asset = 'com_pfprojects.project.' . $id;
+
+        // Check if the user has viewing access when not a super admin
+        if (!$user->authorise('core.admin')) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('access')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . $id);
+
+            $db->setQuery($query);
+            $lvl = $db->loadResult();
+
+            if (!in_array($lvl, $user->getAuthorisedViewLevels())) {
+                return false;
+            }
+        }
+
+        // Check edit permission first
+        if ($user->authorise('core.edit', $asset)) {
             return true;
         }
 
-        // Fallback on edit.own.
+        // Fall back on edit.own.
         // First test if the permission is available.
-        if ($access->get('core.edit.own', 'com_pfprojects')) {
-            // Now test the owner is the user.
-            $owner = (int) isset($data['created_by']) ? $data['created_by'] : 0;
-
-            if (empty($owner) && $id) {
-                // Need to do a lookup from the model.
-                $record = $this->getModel()->getItem($id);
-
-                if (empty($record)) return false;
-
-                $owner = $record->created_by;
-            }
-
-            // If the owner matches 'me' then do the test.
-            if ($owner == $uid) return true;
+        if (!$user->authorise('core.edit.own', $asset)) {
+            return false;
         }
 
-        // Since there is no asset tracking, revert to the component permissions.
-        return parent::allowEdit($data, $key);
+        // Now test the owner is the user.
+        $owner = (int) isset($data['created_by']) ? (int) $data['created_by'] : 0;
+
+        if (!$owner && $id) {
+            // Need to do a lookup from the model.
+            $record = $this->getModel()->getItem($id);
+
+            if (empty($record)) return false;
+
+            $owner = $record->created_by;
+        }
+
+        // If the owner matches 'me' then do the test.
+        return ($owner == $uid && $uid > 0);
     }
 
 

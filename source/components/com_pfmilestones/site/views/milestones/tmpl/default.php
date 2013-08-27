@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Milestones
+ * @package      pkg_projectfork
+ * @subpackage   com_pfmilestones
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -182,14 +182,14 @@ $doc->addStyleDeclaration( $style );
                 			<?php if ($can_edit || $can_edit_own) : ?>
     	    	    			<div class="btn-group">
     	    	    			    <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_pfmilestones&task=form.edit&id=' . $item->slug);?>">
-    	    	    			        <span aria-hidden="true" class="icon-pencil"></span> Edit
+    	    	    			        <span aria-hidden="true" class="icon-pencil"></span><?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT'); ?>
     	    	    			    </a>
     	    	    			</div>
 	    	    			<?php endif; ?>
 	    	    			<?php if ($cmnts_enabled) : ?>
 	    	    				<div class="btn-group">
 	    	    					<a class="btn btn-mini" href="<?php echo JRoute::_(PFmilestonesHelperRoute::getMilestoneRoute($item->slug, $item->project_slug));?>#comments">
-	    	    			       	 <span aria-hidden="true" class="icon-comment"></span> <?php echo $item->comments; ?> <?php echo JText::_('Comments'); ?>
+	    	    			       	 <span aria-hidden="true" class="icon-comment"></span> <?php echo $item->comments; ?> <?php echo JText::_('COM_PROJECTFORK_COMMENTS'); ?>
 	    	    			        </a>
 	    	    			    </div>
     	    				<?php endif; ?>

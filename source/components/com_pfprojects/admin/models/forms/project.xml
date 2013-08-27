@@ -47,7 +47,9 @@
         />
         <field name="rules" type="groupaccess"
             component="com_pfprojects" section="project" inheritonly="false" filter="PFFormHelper::filterRules" validate="groupaccess"
+            version="4.2"
         />
+        <field name="component_rules" type="hidden" filter="PFFormHelper::filterComponentRules"/>
         <field name="labels" type="labelmanager"
             label="COM_PROJECTFORK_FIELD_LABELS" description="COM_PROJECTFORK_FIELD_LABELS_MANAGER_DESC"
         />
@@ -59,6 +61,8 @@
         <field name="created" type="hidden" readonly="true"/>
         <field name="checked_out" type="hidden" filter="unset" />
         <field name="checked_out_time" type="hidden" filter="unset" />
+        <field name="add_groupuser" type="hidden" readonly="true" />
+        <field name="rm_groupuser" type="hidden" readonly="true" />
     </fieldset>
 
     <fields name="attribs">

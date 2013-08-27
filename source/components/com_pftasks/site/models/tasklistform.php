@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Tasks
+ * @package      pkg_projectfork
+ * @subpackage   com_pftasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -24,61 +24,50 @@ class PFtasksModelTasklistForm extends PFtasksModelTasklist
     /**
      * Method to get item data.
      *
-     * @param     integer    The id of the item.
-     * @return    mixed      Item data object on success, false on failure.
+     * @param     integer    $pk      The id of the item.
+     * @return    mixed      $item    Item data object on success, false on failure.
      */
-    public function getItem($id = null)
+    public function getItem($pk = null)
     {
-        // Initialise variables.
-        $id = (int) (!empty($id)) ? $id : $this->getState($this->getName() . '.id');
+        // Get the record from the parent class method
+        $item = parent::getItem($pk);
 
-        // Get a row instance.
-        $table = $this->getTable();
-
-        // Attempt to load the row.
-        $return = $table->load($id);
-
-        // Check for a table object error.
-        if ($return === false && $table->getError()) {
-            $this->setError($table->getError());
-            return false;
-        }
-
-        $properties = $table->getProperties(1);
-        $value = JArrayHelper::toObject($properties, 'JObject');
-
-        // Convert attrib field to Registry.
-        $value->params = new JRegistry;
-        $value->params->loadString($value->attribs);
+        if ($item === false) return false;
 
         // Compute selected asset permissions.
-        $uid    = JFactory::getUser()->get('id');
-        $access = PFtasksHelper::getListActions($value->id);
+        $user   = JFactory::getUser();
+        $uid    = $user->get('id');
+        $access = PFtasksHelper::getListActions($item->id);
 
-        // Check general edit permission first.
-        if ($access->get('core.edit')) {
-            $value->params->set('access-edit', true);
-        }
-        // Now check if edit.own is available.
-        elseif (!empty($uid) && $access->get('core.edit.own')) {
-            // Check for a valid user and that they are the owner.
-            if ($uid == $value->created_by) {
-                $value->params->set('access-edit', true);
-            }
+        $view_access = true;
+
+        if ($item->access && !$user->authorise('core.admin')) {
+            $view_access = in_array($item->access, $user->getAuthorisedViewLevels());
         }
 
-        // Check edit state permission.
-        if ($id) {
-            // Existing item
-            $value->params->set('access-change', $access->get('core.edit.state'));
+        $item->params->set('access-view', $view_access);
+
+        if (!$view_access) {
+            $item->params->set('access-edit', false);
+            $item->params->set('access-change', false);
         }
         else {
-            // New item
-            $access = PFtasksHelper::getListActions();
-            $value->params->set('access-change', $access->get('core.edit.state'));
+            // Check general edit permission first.
+            if ($access->get('core.edit')) {
+                $item->params->set('access-edit', true);
+            }
+            elseif (!empty($uid) &&  $access->get('core.edit.own')) {
+                // Check for a valid user and that they are the owner.
+                if ($uid == $item->created_by) {
+                    $item->params->set('access-edit', true);
+                }
+            }
+
+            // Check edit state permission.
+            $item->params->set('access-change', $access->get('core.edit.state'));
         }
 
-        return $value;
+        return $item;
     }
 
 

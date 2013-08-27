@@ -10,6 +10,20 @@
 
 defined('_JEXEC') or die();
 
+$allowed      = PFrepoHelper::getAllowedFileExtensions();
+$user         = JFactory::getUser();
+$config       = JComponentHelper::getParams('com_pfrepo');
+$filter_admin = $config->get('filter_ext_admin');
+$is_admin     = $user->authorise('core.admin');
+
+// Restrict file extensions?
+$txt_upload = '';
+
+if ($is_admin && !$filter_admin) $allowed = array();
+
+if (count($allowed)) {
+    $txt_upload = JText::_('COM_PROJECTFORK_UPLOAD_ALLOWED_EXT') . ' ' . implode(', ', $allowed);
+}
 
 JHtml::_('behavior.tooltip');
 JHtml::_('behavior.formvalidation');
@@ -34,7 +48,12 @@ Joomla.submitbutton = function(task)
             <legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_FILE') : JText::_('COM_PROJECTFORK_EDIT_FILE'); ?></legend>
             <ul class="adminformlist unstyled">
                 <li><?php echo $this->form->getLabel('dir_id') . $this->form->getInput('dir_id'); ?></li>
-                <li><?php echo $this->form->getLabel('file') . $this->form->getInput('file'); ?></li>
+                <li>
+                    <?php echo $this->form->getLabel('file') . $this->form->getInput('file'); ?>
+                    <?php if (count($allowed)) : ?>
+                        <div class="small"><?php echo $txt_upload; ?></div>
+                    <?php endif; ?>
+                </li>
                 <li><?php echo $this->form->getLabel('title') . $this->form->getInput('title'); ?></li>
                 <li><?php echo $this->form->getLabel('description') . $this->form->getInput('description'); ?></li>
             </ul>

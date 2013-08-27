@@ -112,6 +112,11 @@ class plgContentPFtasks extends JPlugin
 
             // Update publishing state
             $this->updatePubState($context, $table->id, $table->state);
+
+            if ($context == 'com_pfprojects.project') {
+                // Update asset hierarchy
+                $this->updateParentAsset($table->id);
+            }
         }
 
 
@@ -178,6 +183,10 @@ class plgContentPFtasks extends JPlugin
         $context = $this->unalias($context);
 
         $this->deleteFromContext($context, $table->id);
+
+        if ($context == 'com_pfprojects.project') {
+            $this->deleteProjectAsset($table->id);
+        }
 
         return true;
     }
@@ -466,5 +475,124 @@ class plgContentPFtasks extends JPlugin
                 $db->execute();
             }
         }
+    }
+
+
+    /**
+     * Method to change the hierarchy of all task assets
+     *
+     * @param     integer    $project    The project id
+     *
+     * @return    boolean                True on success
+     */
+    protected function updateParentAsset($project)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        // Find the component asset id
+        $query->select('id')
+              ->from('#__assets')
+              ->where('name = ' . $db->quote('com_pftasks'));
+
+        $db->setQuery($query);
+        $com_asset = (int) $db->loadResult();
+
+
+        if (!$com_asset) return false;
+
+        // Find the project asset id
+        $query->clear();
+        $query->select('id')
+              ->from('#__assets')
+              ->where('name = ' . $db->quote('com_pftasks.project.' . $project));
+
+        $db->setQuery($query);
+        $project_asset = (int) $db->loadResult();
+
+        if (!$project_asset) return false;
+
+        // Find all task assets that need to be updated
+        $query->clear();
+        $query->select('a.asset_id')
+              ->from('#__pf_tasks AS a')
+              ->join('INNER', '#__assets AS s ON s.id = a.asset_id')
+              ->where('a.project_id = ' . (int) $project)
+              ->where('s.parent_id = ' . (int) $com_asset)
+              ->order('a.id ASC');
+
+        $db->setQuery($query);
+        $pks = $db->loadColumn();
+
+        if (!is_array($pks)) $pks = array();
+
+        // Update each asset
+        foreach ($pks AS $pk)
+        {
+            $asset = JTable::getInstance('Asset', 'JTable', array('dbo' => $db));
+
+            $asset->load($pk);
+
+            $asset->setLocation($project_asset, 'last-child');
+            $asset->parent_id = $project_asset;
+
+            if (!$asset->check() || !$asset->store(false)) {
+                return false;
+            }
+        }
+
+        // Find all task list assets that need to be updated
+        $query->clear();
+        $query->select('a.asset_id')
+              ->from('#__pf_task_lists AS a')
+              ->join('INNER', '#__assets AS s ON s.id = a.asset_id')
+              ->where('a.project_id = ' . (int) $project)
+              ->where('s.parent_id != ' . (int) $project_asset)
+              ->order('a.id ASC');
+
+        $db->setQuery($query);
+        $pks = $db->loadColumn();
+
+        if (!is_array($pks)) $pks = array();
+
+        // Update each asset
+        foreach ($pks AS $pk)
+        {
+            $asset = JTable::getInstance('Asset', 'JTable', array('dbo' => $db));
+
+            $asset->load($pk);
+
+            $asset->setLocation($project_asset, 'last-child');
+            $asset->parent_id = $project_asset;
+
+            if (!$asset->check() || !$asset->store(false)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Method to delete a component project asset
+     *
+     * @param     integer    $project    The project id
+     *
+     * @return    boolean                True on success
+     */
+    protected function deleteProjectAsset($project)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->delete('#__assets')
+              ->where('name = ' . $db->quote('com_pftasks.project.' . (int) $project));
+
+        $db->setQuery($query);
+
+        if (!$db->execute()) return false;
+
+        return true;
     }
 }

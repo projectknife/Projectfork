@@ -63,6 +63,19 @@ class PFprojectsControllerProject extends JControllerForm
         $data = JRequest::getVar('jform', array(), 'post', 'array');
         $task = $this->getTask();
 
+        // Separate the different component rules before passing on the data
+        if (isset($data['rules'])) {
+            $rules = $data['rules'];
+
+            if (isset($data['rules']['com_pfprojects'])) {
+                $data['rules'] = $data['rules']['com_pfprojects'];
+
+                unset($rules['com_pfprojects']);
+            }
+
+            $data['component_rules'] = $rules;
+        }
+
         // Reset the repo dir when saving as copy
         if ($task == 'save2copy' && isset($data['attribs']['repo_dir'])) {
             $dir = (int) $data['attribs']['repo_dir'];

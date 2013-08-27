@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Forum
+ * @package      pkg_projectfork
+ * @subpackage   com_pfforum
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -59,30 +59,46 @@ class PFforumModelTopic extends JModelAdmin
     /**
      * Method to get a single record.
      *
-     * @param     integer    The id of the primary key.
-     * @return    mixed      Object on success, false on failure.
+     * @param     integer $pk   The id of the primary key.
+     * @return    mixed   $item   Object on success, false on failure.
      */
     public function getItem($pk = null)
     {
-        if ($item = parent::getItem($pk)) {
-            // Convert the params field to an array.
-            $registry = new JRegistry;
-            $registry->loadString($item->attribs);
-            $item->attribs = $registry->toArray();
+        $pk    = (!empty($pk)) ? (int) $pk : (int) $this->getState($this->getName() . '.id');
+        $table = $this->getTable();
 
-            // Get the attachments
-            if (PFApplicationHelper::exists('com_pfrepo')) {
-                $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-                $item->attachment = $attachments->getItems('com_pfforum.topic', $item->id);
-            }
-            else {
-                $item->attachment = array();
-            }
+        if ($pk > 0) {
+            // Attempt to load the row.
+            $return = $table->load($pk);
 
-            // Get the labels
-            $labels = $this->getInstance('Labels', 'PFModel');
-            $item->labels = $labels->getConnections('com_pfforum.topic', $item->id);
+            // Check for a table object error.
+            if ($return === false && $table->getError()) {
+                $this->setError($table->getError());
+                return false;
+            }
         }
+
+        // Convert to the JObject before adding other data.
+        $properties = $table->getProperties(1);
+        $item = JArrayHelper::toObject($properties, 'JObject');
+
+        // Convert attributes to JRegistry params
+        $item->params = new JRegistry();
+
+        $item->params->loadString($item->attribs);
+        $item->attribs = $item->params->toArray();
+
+        // Get the attachments
+        $item->attachment = array();
+
+        if (PFApplicationHelper::exists('com_pfrepo')) {
+            $attachments = $this->getInstance('Attachments', 'PFrepoModel');
+            $item->attachment = $attachments->getItems('com_pfforum.topic', $item->id);
+        }
+
+        // Get the labels
+        $model_labels = $this->getInstance('Labels', 'PFModel');
+        $item->labels = $model_labels->getConnections('com_pfforum.topic', $item->id);
 
         return $item;
     }
@@ -483,16 +499,21 @@ class PFforumModelTopic extends JModelAdmin
      */
     protected function canDelete($record)
     {
-        if (!empty($record->id)) {
-            if ($record->state != -2) return false;
-
-            $user  = JFactory::getUser();
-            $asset = 'com_pfforum.topic.' . (int) $record->id;
-
-            return $user->authorise('core.delete', $asset);
+        if (empty($record->id)) {
+            return parent::canDelete($record);
         }
 
-        return parent::canDelete($record);
+        if ($record->state != -2) {
+            return false;
+        }
+
+        $user = JFactory::getUser();
+
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return $user->authorise('core.delete', 'com_pfforum.topic.' . (int) $record->id);
     }
 
 
@@ -506,16 +527,17 @@ class PFforumModelTopic extends JModelAdmin
      */
     protected function canEditState($record)
     {
+        if (empty($record->id)) {
+            return parent::canEditState($record);
+        }
+
         $user = JFactory::getUser();
 
-		// Check for existing item.
-		if (!empty($record->id)) {
-			return $user->authorise('core.edit.state', 'com_pfforum.topic.' . (int) $record->id);
-		}
-		else {
-		    // Default to component settings.
-			return parent::canEditState('com_pfforum');
-		}
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return $user->authorise('core.edit.state', 'com_pfforum.topic.' . (int) $record->id);
     }
 
 
@@ -529,15 +551,17 @@ class PFforumModelTopic extends JModelAdmin
      */
     protected function canEdit($record)
     {
-        $user = JFactory::getUser();
-
-        // Check for existing item.
-        if (!empty($record->id)) {
-            $asset = 'com_pfforum.topic.' . (int) $record->id;
-
-            return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
+        if (empty($record->id)) {
+            return $user->authorise('core.edit', 'com_pfforum');
         }
 
-        return $user->authorise('core.edit', 'com_pfforum');
+        $user  = JFactory::getUser();
+        $asset = 'com_pfforum.topic.' . (int) $record->id;
+
+        if (!$user->authorise('core.admin') && !in_array($record->access, $user->getAuthorisedViewLevels())) {
+            return false;
+        }
+
+        return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
     }
 }

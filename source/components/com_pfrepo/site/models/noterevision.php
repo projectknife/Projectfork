@@ -22,20 +22,6 @@ require_once dirname(__FILE__) . '/noteform.php';
 class PFrepoModelNoteRevision extends PFrepoModelNoteForm
 {
     /**
-     * Constructor.
-     *
-     * @param    array          $config    An optional associative array of configuration settings.
-     *
-     * @see      jcontroller
-     */
-    public function __construct($config = array())
-    {
-       // Call parent constructor
-       parent::__construct($config);
-    }
-
-
-    /**
      * Returns a Table object, always creating it.
      *
      * @param     string    The table type to instantiate
@@ -58,21 +44,39 @@ class PFrepoModelNoteRevision extends PFrepoModelNoteForm
      */
     public function getItem($pk = null)
     {
-        if ($item = parent::getItem($pk)) {
-            // Convert the params field to an array.
-            $registry = new JRegistry;
-            $registry->loadString($item->attribs);
-            $item->attribs = $registry->toArray();
+        $pk    = (!empty($pk)) ? (int) $pk : (int) $this->getState($this->getName() . '.id');
+        $table = $this->getTable();
 
-            $query = $this->_db->getQuery(true);
+        if ($pk > 0) {
+            // Attempt to load the row.
+            $return = $table->load($pk);
 
-            $query->select('name')
-                  ->from('#__users')
-                  ->where('id = ' . (int) $item->created_by);
-
-            $this->_db->setQuery($query);
-            $item->author_name = $this->_db->loadResult();
+            // Check for a table object error.
+            if ($return === false && $table->getError()) {
+                $this->setError($table->getError());
+                return false;
+            }
         }
+
+        // Convert to the JObject before adding other data.
+        $properties = $table->getProperties(1);
+        $item = JArrayHelper::toObject($properties, 'JObject');
+
+        // Convert attributes to JRegistry params
+        $item->params = new JRegistry();
+
+        $item->params->loadString($item->attribs);
+        $item->attribs = $item->params->toArray();
+
+        // Get the author name
+        $query = $this->_db->getQuery(true);
+
+        $query->select('name')
+              ->from('#__users')
+              ->where('id = ' . (int) $item->created_by);
+
+        $this->_db->setQuery($query);
+        $item->author_name = $this->_db->loadResult();
 
         return $item;
     }
@@ -304,10 +308,10 @@ class PFrepoModelNoteRevision extends PFrepoModelNoteForm
                 $this->setState($this->getName() . '.project', $project);
                 PFApplicationHelper::setActiveProject($project);
             }
-            elseif ($parent_id) {
+            elseif ($dir_id) {
                 $table = $this->getTable('Directory');
 
-                if ($table->load($parent_id)) {
+                if ($table->load($dir_id)) {
                     $project = (int) $table->project_id;
 
                     $this->setState($this->getName() . '.project', $project);

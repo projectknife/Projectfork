@@ -82,7 +82,18 @@ class PFtableComment extends JTableNested
             $result = $this->_db->loadResult();
         }
         else {
-            // Get the asset id of the component
+            // Get the asset id of the component project asset
+            $query->select('id')
+                  ->from('#__assets')
+                  ->where('name' . ' = ' . $this->_db->quote("com_pfcomments.project." . (int) $this->project_id));
+
+            $this->_db->setQuery($query);
+            $result = $this->_db->loadResult();
+        }
+
+        // Fall back to the component
+        if (!$result) {
+            $query->clear();
             $query->select($this->_db->quoteName('id'))
                   ->from($this->_db->quoteName('#__assets'))
                   ->where($this->_db->quoteName('name') . ' = ' . $this->_db->quote("com_pfcomments"));

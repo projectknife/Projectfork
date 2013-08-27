@@ -15,6 +15,23 @@ defined('_JEXEC') or die();
 $dir        = $this->items['directory'];
 $browser    = JBrowser::getInstance();
 $txt_upload = ($browser->getBrowser() == 'msie') ? JText::_('COM_PROJECTFORK_AJAX_UPLOAD_CLICK') : JText::_('COM_PROJECTFORK_AJAX_UPLOAD_DD');
+$allowed    = PFrepoHelper::getAllowedFileExtensions();
+
+$user         = JFactory::getUser();
+$config       = JComponentHelper::getParams('com_pfrepo');
+$filter_admin = $config->get('filter_ext_admin');
+$is_admin     = $user->authorise('core.admin');
+
+// Restrict file extensions?
+$exts = '';
+
+if ($is_admin && !$filter_admin) $allowed = array();
+
+if (count($allowed)) {
+    $exts = ', allowedExtensions: ' . json_encode($allowed);
+
+    $txt_upload .= '. ' . JText::_('COM_PROJECTFORK_UPLOAD_ALLOWED_EXT') . ' ' . implode(', ', $allowed);
+}
 
 $area = array();
 $area[] = '<div class="qq-uploader">';
@@ -62,6 +79,7 @@ window.addEvent('domready', function createUploader()
         fileTemplate: '" . implode('', $el) . "',
         listElement: document.getElementById('qq-upload-list'),
         debug: true
+        " . $exts . "
     });
 });";
 

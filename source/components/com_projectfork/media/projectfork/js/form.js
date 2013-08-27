@@ -206,6 +206,100 @@ var PFform =
               jQuery("label[for=" + jQuery(this).attr('id') + "]").addClass('active btn-success');
           }
       });
+    },
+
+
+    alcmAddSelectedGroup: function(params)
+    {
+        var container = jQuery('#aclm-groups');
+        var sval      = jQuery('#aclm-add-group option:selected').val();
+        var stxt      = jQuery('#aclm-add-group option:selected').text();
+        var group     = jQuery('#alcm-group-' + sval, container);
+
+        if (sval == '' || group.length > 0) return false;
+        if (jQuery('#alcm-add-group').hasClass('disabled')) return false;
+
+        jQuery('#alcm-add-group').addClass('disabled');
+
+        jQuery.ajax(
+        {
+            url: 'index.php',
+            data: 'option=com_pfusers&view=grouprules&id=' + sval + 'tmpl=component&format=raw&' + params,
+            type: 'POST',
+            processData: true,
+            cache: false,
+            dataType: 'html',
+            success: function(resp)
+            {
+                var d = jQuery(resp);
+
+                container.append(d);
+            },
+            error: function(resp, e, msg)
+            {
+                Projectfork.displayMsg(resp, msg);
+            },
+            complete: function()
+            {
+                jQuery('#alcm-add-group').removeClass('disabled');
+            }
+        });
+    },
+
+
+    alcmAddPredefinedGroups: function(gids, com, sec, inh, aid, pid, i)
+    {
+        if (typeof i == 'undefined') i = 0;
+
+        var t = gids.length;
+
+        if (t == 0 || i >= t) return true;
+
+        var container = jQuery('#aclm-groups');
+        var params    = '&inherit=' + inh + '&component=' + com + '&section=' + sec + '&asset_id=' + aid + '&project_id=' + pid;
+
+        jQuery.ajax(
+        {
+            url: 'index.php',
+            data: 'option=com_pfusers&view=grouprules&id=' + gids[i] + 'tmpl=component&format=raw&' + params,
+            type: 'POST',
+            processData: true,
+            cache: false,
+            dataType: 'html',
+            success: function(resp)
+            {
+                var d = jQuery(resp);
+
+                container.append(d);
+
+                i += 1;
+
+                PFform.alcmAddPredefinedGroups(gids, com, sec, inh, aid, pid, i);
+            },
+            error: function(resp, e, msg)
+            {
+                Projectfork.displayMsg(resp, msg);
+            }
+        });
+    },
+
+
+    alcmToggleActions: function(gid)
+    {
+        var container = jQuery('#alcm-actions-' + gid);
+
+        if (container.css('display') == 'none') {
+            container.show();
+        }
+        else {
+            container.hide();
+        }
+    },
+
+
+    alcmRemoveGroup: function(gid)
+    {
+        jQuery('#alcm-group-' + gid).remove();
     }
 }
 

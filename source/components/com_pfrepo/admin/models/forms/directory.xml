@@ -30,6 +30,7 @@
         />
         <field name="rules" type="groupaccess"
             component="com_pfrepo" section="directory" inheritonly="true" filter="PFFormHelper::filterRules" validate="groupaccess"
+            version="4.2"
         />
         <field name="asset_id" type="hidden" filter="unset"/>
         <field name="access" type="inheritaccess" hidden="true" readonly="true"/>

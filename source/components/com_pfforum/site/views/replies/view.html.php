@@ -49,23 +49,23 @@ class PFforumViewReplies extends JViewLegacy
         $this->state = $this->get('State');
         $this->topic = $this->get('Topic');
 
+        // Check for existing topic id.
         if (intval($this->state->get('filter.topic') == 0)) {
             JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return;
         }
-        else {
-            if ($this->topic === false) {
-                JError::raiseError(500, $topic->getError());
-                return;
-            }
 
-            if (!$user->authorise('core.admin', 'com_pfforum')) {
-                if (!in_array($this->topic->access, $user->getAuthorisedViewLevels())) {
-                    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
-                    return;
-                }
-            }
+        // Check for existing topic record.
+        if ($this->topic === false) {
+            JError::raiseError(500, $topic->getError());
+            return false;
         }
+
+        // Check the topic view access.
+		if (!$this->topic->params->get('access-view')) {
+		    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+			return false;
+		}
 
         $this->items      = $this->get('Items');
         $this->pagination = $this->get('Pagination');

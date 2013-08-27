@@ -230,14 +230,11 @@ class PFrepoModelFileRevision extends PFrepoModelFile
      */
     protected function canDelete($record)
     {
-        if (!empty($record->parent_id)) {
-            $user  = JFactory::getUser();
-            $asset = 'com_pfrepo.file.' . (int) $record->parent_id;
-
-            return $user->authorise('core.delete', $asset);
+        if (empty($record->id)) {
+            return parent::canDelete($record);
         }
 
-        return parent::canDelete($record);
+        return JFactory::getUser()->authorise('core.delete', 'com_pfrepo.file.' . (int) $record->parent_id);
     }
 
 
@@ -319,16 +316,11 @@ class PFrepoModelFileRevision extends PFrepoModelFile
      */
     protected function canEditState($record)
     {
-        $user = JFactory::getUser();
+        if (empty($record->id)) {
+            return parent::canEditState($record);
+        }
 
-		// Check for existing item.
-		if (!empty($record->parent_id)) {
-			return $user->authorise('core.edit.state', 'com_pfrepo.file.' . (int) $record->parent_id);
-		}
-		else {
-		    // Default to component settings.
-			return parent::canEditState('com_pfrepo');
-		}
+        return JFactory::getUser()->authorise('core.edit.state', 'com_pfrepo.file.' . (int) $record->parent_id);
     }
 
 
@@ -342,15 +334,13 @@ class PFrepoModelFileRevision extends PFrepoModelFile
      */
     protected function canEdit($record)
     {
-        $user = JFactory::getUser();
-
-        // Check for existing item.
-        if (!empty($record->parent_id)) {
-            $asset = 'com_pfrepo.file.' . (int) $record->parent_id;
-
-            return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
+        if (empty($record->id)) {
+            return $user->authorise('core.edit', 'com_pfrepo');
         }
 
-        return $user->authorise('core.edit', 'com_pfrepo');
+        $user  = JFactory::getUser();
+        $asset = 'com_pfrepo.file.' . (int) $record->parent_id;
+
+        return ($user->authorise('core.edit', $asset) || ($access->get('core.edit.own', $asset) && $record->created_by == $user->id));
     }
 }

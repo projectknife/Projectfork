@@ -15,7 +15,7 @@ jimport('joomla.application.component.controllerform');
 
 
 /**
- * Time Form Controller
+ * Projectfork Time Form Controller
  *
  */
 class PFtimeControllerForm extends JControllerForm
@@ -40,6 +40,23 @@ class PFtimeControllerForm extends JControllerForm
 	 * @var    string
 	 */
 	protected $text_prefix = 'COM_PROJECTFORK_TIME';
+
+
+    /**
+     * Method to get a model object, loading it if required.
+     *
+     * @param     string    $name      The model name. Optional.
+     * @param     string    $prefix    The class prefix. Optional.
+     * @param     array     $config    Configuration array for model. Optional.
+     *
+     * @return    object               The model.
+     */
+    public function &getModel($name = 'Form', $prefix = 'PFtimeModel', $config = array('ignore_request' => true))
+    {
+        $model = parent::getModel($name, $prefix, $config);
+
+        return $model;
+    }
 
 
     /**
@@ -78,39 +95,6 @@ class PFtimeControllerForm extends JControllerForm
 
 
     /**
-     * Method to edit an existing record.
-     *
-     * @param     string     $key        The name of the primary key of the URL variable.
-     * @param     string     $url_var    The name of the URL variable if different from the primary key.
-     *
-     * @return    boolean                True if access level check and checkout passes, false otherwise.
-     */
-    public function edit($key = null, $url_var = 'id')
-    {
-        $result = parent::edit($key, $url_var);
-
-        return $result;
-    }
-
-
-    /**
-     * Method to get a model object, loading it if required.
-     *
-     * @param     string    $name      The model name. Optional.
-     * @param     string    $prefix    The class prefix. Optional.
-     * @param     array     $config    Configuration array for model. Optional.
-     *
-     * @return    object               The model.
-     */
-    public function &getModel($name = 'Form', $prefix = 'PFtimeModel', $config = array('ignore_request' => true))
-    {
-        $model = parent::getModel($name, $prefix, $config);
-
-        return $model;
-    }
-
-
-    /**
      * Method to check if you can add a new record.
      *
      * @param     array      $data    An array of input data.
@@ -119,27 +103,24 @@ class PFtimeControllerForm extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $user = JFactory::getUser();
-        $db   = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        // Get form input
+        $project = isset($data['project_id']) ? (int) $data['project_id'] : PFApplicationHelper::getActiveProjectId();
 
-        $access  = true;
-        $levels  = $user->getAuthorisedViewLevels();
-        $project = isset($data['project_id']) ? (int) $data['project_id'] : 0;
+        $user   = JFactory::getUser();
+        $asset  = 'com_pftime';
+        $access = true;
 
-        // Check if the user has access to the project
-        if (!$user->authorise('core.admin', 'com_pfprojects')) {
-            if ($project) {
-                $query->select('access')
-                      ->from('#__pf_projects')
-                      ->where('id = ' . $db->quote((int) $project));
-
-                $db->setQuery($query);
-                $access = in_array((int) $db->loadResult(), $levels);
+        if ($project) {
+            // Check if the user has viewing access when not a super admin
+            if (!$user->authorise('core.admin')) {
+                $access = in_array($project, PFUserHelper::getAuthorisedProjects());
             }
+
+            // Change the asset name
+            $asset  .= '.project.' . $project;
         }
 
-        return ($user->authorise('core.create', 'com_pftime') && $access);
+        return ($user->authorise('core.create', $asset) && $access);
     }
 
 
@@ -153,37 +134,52 @@ class PFtimeControllerForm extends JControllerForm
      */
     protected function allowEdit($data = array(), $key = 'id')
     {
-        // Initialise variables.
-        $id     = (int) isset($data[$key]) ? $data[$key] : 0;
-        $uid    = JFactory::getUser()->get('id');
-        $access = PFtimeHelper::getActions($id);
+        // Get form input
+        $id = (int) isset($data[$key]) ? $data[$key] : 0;
 
-        // Check general edit permission first.
-        if ($access->get('core.edit')) {
+        $user  = JFactory::getUser();
+        $uid   = $user->get('id');
+        $asset = 'com_pftime.time.' . $id;
+
+        // Check if the user has viewing access when not a super admin
+        if (!$user->authorise('core.admin')) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('access')
+                  ->from('#__pf_timesheet')
+                  ->where('id = ' . $id);
+
+            $db->setQuery($query);
+            $lvl = $db->loadResult();
+
+            if (!in_array($lvl, $user->getAuthorisedViewLevels())) {
+                return false;
+            }
+        }
+
+        // Check edit permission first
+        if ($user->authorise('core.edit', $asset)) {
             return true;
         }
 
         // Fallback on edit.own.
         // First test if the permission is available.
-        if ($access->get('core.edit.own')) {
-            // Now test the owner is the user.
-            $owner = (int) isset($data['created_by']) ? $data['created_by'] : 0;
-
-            if (empty($owner) && $id) {
-                // Need to do a lookup from the model.
-                $record = $this->getModel()->getItem($id);
-
-                if (empty($record)) return false;
-
-                $owner = $record->created_by;
-            }
-
-            // If the owner matches 'me' then do the test.
-            if ($owner == $uid) return true;
+        if (!$user->authorise('core.edit.own', $asset)) {
+            return false;
         }
 
-        // Since there is no asset tracking, revert to the component permissions.
-        return parent::allowEdit($data, $key);
+        // Load the item
+        $record = $this->getModel()->getItem($id);
+
+        // Abort if not found
+        if (empty($record)) return false;
+
+        // Now test the owner is the user.
+        $owner = (int) isset($data['created_by']) ? (int) $data['created_by'] : $record->created_by;
+
+        // If the owner matches 'me' then do the test.
+        return ($owner == $uid && $uid > 0);
     }
 
 

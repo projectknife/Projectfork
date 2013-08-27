@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<extension type="module" version="2.5" client="site" method="upgrade">
+	<name>mod_pf_time</name>
+	<author>ANGEK DESIGN</author>
+	<creationDate>August 2013</creationDate>
+	<copyright>Copyright (C) 2013 ANGEK DESIGN. All rights reserved.</copyright>
+	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
+	<authorEmail>support@angekdesign.com.au</authorEmail>
+	<authorUrl>www.angekdesign.com.au</authorUrl>
+	<version>4.2.0b1</version>
+	<description>MOD_PF_TIME_XML_DESCRIPTION</description>
+    <position>pf-dashboard-left</position>
+    <published>1</published>
+    <show_title>1</show_title>
+    <scriptfile>script.php</scriptfile>
+	<files>
+		<filename module="mod_pf_time">mod_pf_time.php</filename>
+		<folder>tmpl</folder>
+		<filename>helper.php</filename>
+		<filename>script.php</filename>
+		<filename>mod_pf_time.xml</filename>
+	</files>
+	<languages>
+            <language tag="en-GB">language/en-GB/en-GB.mod_pf_time.ini</language>
+            <language tag="en-GB">language/en-GB/en-GB.mod_pf_time.sys.ini</language>
+	</languages>
+    <config>
+        <fields name="params">
+            <fieldset name="basic">
+                <field type="radio" name="filter_own" default="0" class="btn-group"
+                    label="MOD_PF_TIME_CONFIG_FILTER_OWN_LABEL" description="MOD_PF_TIME_CONFIG_FILTER_OWN_DESC"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+				<field type="radio" name="show_monetary" default="0" class="btn-group"
+                    label="MOD_PF_TIME_CONFIG_SHOWMONETARY" description="MOD_PF_TIME_CONFIG_SHOWMONETARY_DESC"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+				<field type="radio" name="show_author" default="0" class="btn-group"
+                    label="MOD_PF_TIME_CONFIG_SHOWAUTHOR" description="MOD_PF_TIME_CONFIG_SHOWAUTHOR_DESC"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+				<field type="radio" name="show_date" default="1" class="btn-group"
+                    label="MOD_PF_TIME_CONFIG_SHOWDATE"
+                >
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+				<field
+					name="count"
+					type="text"
+					default="20"
+					label="MOD_PF_TIME_CONFIG_LISTSIZE"
+					description="MOD_PF_TIME_CONFIG_LISTSIZE_DESC" />
+            </fieldset>
+            <fieldset name="advanced">
+				<field
+					name="layout"
+					type="modulelayout"
+					label="JFIELD_ALT_LAYOUT_LABEL"
+					description="JFIELD_ALT_MODULE_LAYOUT_DESC" />
+				<field
+					name="moduleclass_sfx"
+					type="text"
+					label="COM_MODULES_FIELD_MODULECLASS_SFX_LABEL"
+					description="COM_MODULES_FIELD_MODULECLASS_SFX_DESC" />
+				<field
+					name="cache"
+					type="list"
+					default="1"
+					label="COM_MODULES_FIELD_CACHING_LABEL"
+					description="COM_MODULES_FIELD_CACHING_DESC">
+					<option
+						value="1">JGLOBAL_USE_GLOBAL</option>
+					<option
+						value="0">COM_MODULES_FIELD_VALUE_NOCACHING</option>
+				</field>
+				<field
+					name="cache_time"
+					type="text"
+					default="900"
+					label="COM_MODULES_FIELD_CACHE_TIME_LABEL"
+					description="COM_MODULES_FIELD_CACHE_TIME_DESC" />
+				<field
+					name="cachemode"
+					type="hidden"
+					default="static">
+					<option
+						value="static"></option>
+				</field>
+            </fieldset>
+        </fields>
+    </config>
+</extension>

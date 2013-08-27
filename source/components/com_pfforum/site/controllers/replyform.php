@@ -1,10 +1,10 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Forum
+ * @package      pkg_projectfork
+ * @subpackage   com_pfforum
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -59,37 +59,6 @@ class PFforumControllerReplyform extends JControllerForm
 
 
     /**
-     * Method to cancel an edit.
-     *
-     * @param     string     $key    The name of the primary key of the URL variable.
-     *
-     * @return    boolean            True if access level checks pass, false otherwise.
-     */
-    public function cancel($key = 'id')
-    {
-        $result = parent::cancel($key);
-
-        return $result;
-    }
-
-
-    /**
-     * Method to edit an existing record.
-     *
-     * @param     string     $key        The name of the primary key of the URL variable.
-     * @param     string     $url_var    The name of the URL variable if different from the primary key.
-     *
-     * @return    boolean                True if access level check and checkout passes, false otherwise.
-     */
-    public function edit($key = null, $url_var = 'id')
-    {
-        $result = parent::edit($key, $url_var);
-
-        return $result;
-    }
-
-
-    /**
      * Method to get a model object, loading it if required.
      *
      * @param     string    $name      The model name. Optional.
@@ -107,22 +76,6 @@ class PFforumControllerReplyform extends JControllerForm
 
 
     /**
-     * Method to save a record.
-     *
-     * @param     string     $key        The name of the primary key of the URL variable.
-     * @param     string     $url_var    The name of the URL variable if different from the primary key.
-     *
-     * @return    boolean                True if successful, false otherwise.
-     */
-    public function save($key = null, $url_var = 'id')
-    {
-        $result = parent::save($key, $url_var);
-
-        return $result;
-    }
-
-
-    /**
      * Method to check if you can add a new record.
      *
      * @param     array      $data    An array of input data.
@@ -131,14 +84,12 @@ class PFforumControllerReplyform extends JControllerForm
      */
     protected function allowAdd($data = array())
     {
-        $user  = JFactory::getUser();
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+        // Get form input
+        $topic = (isset($data['topic_id']) ? (int) $data['topic_id'] : JRequest::getUInt('filter_topic'));
 
-        $access  = true;
-        $levels  = $user->getAuthorisedViewLevels();
-        $project = isset($data['project_id']) ? (int) $data['project_id'] : 0;
-        $topic   = (isset($data['topic_id'])  ? (int) $data['topic_id']   : JRequest::getUInt('filter_topic'));
+        $user   = JFactory::getUser();
+        $asset  = 'com_pfforum.topic.' . $topic;
+        $access = true;
 
         // Topic is required
         if (!$topic) {
@@ -146,33 +97,22 @@ class PFforumControllerReplyform extends JControllerForm
             return false;
         }
 
-        // Check if the user has access to the topic
-        if (!$user->authorise('core.admin', 'com_pfforum')) {
-            if ($topic && $access) {
-                $query->clear();
-                $query->select('access')
-                      ->from('#__pf_topics')
-                      ->where('id = ' . $db->quote((int) $topic));
+        // Check if the user has viewing access when not a super admin
+        if (!$user->authorise('core.admin')) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
 
-                $db->setQuery($query);
-                $access = in_array((int) $db->loadResult(), $levels);
-            }
+            $query->select('access')
+                  ->from('#__pf_topics')
+                  ->where('id = ' . (int) $topic);
+
+            $db->setQuery($query);
+            $lvl = $db->loadResult();
+
+            $access = in_array($lvl, $user->getAuthorisedViewLevels());
         }
 
-        // Check if the user has access to the project
-        if (!$user->authorise('core.admin', 'com_pfprojects')) {
-            if ($project && $access) {
-                $query->clear();
-                $query->select('access')
-                      ->from('#__pf_projects')
-                      ->where('id = ' . $db->quote((int) $project));
-
-                $db->setQuery($query);
-                $access = in_array((int) $db->loadResult(), $levels);
-            }
-        }
-
-        return ($user->authorise('core.create', 'com_pfforum') && $access);
+        return ($user->authorise('core.create', $asset) && $access);
     }
 
 
@@ -186,37 +126,53 @@ class PFforumControllerReplyform extends JControllerForm
      */
     protected function allowEdit($data = array(), $key = 'id')
     {
-        // Initialise variables.
+        // Get form input
         $id     = (int) isset($data[$key]) ? $data[$key] : 0;
+
+        $user   = JFactory::getUser();
         $uid    = JFactory::getUser()->get('id');
-        $access = PFforumHelper::getReplyActions($id);
+        $asset  = 'com_pfforum.reply.' . $id;
+        $access = true;
+
+        // Check if the user has viewing access when not a super admin
+        if (!$user->authorise('core.admin')) {
+            $db    = JFactory::getDbo();
+            $query = $db->getQuery(true);
+
+            $query->select('access')
+                  ->from('#__pf_replies')
+                  ->where('id = ' . $id);
+
+            $db->setQuery($query);
+            $lvl = $db->loadResult();
+
+            if (!in_array($lvl, $user->getAuthorisedViewLevels())) {
+                return false;
+            }
+        }
 
         // Check general edit permission first.
-        if ($access->get('core.edit')) {
+        if ($user->authorise('core.edit', $asset)) {
             return true;
         }
 
         // Fallback on edit.own.
         // First test if the permission is available.
-        if ($access->get('core.edit.own')) {
-            // Now test the owner is the user.
-            $owner = (int) isset($data['created_by']) ? $data['created_by'] : 0;
-
-            if (empty($owner) && $id) {
-                // Need to do a lookup from the model.
-                $record = $this->getModel()->getItem($id);
-
-                if (empty($record)) return false;
-
-                $owner = $record->created_by;
-            }
-
-            // If the owner matches 'me' then do the test.
-            if ($owner == $uid) return true;
+        if (!$user->authorise('core.edit.own', $asset)) {
+            return false;
         }
 
-        // Since there is no asset tracking, revert to the component permissions.
-        return parent::allowEdit($data, $key);
+        // Load the item
+        $record = $this->getModel()->getItem($id);
+
+        // Abort if not found
+        if (empty($record)) return false;
+
+        // Now test the owner is the user.
+        $owner = (int) isset($data['created_by']) ? (int) $data['created_by'] : $record->created_by;
+
+        // If the owner matches 'me' then do the test.
+        return ($owner == $uid && $uid > 0);
     }
 
 
