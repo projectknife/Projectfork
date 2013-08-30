@@ -154,7 +154,7 @@ class PFforumModelReplies extends JModelList
         $id .= ':' . $this->getState('filter.published');
         $id .= ':' . $this->getState('filter.access');
         $id .= ':' . $this->getState('filter.author_id');
-        $id .= ':' . $this->getState('filter.topic_id');
+        $id .= ':' . $this->getState('filter.topic');
         $id .= ':' . $this->getState('filter.project');
 
         return parent::getStoreId($id);
@@ -174,7 +174,7 @@ class PFforumModelReplies extends JModelList
         // Get possible filters
         $filter_state   = $this->getState('filter.published');
         $filter_project = $this->getState('filter.project');
-        $filter_topic   = $this->getState('filter.topic_id');
+        $filter_topic   = $this->getState('filter.topic');
         $filter_access  = $this->getState('filter.access');
         $filter_author  = $this->getState('filter.author_id');
         $filter_search  = $this->getState('filter.search');
