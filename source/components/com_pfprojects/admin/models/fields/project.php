@@ -12,7 +12,7 @@ defined('JPATH_PLATFORM') or die;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
-
+jimport('projectfork.framework');
 
 /**
  * Form Field class for selecting a project.
