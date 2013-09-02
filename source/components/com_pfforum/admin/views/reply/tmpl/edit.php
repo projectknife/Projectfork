@@ -32,7 +32,7 @@ Joomla.submitbutton = function(task)
 </script>
 <form action="<?php echo JRoute::_('index.php?option=com_pfforum&view=reply&id=' . (int) $this->item->id); ?>" method="post" name="adminForm" id="item-form" class="form-validate">
 
-    <div class="width-60 fltlft">
+    <div class="width-60 fltlft span7">
         <fieldset class="adminform">
             <legend><?php echo empty($this->item->id) ? JText::_('COM_PROJECTFORK_NEW_REPLY') : JText::_('COM_PROJECTFORK_EDIT_REPLY'); ?></legend>
             <?php echo $this->form->getLabel('description'); ?>
@@ -42,7 +42,7 @@ Joomla.submitbutton = function(task)
         </fieldset>
     </div>
 
-    <div class="width-40 fltrt">
+    <div class="width-40 fltrt span4">
         <?php echo JHtml::_('sliders.start','reply-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
 
             <?php echo JHtml::_('sliders.panel',JText::_('COM_PROJECTFORK_FIELDSET_PUBLISHING'), 'publishing-details'); ?>
