@@ -192,15 +192,13 @@ Joomla.submitbutton = function(task)
                         }
 
                         $percentage = ($item->estimate == 0) ? 0 : round($item->log_time * (100 / $item->estimate));
-                        $percentage_class = 'progress';
 
                         if ($percentage > 100) {
                             $percentage = 100;
-                            $percentage_class .= ' progress-info';
                         }
-                        else {
-                            $percentage_class .= ($item->billable == 1) ? ' progress-success' : '';
-                        }
+
+                        $percentage_class = 'progress';
+                        $percentage_class .= ($item->billable == 1) ? ' progress-success' : ' progress-info';
 
                         $exists = ((int) $item->task_exists > 0);
 			        ?>
