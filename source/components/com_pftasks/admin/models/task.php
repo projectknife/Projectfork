@@ -823,7 +823,10 @@ class PFtasksModelTask extends JModelAdmin
                   . "\n\n" . sprintf($lang->_('COM_PROJECTFORK_EMAIL_FOOTER'), JURI::root());
 
             // Mail it
-            JFactory::getMailer()->sendMail($mailfrom, $fromname, $recipient->email, $subject, $text);
+            $result = JFactory::getMailer()->sendMail($mailfrom, $fromname, $recipient->email, $subject, $text);
+
+            // Break on the first failure, assuming emails aren't working
+            if (!$result) break;
         }
     }
 
