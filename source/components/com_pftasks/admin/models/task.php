@@ -572,6 +572,12 @@ class PFtasksModelTask extends JModelAdmin
         $this->_db->setQuery((string) $query);
         $list = (array) $this->_db->loadColumn();
 
+        if (!is_array($data)) {
+            $data = explode(',', $data);
+        }
+
+        JArrayHelper::toInteger($data);
+
         // Add new references
         foreach($data AS $uid)
         {

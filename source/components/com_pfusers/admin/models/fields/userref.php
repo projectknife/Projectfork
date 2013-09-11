@@ -49,66 +49,38 @@ class JFormFieldUserRef extends JFormFieldUser
             }
         }
 
-        // Validate the currently selected user(s)
-        $groups = $this->getGroups();
-
         if (is_array($this->value)) {
-            $value = array();
-            foreach ($this->value AS $i => $v)
-            {
-                $v = (int) $v;
+            if (count($this->value)) {
+                JArrayHelper::toInteger($this->value);
 
-                if ($v <= 0) {
-                    unset($this->value[$i]);
-                    continue;
+                $db    = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('id, name, username')
+                      ->from('#__users')
+                      ->where('id IN (' . implode(', ', $this->value) . ')')
+                      ->order('name ASC');
+
+                $db->setQuery($query);
+                $value = $db->loadObjectList();
+
+                if (empty($value)) {
+                    $value = array();
                 }
-
-                $user = JFactory::getUser($v);
-
-                $user_groups = $user->getAuthorisedGroups();
-                $authorize   = false;
-
-                if (is_array($groups)) {
-                    foreach($user_groups AS $group)
-                    {
-                        $authorize = in_array($group, $groups);
-                    }
-                }
-
-                if (!$authorize) {
-                    unset($this->value[$i]);
-                    continue;
-                }
-
-                $new_v = new stdClass();
-                $new_v->id       = $user->id;
-                $new_v->name     = $user->name;
-                $new_v->username = $user->username;
-
-                $value[] = $new_v;
+            }
+            else {
+                $value = array();
             }
         }
         else {
             $value = null;
 
             if ($this->value) {
-                $user   = JFactory::getUser($this->value);
+                $user = JFactory::getUser($this->value);
 
-                $user_groups = $user->getAuthorisedGroups();
-                $authorize   = false;
-
-                if (is_array($groups)) {
-                    foreach($user_groups AS $group)
-                    {
-                        $authorize = in_array($group, $groups);
-                    }
-                }
-
-                if ($authorize) {
-                    $value->id       = $user->id;
-                    $value->name     = $user->name;
-                    $value->username = $user->username;
-                }
+                $value->id       = $user->id;
+                $value->name     = $user->name;
+                $value->username = $user->username;
             }
         }
 
@@ -131,11 +103,98 @@ class JFormFieldUserRef extends JFormFieldUser
      */
     protected function getHTML($value, $multiple = false)
     {
-        if (JFactory::getApplication()->isSite()) {
+        if (!$multiple) {
+            if (JFactory::getApplication()->isAdmin()) {
+                return $this->getAdminHTML($value, $multiple);
+            }
+
             return $this->getSiteHTML($value, $multiple);
         }
 
-        return $this->getAdminHTML($value, $multiple);
+        if (version_compare(JVERSION, '3', 'lt') && JFactory::getApplication()->isAdmin()) {
+            return $this->getAdminHTML($value, $multiple);
+        }
+
+        return $this->getSelect2HTML($value, $multiple);
+    }
+
+
+    protected function getSelect2HTML($value, $multiple = false)
+    {
+        $access = (int) $this->form->getValue('access');
+        $pks    = JArrayHelper::getColumn($value, 'id');
+        $html   = array();
+
+        if (!$access) {
+            $access = (int) JFactory::getConfig()->get('access');
+        }
+
+        $url = "index.php?option=com_pfusers&view=userref&filter_access=" . $access . "&tmpl=component&layout=select2&format=json";
+
+        $html[] = '<input type="hidden" id="' . $this->id . '" name="' . $this->name . '" value="' . implode(',', $pks) . '" class="inputbox input-large"/>';
+        $html[] = '<script type="text/javascript">';
+        $html[] = 'jQuery("#' . $this->id . '").select2({';
+        $html[] = '    allowClear: true,';
+        $html[] = '    minimumInputLength: 0,';
+        $html[] = '    multiple: true,';
+        $html[] = '    ajax:';
+        $html[] = '    {';
+        $html[] = '        url: "' . $url . '",';
+        $html[] = '        dataType: "json",';
+        $html[] = '        quietMillis: 200,';
+        $html[] = '        data: function (term, page)';
+        $html[] = '        {';
+        $html[] = '            return {filter_search: term, limit: 10, limitstart: ((page - 1) * 10)};';
+        $html[] = '        },';
+        $html[] = '        results: function (data, page)';
+        $html[] = '        {';
+        $html[] = '            var more = (page * 10) < data.total;';
+        $html[] = '            return {results: data.items, more: more};';
+        $html[] = '        }';
+        $html[] = '    }';
+
+        if (count($pks)) {
+            $html[] = '    ,initSelection: function(element, callback)';
+            $html[] = '    {';
+            $html[] = '        callback(' . $this->getJsonUsers($pks) . ');';
+            $html[] = '    }';
+        }
+
+        $html[] = '});';
+        $html[] = '</script>';
+
+        return $html;
+    }
+
+
+    protected function getJsonUsers($pks)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('id, name, username')
+              ->from('#__users')
+              ->where("id IN(" . implode(',', $pks) . ")")
+              ->order('username ASC');
+
+        $db->setQuery($query);
+        $items = $db->loadObjectList();
+
+        if (empty($items)) $items = array();
+
+        $users = array();
+
+        foreach ($items AS $item)
+        {
+            $row = new stdClass();
+
+            $row->id   = $item->id;
+            $row->text = htmlspecialchars('[' . $item->username . '] ' . $item->name, ENT_COMPAT, 'UTF-8');
+
+            $users[] = $row;
+        }
+
+        return json_encode($users);
     }
 
 

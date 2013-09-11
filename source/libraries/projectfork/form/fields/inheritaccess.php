@@ -64,9 +64,21 @@ class JFormFieldInheritAccess extends JFormFieldList
         // Get the field options
         $this->parents = $parents;
         $options = $this->getOptions();
+        $count   = count($options);
+
+        $html = '';
+
+        if ($count == 1) {
+            $this->value = $options[0]->value;
+            $this->form->setValue($this->fieldname, $this->group, $this->value);
+        }
+        else {
+            $this->value = (int) JFactory::getConfig()->get('access');
+            $this->form->setValue($this->fieldname, $this->group, $this->value);
+        }
 
         // Generate the list
-        return JHtml::_('select.genericlist', $options, $this->name, trim($attr), 'value', 'text', $this->value, $this->id);
+        return JHtml::_('select.genericlist', $options, $this->name, trim($attr), 'value', 'text', $this->value, $this->id) . $html;
     }
 
 
@@ -168,12 +180,15 @@ class JFormFieldInheritAccess extends JFormFieldList
             $levels = (array) $db->loadObjectList();
         }
 
+        $pks = array();
 
         foreach($levels AS $level)
         {
             if (!$is_admin && !isset($groups[$level->value])) {
                 continue;
             }
+
+            $pks[] = (int) $level->value;
 
             // Create a new option object based on the <option /> element.
             $opt = JHtml::_('select.option', (int) $level->value,
