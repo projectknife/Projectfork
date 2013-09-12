@@ -45,7 +45,7 @@ Joomla.submitbutton = function(task)
 <?php endif; ?>
 
 <form action="<?php echo JRoute::_('index.php?option=com_pftasks&view=taskform&id=' . (int) $this->item->id . '&layout=edit'); ?>" method="post" name="adminForm" id="item-form" class="form-validate form-inline">
-	<fieldset>
+    <fieldset>
 		<div class="formelm-buttons btn-toolbar">
             <?php echo $this->toolbar; ?>
 		</div>
@@ -77,6 +77,9 @@ Joomla.submitbutton = function(task)
 		    	<?php echo $this->form->getInput('list_id'); ?>
 		    </div>
 		</div>
+        <div id="jform_access_element">
+            <div id="jform_access_reload"><?php echo $this->form->getInput('access'); ?></div>
+        </div>
 		<div class="formelm control-group">
 			<div class="control-label">
 		    	<?php echo $this->form->getLabel('title'); ?>
@@ -239,10 +242,6 @@ Joomla.submitbutton = function(task)
     <?php endif; ?>
 
     <?php echo JHtml::_('tabs.end') ;?>
-
-    <div id="jform_access_element">
-        <div id="jform_access_reload"><?php echo $this->form->getInput('access'); ?></div>
-    </div>
 
     <div style="display: none;">
     <?php

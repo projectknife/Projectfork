@@ -114,12 +114,12 @@ class PFtasksModelTask extends JModelItem
             // Get the attachments
             if (PFApplicationHelper::exists('com_pfrepo')) {
                 $attachments = $this->getInstance('Attachments', 'PFrepoModel');
-                $data->attachments = $attachments->getItems('com_pftasks.task', $item->id);
-                $data->attachment  = $data->attachments;
+                $item->attachments = $attachments->getItems('com_pftasks.task', $item->id);
+                $item->attachment  = $item->attachments;
             }
             else {
-                $data->attachments = array();
-                $data->attachment  = array();
+                $item->attachments = array();
+                $item->attachment  = array();
             }
 
             // Generate slugs
@@ -161,7 +161,7 @@ class PFtasksModelTask extends JModelItem
                 $item->params->set('access-change', $access->get('core.edit.state'));
             }
 
-            $this->_item[$pk] = $data;
+            $this->_item[$pk] = $item;
         }
         catch (JException $e)
         {

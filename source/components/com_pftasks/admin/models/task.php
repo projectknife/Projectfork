@@ -572,7 +572,20 @@ class PFtasksModelTask extends JModelAdmin
         $this->_db->setQuery((string) $query);
         $list = (array) $this->_db->loadColumn();
 
+        if (!is_array($data)) {
+            $data = explode(',', $data);
+        }
+        elseif (count($data) == 1) {
+            if (strpos($data[0], ',')) {
+                $data = explode(',', $data[0]);
+            }
+        }
+
+        JArrayHelper::toInteger($data);
+
         // Add new references
+        $mailto = array();
+
         foreach($data AS $uid)
         {
             $table = JTable::getInstance('UserRef', 'PFtable');
@@ -588,7 +601,8 @@ class PFtasksModelTask extends JModelAdmin
                     return false;
                 }
 
-                $list[] = $uid;
+                $mailto[] = $uid;
+                $list[]   = $uid;
             }
         }
 
@@ -605,6 +619,11 @@ class PFtasksModelTask extends JModelAdmin
 
                 if (!$table->delete()) return false;
             }
+        }
+
+        // Send email notification to assigned users
+        if(count($mailto)) {
+            $this->notifyAssignedUsers($mailto, $pk);
         }
 
         return true;
@@ -703,6 +722,117 @@ class PFtasksModelTask extends JModelAdmin
         $this->cleanCache();
 
         return true;
+    }
+
+
+    /**
+     * Sends an email to all newly assigned users
+     *
+     * @param    array    $uids    The users to notify
+     * @param    integer   $task_id  The task id
+     *
+     * @return    void
+     */
+    protected function notifyAssignedUsers($uids, $pk)
+    {
+        // Load the relevant task information
+        $query = $this->_db->getQuery(true);
+        $query->select('a.id, a.project_id, a.milestone_id, a.list_id, a.title, a.description, a.priority')
+              ->select('a.start_date, a.end_date')
+              ->select('p.title AS p_title, m.title AS ms_title, l.title AS l_title')
+              ->from('#__pf_tasks AS a')
+              ->join('LEFT', '#__pf_projects AS p ON p.id = a.project_id')
+              ->join('LEFT', '#__pf_milestones AS m ON m.id = a.milestone_id')
+              ->join('LEFT', '#__pf_task_lists AS l ON l.id = a.list_id')
+              ->where('a.id = ' . (int) $pk);
+
+        $this->_db->setQuery($query);
+        $task = $this->_db->loadObject();
+
+        if (empty($task)) return;
+
+        // Get the default language
+        $def_lang = JComponentHelper::getParams('com_languages')->get('administrator');
+        $debug    = JFactory::getConfig()->get('debug_lang');
+
+        // Email settings
+		$mailfrom = JFactory::getConfig()->get('mailfrom');
+		$fromname = JFactory::getConfig()->get('fromname');
+
+        // Own user account
+        $user = JFactory::getUser();
+
+        // mysql nulldate
+        $nd = $this->_db->getNullDate();
+
+        // Task link
+        $link = JRoute::_(JURI::root() . PFtasksHelperRoute::getTaskRoute($task->id, $task->project_id, $task->milestone_id, $task->list_id));
+
+        // Send to each user...
+        foreach ($uids AS $uid)
+        {
+            // Dont email to self
+            if ($uid == $user->id) {
+                continue;
+            }
+
+            // Get recipient
+            $recipient = JFactory::getUser($uid);
+
+            // Load the default language of the recipient
+            $lang = JLanguage::getInstance($recipient->getParam('site_language', $def_lang), $debug);
+		    $lang->load('com_projectfork');
+		    $lang->load('com_pftasks');
+
+            if ($is_site) {
+                $lang->load('com_projectfork', JPATH_ADMINISTRATOR);
+                $lang->load('com_pftasks', JPATH_ADMINISTRATOR);
+            }
+
+            // Prepare subject
+            $format  = $lang->_('COM_PROJECTFORK_TASK_EMAIL_ASSIGN_SUBJECT');
+            $subject = sprintf($format, $task->p_title, $user->name, $task->title);
+
+            // Prepare text
+            $format = $lang->_('COM_PROJECTFORK_TASK_EMAIL_ASSIGN_MESSAGE');
+            $text   = array();
+
+            // Title
+            $text[] = '* ' . $lang->_('JGLOBAL_TITLE') . ': \n  ' . $task->title . '\n';
+
+            // Milestone
+            $text[] = '* ' . $lang->_('COM_PROJECTFORK_EMAIL_LABEL_MILESTONE_ID') . ': \n  ' . (empty($task->m_title) ? '-' : $task->m_title) . '\n';
+
+            // Task list
+            $text[] = '* ' . $lang->_('COM_PROJECTFORK_EMAIL_LABEL_LIST_ID') . ': \n  ' . (empty($task->l_title) ? '-' : $task->l_title) . '\n';
+
+            // Start
+            $text[] = '* ' . $lang->_('COM_PROJECTFORK_EMAIL_LABEL_START_DATE') . ': \n  '
+                    . ($task->start_date == $nd ? '-' : JHtml::_('date', $task->start_date, JText::_('DATE_FORMAT_LC3'))) . '\n';
+
+            // End
+            $text[] = '* ' . $lang->_('COM_PROJECTFORK_EMAIL_LABEL_END_DATE') . ': \n  '
+                    . ($task->end_date == $nd ? '  -' : JHtml::_('date', $task->end_date, JText::_('DATE_FORMAT_LC3'))) . '\n';
+
+            // Priority
+            $text[] = '* ' . $lang->_('COM_PROJECTFORK_EMAIL_LABEL_PRIORITY') . ': \n  ' . PFTasksHelper::priority2string($task->priority) . '\n';
+
+            // Description
+            $text[] = '* ' . $lang->_('COM_PROJECTFORK_EMAIL_LABEL_DESCRIPTION') . ': \n' . strip_tags($task->description);
+
+            // Done. Compile text
+            $text = implode('', $text);
+            $text = str_replace('\n', "\n", $text);
+
+            $text = sprintf($format, $recipient->name, $user->name, $text, $link)
+                  . "\n\n" . sprintf($lang->_('COM_PROJECTFORK_EMAIL_FOOTER'), JURI::root());
+
+            // Mail it
+            $result = JFactory::getMailer()->sendMail($mailfrom, $fromname, $recipient->email, $subject, $text);
+
+            // Break on the first failure, assuming emails aren't working
+            if (!$result) break;
+        }
     }
 
 

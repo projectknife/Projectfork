@@ -15,10 +15,10 @@ jimport('joomla.application.component.modellist');
 jimport('projectfork.application.helper');
 
 /**
- * Methods supporting an users in a given group.
+ * Methods supporting a list of users references.
  *
  */
-class PFusersModelGroupUsers extends JModelList
+class PFusersModelUserRef extends JModelList
 {
     /**
      * Constructor
@@ -48,8 +48,12 @@ class PFusersModelGroupUsers extends JModelList
 
         // Get possible filters
         $filter_search = $this->getState('filter.search');
-        $filter_type   = $this->getState('filter.type');
-        $filter_id     = (int) $this->getState('filter.id');
+        $filter_access = (int) $this->getState('filter.access');
+        $filter_groups = PFAccessHelper::getGroupsByAccessLevel($filter_access, true);
+
+        if (!count($filter_groups)) {
+            return $query;
+        }
 
         // Select the required fields from the table.
         $query->select(
@@ -61,22 +65,9 @@ class PFusersModelGroupUsers extends JModelList
 
         $query->from('#__users AS a');
 
-        // Join on user group
-        if ($filter_id) {
-            if ($filter_type == 'exclude') {
-                $sq = $this->_db->getQuery(true);
-
-                $sq->select('user_id')
-                   ->from('#__user_usergroup_map')
-                   ->where('group_id = ' . $filter_id);
-
-                $query->where('a.id NOT IN(' . $sq . ')');
-            }
-            else {
-                $query->join('INNER', '#__user_usergroup_map AS m ON m.user_id = a.id');
-                $query->where('m.group_id = ' . $filter_id);
-            }
-        }
+        // Join on user groups
+        $query->join('INNER', '#__user_usergroup_map AS m ON m.user_id = a.id');
+        $query->where('m.group_id IN(' . implode(',', $filter_groups) . ')');
 
         // Filter by search
         if (!empty($filter_search)) {
@@ -92,6 +83,7 @@ class PFusersModelGroupUsers extends JModelList
         $order_col = $this->state->get('list.ordering', 'a.username');
         $order_dir = $this->state->get('list.direction', 'asc');
 
+        $query->group('a.id');
         $query->order($this->_db->escape($order_col . ' ' . $order_dir));
 
         return $query;
@@ -112,8 +104,7 @@ class PFusersModelGroupUsers extends JModelList
     {
         // Compile the store id.
         $id .= ':' . $this->getState('filter.search');
-        $id .= ':' . $this->getState('filter.type');
-        $id .= ':' . $this->getState('filter.id');
+        $id .= ':' . $this->getState('filter.access');
 
         return parent::getStoreId($id);
     }
@@ -137,13 +128,9 @@ class PFusersModelGroupUsers extends JModelList
         $search = JRequest::getCmd('filter_search');
         $this->setState('filter.search', $search);
 
-        // Filter - Type
-        $type = JRequest::getVar('filter_type');
-        $this->setState('filter.type', $type);
-
-        // Filter - Group id
-        $pk = JRequest::getInt('id');
-        $this->setState('filter.id', $pk);
+        // Filter - Access
+        $access = JRequest::getUInt('filter_access');
+        $this->setState('filter.access', $access);
 
         // List state information.
         parent::populateState($ordering, $direction);

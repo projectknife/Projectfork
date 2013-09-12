@@ -46,6 +46,9 @@ class plgContentPfnotifications extends JPlugin
             return true;
         }
 
+        // Import PF library, just to be sure
+        jimport('projectfork.library');
+
         // Make sure the item is supported
         if (!PFnotificationsHelper::isSupported($context)) {
             return true;
@@ -87,6 +90,9 @@ class plgContentPfnotifications extends JPlugin
         if (substr($context, 0 , 6) != 'com_pf') {
             return true;
         }
+
+        // Import PF library, just to be sure
+        jimport('projectfork.library');
 
         // Make sure the item is supported
         if (!PFnotificationsHelper::isSupported($context)) {

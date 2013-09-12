@@ -16,6 +16,8 @@ if (count($this->item->children) > 5) {
     $this->item->children[] = JText::_('COM_PROJECTFORK_AND_MORE') . '...';
 }
 
+$backend = JFactory::getApplication()->isAdmin();
+
 $rule_group_id = $this->item->id;
 if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
 ?>
@@ -48,7 +50,15 @@ if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
                             <?php echo JText::_('COM_PROJECTFORK_ADD_USERS'); ?>
                         </div>
                         <div class="controls">
-                            <input type="hidden" id="add_user_group_<?php echo (int) $this->item->id; ?>" class="input-xlarge" size="80" name="jform[add_groupuser][<?php echo (int) $this->item->id; ?>]"/>
+                            <input type="hidden"
+                                id="add_user_group_<?php echo (int) $this->item->id; ?>"
+                                class="input-xlarge"
+                                size="80"
+                                name="jform[add_groupuser][<?php echo (int) $this->item->id; ?>]"
+                                <?php if (version_compare(JVERSION, '3', 'lt') && $backend) : ?>
+                                style="width:50%"
+                                <?php endif; ?>
+                            />
                         </div>
                     </div>
                 </div>
@@ -59,7 +69,16 @@ if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
                             <?php echo JText::_('COM_PROJECTFORK_REMOVE_USERS'); ?>
                         </div>
                         <div class="controls">
-                            <input type="hidden" id="rm_user_group_<?php echo (int) $this->item->id; ?>" class="input-xlarge" size="80" name="jform[rm_groupuser][<?php echo (int) $this->item->id; ?>]"/>
+                            <input
+                                type="hidden"
+                                id="rm_user_group_<?php echo (int) $this->item->id; ?>"
+                                class="input-xlarge"
+                                size="80"
+                                name="jform[rm_groupuser][<?php echo (int) $this->item->id; ?>]"
+                                <?php if (version_compare(JVERSION, '3', 'lt') && $backend) : ?>
+                                style="width:50%"
+                                <?php endif; ?>
+                            />
                         </div>
                     </div>
                 </div>
