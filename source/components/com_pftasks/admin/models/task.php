@@ -575,6 +575,11 @@ class PFtasksModelTask extends JModelAdmin
         if (!is_array($data)) {
             $data = explode(',', $data);
         }
+        elseif (count($data) == 1) {
+            if (strpos($data[0], ',')) {
+                $data = explode(',', $data[0]);
+            }
+        }
 
         JArrayHelper::toInteger($data);
 
