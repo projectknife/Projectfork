@@ -251,6 +251,11 @@ class PFtimeModelTime extends JModelAdmin
             // Set the active project
             PFApplicationHelper::setActiveProject($updated->project_id);
 
+            // Store entered rate in session
+            if (isset($data['rate']) && !empty($data['rate']) && $data['rate'] != '0.00' && $is_new) {
+                JFactory::getApplication()->setUserState('com_projectfork.jform_rate', $data['rate']);
+            }
+
             return true;
         }
 

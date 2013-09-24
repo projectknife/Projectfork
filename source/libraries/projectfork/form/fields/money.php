@@ -47,6 +47,7 @@ class JFormFieldMoney extends JFormField
         }
 
         $task_id = (int) $this->form->getValue('task_id');
+        $id      = (int) $this->form->getValue('id');
 
         if ($task_id && (!$this->value || $this->value == '0.00')) {
             $db = JFactory::getDbo();
@@ -73,6 +74,18 @@ class JFormFieldMoney extends JFormField
             $this->value = '0.00';
             $v1 = '0';
             $v2 = '00';
+
+            // Pre-fill from previously entered value
+            if (empty($id) || $id === '0') {
+                $cached = JFactory::getApplication()->getUserState('com_projectfork.' . $this->id);
+
+                if ($cached && $cached != '0.00') {
+                    $this->value = $cached;
+
+                    $v1 = substr($this->value, 0, -3);
+                    $v2 = substr($this->value, -2);
+                }
+            }
         }
 
         // Get params

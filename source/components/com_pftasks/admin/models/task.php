@@ -466,6 +466,11 @@ class PFtasksModelTask extends JModelAdmin
             // Set the active project
             PFApplicationHelper::setActiveProject($updated->project_id);
 
+            // Store entered rate in session
+            if (isset($data['rate']) && !empty($data['rate']) && $data['rate'] != '0.00') {
+                JFactory::getApplication()->setUserState('com_projectfork.jform_rate', $data['rate']);
+            }
+
             // Add to watch list
             if ($is_new) {
                 $cid = array($id);
