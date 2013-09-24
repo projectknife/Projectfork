@@ -37,19 +37,19 @@ $list_dir   = $this->escape($this->state->get('list.direction'));
     </div>
 
     <div class="filter-select fltrt">
+        <div class="fltrt">
+            <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
+                <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+                <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
+            </select>
+        </div>
+        <div class="fltrt">
+            <select name="filter_assigned_id" class="inputbox input-medium" onchange="this.form.submit()">
+                <option value=""><?php echo JText::_('JOPTION_SELECT_ASSIGNED_USER');?></option>
+                <?php echo JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned_id'));?>
+            </select>
+        </div>
         <?php if ($this->state->get('filter.project')) : ?>
-            <div class="fltrt">
-                <select name="filter_author_id" class="inputbox" onchange="this.form.submit()">
-                    <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                    <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'));?>
-                </select>
-            </div>
-            <div class="fltrt">
-                <select name="filter_assigned_id" class="inputbox input-medium" onchange="this.form.submit()">
-                    <option value=""><?php echo JText::_('JOPTION_SELECT_ASSIGNED_USER');?></option>
-                    <?php echo JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned_id'));?>
-                </select>
-            </div>
             <div class="fltrt">
                 <select name="filter_milestone" class="inputbox input-medium" onchange="this.form.submit()">
                     <option value=""><?php echo JText::_('JOPTION_SELECT_MILESTONE');?></option>

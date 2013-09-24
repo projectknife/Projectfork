@@ -66,7 +66,22 @@ class PFtasksModelTasks extends JModelList
         // Load only if project filter is set
         $project = (int) $this->getState('filter.project');
 
-        if ($project <= 0) return array();
+        if ($project <= 0) {
+            // Make an exception if we are logged in...
+            $user = JFactory::getUser();
+
+            if ($user->id) {
+                $item = new stdClass();
+                $item->value = $user->id;
+                $item->text  = $user->name;
+
+                $items = array($item);
+
+                return $items;
+            }
+
+            return array();
+        }
 
         $query = $this->_db->getQuery(true);
 
@@ -150,7 +165,22 @@ class PFtasksModelTasks extends JModelList
         // Load only if project filter is set
         $project = (int) $this->getState('filter.project');
 
-        if ($project <= 0) return array();
+        if ($project <= 0) {
+            // Make an exception if we are logged in...
+            $user = JFactory::getUser();
+
+            if ($user->id) {
+                $item = new stdClass();
+                $item->value = $user->id;
+                $item->text  = $user->name;
+
+                $items = array($item);
+
+                return $items;
+            }
+
+            return array();
+        }
 
         // Create a new query object.
         $query = $this->_db->getQuery(true);
@@ -201,7 +231,8 @@ class PFtasksModelTasks extends JModelList
     protected function populateState($ordering = 'a.ordering', $direction = 'asc')
     {
         // Initialise variables.
-        $app = JFactory::getApplication();
+        $app  = JFactory::getApplication();
+        $user = JFactory::getUser();
 
         // Adjust the context to support modal layouts.
         if ($layout = JRequest::getVar('layout')) $this->context .= '.' . $layout;
@@ -248,10 +279,16 @@ class PFtasksModelTasks extends JModelList
 
         // Do not allow these filters if no project is selected
         if (!$project) {
-            $this->setState('filter.author_id', '');
-            $this->setState('filter.assigned_id', '');
             $this->setState('filter.tasklist', '');
             $this->setState('filter.milestone', '');
+
+            if ($author_id != $user->id) {
+                $this->setState('filter.author_id', '');
+            }
+
+            if ($assigned != $user->id) {
+                $this->setState('filter.assigned_id', '');
+            }
         }
 
         // List state information.

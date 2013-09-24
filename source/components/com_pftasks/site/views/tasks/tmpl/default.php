@@ -131,21 +131,21 @@ jQuery(document).ready(function() {
                                 <?php echo JHtml::_('select.options', $this->lists, 'value', 'text', $this->state->get('filter.tasklist'));?>
                             </select>
                         </div>
-                        <div class="filter-author btn-group">
-                            <select id="filter_author" name="filter_author" class="inputbox input-medium" onchange="this.form.submit()">
-                                <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
-                                <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'));?>
-                            </select>
-                        </div>
-                        <div class="filter-user btn-group">
-                                <select onchange="this.form.submit()" class="inputbox input-medium" name="filter_assigned" id="filter_assigned">
-                                    <option value=""><?php echo JText::_('JOPTION_SELECT_ASSIGNED_USER');?></option>
-                                    <?php echo JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned'));?>
-                            </select>
-                        </div>
-                    <?php  else : ?>
-                        <input type="hidden" name="filter_assigned" id="filter_assigned" value="<?php echo $this->escape($this->state->get('filter.assigned'));?>"/>
                     <?php endif; ?>
+
+                    <div class="filter-author btn-group">
+                        <select id="filter_author" name="filter_author" class="inputbox input-medium" onchange="this.form.submit()">
+                            <option value=""><?php echo JText::_('JOPTION_SELECT_AUTHOR');?></option>
+                            <?php echo JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author'));?>
+                        </select>
+                    </div>
+                    <div class="filter-user btn-group">
+                            <select onchange="this.form.submit()" class="inputbox input-medium" name="filter_assigned" id="filter_assigned">
+                                <option value=""><?php echo JText::_('JOPTION_SELECT_ASSIGNED_USER');?></option>
+                                <?php echo JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned'));?>
+                        </select>
+                    </div>
+
                     <?php if ($this->access->get('core.edit.state') || $this->access->get('core.edit')) : ?>
                         <div class="filter-status btn-group">
                                 <select onchange="this.form.submit()" class="inputbox input-medium" name="filter_published" id="filter_published">

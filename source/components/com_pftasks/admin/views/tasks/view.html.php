@@ -199,19 +199,19 @@ class PFtasksViewTasks extends JViewLegacy
             JHtml::_('select.options', JHtml::_('pftasks.completeOptions'), 'value', 'text', $this->state->get('filter.complete'))
         );
 
+        JHtmlSidebar::addFilter(
+            JText::_('JOPTION_SELECT_AUTHOR'),
+            'filter_author_id',
+            JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'))
+        );
+
+        JHtmlSidebar::addFilter(
+            JText::_('JOPTION_SELECT_ASSIGNED_USER'),
+            'filter_assigned_id',
+            JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned_id'))
+        );
+
         if ($this->state->get('filter.project')) {
-            JHtmlSidebar::addFilter(
-                JText::_('JOPTION_SELECT_AUTHOR'),
-                'filter_author_id',
-                JHtml::_('select.options', $this->authors, 'value', 'text', $this->state->get('filter.author_id'))
-            );
-
-            JHtmlSidebar::addFilter(
-                JText::_('JOPTION_SELECT_ASSIGNED_USER'),
-                'filter_assigned_id',
-                JHtml::_('select.options', $this->assigned, 'value', 'text', $this->state->get('filter.assigned_id'))
-            );
-
             JHtmlSidebar::addFilter(
                 JText::_('JOPTION_SELECT_MILESTONE'),
                 'filter_milestone',

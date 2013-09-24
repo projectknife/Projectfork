@@ -403,7 +403,19 @@ class PFtasksModelTasks extends JModelList
 
         // Return empty array if no project is select
         $project = (int) $this->getState('filter.project');
-        if ($project < 0) {
+
+        if ($project <= 0) {
+            // Make an exception if we are logged in...
+            if ($user->id) {
+                $item = new stdClass();
+                $item->value = $user->id;
+                $item->text  = $user->name;
+
+                $items = array($item);
+
+                return $items;
+            }
+
             return array();
         }
 
@@ -561,7 +573,20 @@ class PFtasksModelTasks extends JModelList
         $project = (int) $this->getState('filter.project');
 
         // Return empty array if no project is select
-        if ($project < 0) return array();
+        if ($project <= 0) {
+            // Make an exception if we are logged in...
+            if ($user->id) {
+                $item = new stdClass();
+                $item->value = $user->id;
+                $item->text  = $user->name;
+
+                $items = array($item);
+
+                return $items;
+            }
+
+            return array();
+        }
 
         // Construct the query
         $query->select('u.id AS value, u.name AS text')
@@ -607,6 +632,7 @@ class PFtasksModelTasks extends JModelList
     {
         $app    = JFactory::getApplication();
         $access = PFtasksHelper::getActions();
+        $user   = JFactory::getUser();
 
         // Adjust the context to support modal layouts.
         $layout = JRequest::getCmd('layout');
@@ -667,17 +693,23 @@ class PFtasksModelTasks extends JModelList
 
         // Do not allow some filters if no project is selected
         if (!is_numeric($project) || intval($project) == 0) {
-            $this->setState('filter.author', '');
-            $this->setState('filter.assigned', '');
             $this->setState('filter.tasklist', '');
             $this->setState('filter.milestone', '');
             $this->setState('filter.labels', array());
 
-            $author    = '';
-            $assigned  = '';
             $milestone = '';
             $list      = '';
             $labels    = array();
+
+            if ($author != $user->id) {
+                $this->setState('filter.author', '');
+                $author = '';
+            }
+
+            if ($assigned != $user->id) {
+                $this->setState('filter.assigned', '');
+                $assigned = '';
+            }
         }
 
         if (!is_array($labels)) {
