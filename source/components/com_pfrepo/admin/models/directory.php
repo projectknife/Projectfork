@@ -1161,8 +1161,8 @@ class PFrepoModelDirectory extends JModelAdmin
 
         $query->select('id, access')
               ->from('#__pf_repo_dirs')
-              ->where('a.lft > ' . (int) $record->lft)
-              ->where('a.rgt < ' . (int) $record->rgt);
+              ->where('lft > ' . (int) $record->lft)
+              ->where('rgt < ' . (int) $record->rgt);
 
         $this->_db->setQuery($query);
 
