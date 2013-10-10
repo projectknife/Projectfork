@@ -18,6 +18,20 @@ if (count($this->item->children) > 5) {
 
 $rule_group_id = $this->item->id;
 if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
+
+$user = JFactory::getUser();
+$can_manage_users = true;
+$can_remove_group = true;
+
+$is_admin    = $user->authorise('core.admin');
+$is_manager  = $user->authorise('core.manage');
+$admin_group = ($this->item->id > 0 && JAccess::checkGroup($this->item->id, 'core.admin'));
+
+if (!$is_admin && $admin_group) {
+    $can_manage_users = false;
+    $can_remove_group = false;
+}
+
 ?>
 <div class="well well-small" id="alcm-group-<?php echo (int) $this->item->id; ?>">
     <div class="pull-right">
@@ -37,7 +51,7 @@ if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
 
     <div id="alcm-actions-<?php echo (int) $this->item->id; ?>" style="display: none;">
         <hr />
-        <?php if (!in_array($this->item->id, $this->public_groups)) : ?>
+        <?php if (!in_array($this->item->id, $this->public_groups) && $can_manage_users) : ?>
             <fieldset>
                 <legend><?php echo JText::_('COM_PROJECTFORK_MANAGE_GROUP_MEMBERS'); ?></legend>
                 <div class="span6">
@@ -50,7 +64,7 @@ if (!$rule_group_id) $rule_group_id = $this->item->parent_id;
                         </div>
                     </div>
                 </div>
-                <?php if ($this->item->id > 0) : ?>
+                <?php if ($this->item->id > 0 && $can_remove_group) : ?>
                 <div class="span6">
                     <div class="formelm control-group">
                         <div class="control-label">

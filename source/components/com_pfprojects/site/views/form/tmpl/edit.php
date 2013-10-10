@@ -151,7 +151,7 @@ Joomla.submitbutton = function(task)
         <?php endforeach; ?>
     <?php endif; ?>
 
-    <?php if ($user->authorise('core.admin', 'com_pfprojects')) : ?>
+    <?php if ($user->authorise('core.admin', 'com_pfprojects') || $user->authorise('core.manage', 'com_pfprojects')) : ?>
         <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'project-permissions') ;?>
         <fieldset>
             <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>

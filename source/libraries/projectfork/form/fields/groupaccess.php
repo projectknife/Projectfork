@@ -271,6 +271,7 @@ class JFormFieldGroupAccess extends JFormField
                 $this->access = (int) JFactory::getConfig()->get('access');
             }
 
+
             if ($this->inherit) {
                 $this->project_id = (int) $this->form->getValue('project_id');
             }
