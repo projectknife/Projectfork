@@ -183,7 +183,7 @@ class PFtasksModelTask extends JModelAdmin
         $form->setFieldAttribute('alias', 'filter', 'unset');
 
         // Disable these fields if not an admin
-        if (!$user->authorise('core.admin', 'com_pftasks')) {
+        if (!$user->authorise('core.admin', 'com_pftasks') && !$user->authorise('core.manage', 'com_pftasks')) {
             $form->setFieldAttribute('access', 'disabled', 'true');
             $form->setFieldAttribute('access', 'filter', 'unset');
 

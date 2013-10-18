@@ -116,7 +116,7 @@ class PFtimeModelTime extends JModelAdmin
         }
 
         // Disable these fields if not an admin
-        if (!$user->authorise('core.admin', 'com_pftime')) {
+        if (!$user->authorise('core.admin', 'com_pftime') && !$user->authorise('core.manage', 'com_pftime')) {
             $form->setFieldAttribute('access', 'disabled', 'true');
             $form->setFieldAttribute('access', 'filter', 'unset');
 

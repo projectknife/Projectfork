@@ -19,6 +19,7 @@ JHtml::_('pfhtml.script.form');
 
 // Create shortcut to parameters.
 $params = $this->state->get('params');
+$user   = JFactory::getUser();
 ?>
 <script type="text/javascript">
 jQuery(document).ready(function()
@@ -157,7 +158,7 @@ Joomla.submitbutton = function(task)
             <?php endforeach; ?>
         <?php endif; ?>
 
-        <?php if (JFactory::getUser()->authorise('core.admin', 'com_pfmilestones')) : ?>
+        <?php if ($user->authorise('core.admin', 'com_pfmilestones') || $user->authorise('core.manage', 'com_pfmilestones')) : ?>
             <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'milestone-permissions') ;?>
             <fieldset>
                 <p><?php echo JText::_('COM_PROJECTFORK_RULES_LABEL'); ?></p>

@@ -597,7 +597,7 @@ class PFrepoModelNote extends JModelAdmin
         $id     = (int) $jinput->get('id', 0);
 
         // Disable these fields if not an admin
-        if (!$user->authorise('core.admin', 'com_pfrepo')) {
+        if (!$user->authorise('core.admin', 'com_pfrepo') && !$user->authorise('core.manage', 'com_pfrepo')) {
             $form->setFieldAttribute('access', 'disabled', 'true');
             $form->setFieldAttribute('access', 'filter', 'unset');
 
