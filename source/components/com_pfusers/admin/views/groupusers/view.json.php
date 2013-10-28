@@ -32,7 +32,9 @@ class PFusersViewGroupUsers extends JViewLegacy
     {
         $this->items = $this->get('Items');
 
-        if (!JFactory::getUser()->authorise('core.admin')) {
+        $user = JFactory::getUser();
+
+        if (!$user->authorise('core.admin', 'com_pfprojects') && !$user->authorise('core.manage', 'com_pfprojects')) {
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
