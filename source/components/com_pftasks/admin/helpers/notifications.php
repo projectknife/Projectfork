@@ -80,8 +80,22 @@ abstract class PFtasksNotificationsHelper
 
         $query->select('a.user_id')
               ->from('#__pf_ref_observer AS a')
-              ->where('a.item_type = ' . $db->quote('com_pftasks.task'))
-              ->where('a.item_id = ' . $db->quote((int) $table->id));
+              ->where(
+                '('
+                . 'a.item_type = ' . $db->quote('com_pftasks.task')
+                . ' AND a.item_id = ' . (int) $table->id
+                . ')'
+                . ($table->milestone_id > 0 ?
+                ' OR ('
+                . 'a.item_type = ' . $db->quote('com_pfmilestones.milestone')
+                . ' AND a.item_id = ' . (int) $table->milestone_id
+                . ')'
+                : '')
+                . ' OR ('
+                . 'a.item_type = ' . $db->quote('com_pfprojects.project')
+                . ' AND a.item_id = ' . (int) $table->project_id
+                . ')'
+            );
 
         $db->setQuery($query);
         $users = (array) $db->loadColumn();
@@ -130,7 +144,7 @@ abstract class PFtasksNotificationsHelper
     {
         // Get the changed fields
         $props = array(
-            'description', 'created_by', 'access', 'start_date', 'end_date',
+            'description', 'created_by', 'access', array('start_date', 'NE-SQLDATE'), array('end_date', 'NE-SQLDATE'),
             'milestone_id', 'list_id', 'priority', 'complete', 'rate', 'estimate'
         );
 
@@ -140,8 +154,8 @@ abstract class PFtasksNotificationsHelper
             $changes = PFObjectHelper::getDiff($before, $after, $props);
         }
 
-        if (!count($changes)) {
-            return false;
+        if ($is_new) {
+            $changes = PFObjectHelper::toArray($after, $props);
         }
 
         $txt_prefix = self::$prefix . '_' . ($is_new ? 'NEW' : 'UPD');

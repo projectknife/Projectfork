@@ -80,8 +80,16 @@ abstract class PFmilestonesNotificationsHelper
 
         $query->select('a.user_id')
               ->from('#__pf_ref_observer AS a')
-              ->where('a.item_type = ' . $db->quote('com_pfmilestones.milestone'))
-              ->where('a.item_id = ' . $db->quote((int) $table->id));
+              ->where(
+                '('
+                . 'a.item_type = ' . $db->quote('com_pfmilestones.milestone')
+                . ' AND a.item_id = ' . (int) $table->id
+                . ')'
+                . ' OR ('
+                . 'a.item_type = ' . $db->quote('com_pfprojects.project')
+                . ' AND a.item_id = ' . (int) $table->project_id
+                . ')'
+              );
 
         $db->setQuery($query);
         $users = (array) $db->loadColumn();
@@ -111,8 +119,6 @@ abstract class PFmilestonesNotificationsHelper
         $txt     = sprintf($format, $project, $user->name, $after->title);
 
         return $txt;
-
-        return $txt;
     }
 
 
@@ -132,7 +138,7 @@ abstract class PFmilestonesNotificationsHelper
     {
         // Get the changed fields
         $props = array(
-            'description', 'created_by', 'access', 'start_date', 'end_date'
+            'description', 'created_by', 'access', array('start_date', 'NE-SQLDATE'), array('end_date', 'NE-SQLDATE')
         );
 
         $changes = array();
@@ -141,8 +147,8 @@ abstract class PFmilestonesNotificationsHelper
             $changes = PFObjectHelper::getDiff($before, $after, $props);
         }
 
-        if (!count($changes)) {
-            return false;
+        if ($is_new) {
+            $changes = PFObjectHelper::toArray($after, $props);
         }
 
         $txt_prefix = self::$prefix . '_' . ($is_new ? 'NEW' : 'UPD');
