@@ -15,6 +15,7 @@
         <filename plugin="pfnotifications">pfnotifications.php</filename>
         <filename>script.php</filename>
         <filename>helper.php</filename>
+        <folder>cli</folder>
 	</files>
     <languages>
             <language tag="en-GB">language/en-GB/en-GB.plg_content_pfnotifications.ini</language>
