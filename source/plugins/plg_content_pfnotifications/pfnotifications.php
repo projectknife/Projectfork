@@ -43,7 +43,14 @@ class plgContentPfnotifications extends JPlugin
 
         // Component name must start with com_pf
         if (substr($context, 0 , 6) != 'com_pf') {
-            return true;
+            return;
+        }
+
+        // Check config if sending is enabled for this type of event (new/update)
+        $send_type = (int) $this->params->get('send_type');
+
+        if (($is_new && $send_type == 2) || (!$is_new && $send_type == 1)) {
+            return;
         }
 
         // Import PF library, just to be sure
@@ -51,7 +58,7 @@ class plgContentPfnotifications extends JPlugin
 
         // Make sure the item is supported
         if (!PFnotificationsHelper::isSupported($context)) {
-            return true;
+            return;
         }
 
         list($component, $item) = explode('.', $context, 2);
@@ -89,6 +96,13 @@ class plgContentPfnotifications extends JPlugin
         // Component name must start with com_pf
         if (substr($context, 0 , 6) != 'com_pf') {
             return true;
+        }
+
+        // Check config if sending is enabled for this type of event (new/update)
+        $send_type = (int) $this->params->get('send_type');
+
+        if (($is_new && $send_type == 2) || (!$is_new && $send_type == 1)) {
+            return;
         }
 
         // Import PF library, just to be sure
@@ -167,6 +181,12 @@ class plgContentPfnotifications extends JPlugin
 		$fromname = JFactory::getConfig()->get('fromname');
         $user     = JFactory::getUser();
         $is_site  = JFactory::getApplication()->isSite();
+        $mailer   = JFactory::getMailer();
+        $date     = new JDate();
+        $now      = $date->toSql();
+        $store    = $this->params->get('send_method');
+
+        $db = JFactory::getDbo();
 
         $this->table_after = $table;
 
@@ -194,7 +214,22 @@ class plgContentPfnotifications extends JPlugin
                 break;
             }
 
-            JFactory::getMailer()->sendMail($mailfrom, $fromname, $receiver->email, $subject, $message);
+            if (!$store) {
+                // Send directly
+                $mailer->sendMail($mailfrom, $fromname, $receiver->email, $subject, $message);
+            }
+            else {
+                // Store in db
+                $data = new stdClass();
+
+                $data->id      = null;
+                $data->email   = $receiver->email;
+                $data->subject = $subject;
+                $data->message = $message;
+                $data->created = $now;
+
+                $db->insertObject('#__pf_emailqueue', $data);
+            }
 		}
 
         return true;

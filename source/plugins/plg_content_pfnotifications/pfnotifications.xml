@@ -20,4 +20,37 @@
             <language tag="en-GB">language/en-GB/en-GB.plg_content_pfnotifications.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.plg_content_pfnotifications.sys.ini</language>
     </languages>
+    <config>
+		<fields name="params">
+			<fieldset name="basic">
+                <field name="send_type"
+					type="list"
+                    class="btn-group"
+					default="0"
+					description="PLG_CONTENT_PFNOTIFICATIONS_FIELD_SEND_TYPE_DESC"
+					label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_SEND_TYPE_LABEL"
+                >
+                    <option value="0">PLG_CONTENT_PFNOTIFICATIONS_FIELD_SEND_TYPE_NEW_AND_UPD</option>
+                    <option value="1">PLG_CONTENT_PFNOTIFICATIONS_FIELD_SEND_TYPE_NEW</option>
+                    <option value="2">PLG_CONTENT_PFNOTIFICATIONS_FIELD_SEND_TYPE_UPD</option>
+                </field>
+                <field name="send_method"
+					type="radio"
+                    class="btn-group"
+					default="0"
+					description="PLG_CONTENT_PFNOTIFICATIONS_FIELD_SEND_METHOD_DESC"
+					label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_SEND_METHOD_LABEL"
+                >
+                    <option value="0">PLG_CONTENT_PFNOTIFICATIONS_FIELD_SEND_METHOD_DIRECT</option>
+                    <option value="1">PLG_CONTENT_PFNOTIFICATIONS_FIELD_SEND_METHOD_CRON</option>
+                </field>
+                <field type="text" name="cron_limit" default="20"
+                    size="10"
+                    class="input-small"
+                    label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_CRON_LIMIT_LABEL"
+                    description="PLG_CONTENT_PFNOTIFICATIONS_FIELD_CRON_LIMIT_DESC"
+                />
+            </fieldset>
+        </fields>
+   </config>
 </extension>
