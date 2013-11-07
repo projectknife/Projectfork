@@ -185,6 +185,7 @@ class PFrepoModelRepository extends JModelList
     }
 
 
+
     /**
      * Build an SQL query to load the list data.
      * This query loads the project repo list only!

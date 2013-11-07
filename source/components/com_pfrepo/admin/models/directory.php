@@ -766,6 +766,13 @@ class PFrepoModelDirectory extends JModelAdmin
             return false;
         }
 
+        // Add to watch list
+        if ($is_new) {
+            $cid = array($table->id);
+
+            $this->watch($cid, 1);
+        }
+
         // Trigger the onContentAfterSave event.
         $dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $is_new));
 
@@ -962,6 +969,101 @@ class PFrepoModelDirectory extends JModelAdmin
 
             // Trigger the onContentAfterDelete event.
             $dispatcher->trigger($this->event_after_delete, array($context, $table));
+        }
+
+        // Clear the component's cache
+        $this->cleanCache();
+
+        return true;
+    }
+
+
+    /**
+     * Method to watch an item
+     *
+     * @param    array      $pks      The items to watch
+     * @param    integer    $value    1 to watch, 0 to unwatch
+     * @param    integer    $uid      The user id to watch the item
+     */
+    public function watch(&$pks, $value = 1, $uid = null)
+    {
+        $user  = JFactory::getUser($uid);
+        $table = $this->getTable();
+        $pks   = (array) $pks;
+
+        $is_admin = $user->authorise('core.admin', $this->option);
+        $my_views = $user->getAuthorisedViewLevels();
+        $projects = array();
+
+        $item_type = 'com_pfrepo.directory';
+
+        // Access checks.
+        foreach ($pks as $i => $pk) {
+            $table->reset();
+
+            if ($table->load($pk)) {
+                if (!$is_admin && !in_array($table->access, $my_views)) {
+                    unset($pks[$i]);
+                    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+                    $this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
+                    return false;
+                }
+
+                $projects[$pk] = (int) $table->project_id;
+            }
+            else {
+                unset($pks[$i]);
+            }
+        }
+
+        // Attempt to watch/unwatch the selected items
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        foreach ($pks AS $i => $pk)
+        {
+            $query->clear();
+
+            if ($value == 0) {
+                $query->delete('#__pf_ref_observer')
+                      ->where('item_type = ' . $db->quote( $item_type ) )
+                      ->where('item_id = ' . $db->quote((int) $pk))
+                      ->where('user_id = ' . $db->quote((int) $user->get('id')));
+
+                $db->setQuery($query);
+                $db->execute();
+
+                if ($db->getError()) {
+                    $this->setError($db->getError());
+                    return false;
+                }
+            }
+            else {
+                $query->select('COUNT(*)')
+                      ->from('#__pf_ref_observer')
+                      ->where('item_type = ' . $db->quote( $item_type ) )
+                      ->where('item_id = ' . $db->quote((int) $pk))
+                      ->where('user_id = ' . $db->quote((int) $user->get('id')));
+
+                $db->setQuery($query);
+                $count = (int) $db->loadResult();
+
+                if (!$count) {
+                    $data = new stdClass;
+
+                    $data->user_id   = (int) $user->get('id');
+                    $data->item_type = $item_type;
+                    $data->item_id   = (int) $pk;
+                    $data->project_id= (int) $projects[$pk];
+
+                    $db->insertObject('#__pf_ref_observer', $data);
+
+                    if ($db->getError()) {
+                        $this->setError($db->getError());
+                        return false;
+                    }
+                }
+            }
         }
 
         // Clear the component's cache

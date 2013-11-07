@@ -141,6 +141,7 @@ class plgContentPfnotifications extends JPlugin
         }
 
         $users = call_user_func_array(array($class_name, $users_method), array($context, $table, $is_new));
+        $dupe  = array();
 
         if (count($users) == 0) {
             return true;
@@ -150,6 +151,12 @@ class plgContentPfnotifications extends JPlugin
         if (isset($table->access)) {
             foreach ($users AS $i => $u)
             {
+                if (in_array($u, $dupe)) {
+                    continue;
+                }
+
+                $dupe[] = $u;
+
                 $user = JFactory::getUser((int) $u);
 
                 if (!$user->authorise('core.admin', $component)) {
@@ -167,6 +174,12 @@ class plgContentPfnotifications extends JPlugin
         else {
             foreach ($users AS $i => $u)
             {
+                if (in_array($u, $dupe)) {
+                    continue;
+                }
+
+                $dupe[] = $u;
+
                 $users[$i] = JFactory::getUser((int) $u);
             }
         }
