@@ -147,6 +147,72 @@ abstract class PFrepoNotificationsHelper
      *
      * @return    string
      */
+    public static function getFileSubject($lang, $receiver, $user, $after, $before, $is_new)
+    {
+        $txt_prefix = self::$prefix . '_' . ($is_new ? 'NEW' : 'UPD');
+
+        $format  = $lang->_($txt_prefix . '_SUBJECT');
+        $project = PFnotificationsHelper::translateValue('project_id', $after->project_id);
+        $txt     = sprintf($format, $project, $user->name, $after->title);
+
+        return $txt;
+    }
+
+
+    /**
+     * Method to generate the email message
+     *
+     * @param     object     $lang         Instance of the default user language
+     * @param     object     $receiveer    Instance of the the receiving user
+     * @param     object     $user         Instance of the user who made the change
+     * @param     object     $after        Instance of the item table after it was updated
+     * @param     object     $before       Instance of the item table before it was updated
+     * @param     boolean    $is_new       True if the item is new ($before will be null)
+     *
+     * @return    string
+     */
+    public static function getFileMessage($lang, $receiver, $user, $after, $before, $is_new)
+    {
+        // Get the changed fields
+        $props = array(
+            'description', 'created_by', 'access'
+        );
+
+        $changes = array();
+
+        if (is_object($before) && is_object($after)) {
+            $changes = PFObjectHelper::getDiff($before, $after, $props);
+        }
+
+        if ($is_new) {
+            $changes = PFObjectHelper::toArray($after, $props);
+        }
+
+        $txt_prefix = self::$prefix . '_' . ($is_new ? 'NEW' : 'UPD');
+
+        $format  = $lang->_($txt_prefix . '_MESSAGE');
+        $changes = PFnotificationsHelper::formatChanges($lang, $changes);
+        $footer  = sprintf($lang->_('COM_PROJECTFORK_EMAIL_FOOTER'), JURI::root());
+        $link    = JRoute::_(JURI::root() . PFrepoHelperRoute::getFileRoute($after->id, $after->project_id, $after->dir_id));
+        $txt     = sprintf($format, $receiver->name, $user->name, $changes, $link);
+        $txt     = str_replace('\n', "\n", $txt . "\n\n" . $footer);
+
+        return $txt;
+    }
+
+
+    /**
+     * Method to generate the email subject
+     *
+     * @param     object     $lang         Instance of the default user language
+     * @param     object     $receiveer    Instance of the the receiving user
+     * @param     object     $user         Instance of the user who made the change
+     * @param     object     $after        Instance of the item table after it was updated
+     * @param     object     $before       Instance of the item table before it was updated
+     * @param     boolean    $is_new       True if the item is new ($before will be null)
+     *
+     * @return    string
+     */
     public static function getNoteSubject($lang, $receiver, $user, $after, $before, $is_new)
     {
         $txt_prefix = self::$prefix . '_' . ($is_new ? 'NEW' : 'UPD');
@@ -199,6 +265,7 @@ abstract class PFrepoNotificationsHelper
 
         return $txt;
     }
+
 
     /**
      * Method to generate the email subject
