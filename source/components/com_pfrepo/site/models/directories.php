@@ -102,7 +102,7 @@ class PFrepoModelDirectories extends JModelList
                            . 'AND lbl.item_type = ' . $this->_db->quote('com_pfrepo.directory') . ')');
 
         // Join over the observer table for email notification status
-        if ($user->get('id') > 0) {
+        if ($user->id > 0) {
             $query->select('COUNT(DISTINCT obs.user_id) AS watching');
             $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = '
                 . $this->_db->quote('com_pfrepo.directory') . ' AND obs.item_id = a.id AND obs.user_id = '
