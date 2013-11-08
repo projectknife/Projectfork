@@ -97,8 +97,16 @@ abstract class PFforumNotificationsHelper
 
         $query->select('a.user_id')
               ->from('#__pf_ref_observer AS a')
-              ->where('a.item_type = ' . $db->quote('com_pfforum.topic'))
-              ->where('a.item_id = ' . $db->quote((int) $item_id));
+              ->where(
+                '('
+                . 'a.item_type = ' . $db->quote('com_pfforum.topic')
+                . 'AND a.item_id = ' . (int) $item_id
+                . ')'
+                . ' OR ('
+                . 'a.item_type = ' . $db->quote('com_pfprojects.project')
+                . ' AND a.item_id = ' . (int) $table->project_id
+                . ')'
+              );
 
         $db->setQuery($query);
         $users = (array) $db->loadColumn();
@@ -156,8 +164,8 @@ abstract class PFforumNotificationsHelper
             $changes = PFObjectHelper::getDiff($before, $after, $props);
         }
 
-        if (!count($changes)) {
-            return false;
+        if ($is_new) {
+            $changes = PFObjectHelper::toArray($after, $props);
         }
 
         $txt_prefix = self::$prefix . '_' . ($is_new ? 'NEW' : 'UPD');

@@ -185,6 +185,7 @@ class PFrepoModelRepository extends JModelList
     }
 
 
+
     /**
      * Build an SQL query to load the list data.
      * This query loads the project repo list only!
@@ -233,6 +234,15 @@ class PFrepoModelRepository extends JModelList
         $query->select('COUNT(DISTINCT lbl.id) AS label_count')
               ->join('LEFT', '#__pf_ref_labels AS lbl ON (lbl.item_id = a.id '
                            . 'AND lbl.item_type = ' . $this->_db->quote('com_pfrepo.directory') . ')');
+
+        // Join over the observer table for email notification status
+        if ($user->id > 0) {
+            $query->select('COUNT(DISTINCT obs.user_id) AS watching');
+            $query->join('LEFT', '#__pf_ref_observer AS obs ON (obs.item_type = '
+                . $this->_db->quote('com_pfrepo.directory') . ' AND obs.item_id = a.id AND obs.user_id = '
+                . $this->_db->quote($user->get('id')) . ')'
+            );
+        }
 
         // Filter by access level.
         if ($filter_access) {

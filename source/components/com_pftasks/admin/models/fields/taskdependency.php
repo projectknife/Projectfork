@@ -13,6 +13,7 @@ defined('JPATH_PLATFORM') or die;
 
 jimport('joomla.html.html');
 jimport('joomla.form.formfield');
+jimport('projectfork.library');
 
 
 /**
@@ -217,20 +218,37 @@ class JFormFieldTaskDependency extends JFormField
         $query = $db->getQuery(true);
         $opts  = array();
 
+        $ms_exists = PFApplicationHelper::enabled('com_pfmilestones');
+
         $id   = (int) $this->form->getValue('id');
         $view = $app->input->get('view');
 
-        $query->select('a.id AS value, a.title AS text')
+        $query->select('a.id AS value, a.title AS t_title')
+              ->select('l.title AS l_title')
               ->from('#__pf_tasks AS a')
-              ->where('a.complete = 0')
-              ->where('a.state = 1')
-              ->where('a.project_id = ' . (int) $project)
-              ->order('a.title ASC');
+              ->join('left', '#__pf_task_lists AS l ON l.id = a.list_id');
+
+        if ($ms_exists) {
+            $query->select('m.title AS m_title')
+                  ->join('left', '#__pf_milestones AS m ON m.id = a.milestone_id');
+        }
+
+        $query->where('a.project_id = ' . (int) $project);
+
+        if ($ms_exists) {
+            $query->order('m.title, l.title, a.title ASC');
+        }
+        else {
+            $query->order('l.title, a.title ASC');
+        }
+
 
         $db->setQuery($query);
-        $items = (array) $db->loadObjectList();
+        $items = $db->loadObjectList();
 
         $opts[] = JHtml::_('select.option', '', JText::_('COM_PROJECTFORK_OPTION_SELECT_TASK'));
+
+        if (empty($items)) return $opts;
 
         foreach ($items AS $item)
         {
@@ -239,7 +257,18 @@ class JFormFieldTaskDependency extends JFormField
                 continue;
             }
 
-            $opts[] = JHtml::_('select.option', $item->value, $item->text);
+            $value = array();
+
+            if ($ms_exists) {
+                $value[] = (empty($item->m_title) ? '-' : $item->m_title);
+            }
+
+            $value[] = (empty($item->l_title) ? '-' : $item->l_title);
+            $value[] = $item->t_title;
+
+            $text = implode('/', $value);
+
+            $opts[] = JHtml::_('select.option', $item->value, $text);
         }
 
         return $opts;

@@ -23,7 +23,10 @@ abstract class PFrepoNotificationsHelper
      *
      * @var    array
      */
-    protected static $contexts = array('com_pfrepo.attachment');
+    protected static $contexts = array('com_pfrepo.attachment',
+                                       'com_pfrepo.file', 'com_pfrepo.fileform',
+                                       'com_pfrepo.note', 'com_pfrepo.noteform'
+                                       );
 
     /**
      * Email string prefix
@@ -57,7 +60,25 @@ abstract class PFrepoNotificationsHelper
      */
     public static function getItemName($context)
     {
-        return 'attachment';
+        switch ($context)
+        {
+            case 'com_pfrepo.file':
+            case 'com_pfrepo.fileform':
+                self::$prefix = 'COM_PFREPO_FILE_EMAIL';
+                return 'file';
+                break;
+
+            case 'com_pfrepo.note':
+            case 'com_pfrepo.noteform':
+                self::$prefix = 'COM_PFREPO_NOTE_EMAIL';
+                return 'note';
+                break;
+
+            default:
+                self::$prefix = 'COM_PROJECTFORK_ATTACHMENT_EMAIL';
+                return 'attachment';
+                break;
+        }
     }
 
 
@@ -72,22 +93,177 @@ abstract class PFrepoNotificationsHelper
      */
     public static function getObservers($context, $table, $is_new = false)
     {
-        if (!$is_new) {
-            return array();
+        $db = JFactory::getDbo();
+
+        if (in_array($context, array('com_pfrepo.file', 'com_pfrepo.fileform', 'com_pfrepo.note', 'com_pfrepo.noteform'))) {
+            $parents = self::getParentDirectories($table->dir_id);
+            $query   = $db->getQuery(true);
+
+            $query->select('a.user_id')
+                  ->from('#__pf_ref_observer AS a');
+
+            $query->where(
+                '('
+                . 'a.item_type = ' . $db->quote('com_pfrepo.directory')
+                . ' AND a.item_id IN(' . implode(', ', $parents) . ') '
+                . ')'
+                . ' OR ('
+                . 'a.item_type = ' . $db->quote('com_pfprojects.project')
+                . ' AND a.item_id = ' . (int) $table->project_id
+                . ')'
+            );
         }
+        else {
+            if (isset($table->item_type) && isset($table->item_id) && !$is_new) {
+                $query = $db->getQuery(true);
 
-        $db    = JFactory::getDbo();
-        $query = $db->getQuery(true);
+                $query->select('a.user_id')
+                      ->from('#__pf_ref_observer AS a');
 
-        $query->select('a.user_id')
-              ->from('#__pf_ref_observer AS a')
-              ->where('a.item_type = ' . $db->quote($db->escape($table->item_type)))
-              ->where('a.item_id = ' . $db->quote((int) $table->item_id));
+                $query->where('a.item_type = ' . $db->quote($db->escape($table->item_type)))
+                      ->where('a.item_id = ' . $db->quote((int) $table->item_id));
+            }
+            else {
+                return array();
+            }
+        }
 
         $db->setQuery($query);
         $users = (array) $db->loadColumn();
 
         return $users;
+    }
+
+
+    /**
+     * Method to generate the email subject
+     *
+     * @param     object     $lang         Instance of the default user language
+     * @param     object     $receiveer    Instance of the the receiving user
+     * @param     object     $user         Instance of the user who made the change
+     * @param     object     $after        Instance of the item table after it was updated
+     * @param     object     $before       Instance of the item table before it was updated
+     * @param     boolean    $is_new       True if the item is new ($before will be null)
+     *
+     * @return    string
+     */
+    public static function getFileSubject($lang, $receiver, $user, $after, $before, $is_new)
+    {
+        $txt_prefix = self::$prefix . '_' . ($is_new ? 'NEW' : 'UPD');
+
+        $format  = $lang->_($txt_prefix . '_SUBJECT');
+        $project = PFnotificationsHelper::translateValue('project_id', $after->project_id);
+        $txt     = sprintf($format, $project, $user->name, $after->title);
+
+        return $txt;
+    }
+
+
+    /**
+     * Method to generate the email message
+     *
+     * @param     object     $lang         Instance of the default user language
+     * @param     object     $receiveer    Instance of the the receiving user
+     * @param     object     $user         Instance of the user who made the change
+     * @param     object     $after        Instance of the item table after it was updated
+     * @param     object     $before       Instance of the item table before it was updated
+     * @param     boolean    $is_new       True if the item is new ($before will be null)
+     *
+     * @return    string
+     */
+    public static function getFileMessage($lang, $receiver, $user, $after, $before, $is_new)
+    {
+        // Get the changed fields
+        $props = array(
+            'description', 'created_by', 'access'
+        );
+
+        $changes = array();
+
+        if (is_object($before) && is_object($after)) {
+            $changes = PFObjectHelper::getDiff($before, $after, $props);
+        }
+
+        if ($is_new) {
+            $changes = PFObjectHelper::toArray($after, $props);
+        }
+
+        $txt_prefix = self::$prefix . '_' . ($is_new ? 'NEW' : 'UPD');
+
+        $format  = $lang->_($txt_prefix . '_MESSAGE');
+        $changes = PFnotificationsHelper::formatChanges($lang, $changes);
+        $footer  = sprintf($lang->_('COM_PROJECTFORK_EMAIL_FOOTER'), JURI::root());
+        $link    = JRoute::_(JURI::root() . PFrepoHelperRoute::getFileRoute($after->id, $after->project_id, $after->dir_id));
+        $txt     = sprintf($format, $receiver->name, $user->name, $changes, $link);
+        $txt     = str_replace('\n', "\n", $txt . "\n\n" . $footer);
+
+        return $txt;
+    }
+
+
+    /**
+     * Method to generate the email subject
+     *
+     * @param     object     $lang         Instance of the default user language
+     * @param     object     $receiveer    Instance of the the receiving user
+     * @param     object     $user         Instance of the user who made the change
+     * @param     object     $after        Instance of the item table after it was updated
+     * @param     object     $before       Instance of the item table before it was updated
+     * @param     boolean    $is_new       True if the item is new ($before will be null)
+     *
+     * @return    string
+     */
+    public static function getNoteSubject($lang, $receiver, $user, $after, $before, $is_new)
+    {
+        $txt_prefix = self::$prefix . '_' . ($is_new ? 'NEW' : 'UPD');
+
+        $format  = $lang->_($txt_prefix . '_SUBJECT');
+        $project = PFnotificationsHelper::translateValue('project_id', $after->project_id);
+        $txt     = sprintf($format, $project, $user->name, $after->title);
+
+        return $txt;
+    }
+
+
+    /**
+     * Method to generate the email message
+     *
+     * @param     object     $lang         Instance of the default user language
+     * @param     object     $receiveer    Instance of the the receiving user
+     * @param     object     $user         Instance of the user who made the change
+     * @param     object     $after        Instance of the item table after it was updated
+     * @param     object     $before       Instance of the item table before it was updated
+     * @param     boolean    $is_new       True if the item is new ($before will be null)
+     *
+     * @return    string
+     */
+    public static function getNoteMessage($lang, $receiver, $user, $after, $before, $is_new)
+    {
+        // Get the changed fields
+        $props = array(
+            'description', 'created_by', 'access'
+        );
+
+        $changes = array();
+
+        if (is_object($before) && is_object($after)) {
+            $changes = PFObjectHelper::getDiff($before, $after, $props);
+        }
+
+        if ($is_new) {
+            $changes = PFObjectHelper::toArray($after, $props);
+        }
+
+        $txt_prefix = self::$prefix . '_' . ($is_new ? 'NEW' : 'UPD');
+
+        $format  = $lang->_($txt_prefix . '_MESSAGE');
+        $changes = PFnotificationsHelper::formatChanges($lang, $changes);
+        $footer  = sprintf($lang->_('COM_PROJECTFORK_EMAIL_FOOTER'), JURI::root());
+        $link    = JRoute::_(JURI::root() . PFrepoHelperRoute::getNoteRoute($after->id, $after->project_id, $after->dir_id));
+        $txt     = sprintf($format, $receiver->name, $user->name, $changes, $link);
+        $txt     = str_replace('\n', "\n", $txt . "\n\n" . $footer);
+
+        return $txt;
     }
 
 
@@ -212,5 +388,40 @@ abstract class PFrepoNotificationsHelper
         $txt     = str_replace('\n', "\n", $txt . "\n\n" . $footer);
 
         return $txt;
+    }
+
+
+    protected static function getParentDirectories($id)
+    {
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('lft, rgt')
+              ->from('#__pf_repo_dirs')
+              ->where('id = ' . (int) $id);
+
+        $db->setQuery($query);
+        $data = $db->loadObject();
+
+        if (empty($data)) {
+            return array($id);
+        }
+
+        $query->clear();
+        $query->select('id')
+              ->from('#__pf_repo_dirs')
+              ->where('lft < ' . $data->lft)
+              ->where('rgt > ' . $data->rgt);
+
+        $db->setQuery($query);
+        $parents = $db->loadColumn();
+
+        if (!is_array($parents)) {
+            $parents = array();
+        }
+
+        $parents[] = $id;
+
+        return $parents;
     }
 }

@@ -631,7 +631,7 @@ class PFrepoModelDirectory extends JModelAdmin
         $form->setFieldAttribute('alias', 'filter', 'unset');
 
         // Disable these fields if not an admin
-        if (!$user->authorise('core.admin', 'com_pfrepo')) {
+        if (!$user->authorise('core.admin', 'com_pfrepo') && !$user->authorise('core.manage', 'com_pfrepo')) {
             $form->setFieldAttribute('access', 'disabled', 'true');
             $form->setFieldAttribute('access', 'filter', 'unset');
 
@@ -764,6 +764,13 @@ class PFrepoModelDirectory extends JModelAdmin
         if (!$table->store()) {
             $this->setError($table->getError());
             return false;
+        }
+
+        // Add to watch list
+        if ($is_new) {
+            $cid = array($table->id);
+
+            $this->watch($cid, 1);
         }
 
         // Trigger the onContentAfterSave event.
@@ -972,6 +979,101 @@ class PFrepoModelDirectory extends JModelAdmin
 
 
     /**
+     * Method to watch an item
+     *
+     * @param    array      $pks      The items to watch
+     * @param    integer    $value    1 to watch, 0 to unwatch
+     * @param    integer    $uid      The user id to watch the item
+     */
+    public function watch(&$pks, $value = 1, $uid = null)
+    {
+        $user  = JFactory::getUser($uid);
+        $table = $this->getTable();
+        $pks   = (array) $pks;
+
+        $is_admin = $user->authorise('core.admin', $this->option);
+        $my_views = $user->getAuthorisedViewLevels();
+        $projects = array();
+
+        $item_type = 'com_pfrepo.directory';
+
+        // Access checks.
+        foreach ($pks as $i => $pk) {
+            $table->reset();
+
+            if ($table->load($pk)) {
+                if (!$is_admin && !in_array($table->access, $my_views)) {
+                    unset($pks[$i]);
+                    JError::raiseWarning(403, JText::_('JERROR_ALERTNOAUTHOR'));
+                    $this->setError(JText::_('JERROR_ALERTNOAUTHOR'));
+                    return false;
+                }
+
+                $projects[$pk] = (int) $table->project_id;
+            }
+            else {
+                unset($pks[$i]);
+            }
+        }
+
+        // Attempt to watch/unwatch the selected items
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
+
+        foreach ($pks AS $i => $pk)
+        {
+            $query->clear();
+
+            if ($value == 0) {
+                $query->delete('#__pf_ref_observer')
+                      ->where('item_type = ' . $db->quote( $item_type ) )
+                      ->where('item_id = ' . $db->quote((int) $pk))
+                      ->where('user_id = ' . $db->quote((int) $user->get('id')));
+
+                $db->setQuery($query);
+                $db->execute();
+
+                if ($db->getError()) {
+                    $this->setError($db->getError());
+                    return false;
+                }
+            }
+            else {
+                $query->select('COUNT(*)')
+                      ->from('#__pf_ref_observer')
+                      ->where('item_type = ' . $db->quote( $item_type ) )
+                      ->where('item_id = ' . $db->quote((int) $pk))
+                      ->where('user_id = ' . $db->quote((int) $user->get('id')));
+
+                $db->setQuery($query);
+                $count = (int) $db->loadResult();
+
+                if (!$count) {
+                    $data = new stdClass;
+
+                    $data->user_id   = (int) $user->get('id');
+                    $data->item_type = $item_type;
+                    $data->item_id   = (int) $pk;
+                    $data->project_id= (int) $projects[$pk];
+
+                    $db->insertObject('#__pf_ref_observer', $data);
+
+                    if ($db->getError()) {
+                        $this->setError($db->getError());
+                        return false;
+                    }
+                }
+            }
+        }
+
+        // Clear the component's cache
+        $this->cleanCache();
+
+        return true;
+    }
+
+
+    /**
      * Method to physically create or move a directory
      *
      * @param     array      $data    The directory data
@@ -1161,8 +1263,8 @@ class PFrepoModelDirectory extends JModelAdmin
 
         $query->select('id, access')
               ->from('#__pf_repo_dirs')
-              ->where('a.lft > ' . (int) $record->lft)
-              ->where('a.rgt < ' . (int) $record->rgt);
+              ->where('lft > ' . (int) $record->lft)
+              ->where('rgt < ' . (int) $record->rgt);
 
         $this->_db->setQuery($query);
 

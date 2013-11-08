@@ -77,6 +77,50 @@ abstract class PFObjectHelper
     }
 
 
+    public static function toArray($obj, $props)
+    {
+        $data = array();
+
+        $obj_props = array();
+
+        if ($obj instanceof JTable) {
+            $obj_props = $obj->getProperties(true);
+        }
+        else {
+            $obj_props = get_object_vars($obj);
+        }
+
+        foreach($props AS $prop)
+        {
+            if (!is_array($prop)) {
+                $prop = array($prop, 'NE');
+            }
+
+            if (count($prop) != 2) continue;
+
+            list($name, $cmp) = $prop;
+
+            switch (strtoupper($cmp))
+            {
+                case 'NE-SQLDATE':
+                    // Not equal, not sql null date
+                    if ($obj->$name != JFactory::getDbo()->getNullDate()) {
+                        $data[$name] = $obj->$name;
+                    }
+                    break;
+
+                case 'NE':
+                default:
+                    // Default, not equal
+                    $data[$name] = $obj->$name;
+                    break;
+            }
+        }
+
+        return $data;
+    }
+
+
     public static function toContentItem(&$item)
     {
         static $content;

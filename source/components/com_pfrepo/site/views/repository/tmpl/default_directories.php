@@ -49,6 +49,14 @@ foreach ($this->items['directories'] as $i => $item) :
         $icon = 'icon-locked';
     }
 
+    // Prepare the watch button
+    $watch = '';
+
+    if ($uid) {
+        $options = array('a-class' => 'btn-mini', 'div-class' => 'pull-right');
+        $watch = JHtml::_('pfhtml.button.watch', 'repository', $i, $item->watching, $options);
+    }
+
     $can_create   = $access->get('core.create');
     $can_edit     = $access->get('core.edit');
     $can_checkin  = ($user->authorise('core.manage', 'com_checkin') || $item->checked_out == $uid || $item->checked_out == 0);
@@ -104,6 +112,7 @@ foreach ($this->items['directories'] as $i => $item) :
                     <?php echo str_replace($this_path, '.', $item->path) . '/'; ?>
                 </div>
             <?php endif; ?>
+            <?php echo $watch; ?>
         </td>
         <td class="hidden-phone">
         	<?php echo JText::_('JGRID_HEADING_DIRECTORY'); ?>

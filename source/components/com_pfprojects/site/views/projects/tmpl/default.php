@@ -133,9 +133,7 @@ $is_ssl = JFactory::getURI()->isSSL();
 	    	    	    		<?php if (!empty($item->logo_img)) : ?>
 	    	    	    		        <img src="<?php echo $item->logo_img;?>" width="100" class="thumbnail pull-left" alt="<?php echo $this->escape($item->title);?>" />
 	    	    	    		<?php else : ?>
-                                        <?php if (!$is_ssl) : ?>
-	    	    	    		           <img src="http://placehold.it/100x100&text=<?php echo $this->escape($item->title);?>"  class="thumbnail pull-left" alt="<?php echo $this->escape($item->title);?>" />
-                                        <?php endif; ?>
+	    	    	    		        <img src="<?php echo JURI::root(true) . '/media/com_projectfork/projectfork/images/icons/project-placeholder.png'; ?>"  class="thumbnail pull-left" width="100" alt="<?php echo $this->escape($item->title);?>" />
 	    	    	    		<?php endif ; ?>
 	    	    	    		</a>
     	    	    		<h2 class="item-title">

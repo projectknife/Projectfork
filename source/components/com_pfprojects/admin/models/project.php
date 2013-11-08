@@ -270,7 +270,7 @@ class PFprojectsModelProject extends JModelAdmin
         $form->setFieldAttribute('alias', 'filter', 'unset');
 
         // Disable these fields if not an admin
-        if (!$user->authorise('core.admin', 'com_pfprojects')) {
+        if (!$user->authorise('core.admin', 'com_pfprojects') && !$user->authorise('core.manage', 'com_pfprojects')) {
             $form->setFieldAttribute('access', 'disabled', 'true');
             $form->setFieldAttribute('access', 'filter', 'unset');
 
@@ -296,6 +296,7 @@ class PFprojectsModelProject extends JModelAdmin
      */
     public function save($data)
     {
+        $user   = JFactory::getUser();
         $table  = $this->getTable();
         $key    = $table->getKeyName();
         $pk     = (!empty($data[$key])) ? $data[$key] : (int) $this->getState($this->getName() . '.id');
@@ -347,6 +348,8 @@ class PFprojectsModelProject extends JModelAdmin
             }
 
             // Inject group into component rules
+            $is_admin = $user->authorise('core.admin');
+
             if (isset($data['component_rules']) && $is_new && $create_group) {
                 foreach ($data['component_rules'] AS $component => $rules)
                 {
@@ -356,12 +359,18 @@ class PFprojectsModelProject extends JModelAdmin
                             foreach ($groups AS $gid => $v)
                             {
                                 if ($gid == 0) {
-                                    if ($group_id) {
-                                        unset($data['component_rules'][$component][$action][$gid]);
-                                        $data['component_rules'][$component][$action][$group_id] = $v;
+                                    if (!$is_admin && $action == 'core.admin') {
+                                        // Dont allow non-admins to inject core admin permission
+                                        unset($data['component_rules'][$component][$action]);
                                     }
                                     else {
-                                        unset($data['component_rules'][$component][$action][$gid]);
+                                        if ($group_id) {
+                                            unset($data['component_rules'][$component][$action][$gid]);
+                                            $data['component_rules'][$component][$action][$group_id] = $v;
+                                        }
+                                        else {
+                                            unset($data['component_rules'][$component][$action][$gid]);
+                                        }
                                     }
                                 }
                             }
@@ -1202,7 +1211,9 @@ class PFprojectsModelProject extends JModelAdmin
      */
     protected function addGroupUsers($data)
     {
-        $query = $this->_db->getQuery(true);
+        $user     = JFactory::getUser();
+        $is_admin = $user->authorise('core.admin');
+        $query    = $this->_db->getQuery(true);
 
         foreach($data AS $gid => $users)
         {
@@ -1211,6 +1222,13 @@ class PFprojectsModelProject extends JModelAdmin
             if (empty($users)) continue;
 
             $users = explode(',', $users);
+
+            // If we are not an admin, but the group grants admin privileges, don't allow user manipulation
+            if (!$is_admin) {
+                if (JAccess::checkGroup($gid, 'core.admin')) {
+                    continue;
+                }
+            }
 
             // Loop through the users
             foreach ($users AS $uid)
@@ -1232,7 +1250,8 @@ class PFprojectsModelProject extends JModelAdmin
                 if ($exists) continue;
 
                 $obj = new stdClass();
-                $obj->user_id = $uid;
+
+                $obj->user_id  = $uid;
                 $obj->group_id = $gid;
 
                 // Add user to group
@@ -1253,13 +1272,22 @@ class PFprojectsModelProject extends JModelAdmin
      */
     protected function removeGroupUsers($data)
     {
-        $query = $this->_db->getQuery(true);
+        $user     = JFactory::getUser();
+        $is_admin = $user->authorise('core.admin');
+        $query    = $this->_db->getQuery(true);
 
         foreach($data AS $gid => $users)
         {
             $gid = (int) $gid;
 
             if (empty($users)) continue;
+
+            // If we are not an admin, but the group grants admin privileges, don't allow user manipulation
+            if (!$is_admin) {
+                if (JAccess::checkGroup($gid, 'core.admin')) {
+                    continue;
+                }
+            }
 
             $users = explode(',', $users);
             $clean = array();

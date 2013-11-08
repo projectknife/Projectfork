@@ -14,6 +14,7 @@ $user     = JFactory::getUser();
 $ul_open  = false;
 $level    = 1;
 $uid      = $user->get('id');
+$php53    = version_compare(PHP_VERSION, '5.3', 'ge');
 ?>
 <?php
 foreach($this->items AS $i => $item) :
@@ -52,7 +53,13 @@ foreach($this->items AS $i => $item) :
 	                    	<span class="item-date small pull-right">
 			                    <?php echo JHtml::date($item->created); ?>
 			                </span>
-                            <?php echo nl2br($item->description); ?>
+                            <?php
+                                if ($php53) {
+                                    $item->description = $this->linkify($item->description);
+                                }
+
+                                echo nl2br($item->description);
+                            ?>
                             <small><cite title="<?php echo $item->author_name; ?>"><?php echo $item->author_name; ?></cite></small>
 	                        <div class="btn-group comment-item-actions">
 	                            <?php if ($can_create) : ?>

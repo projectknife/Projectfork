@@ -183,7 +183,7 @@ class PFtasksModelTask extends JModelAdmin
         $form->setFieldAttribute('alias', 'filter', 'unset');
 
         // Disable these fields if not an admin
-        if (!$user->authorise('core.admin', 'com_pftasks')) {
+        if (!$user->authorise('core.admin', 'com_pftasks') && !$user->authorise('core.manage', 'com_pftasks')) {
             $form->setFieldAttribute('access', 'disabled', 'true');
             $form->setFieldAttribute('access', 'filter', 'unset');
 
@@ -465,6 +465,11 @@ class PFtasksModelTask extends JModelAdmin
 
             // Set the active project
             PFApplicationHelper::setActiveProject($updated->project_id);
+
+            // Store entered rate in session
+            if (isset($data['rate']) && !empty($data['rate']) && $data['rate'] != '0.00') {
+                JFactory::getApplication()->setUserState('com_projectfork.jform_rate', $data['rate']);
+            }
 
             // Add to watch list
             if ($is_new) {

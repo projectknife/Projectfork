@@ -136,7 +136,7 @@ class PFforumModelTopic extends JModelAdmin
 		$form->setFieldAttribute('alias', 'filter', 'unset');
 
         // Disable these fields if not an admin
-        if (!$user->authorise('core.admin', 'com_pfforum')) {
+        if (!$user->authorise('core.admin', 'com_pfforum') && !$user->authorise('core.manage', 'com_pfforum')) {
             $form->setFieldAttribute('access', 'disabled', 'true');
             $form->setFieldAttribute('access', 'filter', 'unset');
 

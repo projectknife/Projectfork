@@ -63,20 +63,25 @@ if (!$this->is_j25) :
 endif;
 ?>
 <form action="<?php echo JRoute::_('index.php?option=com_pftasks&view=tasks'); ?>" method="post" name="adminForm" id="adminForm">
-    <!-- Task field must be at the top because of a bug in the Joomla 3.0 sortable script -->
-    <input type="hidden" name="task" value="" />
     <?php
     if (!$this->is_j25) :
         if (!empty($this->sidebar)) :
             ?>
             <div id="j-sidebar-container" class="span2">
+                <!-- Task field must be at the top because of a bug in the Joomla 3.0 sortable script -->
+                <input type="hidden" name="task" value="" />
                 <?php echo $this->sidebar; ?>
             </div>
             <div id="j-main-container" class="span10">
         <?php else : ?>
                 <div id="j-main-container">
+                <input type="hidden" name="task" value="" />
             <?php
         endif;
+    else :
+        ?>
+        <input type="hidden" name="task" value="" />
+        <?php
     endif;
 
     echo $this->loadTemplate('filter_' . ($this->is_j25 ? 'j25' : 'j30'));

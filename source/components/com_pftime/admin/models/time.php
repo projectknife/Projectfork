@@ -116,7 +116,7 @@ class PFtimeModelTime extends JModelAdmin
         }
 
         // Disable these fields if not an admin
-        if (!$user->authorise('core.admin', 'com_pftime')) {
+        if (!$user->authorise('core.admin', 'com_pftime') && !$user->authorise('core.manage', 'com_pftime')) {
             $form->setFieldAttribute('access', 'disabled', 'true');
             $form->setFieldAttribute('access', 'filter', 'unset');
 
@@ -250,6 +250,11 @@ class PFtimeModelTime extends JModelAdmin
 
             // Set the active project
             PFApplicationHelper::setActiveProject($updated->project_id);
+
+            // Store entered rate in session
+            if (isset($data['rate']) && !empty($data['rate']) && $data['rate'] != '0.00' && $is_new) {
+                JFactory::getApplication()->setUserState('com_projectfork.jform_rate', $data['rate']);
+            }
 
             return true;
         }

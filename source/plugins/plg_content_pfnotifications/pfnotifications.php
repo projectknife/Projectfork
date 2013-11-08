@@ -3,7 +3,7 @@
  * @package      Projectfork Notifications
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -43,7 +43,14 @@ class plgContentPfnotifications extends JPlugin
 
         // Component name must start with com_pf
         if (substr($context, 0 , 6) != 'com_pf') {
-            return true;
+            return;
+        }
+
+        // Check config if sending is enabled for this type of event (new/update)
+        $send_type = (int) $this->params->get('send_type');
+
+        if (($is_new && $send_type == 2) || (!$is_new && $send_type == 1)) {
+            return;
         }
 
         // Import PF library, just to be sure
@@ -51,7 +58,7 @@ class plgContentPfnotifications extends JPlugin
 
         // Make sure the item is supported
         if (!PFnotificationsHelper::isSupported($context)) {
-            return true;
+            return;
         }
 
         list($component, $item) = explode('.', $context, 2);
@@ -91,6 +98,13 @@ class plgContentPfnotifications extends JPlugin
             return true;
         }
 
+        // Check config if sending is enabled for this type of event (new/update)
+        $send_type = (int) $this->params->get('send_type');
+
+        if (($is_new && $send_type == 2) || (!$is_new && $send_type == 1)) {
+            return;
+        }
+
         // Import PF library, just to be sure
         jimport('projectfork.library');
 
@@ -127,6 +141,7 @@ class plgContentPfnotifications extends JPlugin
         }
 
         $users = call_user_func_array(array($class_name, $users_method), array($context, $table, $is_new));
+        $dupe  = array();
 
         if (count($users) == 0) {
             return true;
@@ -136,6 +151,12 @@ class plgContentPfnotifications extends JPlugin
         if (isset($table->access)) {
             foreach ($users AS $i => $u)
             {
+                if (in_array($u, $dupe)) {
+                    continue;
+                }
+
+                $dupe[] = $u;
+
                 $user = JFactory::getUser((int) $u);
 
                 if (!$user->authorise('core.admin', $component)) {
@@ -153,6 +174,12 @@ class plgContentPfnotifications extends JPlugin
         else {
             foreach ($users AS $i => $u)
             {
+                if (in_array($u, $dupe)) {
+                    continue;
+                }
+
+                $dupe[] = $u;
+
                 $users[$i] = JFactory::getUser((int) $u);
             }
         }
@@ -167,6 +194,12 @@ class plgContentPfnotifications extends JPlugin
 		$fromname = JFactory::getConfig()->get('fromname');
         $user     = JFactory::getUser();
         $is_site  = JFactory::getApplication()->isSite();
+        $mailer   = JFactory::getMailer();
+        $date     = new JDate();
+        $now      = $date->toSql();
+        $store    = $this->params->get('send_method');
+
+        $db = JFactory::getDbo();
 
         $this->table_after = $table;
 
@@ -194,7 +227,22 @@ class plgContentPfnotifications extends JPlugin
                 break;
             }
 
-            JFactory::getMailer()->sendMail($mailfrom, $fromname, $receiver->email, $subject, $message);
+            if (!$store) {
+                // Send directly
+                $mailer->sendMail($mailfrom, $fromname, $receiver->email, $subject, $message);
+            }
+            else {
+                // Store in db
+                $data = new stdClass();
+
+                $data->id      = null;
+                $data->email   = $receiver->email;
+                $data->subject = $subject;
+                $data->message = $message;
+                $data->created = $now;
+
+                $db->insertObject('#__pf_emailqueue', $data);
+            }
 		}
 
         return true;

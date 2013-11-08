@@ -62,7 +62,9 @@ class PFusersViewGroupRules extends JViewLegacy
         $this->rules         = $this->getAssetRules();
         $this->public_groups = array('1', JComponentHelper::getParams('com_users')->get('guest_usergroup', 1));
 
-        if (!JFactory::getUser()->authorise('core.admin', $this->component)) {
+        $user = JFactory::getUser();
+
+        if (!$user->authorise('core.admin', $this->component) && !$user->authorise('core.manage', $this->component)) {
             JError::raiseError(403, JText::_('JERROR_ALERTNOAUTHOR'));
             return false;
         }
