@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="system" method="upgrade">
 	<name>plg_system_pfdemo</name>
-	<creationDate>September 2013</creationDate>
+	<creationDate>November 2013</creationDate>
 	<author>Tobias Kuhn</author>
 	<copyright>(C) 2006 - 2013 Tobias Kuhn. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>support@projectfork.net</authorEmail>
 	<authorUrl>www.projectfork.net</authorUrl>
-	<version>4.2.0b2</version>
+	<version>4.2.0b3</version>
 	<description>PLG_SYSTEM_PFDEMO_XML_DESCRIPTION</description>
 	<files>
         <filename plugin="pfdemo">pfdemo.php</filename>
