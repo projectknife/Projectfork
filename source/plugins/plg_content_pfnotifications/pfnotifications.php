@@ -152,6 +152,7 @@ class plgContentPfnotifications extends JPlugin
             foreach ($users AS $i => $u)
             {
                 if (in_array($u, $dupe)) {
+                    unset($users[$i]);
                     continue;
                 }
 
@@ -175,6 +176,7 @@ class plgContentPfnotifications extends JPlugin
             foreach ($users AS $i => $u)
             {
                 if (in_array($u, $dupe)) {
+                    unset($users[$i]);
                     continue;
                 }
 

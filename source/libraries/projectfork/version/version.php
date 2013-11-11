@@ -30,13 +30,13 @@ final class PFVersion
     public $DEV_STATUS = 'Beta';
 
     /** @var  string  Build number. */
-    public $BUILD = '3';
+    public $BUILD = '4';
 
     /** @var  string  Code name. */
     public $CODENAME = 'Carrier';
 
     /** @var  string  Release date. */
-    public $RELDATE = '09-November-2013';
+    public $RELDATE = '11-November-2013';
 
     /** @var  string  Release time. */
     public $RELTIME = '21:00';
