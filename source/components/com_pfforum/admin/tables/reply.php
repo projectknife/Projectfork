@@ -11,11 +11,15 @@
 defined('_JEXEC') or die();
 
 
+// Register compat class
+JLoader::register('PFtableReplyCompat', dirname(__FILE__) . '/reply_compat.php');
+
+
 /**
  * Reply table
  *
  */
-class PFtableReply extends JTable
+class PFtableReply extends PFtableReplyCompat
 {
     /**
      * Constructor
@@ -50,7 +54,7 @@ class PFtableReply extends JTable
      *
      * @return    integer
      */
-    protected function _getAssetParentId($table = null, $id = null)
+    protected function _getAssetParentIdCompat($table = null, $id = null)
     {
         // Initialise variables.
         $asset_id = null;

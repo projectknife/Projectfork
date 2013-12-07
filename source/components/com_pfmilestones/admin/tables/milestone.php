@@ -11,11 +11,19 @@
 defined('_JEXEC') or die();
 
 
+jimport('joomla.database.tableasset');
+jimport('joomla.database.table');
+jimport('projectfork.library');
+
+// Register compat class
+JLoader::register('PFtableMilestoneCompat', dirname(__FILE__) . '/milestone_compat.php');
+
+
 /**
  * Milestone table
  *
  */
-class PFtableMilestone extends JTable
+class PFtableMilestone extends PFtableMilestoneCompat
 {
     /**
      * Constructor
@@ -52,6 +60,31 @@ class PFtableMilestone extends JTable
 
 
     /**
+     * Method to get the project access level id
+     *
+     * @return    integer
+     */
+    protected function _getParentAccess()
+    {
+        if ((int) $this->project_id == 0) return (int) JFactory::getConfig()->get('access');
+
+        $db    = $this->getDbo();
+        $query = $db->getQuery(true);
+
+        $query->select('access')
+              ->from('#__pf_projects')
+              ->where('id = ' . (int) $this->project_id);
+
+        $db->setQuery($query);
+        $access = (int) $db->loadResult();
+
+        if (!$access) $access = (int) JFactory::getConfig()->get('access');
+
+        return $access;
+    }
+
+
+    /**
      * Method to get the parent asset id for the record
      *
      * @param     jtable     $table    A JTable object for the asset parent
@@ -59,7 +92,7 @@ class PFtableMilestone extends JTable
      *
      * @return    integer
      */
-    protected function _getAssetParentId($table = null, $id = null)
+    protected function _getAssetParentIdCompat($table = null, $id = null)
     {
         $asset_id = null;
         $query    = $this->_db->getQuery(true);
@@ -90,31 +123,6 @@ class PFtableMilestone extends JTable
         if ($asset_id) return $asset_id;
 
         return parent::_getAssetParentId($table, $id);
-    }
-
-
-    /**
-     * Method to get the project access level id
-     *
-     * @return    integer
-     */
-    protected function _getParentAccess()
-    {
-        if ((int) $this->project_id == 0) return (int) JFactory::getConfig()->get('access');
-
-        $db    = $this->getDbo();
-        $query = $db->getQuery(true);
-
-        $query->select('access')
-              ->from('#__pf_projects')
-              ->where('id = ' . (int) $this->project_id);
-
-        $db->setQuery($query);
-        $access = (int) $db->loadResult();
-
-        if (!$access) $access = (int) JFactory::getConfig()->get('access');
-
-        return $access;
     }
 
 

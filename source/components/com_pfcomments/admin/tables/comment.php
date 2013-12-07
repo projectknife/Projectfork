@@ -14,11 +14,15 @@ defined('_JEXEC') or die();
 jimport('joomla.database.tablenested');
 
 
+// Register compat class
+JLoader::register('PFtableCommentCompat', dirname(__FILE__) . '/comment_compat.php');
+
+
 /**
  * Comment table
  *
  */
-class PFtableComment extends JTableNested
+class PFtableComment extends PFtableCommentCompat
 {
     /**
      * Constructor
@@ -64,7 +68,7 @@ class PFtableComment extends JTableNested
      *
      * @return    integer              The id of the asset's parent
      */
-    protected function _getAssetParentId($table = null, $id = null)
+    protected function _getAssetParentIdCompat($table = null, $id = null)
     {
         $asset_id = null;
         $result   = null;

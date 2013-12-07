@@ -14,11 +14,15 @@ defined('_JEXEC') or die();
 jimport('joomla.database.tableasset');
 
 
+// Register compat class
+JLoader::register('PFtableTopicCompat', dirname(__FILE__) . '/topic_compat.php');
+
+
 /**
  * Topic table
  *
  */
-class PFtableTopic extends JTable
+class PFtableTopic extends PFtableTopicCompat
 {
     /**
      * Constructor
@@ -65,7 +69,7 @@ class PFtableTopic extends JTable
      *
      * @return    integer
      */
-    protected function _getAssetParentId($table = null, $id = null)
+    protected function _getAssetParentIdCompat($table = null, $id = null)
     {
         $asset_id = null;
         $query    = $this->_db->getQuery(true);
