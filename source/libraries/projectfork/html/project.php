@@ -279,6 +279,7 @@ abstract class PFhtmlProject
         $js[] = "            data: function (term, page) {return {filter_search: term, limit: 10, limitstart: ((page - 1) * 10)};},";
         $js[] = "            results: function (data, page) {var more = (page * 10) < data.total;return {results: data.items, more: more};}";
         $js[] = "        },";
+        $js[] = "        escapeMarkup:function(markup) { return markup; },";
         $js[] = "        initSelection: function(element, callback) {";
         $js[] = "           callback({id:" . $active_id . ", text: '" . ($active_id ? $active_title : $placehold) . "'});";
         $js[] = "        }";
