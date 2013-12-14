@@ -42,7 +42,6 @@ class PFNotificationCron extends JApplicationCli
     {
         $mailfrom = JFactory::getConfig()->get('mailfrom');
 		$fromname = JFactory::getConfig()->get('fromname');
-        $mailer   = JFactory::getMailer();
         $db       = JFactory::getDbo();
 
         // Get plugin params
@@ -77,6 +76,7 @@ class PFNotificationCron extends JApplicationCli
         // Send and delete each email
         foreach ($items AS $item)
         {
+            $mailer = JFactory::getMailer();
             $mailer->sendMail($mailfrom, $fromname, $item->email, $item->subject, $item->message);
 
             $query->clear();

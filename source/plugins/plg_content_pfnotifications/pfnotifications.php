@@ -196,7 +196,6 @@ class plgContentPfnotifications extends JPlugin
 		$fromname = JFactory::getConfig()->get('fromname');
         $user     = JFactory::getUser();
         $is_site  = JFactory::getApplication()->isSite();
-        $mailer   = JFactory::getMailer();
         $date     = new JDate();
         $now      = $date->toSql();
         $store    = $this->params->get('send_method');
@@ -207,6 +206,11 @@ class plgContentPfnotifications extends JPlugin
 
         foreach ($users as $receiver)
 		{
+		    // Make sure we have a user object and an email address
+            if (!is_object($receiver) || empty($receiver->email)) {
+		        continue;
+		    }
+
 		    if ($receiver->id == $user->id) {
 		        // Don't mail own actions to self
                 continue;
@@ -231,6 +235,7 @@ class plgContentPfnotifications extends JPlugin
 
             if (!$store) {
                 // Send directly
+                $mailer = JFactory::getMailer();
                 $mailer->sendMail($mailfrom, $fromname, $receiver->email, $subject, $message);
             }
             else {
