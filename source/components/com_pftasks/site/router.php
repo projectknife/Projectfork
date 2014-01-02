@@ -25,8 +25,9 @@ function PFtasksBuildRoute(&$query)
         return array();
     }
 
-    // Setup vars
     $segments = array();
+    $app      = JFactory::getApplication();
+    $menu     = $app->getMenu();
     $view     = $query['view'];
 
     // We need a menu item.  Either the one specified in the query, or the current active one if none specified
@@ -34,9 +35,18 @@ function PFtasksBuildRoute(&$query)
         $menu_item_given = false;
     }
     else {
-        $menu_item_given = true;
-    }
+        $app  = JFactory::getApplication();
+	    $menu = $app->getMenu();
+        $menuItem = $menu->getItem($query['Itemid']);
 
+        if ($menuItem && $menuItem->query['view'] == $query['view']) {
+            $menu_item_given = true;
+        }
+        else {
+            $menu_item_given = false;
+            unset($query['Itemid']);
+        }
+    }
 
     // Handle tasks and task query
     if($view == 'tasks' || $view == 'task') {

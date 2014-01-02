@@ -37,15 +37,7 @@ abstract class PFtasksHelperRoute
         $link .= '&filter_milestone=' . $milestone;
         $link .= '&filter_tasklist=' . $list;
 
-        $needles = array('filter_project'   => array((int) $project),
-                         'filter_milestone' => array((int) $milestone),
-                         'filter_tasklist'  => array((int) $list)
-                        );
-
-        if ($item = PFApplicationHelper::itemRoute($needles, 'com_pftasks.tasks')) {
-            $link .= '&Itemid=' . $item;
-        }
-        elseif ($item = PFApplicationHelper::itemRoute(null, 'com_pftasks.tasks')) {
+        if ($item = PFApplicationHelper::itemRoute(null, 'com_pftasks.tasks')) {
             $link .= '&Itemid=' . $item;
         }
 

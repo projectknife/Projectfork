@@ -333,10 +333,14 @@ abstract class PFApplicationHelper
         }
         else {
             $active = $menus->getActive();
+
             if ($active && $active->component == $com_name) {
                 if ($com_view) {
                     if (isset(self::$routes[$com_name][$view_name][0])) {
                         return self::$routes[$com_name][$view_name][0];
+                    }
+                    elseif ($com_view && isset($active->query['view']) && $active->query['view'] != $com_view) {
+                        return null;
                     }
                 }
 
