@@ -27,16 +27,16 @@ final class PFVersion
     public $DEV_LEVEL = '0';
 
     /** @var  string  Development status. */
-    public $DEV_STATUS = 'Beta';
+    public $DEV_STATUS = 'Stable';
 
     /** @var  string  Build number. */
-    public $BUILD = '4';
+    public $BUILD = '0';
 
     /** @var  string  Code name. */
     public $CODENAME = 'Carrier';
 
     /** @var  string  Release date. */
-    public $RELDATE = '11-November-2013';
+    public $RELDATE = '08-January-2014';
 
     /** @var  string  Release time. */
     public $RELTIME = '21:00';
@@ -45,7 +45,7 @@ final class PFVersion
     public $RELTZ = 'CET';
 
     /** @var  string  Copyright Notice. */
-    public $COPYRIGHT = 'Copyright (C) 2006 - 2013 Tobias Kuhn and Kyle Ledbetter. All rights reserved.';
+    public $COPYRIGHT = 'Copyright (C) 2006 - 2014 Tobias Kuhn and Kyle Ledbetter. All rights reserved.';
 
     /** @var  string  Link text. */
     public $URL = '<a href="http://www.projectfork.net">Projectfork</a> is Free Software released under the GNU General Public License.';
