@@ -11,11 +11,19 @@
 defined('_JEXEC') or die();
 
 
+jimport('joomla.database.tableasset');
+jimport('joomla.database.table');
+jimport('projectfork.library');
+
+// Register compat class
+JLoader::register('PFtableTaskCompat', dirname(__FILE__) . '/task_compat.php');
+
+
 /**
  * Task table
  *
  */
-class PFtableTask extends JTable
+class PFtableTask extends PFtableTaskCompat
 {
     /**
      * Constructor
@@ -59,7 +67,7 @@ class PFtableTask extends JTable
      *
      * @return    integer
      */
-    protected function _getAssetParentId($table = null, $id = null)
+    protected function _getAssetParentIdCompat($table = null, $id = null)
     {
         // Initialise variables.
         $asset_id = null;

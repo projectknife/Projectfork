@@ -14,11 +14,15 @@ defined('_JEXEC') or die();
 jimport('joomla.database.tablenested');
 
 
+// Register compat class
+JLoader::register('PFtableDirectoryCompat', dirname(__FILE__) . '/directory_compat.php');
+
+
 /**
  * Directory table
  *
  */
-class PFTableDirectory extends JTableNested
+class PFTableDirectory extends PFtableDirectoryCompat
 {
     /**
      * Constructor
@@ -154,7 +158,7 @@ class PFTableDirectory extends JTableNested
      *
      * @return    integer              The id of the asset's parent
      */
-    protected function _getAssetParentId($table = null, $id = null)
+    protected function _getAssetParentIdCompat($table = null, $id = null)
     {
         $asset_id = null;
         $result   = null;

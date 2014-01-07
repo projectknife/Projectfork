@@ -13,12 +13,15 @@ defined('_JEXEC') or die();
 
 jimport('joomla.database.tableasset');
 
+// Register compat class
+JLoader::register('PFtableNoteCompat', dirname(__FILE__) . '/note_compat.php');
+
 
 /**
  * Repository Note Table Class
  *
  */
-class PFtableNote extends JTable
+class PFtableNote extends PFtableNoteCompat
 {
     /**
      * Constructor
@@ -53,7 +56,7 @@ class PFtableNote extends JTable
      *
      * @return    integer
      */
-    protected function _getAssetParentId($table = null, $id = null)
+    protected function _getAssetParentIdCompat($table = null, $id = null)
     {
         // Initialise variables.
         $asset_id = null;

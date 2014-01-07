@@ -14,12 +14,15 @@ defined('_JEXEC') or die();
 jimport('joomla.database.tableasset');
 require_once JPATH_ADMINISTRATOR . '/components/com_pfrepo/helpers/pfrepo.php';
 
+// Register compat class
+JLoader::register('PFtableFileCompat', dirname(__FILE__) . '/file_compat.php');
+
 
 /**
  * File Table Class
  *
  */
-class PFtableFile extends JTable
+class PFtableFile extends PFtableFileCompat
 {
     /**
      * Constructor
@@ -63,7 +66,7 @@ class PFtableFile extends JTable
      *
      * @return    integer
      */
-    protected function _getAssetParentId($table = null, $id = null)
+    protected function _getAssetParentIdCompat($table = null, $id = null)
     {
         $asset_id = null;
         $query    = $this->_db->getQuery(true);

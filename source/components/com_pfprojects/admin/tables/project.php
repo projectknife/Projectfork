@@ -15,11 +15,15 @@ jimport('joomla.database.tableasset');
 jimport('joomla.database.table');
 jimport('projectfork.library');
 
+// Register compat class
+JLoader::register('PFtableProjectCompat', dirname(__FILE__) . '/project_compat.php');
+
+
 /**
  * Projectfork Project Table
  *
  */
-class PFtableProject extends JTable
+class PFtableProject extends PFtableProjectCompat
 {
     protected $asset_rules;
 
@@ -66,7 +70,7 @@ class PFtableProject extends JTable
      *
      * @return    integer              The id of the asset's parent
      */
-    protected function _getAssetParentId($table = null, $id = null)
+    protected function _getAssetParentIdCompat($table = null, $id = null)
     {
         $query    = $this->_db->getQuery(true);
         $asset_id = null;

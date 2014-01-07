@@ -14,11 +14,15 @@ defined('_JEXEC') or die();
 jimport('joomla.database.tableasset');
 
 
+// Register compat class
+JLoader::register('PFtableTimeCompat', dirname(__FILE__) . '/time_compat.php');
+
+
 /**
  * Timesheet table
  *
  */
-class PFtableTime extends JTable
+class PFtableTime extends PFtableTimeCompat
 {
     /**
      * Constructor
@@ -52,7 +56,7 @@ class PFtableTime extends JTable
      *
      * @return    integer
      */
-    protected function _getAssetParentId($table = null, $id = null)
+    protected function _getAssetParentIdCompat($table = null, $id = null)
     {
         // Initialise variables.
         $asset_id = null;

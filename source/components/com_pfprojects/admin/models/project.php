@@ -1191,7 +1191,7 @@ class PFprojectsModelProject extends JModelAdmin
 
             $query->clear()
                   ->update('#__usergroups')
-                  ->set('title = ' . $db->quote($title))
+                  ->set('title = ' . $this->_db->quote($title))
                   ->where('id = ' . (int) $id);
 
             $this->_db->setQuery($query);
