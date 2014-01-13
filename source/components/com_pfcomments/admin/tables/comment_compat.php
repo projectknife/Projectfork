@@ -26,7 +26,7 @@ if (version_compare(JVERSION, '3.2.0', '>=')) {
     }
 }
 else {
-    class PFtableCommentCompat extends JTable
+    class PFtableCommentCompat extends JTableNested
     {
         protected function _getAssetParentIdCompat($table = null, $id = null)
         {
