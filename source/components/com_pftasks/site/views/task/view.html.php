@@ -140,7 +140,7 @@ class PFtasksViewTask extends JViewLegacy
 			$this->params->def('page_heading', $this->params->get('page_title', $menu->title));
 		}
 		else {
-			$this->params->def('page_heading', JText::_('COM_PROJECTFORK_TASK'));
+			$this->params->def('page_heading', JText::_('COM_PROJECTFORK_TASK_TITLE'));
 		}
 
 		$title = $this->params->get('page_title', '');
