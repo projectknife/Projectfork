@@ -94,6 +94,9 @@
     $link_ms       = (class_exists('PFmilestonesHelperRoute') ? PFmilestonesHelperRoute::getMilestonesRoute() : 'index.php?option=com_pfmilestones');
     $link_forum    = (class_exists('PFforumHelperRoute') ? PFforumHelperRoute::getTopicsRoute() : 'index.php?option=com_pfforum');
     $link_repo     = (class_exists('PFrepoHelperRoute') ? PFrepoHelperRoute::getRepositoryRoute($pid, $repo_dir) : 'index.php?option=com_pfrepo&filter_project=' . $pid . '&parent_id=' . $repo_dir);
+
+    // Logout link return
+    $return = base64_encode($this->baseurl);
 ?>
 <!DOCTYPE html>
 <html>
@@ -195,7 +198,7 @@
                                     </a>
                                 </li>
 								<li class="divider"></li>
-								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_users&task=user.logout&'. JSession::getFormToken() .'=1');?>"><?php echo JText::_('TPL_GOGGLES_LOGOUT');?></a></li>
+								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_users&task=user.logout&'. JSession::getFormToken() .'=1&return=' . $return, false);?>"><?php echo JText::_('TPL_GOGGLES_LOGOUT');?></a></li>
 							</ul>
 						</li>
 						<?php endif;?>
