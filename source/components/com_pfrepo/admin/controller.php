@@ -42,6 +42,51 @@ class PFrepoController extends JControllerLegacy
         $layout  = JRequest::getCmd('layout');
         $id      = JRequest::getUint('id');
 
+        // Inject default view if not set
+        if (empty($view)) {
+            JRequest::setVar('view', $this->default_view);
+            $view = $this->default_view;
+        }
+
+        if ($view == $this->default_view) {
+            $parent_id = JRequest::getUInt('filter_parent_id');
+            $project   = PFApplicationHelper::getActiveProjectId('filter_project');
+
+            if ($parent_id && $project === "") {
+                $this->setRedirect('index.php?option=com_pfrepo&view=' . $this->default_view);
+                return $this;
+            }
+            elseif ($parent_id > 1 && $project > 0) {
+                // Check if the folder belongs to the project
+                $db    = JFactory::getDbo();
+                $query = $db->getQuery(true);
+
+                $query->select('project_id')
+                      ->from('#__pf_repo_dirs')
+                      ->where('id = ' . (int) $parent_id);
+
+                $db->setQuery($query);
+                $pid = $db->loadResult();
+
+                if ($pid != $project) {
+                    // No match, redirect to the project root dir
+                    $query->clear();
+                    $query->select('id, path')
+                          ->from('#__pf_repo_dirs')
+                          ->where('parent_id = 1')
+                          ->where('project_id = ' . (int) $project);
+
+                    $db->setQuery($query, 0, 1);
+                    $dir = $db->loadObject();
+
+                    if ($dir) {
+                        $this->setRedirect('index.php?option=com_pfrepo&view=' . $this->default_view . '&filter_project=' . $project . '&filter_parent_id=' . $dir->id);
+                        return $this;
+                    }
+                }
+            }
+        }
+
         // Check form edit access
         if ($layout == 'edit' && !$this->checkEditId('com_pfrepo.edit.' . $view, $id)) {
             $this->setError(JText::sprintf('JLIB_APPLICATION_ERROR_UNHELD_ID', $id));

@@ -353,21 +353,27 @@ class PFrepoModelRepository extends JModelList
         }
         elseif (is_numeric($parent_id) && $project <= 0) {
             // If a folder is selected, but no project, find the project id of the folder
-            $dir  = $this->getInstance('DirectoryForm', 'PFrepoModel', $config = array('ignore_request' => true));
-            $item = $dir->getItem((int) $parent_id);
+            if ($project === "") {
+                $parent_id = 1;
+                $project   = 0;
+            }
+            else {
+                $dir  = $this->getInstance('DirectoryForm', 'PFrepoModel', $config = array('ignore_request' => true));
+                $item = $dir->getItem((int) $parent_id);
 
-            if ($item->id > 0) {
-                if ($item->parent_id == '1') {
-                    $project = $item->project_id;
+                if ($item->id > 0) {
+                    if ($item->parent_id == '1') {
+                        $project = $item->project_id;
+                    }
+                    else {
+                        $parent_id = 1;
+                        $project   = 0;
+                    }
                 }
                 else {
                     $parent_id = 1;
                     $project   = 0;
                 }
-            }
-            else {
-                $parent_id = 1;
-                $project   = 0;
             }
         }
         elseif ($project <= 0 && empty($parent_id)) {
