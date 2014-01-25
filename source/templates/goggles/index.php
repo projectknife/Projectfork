@@ -240,42 +240,42 @@ $return = base64_encode($this->baseurl);
 					  </a>
 					  <ul class="dropdown-menu">
 					  	<?php
-					  		if($user->authorise('core.create', 'com_pfprojects')) :
-					  	?>
-					    	<li><a href="<?php echo JRoute::_($link_projects . '&task=form.add');?>"><i class="icon-briefcase"></i> <?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
-					    <?php
-					    	endif;
-					    	if($user->authorise('core.create', 'com_pfmilestones')) :
-					    ?>
-					    	<li><a href="<?php echo JRoute::_($link_ms . '&task=form.add');?>"><i class="icon-flag"></i> <?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
-					    <?php
-					    	endif;
-					    	if($user->authorise('core.create', 'com_pftasks')) :
-					    ?>
-					    	<li><a href="<?php echo JRoute::_($link_tasks . '&task=tasklistform.add');?>"><i class="icon-list-view"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
-					    <?php
-					    	endif;
-					    	if($user->authorise('core.create', 'com_pftasks')) :
-					    ?>
-					    	<li><a href="<?php echo JRoute::_($link_tasks . '&task=taskform.add');?>"><i class="icon-checkbox"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
-					    <?php
-					    	endif;
-					    	if($user->authorise('core.create', 'com_pftime')) :
-					    ?>
-					    	<li><a href="<?php echo JRoute::_($link_time . '&task=form.add');?>"><i class="icon-clock"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
-					    <?php
-					    	endif;
-					    	if($user->authorise('core.create', 'com_pfforum')) :
-					    ?>
-					    	<li><a href="<?php echo JRoute::_($link_forum . '&task=topicform.add');?>"><i class="icon-comments-2"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
-					    <?php
-					    	endif;
-					    	if($user->authorise('core.create', 'com_pfrepo') && $app->getUserState('com_projectfork.project.active.id')) :
-					    ?>
-					    	<li><a href="<?php echo JRoute::_($link_repo . '&task=fileform.add');?>"><i class="icon-upload"></i> <?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
-					    <?php
-					    	endif;
-					    ?>
+                if($user->authorise('core.create', 'com_pfprojects') && PFApplicationHelper::enabled('com_pfprojects')) :
+              ?>
+                <li><a href="<?php echo JRoute::_($link_projects . '&task=form.add');?>"><i class="icon-briefcase"></i> <?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
+              <?php
+                endif;
+                if($user->authorise('core.create', 'com_pfmilestones') && PFApplicationHelper::enabled('com_pfmilestones')) :
+              ?>
+                <li><a href="<?php echo JRoute::_($link_ms . '&task=form.add');?>"><i class="icon-flag"></i> <?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
+              <?php
+                endif;
+                if($user->authorise('core.create', 'com_pftasks') && PFApplicationHelper::enabled('com_pftasks')) :
+              ?>
+                <li><a href="<?php echo JRoute::_($link_tasks . '&task=tasklistform.add');?>"><i class="icon-list-view"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
+              <?php
+                endif;
+                if($user->authorise('core.create', 'com_pftasks') && PFApplicationHelper::enabled('com_pftasks')) :
+              ?>
+                <li><a href="<?php echo JRoute::_($link_tasks . '&task=taskform.add');?>"><i class="icon-checkbox"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
+              <?php
+                endif;
+                if($user->authorise('core.create', 'com_pftime') && PFApplicationHelper::enabled('com_pftime')) :
+              ?>
+                <li><a href="<?php echo JRoute::_($link_time . '&task=form.add');?>"><i class="icon-clock"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
+              <?php
+                endif;
+                if($user->authorise('core.create', 'com_pfforum') && PFApplicationHelper::enabled('com_pfforum')) :
+              ?>
+                <li><a href="<?php echo JRoute::_($link_forum . '&task=topicform.add');?>"><i class="icon-comments-2"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
+              <?php
+                endif;
+                if($user->authorise('core.create', 'com_pfrepo') && $app->getUserState('com_projectfork.project.active.id') && PFApplicationHelper::enabled('com_pfrepo')) :
+              ?>
+                <li><a href="<?php echo JRoute::_($link_repo . '&task=fileform.add');?>"><i class="icon-upload"></i> <?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
+              <?php
+                endif;
+              ?>
 					  </ul>
 					  </div>
 					  <hr />
