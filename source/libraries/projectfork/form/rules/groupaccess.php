@@ -11,11 +11,40 @@
 defined('_JEXEC') or die();
 
 
+if (version_compare(JVERSION, '3.0.0', '>=')) {
+    class PFJFormRuleCompat extends JFormRule
+    {
+        public function test(SimpleXMLElement $element, $value, $group = null, JRegistry $input = null, JForm $form = null)
+        {
+            return $this->testCompat($element, $value, $group = null, $input = null, $form = null);
+        }
+
+
+        public function testCompat($element, $value, $group = null, $input = null, $form = null)
+        {
+            return false;
+        }
+    }
+}
+else {
+    class PFJFormRuleCompat extends JFormRule
+    {
+        public function test(&$element, $value, $group = null, &$input = null, &$form = null)
+        {
+            return $this->testCompat($element, $value, $group = null, $input = null, $form = null);
+        }
+
+        public function testCompat($element, $value, $group = null, $input = null, $form = null)
+        {
+            return false;
+        }
+    }
+}
 /**
  * Form Rule class for the group access field.
  *
  */
-class JFormRuleGroupAccess extends JFormRule
+class JFormRuleGroupAccess extends PFJFormRuleCompat
 {
     /**
      * Method to test the value.
@@ -30,7 +59,7 @@ class JFormRuleGroupAccess extends JFormRule
      *
      * @throws    jexception                      on invalid rule.
      */
-    public function test($element, $value, $group = null, $input = null, $form = null)
+    public function testCompat($element, $value, $group = null, $input = null, $form = null)
     {
         // Get the possible field actions and the ones posted to validate them.
         $fieldActions = self::getFieldActions($element);
