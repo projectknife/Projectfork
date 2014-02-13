@@ -201,7 +201,7 @@ Joomla.submitbutton = function(task)
     </fieldset>
 
     <?php if (PFApplicationHelper::enabled('com_pfrepo')) : ?>
-    <?php echo JHtml::_('tabs.panel', 'Attachments', 'task-attachments') ;?>
+    <?php echo JHtml::_('tabs.panel', JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'), 'task-attachments') ;?>
         <fieldset>
         	<div id="jform_attachment_element" class="formelm control-group">
                 <div id="jform_attachment_reload">
