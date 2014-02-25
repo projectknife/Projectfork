@@ -76,12 +76,38 @@ class PFprojectsControllerProject extends JControllerForm
             $data['component_rules'] = $rules;
         }
 
-        // Reset the repo dir when saving as copy
-        if ($task == 'save2copy' && isset($data['attribs']['repo_dir'])) {
-            $dir = (int) $data['attribs']['repo_dir'];
 
-            if ($dir) {
-                $data['attribs']['repo_dir'] = 0;
+        if ($task == 'save2copy') {
+            // Reset the repo dir when saving as copy
+            if (isset($data['attribs']['repo_dir'])) {
+                $dir = (int) $data['attribs']['repo_dir'];
+
+                if ($dir) {
+                    $data['attribs']['repo_dir'] = 0;
+                }
+            }
+
+            // Reset label id's
+            if (isset($data['labels']) && is_array($data['labels'])) {
+                foreach($data['labels'] AS $a => $g)
+                {
+                    if (isset($g['id'])) {
+                        foreach($g['id'] AS $k => $i)
+                        {
+                            $data['labels'][$a]['id'][$k] = 0;
+                        }
+                    }
+                }
+            }
+
+            // Store the current project id in session
+            $recordId = JRequest::getUInt('id');
+
+            if ($recordId) {
+                $context = "$this->option.copy.$this->context.id";
+                $app     = JFactory::getApplication();
+
+                $app->setUserState($context, intval($recordId));
             }
         }
 

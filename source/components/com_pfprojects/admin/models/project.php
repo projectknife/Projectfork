@@ -561,16 +561,15 @@ class PFprojectsModelProject extends JModelAdmin
 
             // Store the labels
             if (isset($data['labels'])) {
-                $labels = $this->getInstance('Labels', 'PFModel');
+                $labels = $this->getInstance('Labels', 'PFModel', array('ignore_request' => true));
                 $lbl_project = (int) $labels->getState('item.project');
 
-                if ($lbl_project != $id) {
-                    $labels->setState('item.project', $id);
-                }
+                $labels->setState('item.project', $id);
+                $labels->setState('item.id', $id);
 
                 if (!$labels->save($data['labels'])) {
-                    $this->setError($labels->getError());
-                    return false;
+                    /*$this->setError($labels->getError());
+                    return false;*/
                 }
             }
 
