@@ -343,6 +343,7 @@ class plgContentPFprojects extends JPlugin
             $table->id         = null;
             $table->asset_id   = null;
             $table->project_id = $new_table->id;
+            $table->access     = $new_table->access;
             $table->attachment = array();
 
             // Convert attributes to JRegistry params
@@ -397,6 +398,7 @@ class plgContentPFprojects extends JPlugin
             $table->id         = null;
             $table->asset_id   = null;
             $table->project_id = $new_table->id;
+            $table->access     = $new_table->access;
             $table->attachment = array();
 
             if ($table->milestone_id) {
@@ -460,6 +462,7 @@ class plgContentPFprojects extends JPlugin
             $table->id         = null;
             $table->asset_id   = null;
             $table->project_id = $new_table->id;
+            $table->access     = $new_table->access;
             $table->attachment = array();
 
             if ($table->milestone_id) {
