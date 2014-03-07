@@ -52,10 +52,19 @@
                     <option value="a.priority">MOD_PF_TASKS_CONFIG_SORT_PRIORITY_LABEL</option>
                 </field>
                 <field type="list" name="order" default="ASC"
-                    label="MOD_PF_TASKS_CONFIG_ORDER_LABEL"
+                    label="MOD_PF_TASKS_CONFIG_ORDER_LABEL" size="10"
                 >
                     <option value="ASC">MOD_PF_TASKS_CONFIG_ORDER_ASC_LABEL</option>
                     <option value="DESC">MOD_PF_TASKS_CONFIG_ORDER_DESC_LABEL</option>
+                </field>
+                <field type="list" name="count" default="10"
+                    label="MOD_PF_TASKS_CONFIG_COUNT_LABEL"
+                >
+                    <option value="5">5</option>
+                    <option value="10">10</option>
+                    <option value="15">15</option>
+                    <option value="20">20</option>
+                    <option value="25">25</option>
                 </field>
                 <field type="radio" name="show_assigned" default="0" class="btn-group"
                     label="MOD_PF_TASKS_CONFIG_SHOW_ASSIGNED_LABEL"
