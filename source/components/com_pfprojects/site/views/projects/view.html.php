@@ -162,7 +162,6 @@ class PFprojectsViewProjects extends JViewLegacy
             $options[] = array('text' => 'COM_PROJECTFORK_ACTION_PUBLISH',   'task' => $this->getName() . '.publish');
             $options[] = array('text' => 'COM_PROJECTFORK_ACTION_UNPUBLISH', 'task' => $this->getName() . '.unpublish');
             $options[] = array('text' => 'COM_PROJECTFORK_ACTION_ARCHIVE',   'task' => $this->getName() . '.archive');
-            $options[] = array('text' => 'COM_PROJECTFORK_ACTION_TRASH',     'task' => $this->getName() . '.trash');
             $options[] = array('text' => 'COM_PROJECTFORK_ACTION_CHECKIN',   'task' => $this->getName() . '.checkin');
         }
 

@@ -51,6 +51,35 @@ class PFrepoModelFiles extends JModelList
 
 
     /**
+     * Method to get the aggregated total files of parent projects
+     *
+     * @param     array     $pks         The project primary keys
+     *
+     * @return    array                  Assoc array with the pk and total value
+     */
+    public function getProjectCount($pks)
+    {
+        if (!is_array($pks) || count($pks) == 0) {
+            return array();
+        }
+
+        $query = $this->_db->getQuery(true);
+        $query->select('project_id, COUNT(id) AS total')
+              ->from('#__pf_repo_files')
+              ->where('project_id IN(' . implode(',', $pks) . ') ')
+              ->group('project_id')
+              ->order('id ASC');
+
+        $this->_db->setQuery($query);
+        $aggregate = $this->_db->loadAssocList('project_id', 'total');
+
+        if (!is_array($aggregate)) $aggregate = array();
+
+        return $aggregate;
+    }
+
+
+    /**
      * Counts the revisions of the given files
      *
      * @param    array    $pks      The files to count the revisions of

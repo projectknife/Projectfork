@@ -27,6 +27,17 @@ abstract class JHtmlTime
      */
     public static function format($secs = 0, $style = 'literal')
     {
+        static $nf_dec = null;
+        static $nf_th  = null;
+
+        if ($nf_dec == null) {
+            $params = PFApplicationHelper::getProjectParams(0);
+
+            $nf_dec = $params->get('decimal_delimiter', '.');
+            $nf_th  = $params->get('thousands_delimiter', ',');
+        }
+
+
         $secs   = intval($secs);
         $format = '';
 
@@ -40,7 +51,7 @@ abstract class JHtmlTime
         {
             case 'decimal':
                 if ($minutes > 0) {
-                    $format = number_format($minutes / 60, 1);
+                    $format = number_format($minutes / 60, 1, $nf_dec, $nf_th);
                 }
                 else {
                     $format = 0.00;

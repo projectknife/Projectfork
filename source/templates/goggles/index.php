@@ -1,99 +1,104 @@
 <?php
-	/*** @copyright Copyright Pixel Praise LLC © 2012. All rights reserved. */
-	// no direct access
-	defined('_JEXEC') or die;
+/*** @copyright Copyright Pixel Praise LLC © 2012-2014. All rights reserved. */
 
-    // Include the document helper
-    JLoader::register('TemplateHelperDocument', dirname(__FILE__) . '/helpers/document.php');
+// no direct access
+defined('_JEXEC') or die;
 
-	$app = JFactory::getApplication();
-	$doc = JFactory::getDocument();
+// Include the document helper
+JLoader::register('TemplateHelperDocument', dirname(__FILE__) . '/helpers/document.php');
 
-	// Settings for Joomla 3.0.x
-	if (version_compare(JVERSION, '3.0.0', 'ge')) {
-		// Add JavaScript Frameworks
-		JHtml::_('bootstrap.framework');
-	}
-	// Settings for Joomla 2.5.x
-	else {
-		// Detect bootstrap and jQuery in document header
-	    $isset_jquery = TemplateHelperDocument::headContains('jquery', 'script');
-	    $isset_bsjs   = TemplateHelperDocument::headContains('bootstrap', 'script');
-	    $isset_bscss  = TemplateHelperDocument::headContains('bootstrap', 'stylesheet');
+$app = JFactory::getApplication();
+$doc = JFactory::getDocument();
 
-	    if ($this->params->get('bootstrap_javascript', 1)) {
-	        if (!$isset_jquery) {
-	            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/jquery.js');
-	        }
+// Settings for Joomla 3.0.x
+if (version_compare(JVERSION, '3.0.0', 'ge')) {
+    // Add JavaScript Frameworks
+    JHtml::_('bootstrap.framework');
+}
+else {
+    // Settings for Joomla 2.5.x
+    // Detect bootstrap and jQuery in document header
+    $isset_jquery = TemplateHelperDocument::headContains('jquery', 'script');
+    $isset_bsjs   = TemplateHelperDocument::headContains('bootstrap', 'script');
+    $isset_bscss  = TemplateHelperDocument::headContains('bootstrap', 'stylesheet');
 
-	        if (!$isset_bsjs) {
-	            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/bootstrap.min.js');
-	        }
+    if ($this->params->get('bootstrap_javascript', 1)) {
+        if (!$isset_jquery) {
+            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/jquery.js');
+        }
 
-	    }
-
-	    // Add 2.5 System Stylesheets
-		$doc->addStyleSheet('templates/system/css/general.css');
-		$doc->addStyleSheet('templates/system/css/system.css');
-	}
-
-	$doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/application.js');
-
-	// Add Template Stylesheet
-	$doc->addStyleSheet('templates/'.$this->template.'/css/template.css');
-
-    // Register component route helper classes
-    $pid = (int) $app->getUserState('com_projectfork.project.active.id');
-
-    if (jimport('projectfork.library')) {
-        $components = array(
-            'com_pfprojects',
-            'com_pfmilestones',
-            'com_pftasks',
-            'com_pftime',
-            'com_pfrepo',
-            'com_pfforum'
-        );
-
-        foreach ($components AS $component)
-        {
-            $route_helper = JPATH_SITE . '/components/' . $component . '/helpers/route.php';
-            $class_name   = 'PF' . str_replace('com_pf', '', $component) . 'HelperRoute';
-
-            if (file_exists($route_helper)) {
-                JLoader::register($class_name, $route_helper);
-            }
+        if (!$isset_bsjs) {
+            $doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/bootstrap.min.js');
         }
     }
 
-    // Have to find the project repo base dir
-    if ($pid) {
-        $db = JFactory::getDbo();
-        $query = $db->getQuery(true);
+    // Add 2.5 System Stylesheets
+    $doc->addStyleSheet('templates/system/css/general.css');
+    $doc->addStyleSheet('templates/system/css/system.css');
+}
 
-        $query->select('attribs')
-              ->from('#__pf_projects')
-              ->where('id = ' . $db->quote($pid));
+$doc->addScript($this->baseurl . '/templates/' . $this->template . '/js/application.js');
 
-        $db->setQuery($query);
-        $project_attribs = $db->loadResult();
+// Add Template Stylesheet
+$doc->addStyleSheet('templates/'.$this->template.'/css/template.css');
 
-        $project_params = new JRegistry;
-        $project_params->loadString($project_attribs);
+// Try to import the Projectfork library
+if (jimport('projectfork.library')) {
+    $components = array(
+        'com_pfprojects',
+        'com_pfmilestones',
+        'com_pftasks',
+        'com_pftime',
+        'com_pfrepo',
+        'com_pfforum'
+    );
 
-        $repo_dir = (int) $project_params->get('repo_dir');
+    // Register component route helper classes
+    foreach ($components AS $component)
+    {
+        $route_helper = JPATH_SITE . '/components/' . $component . '/helpers/route.php';
+        $class_name   = 'PF' . str_replace('com_pf', '', $component) . 'HelperRoute';
+
+        if (file_exists($route_helper)) {
+            JLoader::register($class_name, $route_helper);
+        }
     }
-    else {
-        $repo_dir = 1;
-    }
+}
 
-    // Prepare component base links
-    $link_tasks    = (class_exists('PFtasksHelperRoute') ? PFtasksHelperRoute::getTasksRoute() : 'index.php?option=com_pftasks');
-    $link_projects = (class_exists('PFprojectsHelperRoute') ? PFprojectsHelperRoute::getProjectsRoute() : 'index.php?option=com_pfprojects');
-    $link_time     = (class_exists('PFtimeHelperRoute') ? PFtimeHelperRoute::getTimesheetRoute() : 'index.php?option=com_pftime');
-    $link_ms       = (class_exists('PFmilestonesHelperRoute') ? PFmilestonesHelperRoute::getMilestonesRoute() : 'index.php?option=com_pfmilestones');
-    $link_forum    = (class_exists('PFforumHelperRoute') ? PFforumHelperRoute::getTopicsRoute() : 'index.php?option=com_pfforum');
-    $link_repo     = (class_exists('PFrepoHelperRoute') ? PFrepoHelperRoute::getRepositoryRoute($pid, $repo_dir) : 'index.php?option=com_pfrepo&filter_project=' . $pid . '&parent_id=' . $repo_dir);
+// Get the currently active project
+$pid = (int) $app->getUserState('com_projectfork.project.active.id');
+
+// Find the project repo base dir
+if ($pid) {
+    $db    = JFactory::getDbo();
+    $query = $db->getQuery(true);
+
+    $query->select('attribs')
+          ->from('#__pf_projects')
+          ->where('id = ' . $db->quote($pid));
+
+    $db->setQuery($query);
+    $project_attribs = $db->loadResult();
+
+    $project_params = new JRegistry;
+    $project_params->loadString($project_attribs);
+
+    $repo_dir = (int) $project_params->get('repo_dir');
+}
+else {
+    $repo_dir = 1;
+}
+
+// Prepare component base links
+$link_tasks    = (class_exists('PFtasksHelperRoute') ? PFtasksHelperRoute::getTasksRoute() : 'index.php?option=com_pftasks');
+$link_projects = (class_exists('PFprojectsHelperRoute') ? PFprojectsHelperRoute::getProjectsRoute() : 'index.php?option=com_pfprojects');
+$link_time     = (class_exists('PFtimeHelperRoute') ? PFtimeHelperRoute::getTimesheetRoute() : 'index.php?option=com_pftime');
+$link_ms       = (class_exists('PFmilestonesHelperRoute') ? PFmilestonesHelperRoute::getMilestonesRoute() : 'index.php?option=com_pfmilestones');
+$link_forum    = (class_exists('PFforumHelperRoute') ? PFforumHelperRoute::getTopicsRoute() : 'index.php?option=com_pfforum');
+$link_repo     = (class_exists('PFrepoHelperRoute') ? PFrepoHelperRoute::getRepositoryRoute($pid, $repo_dir) : 'index.php?option=com_pfrepo&filter_project=' . $pid . '&parent_id=' . $repo_dir);
+
+// Logout link return
+$return = base64_encode($this->baseurl);
 ?>
 <!DOCTYPE html>
 <html>
@@ -195,7 +200,7 @@
                                     </a>
                                 </li>
 								<li class="divider"></li>
-								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_users&task=user.logout&'. JSession::getFormToken() .'=1');?>"><?php echo JText::_('TPL_GOGGLES_LOGOUT');?></a></li>
+								<li class=""><a href="<?php echo JRoute::_('index.php?option=com_users&task=user.logout&'. JSession::getFormToken() .'=1&return=' . $return, false);?>"><?php echo JText::_('TPL_GOGGLES_LOGOUT');?></a></li>
 							</ul>
 						</li>
 						<?php endif;?>
@@ -235,42 +240,42 @@
 					  </a>
 					  <ul class="dropdown-menu">
 					  	<?php
-					  		if($user->authorise('core.create', 'com_pfprojects')) :
-					  	?>
-					    	<li><a href="<?php echo JRoute::_($link_projects . '&task=form.add');?>"><i class="icon-briefcase"></i> <?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
-					    <?php
-					    	endif;
-					    	if($user->authorise('core.create', 'com_pfmilestones')) :
-					    ?>
-					    	<li><a href="<?php echo JRoute::_($link_ms . '&task=form.add');?>"><i class="icon-flag"></i> <?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
-					    <?php
-					    	endif;
-					    	if($user->authorise('core.create', 'com_pftasks')) :
-					    ?>
-					    	<li><a href="<?php echo JRoute::_($link_tasks . '&task=tasklistform.add');?>"><i class="icon-list-view"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
-					    <?php
-					    	endif;
-					    	if($user->authorise('core.create', 'com_pftasks')) :
-					    ?>
-					    	<li><a href="<?php echo JRoute::_($link_tasks . '&task=taskform.add');?>"><i class="icon-checkbox"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
-					    <?php
-					    	endif;
-					    	if($user->authorise('core.create', 'com_pftime')) :
-					    ?>
-					    	<li><a href="<?php echo JRoute::_($link_time . '&task=form.add');?>"><i class="icon-clock"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
-					    <?php
-					    	endif;
-					    	if($user->authorise('core.create', 'com_pfforum')) :
-					    ?>
-					    	<li><a href="<?php echo JRoute::_($link_forum . '&task=topicform.add');?>"><i class="icon-comments-2"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
-					    <?php
-					    	endif;
-					    	if($user->authorise('core.create', 'com_pfrepo') && $app->getUserState('com_projectfork.project.active.id')) :
-					    ?>
-					    	<li><a href="<?php echo JRoute::_($link_repo . '&task=fileform.add');?>"><i class="icon-upload"></i> <?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
-					    <?php
-					    	endif;
-					    ?>
+                if($user->authorise('core.create', 'com_pfprojects') && PFApplicationHelper::enabled('com_pfprojects')) :
+              ?>
+                <li><a href="<?php echo JRoute::_($link_projects . '&task=form.add');?>"><i class="icon-briefcase"></i> <?php echo JText::_('TPL_GOGGLES_NEW_PROJECT');?></a></li>
+              <?php
+                endif;
+                if($user->authorise('core.create', 'com_pfmilestones') && PFApplicationHelper::enabled('com_pfmilestones')) :
+              ?>
+                <li><a href="<?php echo JRoute::_($link_ms . '&task=form.add');?>"><i class="icon-flag"></i> <?php echo JText::_('TPL_GOGGLES_NEW_MILESTONE');?></a></li>
+              <?php
+                endif;
+                if($user->authorise('core.create', 'com_pftasks') && PFApplicationHelper::enabled('com_pftasks')) :
+              ?>
+                <li><a href="<?php echo JRoute::_($link_tasks . '&task=tasklistform.add');?>"><i class="icon-list-view"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASKLIST');?></a></li>
+              <?php
+                endif;
+                if($user->authorise('core.create', 'com_pftasks') && PFApplicationHelper::enabled('com_pftasks')) :
+              ?>
+                <li><a href="<?php echo JRoute::_($link_tasks . '&task=taskform.add');?>"><i class="icon-checkbox"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TASK');?></a></li>
+              <?php
+                endif;
+                if($user->authorise('core.create', 'com_pftime') && PFApplicationHelper::enabled('com_pftime')) :
+              ?>
+                <li><a href="<?php echo JRoute::_($link_time . '&task=form.add');?>"><i class="icon-clock"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TIME');?></a></li>
+              <?php
+                endif;
+                if($user->authorise('core.create', 'com_pfforum') && PFApplicationHelper::enabled('com_pfforum')) :
+              ?>
+                <li><a href="<?php echo JRoute::_($link_forum . '&task=topicform.add');?>"><i class="icon-comments-2"></i> <?php echo JText::_('TPL_GOGGLES_NEW_TOPIC');?></a></li>
+              <?php
+                endif;
+                if($user->authorise('core.create', 'com_pfrepo') && $app->getUserState('com_projectfork.project.active.id') && PFApplicationHelper::enabled('com_pfrepo')) :
+              ?>
+                <li><a href="<?php echo JRoute::_($link_repo . '&task=fileform.add');?>"><i class="icon-upload"></i> <?php echo JText::_('TPL_GOGGLES_NEW_FILE');?></a></li>
+              <?php
+                endif;
+              ?>
 					  </ul>
 					  </div>
 					  <hr />

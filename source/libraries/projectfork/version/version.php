@@ -24,7 +24,7 @@ final class PFVersion
     public $RELEASE = '4.2';
 
     /** @var  string  Maintenance version. */
-    public $DEV_LEVEL = '0';
+    public $DEV_LEVEL = '1';
 
     /** @var  string  Development status. */
     public $DEV_STATUS = 'Stable';
@@ -36,7 +36,7 @@ final class PFVersion
     public $CODENAME = 'Carrier';
 
     /** @var  string  Release date. */
-    public $RELDATE = '08-January-2014';
+    public $RELDATE = '07-March-2014';
 
     /** @var  string  Release time. */
     public $RELTIME = '21:00';

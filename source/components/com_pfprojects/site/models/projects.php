@@ -64,6 +64,7 @@ class PFprojectsModelProjects extends JModelList
         $base_url  = JURI::root(true) . '/media/com_projectfork/repo/0/logo';
 
         $tasks_exists = PFApplicationHelper::enabled('com_pftasks');
+        $repo_exists  = PFApplicationHelper::enabled('com_pfrepo');
 
         $pks = JArrayHelper::getColumn($items, 'id');
 
@@ -71,6 +72,7 @@ class PFprojectsModelProjects extends JModelList
         $progress        = array();
         $total_tasks     = array();
         $completed_tasks = array();
+        $total_files     = array();
 
         if ($tasks_exists) {
             JLoader::register('PFtasksModelTasks', JPATH_SITE . '/components/com_pftasks/models/tasks.php');
@@ -79,6 +81,13 @@ class PFprojectsModelProjects extends JModelList
             $progress    = $tmodel->getAggregatedProgress($pks, 'project_id');
             $total_tasks = $tmodel->getAggregatedTotal($pks, 'project_id');
             $completed_tasks = $tmodel->getAggregatedTotal($pks, 'project_id', 1);
+        }
+
+        if ($repo_exists) {
+            JLoader::register('PFtasksModelTasks', JPATH_SITE . '/components/com_pfrepo/models/files.php');
+
+            $fmodel      = JModelLegacy::getInstance('Files', 'PFrepoModel', array('ignore_request' => true));
+            $total_files = $fmodel->getProjectCount($pks);
         }
 
         // Loop over each row to inject data
@@ -117,6 +126,9 @@ class PFprojectsModelProjects extends JModelList
 
             // Inject progress
             $items[$i]->progress = (isset($progress[$item->id]) ? $progress[$item->id] : 0);
+
+            // Inject attached files
+            $items[$i]->attachments = (isset($total_files[$item->id]) ? $total_files[$item->id] : 0);
         }
 
         return $items;
@@ -183,11 +195,6 @@ class PFprojectsModelProjects extends JModelList
                   . $this->_db->quote($user->get('id')) . ')'
             );
         }
-
-        // Join over the attachments for attachment count
-        $query->select('COUNT(DISTINCT at.id) AS attachments')
-              ->join('LEFT', '#__pf_ref_attachments AS at ON (at.item_type = '
-              . $this->_db->quote('com_pfprojects.project') . ' AND at.item_id = a.id)');
 
         // Join over the comments for comment count
         $query->select('COUNT(DISTINCT co.id) AS comments')

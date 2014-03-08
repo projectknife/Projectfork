@@ -95,9 +95,18 @@ abstract class PFrepoHelperRoute
     {
         $path  = self::getRepositoryPath($project, $path);
         $link  = 'index.php?option=com_pfrepo&view=repository';
-        $link .= '&filter_project=' . $project;
-        $link .= '&filter_parent_id=' . $dir;
-        $link .= '&path=' . $path;
+
+        if ($project) {
+            $link .= '&filter_project=' . $project;
+        }
+
+        if ($dir) {
+            $link .= '&filter_parent_id=' . $dir;
+        }
+
+        if ($path) {
+            $link .= '&path=' . $path;
+        }
 
         $needles = array('filter_project'   => array((int) $project),
                          'filter_parent_id' => array((int) $dir),

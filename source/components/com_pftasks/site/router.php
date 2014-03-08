@@ -39,7 +39,8 @@ function PFtasksBuildRoute(&$query)
 	    $menu = $app->getMenu();
         $menuItem = $menu->getItem($query['Itemid']);
 
-        if ($menuItem && $menuItem->query['view'] == $query['view']) {
+        if ($menuItem) {
+        // if ($menuItem && $menuItem->query['view'] == $query['view']) {
             $menu_item_given = true;
         }
         else {

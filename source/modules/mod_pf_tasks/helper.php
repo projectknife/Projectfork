@@ -34,7 +34,7 @@ abstract class modPFtasksHelper
 
         // Set the filters based on the module params
 		$model->setState('list.start', 0);
-		$model->setState('list.limit', (int) $params->get('count', 5));
+		$model->setState('list.limit', (int) $params->get('count', 10));
 		$model->setState('filter.published', 1);
 
         // Set project filter
