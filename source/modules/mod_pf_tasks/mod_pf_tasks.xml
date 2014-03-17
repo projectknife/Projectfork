@@ -47,7 +47,7 @@
                 <field type="list" name="sort" default=""
                     label="MOD_PF_TASKS_CONFIG_SORT_LABEL"
                 >
-                    <option value="">MOD_PF_TASKS_CONFIG_SORT_END_DATE_LABEL</option>
+                    <option value="a.end_date">MOD_PF_TASKS_CONFIG_SORT_END_DATE_LABEL</option>
                     <option value="a.start_date">MOD_PF_TASKS_CONFIG_SORT_START_DATE_LABEL</option>
                     <option value="a.priority">MOD_PF_TASKS_CONFIG_SORT_PRIORITY_LABEL</option>
                 </field>
