@@ -217,10 +217,12 @@ class plgContentPfnotifications extends JPlugin
 		    }
 
             // Load the default language of the component
-            $lang = JLanguage::getInstance($receiver->getParam('site_language', $def_lang), $debug);
-		    $lang->load($component);
+            $lang = JLanguage::getInstance($receiver->getParam('language', $receiver->getParam('site_language', $def_lang)), $debug);
+		    $lang->load("com_projectfork", JPATH_SITE);
+            $lang->load($component, JPATH_SITE);
 
             if ($is_site) {
+                $lang->load("com_projectfork", JPATH_ADMINISTRATOR);
                 $lang->load($component, JPATH_ADMINISTRATOR);
             }
 
