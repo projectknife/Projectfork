@@ -291,7 +291,7 @@ class PFrepoModelFiles extends JModelList
 
             // Get the labels
             if ($item->label_count > 0) {
-                $item->labels = $labels->getConnections('com_pfrepo.note', $item->id);
+                $item->labels = $labels->getConnections('com_pfrepo.file', $item->id);
             }
 
             // Revision count

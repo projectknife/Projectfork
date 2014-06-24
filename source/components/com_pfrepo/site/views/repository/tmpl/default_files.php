@@ -80,6 +80,8 @@ foreach ($this->items['files'] as $i => $item) :
             	<?php echo JHtml::_('pfhtml.label.access', $item->access); ?>
             <?php endif; ?>
 
+            <?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
+
             <?php if ($filter_project && $is_search): ?>
                 <div class="small">
                     <?php echo str_replace($this_path, '.', $item->path) . '/'; ?>
