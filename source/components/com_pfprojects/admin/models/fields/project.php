@@ -118,7 +118,7 @@ class JFormFieldProject extends JFormField
         $js[] = "        },";
         $js[] = "        escapeMarkup:function(markup) { return markup; },";
         $js[] = "        initSelection: function(element, callback) {";
-        $js[] = "           callback({id:" . $value . ", text: '" . $title . "'});";
+        $js[] = "           callback({id:" . $value . ", text: '" . htmlspecialchars($title, ENT_QUOTES) . "'});";
         $js[] = "        }";
         $js[] = "    });";
         $js[] = "    jQuery('#" . $this->id . "_id').change(function(){" . $onchange . "});";
