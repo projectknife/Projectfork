@@ -773,6 +773,8 @@ class PFtasksModelTask extends JModelAdmin
         // Task link
         $link = JRoute::_(JURI::root() . PFtasksHelperRoute::getTaskRoute($task->id, $task->project_id, $task->milestone_id, $task->list_id));
 
+        $is_site = JFactory::getApplication()->isSite();
+
         // Send to each user...
         foreach ($uids AS $uid)
         {

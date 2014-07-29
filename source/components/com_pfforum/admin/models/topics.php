@@ -202,7 +202,7 @@ class PFforumModelTopics extends JModelList
         if (!$user->authorise('core.admin')) {
             $levels = implode(',', $user->getAuthorisedViewLevels());
 
-            $query->where('a.access IN (' . $groups . ')');
+            $query->where('a.access IN (' . $levels . ')');
         }
 
         // Filter by published state

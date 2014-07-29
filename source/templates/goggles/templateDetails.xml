@@ -2,8 +2,8 @@
 <!DOCTYPE install PUBLIC "-//Joomla! 2.5//DTD template 1.0//EN" "http://www.joomla.org/xml/dtd/2.5/template-install.dtd">
 <extension version="2.5" type="template" client="site" method="upgrade">
   <name>goggles</name>
-  <version>4.2.0</version>
-  <creationDate>January 2014</creationDate>
+  <version>4.2.2</version>
+  <creationDate>July 2014</creationDate>
   <author>Kyle Ledbetter</author>
   <authorEmail>support@projectfork.net</authorEmail>
   <description>Default Projectfork UI Template based off Bootstrap from Twitter</description>

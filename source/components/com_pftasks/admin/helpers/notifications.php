@@ -78,6 +78,7 @@ abstract class PFtasksNotificationsHelper
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
+        // Get observers
         $query->select('a.user_id')
               ->from('#__pf_ref_observer AS a')
               ->where(
@@ -100,7 +101,19 @@ abstract class PFtasksNotificationsHelper
         $db->setQuery($query);
         $users = (array) $db->loadColumn();
 
-        return $users;
+        // Get assigned users
+        $query->clear()
+              ->select('user_id')
+              ->from('#__pf_ref_users')
+              ->where('item_type = ' . $db->quote('com_pftasks.task'))
+              ->where('item_id = ' . (int) $table->id);
+
+        $db->setQuery($query);
+        $assigned = (array) $db->loadColumn();
+
+        $return = array_merge($users, $assigned);
+
+        return $return;
     }
 
 

@@ -281,7 +281,7 @@ abstract class PFhtmlProject
         $js[] = "        },";
         $js[] = "        escapeMarkup:function(markup) { return markup; },";
         $js[] = "        initSelection: function(element, callback) {";
-        $js[] = "           callback({id:" . $active_id . ", text: '" . ($active_id ? $active_title : $placehold) . "'});";
+        $js[] = "           callback({id:" . $active_id . ", text: '" . ($active_id ? htmlspecialchars($active_title, ENT_QUOTES) : htmlspecialchars($placehold, ENT_QUOTES)) . "'});";
         $js[] = "        }";
         $js[] = "    });";
         $js[] = "    jQuery('#filter_project_id" . $field_id . "').change(function(){this.form.submit();});";

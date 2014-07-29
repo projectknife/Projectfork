@@ -143,7 +143,6 @@ class PFtasksModelTaskForm extends PFtasksModelTask
             return JError::raiseWarning(500, JText::_($this->text_prefix . '_ERROR_NO_ITEMS_SELECTED'));
         }
 
-        // update priority values
         foreach ($pks as $i => $pk)
         {
             $table->load((int) $pk);
@@ -160,6 +159,9 @@ class PFtasksModelTaskForm extends PFtasksModelTask
             if (!$refs->store($uids, 'com_pftasks.task', $pk)) {
                 return false;
             }
+
+            // Send notification
+            $this->notifyAssignedUsers($uids, $pk);
         }
 
         // Clear the component's cache

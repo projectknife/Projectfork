@@ -40,7 +40,6 @@ $canEditOwn	= ($user->authorise('core.edit.own', $asset_name) && $this->item->cr
     <?php echo $item->event->beforeDisplayContent;?>
 
 	<div class="item-description">
-		<?php echo $item->text; ?>
 
         <dl class="article-info dl-horizontal pull-right">
     		<dt class="project-title">
@@ -98,6 +97,7 @@ $canEditOwn	= ($user->authorise('core.edit.own', $asset_name) && $this->item->cr
         		</dd>
             <?php endif; ?>
     	</dl>
+        <?php echo $item->text; ?>
         <div class="clearfix"></div>
 	</div>
 
