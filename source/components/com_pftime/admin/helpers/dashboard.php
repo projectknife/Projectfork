@@ -11,6 +11,8 @@
 defined('_JEXEC') or die();
 
 
+jimport('projectfork.library');
+
 /**
  * Dashboard Helper Class
  *
@@ -27,7 +29,14 @@ abstract class PFtimeHelperDashboard
         $user    = JFactory::getUser();
         $buttons = array();
 
-        if ($user->authorise('core.create', 'com_pftime')) {
+        $pid   = PFApplicationHelper::getActiveProjectId();
+        $asset = 'com_pftime';
+
+        if ($pid) {
+            $asset .= '.project.' . $pid;
+        }
+
+        if ($user->authorise('core.create', $asset)) {
             $buttons[] = array(
                 'title' => 'MOD_PF_DASH_BUTTONS_ADD_TIME',
                 'link'  => PFtimeHelperRoute::getTimesheetRoute() . '&task=form.add',
