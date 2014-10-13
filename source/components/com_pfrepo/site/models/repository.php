@@ -395,14 +395,7 @@ class PFrepoModelRepository extends JModelList
         JRequest::setVar('filter_project',   $project);
 
         // Handle list limit
-        if ($project) {
-            JRequest::setVar('limit', 0);
-        }
-        else {
-            if (JRequest::getVar('limit') === null) {
-                JRequest::setVar('limit', $app->getCfg('list_limit'));
-            }
-        }
+        JRequest::setVar('limit', $app->getCfg('list_limit'));
 
         // Do not allow to filter by author if no project is selected
         if ($project <= 0) {
