@@ -332,15 +332,20 @@ class JFormFieldGroupAccess extends JFormField
             $db    = JFactory::getDBO();
             $query = $db->getQuery(true);
 
-            $query->select('a.id AS value, a.title AS text, a.parent_id')
-                  ->from($db->quoteName('#__usergroups') . ' AS a, ' . $db->quoteName('#__usergroups') . ' AS b')
-                  ->where('a.lft BETWEEN b.lft AND b.rgt')
-                  ->where('b.id IN(' . implode(', ', $pks) . ')')
-                  ->group('a.id, a.title, a.lft, a.rgt')
-                  ->order('a.lft ASC');
+            if (!is_array($pks) || count($pks) == 0) {
+                $groups = array();
+            }
+            else {
+                $query->select('a.id AS value, a.title AS text, a.parent_id')
+                      ->from($db->quoteName('#__usergroups') . ' AS a, ' . $db->quoteName('#__usergroups') . ' AS b')
+                      ->where('a.lft BETWEEN b.lft AND b.rgt')
+                      ->where('b.id IN(' . implode(', ', $pks) . ')')
+                      ->group('a.id, a.title, a.lft, a.rgt')
+                      ->order('a.lft ASC');
 
-            $db->setQuery($query);
-            $groups = $db->loadObjectList();
+                $db->setQuery($query);
+                $groups = $db->loadObjectList();
+            }
 
             if (!is_array($groups)) $groups = array();
             $count = count($groups);
