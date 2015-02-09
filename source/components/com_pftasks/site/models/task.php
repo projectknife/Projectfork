@@ -99,6 +99,11 @@ class PFtasksModelTask extends JModelItem
                 return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_TASK_NOT_FOUND'));
             }
 
+			// get tasks' labels
+			$item->labels = null;
+			$model_labels = $this->getInstance('Labels', 'PFModel');
+			$item->labels = $model_labels->getConnections('com_pftasks.task', $item->id);
+			
             // Check for published state if filter set.
             if (((is_numeric($published)) || (is_numeric($archived))) && (($item->state != $published) && ($item->state != $archived))) {
                 return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_TASK_NOT_FOUND'));
