@@ -88,6 +88,12 @@ $canEditOwn	= ($user->authorise('core.edit.own', $asset_name) && $this->item->cr
     		<dd class="owner-data">
     			 <?php echo JHtml::_('pfhtml.label.author', $item->author, $item->created); ?>
     		</dd>
+            <dt class="assigned-title">
+    			<?php echo JText::_('COM_PROJECTFORK_FIELDSET_ASSIGNED_USERS');?>:
+    		</dt>
+    		<dd class="assigned-data">
+    			 <?php echo JHtml::_('pftasks.assignedLabel', $item->id, $item->id, $item->users); ?>
+    		</dd>
             <?php if (PFApplicationHelper::enabled('com_pfrepo') && count($item->attachments)) : ?>
                 <dt class="attachment-title">
         			<?php echo JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'); ?>:
