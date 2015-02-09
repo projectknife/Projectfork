@@ -82,6 +82,14 @@ $canEditOwn	= (($user->authorise('core.edit.own', $asset_name) || $user->authori
                      <?php echo JHtml::_('pfrepo.attachments', $item->attachments); ?>
         		</dd>
             <?php endif; ?>
+			<?php if ($item->labels) : ?>
+				<dt class="labels-title">
+					<?php echo JText::_('COM_PROJECTFORK_FIELDSET_PROJECT_LABELS'); ?>:
+				</dt>
+				<dd class="labels-data">
+					<?php echo JHtml::_('pfhtml.label.labels', $item->labels); ?>
+				</dd>
+			<?php endif; ?>
     	</dl>
         <div class="clearfix"></div>
 	</div>
