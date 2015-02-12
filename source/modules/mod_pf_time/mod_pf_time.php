@@ -3,7 +3,7 @@
 * @package      Projectfork Timesheet Module
 *
 * @author       ANGEK DESIGN (Kon Angelopoulos)
-* @copyright    Copyright (C) 2013 ANGEK DESIGN. All rights reserved.
+* @copyright    Copyright (C) 2013 - 2015 ANGEK DESIGN. All rights reserved.
 * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
 **/
 
@@ -20,11 +20,18 @@ if (!PFApplicationHelper::exists('com_projectfork')) {
     return;
 }
 
-
 require_once dirname(__FILE__) . '/helper.php';
 
-$items = modPFtimeHelper::getItems($params);
+$action = JRequest::getVar('action',null);
 
+if ($action) {
+	if ($action == 'export') {				
+		modPFtimeHelper::exportCSV();
+	}
+	elseif ($action == 'filter') {
+		modPFtimeHelper::displayData();
+	}
+}
 
 
 // Include layout
