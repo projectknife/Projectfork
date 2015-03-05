@@ -12,6 +12,7 @@ defined('_JEXEC') or die();
 
 
 JHtml::_('pfhtml.script.listform');
+JHtml::script('com_projectfork/projectfork/jquery.PrintArea.js', false, true);
 
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
@@ -26,6 +27,18 @@ $billable_percent   = ($this->total_time == 0) ? 0 : round($this->total_time_bil
 $unbillable_percent = ($this->total_time == 0) ? 0 : round($this->total_time_unbillable * (100 / $this->total_time));
 
 $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
+
+$doc = JFactory::getDocument();
+
+$doc->addScriptDeclaration('
+jQuery(document).ready(function()
+{
+	jQuery("div#print_btn").click(function(){		
+		var options = {mode:"popup"};
+		jQuery(".PrintArea.all").printArea(options);
+	});
+});
+');
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task)
@@ -42,7 +55,7 @@ Joomla.submitbutton = function(task)
     }
 }
 </script>
-<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-timesheet">
+<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-timesheet PrintArea all">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
@@ -58,6 +71,7 @@ Joomla.submitbutton = function(task)
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('pfhtml.project.filter');?>
                 </div>
+				<div class="btn button b1" id="print_btn"><?php echo JText::_('COM_PROJECTFORK_PRINT'); ?></div>
             </div>
 
             <div class="<?php echo $filter_in;?>collapse" id="filters">

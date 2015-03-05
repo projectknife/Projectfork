@@ -14,7 +14,7 @@ defined('_JEXEC') or die();
 JHtml::_('pfhtml.script.jquerysortable');
 JHtml::_('pfhtml.script.listform');
 JHtml::_('pfhtml.script.task');
-
+JHtml::script('com_projectfork/projectfork/jquery.PrintArea.js', false, true);
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
@@ -65,6 +65,15 @@ $style = '.complete .task-title > a, .complete .task-description, .complete .car
         . 'margin: 2px 0;'
         . '}';
 $doc->addStyleDeclaration( $style );
+$doc->addScriptDeclaration('
+jQuery(document).ready(function()
+{
+	jQuery("div#print_btn").click(function(){		
+		var options = {mode:"popup"};
+		jQuery(".PrintArea.all").printArea(options);
+	});
+});
+');
 ?>
 <script type="text/javascript">
 jQuery(document).ready(function() {
@@ -82,7 +91,7 @@ jQuery(document).ready(function() {
     <?php endif; ?>
 });
 </script>
-<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-tasks">
+<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-tasks PrintArea all">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
@@ -97,6 +106,7 @@ jQuery(document).ready(function() {
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('pfhtml.project.filter');?>
                 </div>
+				<div class="btn button b1" id="print_btn"><?php echo JText::_('COM_PROJECTFORK_PRINT'); ?></div>
             </div>
 
             <div class="clearfix"> </div>
