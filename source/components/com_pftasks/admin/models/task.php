@@ -626,9 +626,53 @@ class PFtasksModelTask extends JModelAdmin
             }
         }
 
-        // Send email notification to assigned users
+
         if(count($mailto)) {
+            // Send email notification to assigned users
             $this->notifyAssignedUsers($mailto, $pk);
+
+            // Auto-subscribe users for future notifications
+            // Get the project id of the task first
+            $query->clear();
+            $query->select('project_id')
+                  ->from('#__pf_tasks')
+                  ->where('id = ' . (int) $pk);
+
+            $this->_db->setQuery($query);
+            $pid = (int) $this->_db->loadResult();
+
+            if (!$pid) return true;
+
+            // Get existing subscriptions
+            $query->clear();
+            $query->select('user_id')
+                  ->from('#__pf_ref_observer')
+                  ->where('item_type = ' . $this->_db->quote($item))
+                  ->where('item_id = ' . (int) $pk)
+                  ->order('user_id ASC');
+
+            $this->_db->setQuery($query);
+            $subs = (array) $this->_db->loadColumn();
+
+            JArrayHelper::toInteger($subs);
+
+            // Create dummy object
+            $obj = new stdClass();
+            $obj->user_id = 0;
+            $obj->item_type = $item;
+            $obj->item_id = (int) $pk;
+            $obj->project_id = $pid;
+
+            // Store each new subscription
+            foreach ($mailto AS $uid)
+            {
+                if (in_array($uid, $subs)) {
+                    continue;
+                }
+
+                $obj->user_id = $uid;
+                $this->_db->insertObject('#__pf_ref_observer', $obj);
+            }
         }
 
         return true;
