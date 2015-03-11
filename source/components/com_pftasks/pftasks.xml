@@ -35,5 +35,6 @@
             <language tag="en-GB">language/en-GB/en-GB.com_pftasks.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pftasks.sys.ini</language>
         </languages>
+        <menu>com_pftasks</menu>
     </administration>
 </extension>

@@ -33,5 +33,6 @@
             <language tag="en-GB">language/en-GB/en-GB.com_pfcomments.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pfcomments.sys.ini</language>
         </languages>
+        <menu>com_pfcomments</menu>
     </administration>
 </extension>

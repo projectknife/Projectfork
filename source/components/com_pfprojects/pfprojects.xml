@@ -35,5 +35,6 @@
             <language tag="en-GB">language/en-GB/en-GB.com_pfprojects.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pfprojects.sys.ini</language>
         </languages>
+        <menu>com_pfprojects</menu>
     </administration>
 </extension>

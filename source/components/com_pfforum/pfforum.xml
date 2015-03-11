@@ -35,5 +35,6 @@
             <language tag="en-GB">language/en-GB/en-GB.com_pfforum.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pfforum.sys.ini</language>
         </languages>
+        <menu>com_pfforum</menu>
     </administration>
 </extension>

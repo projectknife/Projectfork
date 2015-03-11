@@ -9,7 +9,6 @@
 
 defined('_JEXEC') or die();
 
-
 $db    = JFactory::getDbo();
 $query = $db->getQuery(true);
 

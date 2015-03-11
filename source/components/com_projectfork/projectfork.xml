@@ -55,6 +55,7 @@
             <language tag="en-GB">language/en-GB/en-GB.com_projectfork.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_projectfork.sys.ini</language>
         </languages>
+        <menu>com_projectfork</menu>
     </administration>
     <media destination="com_projectfork" folder="media">
         <folder>bootstrap</folder>

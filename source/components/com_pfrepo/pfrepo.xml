@@ -35,5 +35,6 @@
             <language tag="en-GB">language/en-GB/en-GB.com_pfrepo.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pfrepo.sys.ini</language>
         </languages>
+        <menu>com_pfrepo</menu>
     </administration>
 </extension>

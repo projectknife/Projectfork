@@ -35,5 +35,6 @@
             <language tag="en-GB">language/en-GB/en-GB.com_pfmilestones.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pfmilestones.sys.ini</language>
         </languages>
+        <menu>com_pfmilestones</menu>
     </administration>
 </extension>

@@ -32,5 +32,6 @@
             <language tag="en-GB">language/en-GB/en-GB.com_pfusers.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pfusers.sys.ini</language>
         </languages>
+        <menu>com_pfusers</menu>
     </administration>
 </extension>

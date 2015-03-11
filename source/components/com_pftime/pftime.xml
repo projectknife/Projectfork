@@ -35,5 +35,6 @@
             <language tag="en-GB">language/en-GB/en-GB.com_pftime.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pftime.sys.ini</language>
         </languages>
+        <menu>com_pftime</menu>
     </administration>
 </extension>
