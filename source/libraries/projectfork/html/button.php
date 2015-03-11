@@ -19,6 +19,27 @@ abstract class PFhtmlButton
 
         if (is_null($enabled)) {
             $enabled = JPluginHelper::isEnabled('content', 'pfnotifications');
+
+            if ($enabled) {
+                // Check the plugin access level
+                $user = JFactory::getUser();
+
+                if (!$user->authorise('core.admin') && !$user->authorise('core.manage')) {
+                    $db = JFactory::getDbo();
+                    $query = $db->getQuery(true);
+
+                    $query->select('access')
+                          ->from('#__extensions')
+                          ->where('type = ' . $db->quote('plugin'))
+                          ->where('element = ' . $db->quote('pfnotifications'))
+                          ->where('folder = ' . $db->quote('content'));
+
+                    $db->setQuery($query);
+                    $plg_access = (int) $db->loadResult();
+                    $levels     = $user->getAuthorisedViewLevels();
+                    $enabled    = in_array($plg_access, $levels);
+                }
+            }
         }
 
         if (!$enabled) return '';
