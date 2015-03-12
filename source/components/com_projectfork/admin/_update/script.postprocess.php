@@ -36,3 +36,22 @@ foreach($files AS $file)
         }
     }
 }
+
+
+// Restore com_pfdesigns admin menu item
+$query->clear();
+$query->select('extension_id')
+      ->from('#__extensions')
+      ->where('name = ' . $db->quote('com_pfdesigns'))
+      ->where('type = ' . $db->quote('component'));
+
+$db->setQuery($query);
+$designs_id = $db->loadResult();
+
+if ($designs_id) {
+    if (!defined('PF_LIBRARY')) {
+        jimport('projectfork.library');
+    }
+
+    PFInstallerHelper::setComponentMenuItem('com_pfdesigns');
+}
