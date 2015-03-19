@@ -37,4 +37,7 @@
         </languages>
         <menu>com_pftasks</menu>
     </administration>
+    <media destination="com_pftasks" folder="media">
+        <folder>css</folder>
+    </media>
 </extension>

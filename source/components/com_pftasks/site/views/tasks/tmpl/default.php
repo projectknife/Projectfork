@@ -14,7 +14,6 @@ defined('_JEXEC') or die();
 JHtml::_('pfhtml.script.jquerysortable');
 JHtml::_('pfhtml.script.listform');
 JHtml::_('pfhtml.script.task');
-JHtml::script('com_projectfork/projectfork/jquery.PrintArea.js', false, true);
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
@@ -65,15 +64,10 @@ $style = '.complete .task-title > a, .complete .task-description, .complete .car
         . 'margin: 2px 0;'
         . '}';
 $doc->addStyleDeclaration( $style );
-$doc->addScriptDeclaration('
-jQuery(document).ready(function()
-{
-	jQuery("div#print_btn").click(function(){		
-		var options = {mode:"popup"};
-		jQuery(".PrintArea.all").printArea(options);
-	});
-});
-');
+
+$print_url = PFtasksHelperRoute::getTasksRoute($this->state->get('filter.project'), $this->state->get('filter.milestone'), $this->state->get('filter.tasklist'))
+           . '&tmpl=component&layout=print';
+$print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no';
 ?>
 <script type="text/javascript">
 jQuery(document).ready(function() {
@@ -106,7 +100,9 @@ jQuery(document).ready(function() {
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('pfhtml.project.filter');?>
                 </div>
-				<div class="btn button b1" id="print_btn"><?php echo JText::_('COM_PROJECTFORK_PRINT'); ?></div>
+				<a class="btn button" id="print_btn" href="javascript:void(0);" onclick="window.open('<?php echo JRoute::_($print_url);?>', 'print', '<?php echo $print_opt; ?>')">
+                    <?php echo JText::_('COM_PROJECTFORK_PRINT'); ?>
+                </a>
             </div>
 
             <div class="clearfix"> </div>
