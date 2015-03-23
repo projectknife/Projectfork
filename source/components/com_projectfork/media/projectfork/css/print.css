@@ -3,7 +3,7 @@
  * @copyright    Copyright (C) 2006-2015 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  *
- * CSS for task list print layout
+ * CSS for print layout
  */
 
 body
@@ -14,7 +14,7 @@ body
     padding: 0px 0px 0px 0px !important;
     color:black !important;
 }
-div.view-tasks-print
+div#projectfork
 {
     padding: 20px;
 }

@@ -11,7 +11,7 @@
 defined('_JEXEC') or die();
 
 // Include css
-JHtml::_('stylesheet', 'com_pftasks/list_print.css', false, true, false, false, false);
+JHtml::_('stylesheet', 'com_projectfork/projectfork/print.css', false, true, false, false, false);
 
 $current_list = '';
 $list_open    = false;
