@@ -12,7 +12,6 @@ defined('_JEXEC') or die();
 
 
 JHtml::_('pfhtml.script.listform');
-JHtml::script('com_projectfork/projectfork/jquery.PrintArea.js', false, true);
 
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
@@ -32,16 +31,9 @@ $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
 
 $is_ssl = JFactory::getURI()->isSSL();
 
-$doc   = JFactory::getDocument();
-$doc->addScriptDeclaration('
-jQuery(document).ready(function()
-{
-	jQuery("div#print_btn").click(function(){		
-		var options = {mode:"popup"};
-		jQuery(".PrintArea.all").printArea(options);
-	});
-});
-');
+$print_url = PFprojectsHelperRoute::getProjectsRoute()
+           . '&tmpl=component&layout=print';
+$print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no';
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects PrintArea all">
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -55,7 +47,9 @@ jQuery(document).ready(function()
 
             <div class="btn-toolbar btn-toolbar-top">
                 <?php echo $this->toolbar;?>
-				<div class="btn button b1" id="print_btn"><?php echo JText::_('COM_PROJECTFORK_PRINT'); ?></div>
+				<a class="btn button" id="print_btn" href="javascript:void(0);" onclick="window.open('<?php echo JRoute::_($print_url);?>', 'print', '<?php echo $print_opt; ?>')">
+                    <?php echo JText::_('COM_PROJECTFORK_PRINT'); ?>
+                </a>
             </div>
 
             <div class="clearfix"></div>
