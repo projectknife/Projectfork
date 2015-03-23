@@ -39,15 +39,9 @@ $style = '.large {'
         . '}';
 $doc->addStyleDeclaration( $style );
 
-$doc->addScriptDeclaration('
-jQuery(document).ready(function()
-{
-	jQuery("div#print_btn").click(function(){		
-		var options = {mode:"popup"};
-		jQuery(".PrintArea.all").printArea(options);
-	});
-});
-');
+$print_url = PFmilestonesHelperRoute::getMilestonesRoute($this->state->get('filter.project'))
+           . '&tmpl=component&layout=print';
+$print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no';
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-milestones PrintArea all">
 
@@ -64,7 +58,9 @@ jQuery(document).ready(function()
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('pfhtml.project.filter');?>
                 </div>
-				<div class="btn button b1" id="print_btn"><?php echo JText::_('COM_PROJECTFORK_PRINT'); ?></div>
+				<a class="btn button" id="print_btn" href="javascript:void(0);" onclick="window.open('<?php echo JRoute::_($print_url);?>', 'print', '<?php echo $print_opt; ?>')">
+                    <?php echo JText::_('COM_PROJECTFORK_PRINT'); ?>
+                </a>
             </div>
 
             <div class="<?php echo $filter_in;?>collapse" id="filters">
