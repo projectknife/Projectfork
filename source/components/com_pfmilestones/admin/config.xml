@@ -1,5 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
+    <fieldset name="general" label="COM_PFMILESTONES_CONFIG_GENERAL_LABEL" description="COM_PFMILESTONES_CONFIG_GENERAL_DESC">
+        <field name="milestone_color" type="color"
+			default="#ffffff"
+			description="COM_PFMILESTONES_CONFIG_COLOR_DESC"
+			label="COM_PFMILESTONES_CONFIG_COLOR_LABEL"
+		/>
+    </fieldset>
     <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules"
 			label="JCONFIG_PERMISSIONS_LABEL"
