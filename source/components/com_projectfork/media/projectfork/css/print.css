@@ -1,0 +1,30 @@
+/**
+ * @author       Tobias Kuhn (eaxs)
+ * @copyright    Copyright (C) 2006-2015 Tobias Kuhn. All rights reserved.
+ * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
+ *
+ * CSS for print layout
+ */
+
+body
+{
+    background-color:white !important;
+    background-image:none !important;
+    margin:0px 0px 0px 0px !important;
+    padding: 0px 0px 0px 0px !important;
+    color:black !important;
+}
+div#projectfork
+{
+    padding: 20px;
+}
+table.cat-items
+{
+    width: 100%;
+}
+table.cat-items tr td,
+table.cat-items tr th
+{
+    text-align: left;
+    color:black;
+}

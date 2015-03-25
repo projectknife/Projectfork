@@ -147,7 +147,7 @@ abstract class PFusersHelperRoute
         if (!$itemid) return null;
 
         // Return link
-        return 'index.php?option=com_comprofiler&task=userProfile&user=' . $id . ($itemid ? '&Itemid=' . $itemid : '');
+        return 'index.php?option=com_comprofiler&task=userProfile&user=' . intval($id) . ($itemid ? '&Itemid=' . $itemid : '');
     }
 
 

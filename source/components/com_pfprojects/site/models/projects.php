@@ -84,7 +84,7 @@ class PFprojectsModelProjects extends JModelList
         }
 
         if ($repo_exists) {
-            JLoader::register('PFtasksModelTasks', JPATH_SITE . '/components/com_pfrepo/models/files.php');
+            JLoader::register('PFrepoModelFiles', JPATH_SITE . '/components/com_pfrepo/models/files.php');
 
             $fmodel      = JModelLegacy::getInstance('Files', 'PFrepoModel', array('ignore_request' => true));
             $total_files = $fmodel->getProjectCount($pks);
@@ -266,7 +266,7 @@ class PFprojectsModelProjects extends JModelList
 
         // View Layout
         $this->setState('layout', $layout);
-        if ($layout) $this->context .= '.' . $layout;
+        if ($layout && $layout != 'print') $this->context .= '.' . $layout;
 
         // Params
         $value = $app->getParams();

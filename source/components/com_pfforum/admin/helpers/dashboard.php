@@ -10,6 +10,8 @@
 
 defined('_JEXEC') or die();
 
+jimport('projectfork.library');
+
 
 /**
  * Dashboard Helper Class
@@ -27,7 +29,14 @@ abstract class PFforumHelperDashboard
         $user    = JFactory::getUser();
         $buttons = array();
 
-        if ($user->authorise('core.create', 'com_pfforum')) {
+        $pid   = PFApplicationHelper::getActiveProjectId();
+        $asset = 'com_pfforum';
+
+        if ($pid) {
+            $asset .= '.project.' . $pid;
+        }
+
+        if ($user->authorise('core.create', $asset)) {
             $buttons[] = array(
                 'title' => 'MOD_PF_DASH_BUTTONS_ADD_TOPIC',
                 'link'  => PFforumHelperRoute::getTopicsRoute() . '&task=topicform.add',
@@ -37,7 +46,7 @@ abstract class PFforumHelperDashboard
 
         return $buttons;
     }
-    
+
     /**
      * Returns a list of buttons for the backend
      *

@@ -38,7 +38,7 @@ abstract class modPFtasksHelper
 		$model->setState('filter.published', 1);
 
         // Set project filter
-        if ((int) $params->get('tasks_of')) {
+        if (!(int) $params->get('tasks_of')) {
             $model->setState('filter.project', PFApplicationHelper::getActiveProjectId());
         }
         else {

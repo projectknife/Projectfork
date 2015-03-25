@@ -780,11 +780,12 @@ class PFrepoModelDirectory extends JModelAdmin
         if (isset($data['labels'])) {
             $labels = $this->getInstance('Labels', 'PFModel', $config = array());
 
-            $labels->setState('item.project', $table->project_id);
-            $labels->setState('item.type', 'com_pfrepo.directory');
+            $labels->setState('item.project', $table->project_id);            
             $labels->setState('item.id', $table->id);
 
-            $labels->saveRefs($data['labels']);
+            if (!$labels->saveRefs($data['labels'],'com_pfrepo.directory')) {
+                return false;
+            }
         }
 
         // Rebuild the path for the directory

@@ -71,7 +71,7 @@ foreach ($this->items['notes'] as $i => $item) :
 	                echo $this->menu->render(array('class' => 'btn-mini'));
 	            ?>
         	</span>
-
+			<?php if ($item->label_count) : echo JHtml::_('pfhtml.label.labels', $item->labels); endif; ?>
             <?php if ($filter_project && $is_search): ?>
                 <div class="small">
                     <?php echo str_replace($this_path, '.', $item->path) . '/'; ?>

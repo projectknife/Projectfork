@@ -100,6 +100,10 @@ class PFmilestonesModelMilestone extends JModelItem
             if (empty($item)) {
                 return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_MILESTONE_NOT_FOUND'));
             }
+			// get milestones' labels
+			$item->labels = null;
+			$model_labels = $this->getInstance('Labels', 'PFModel');
+			$item->labels = $model_labels->getConnections('com_pfmilestones.milestone', $item->id);
 
             // Check for published state if filter set.
             if (((is_numeric($published)) || (is_numeric($archived))) && (($item->state != $published) && ($item->state != $archived))) {

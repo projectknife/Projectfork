@@ -99,6 +99,11 @@ class PFtasksModelTask extends JModelItem
                 return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_TASK_NOT_FOUND'));
             }
 
+			// get tasks' labels
+			$item->labels = null;
+			$model_labels = $this->getInstance('Labels', 'PFModel');
+			$item->labels = $model_labels->getConnections('com_pftasks.task', $item->id);
+			
             // Check for published state if filter set.
             if (((is_numeric($published)) || (is_numeric($archived))) && (($item->state != $published) && ($item->state != $archived))) {
                 return JError::raiseError(404, JText::_('COM_PROJECTFORK_ERROR_TASK_NOT_FOUND'));
@@ -111,6 +116,13 @@ class PFtasksModelTask extends JModelItem
             $item->params = clone $this->getState('params');
             $item->params->merge($registry);
 
+
+            // Get assigned users
+            $ref = JModelLegacy::getInstance('UserRefs', 'PFusersModel');
+
+            $item->users = $ref->getItems('com_pftasks.task', $item->id);
+
+
             // Get the attachments
             if (PFApplicationHelper::exists('com_pfrepo')) {
                 $attachments = $this->getInstance('Attachments', 'PFrepoModel');
@@ -121,6 +133,7 @@ class PFtasksModelTask extends JModelItem
                 $item->attachments = array();
                 $item->attachment  = array();
             }
+
 
             // Generate slugs
             $item->slug           = $item->alias           ? ($item->id . ':' . $item->alias)                     : $item->id;

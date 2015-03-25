@@ -30,8 +30,12 @@ $users_enabled = PFApplicationHelper::enabled('com_pfusers');
 $cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
 
 $is_ssl = JFactory::getURI()->isSSL();
+
+$print_url = PFprojectsHelperRoute::getProjectsRoute()
+           . '&tmpl=component&layout=print';
+$print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no';
 ?>
-<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects">
+<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects PrintArea all">
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
     <?php endif; ?>
@@ -43,6 +47,9 @@ $is_ssl = JFactory::getURI()->isSSL();
 
             <div class="btn-toolbar btn-toolbar-top">
                 <?php echo $this->toolbar;?>
+				<a class="btn button" id="print_btn" href="javascript:void(0);" onclick="window.open('<?php echo JRoute::_($print_url);?>', 'print', '<?php echo $print_opt; ?>')">
+                    <?php echo JText::_('COM_PROJECTFORK_PRINT'); ?>
+                </a>
             </div>
 
             <div class="clearfix"></div>
@@ -86,7 +93,6 @@ $is_ssl = JFactory::getURI()->isSSL();
                     <?php endif; ?>
                 </div>
             </div>
-
             <div class="clearfix"></div>
             <div class="row-striped">
                 <?php

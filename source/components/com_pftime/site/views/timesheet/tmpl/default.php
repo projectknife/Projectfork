@@ -26,6 +26,10 @@ $billable_percent   = ($this->total_time == 0) ? 0 : round($this->total_time_bil
 $unbillable_percent = ($this->total_time == 0) ? 0 : round($this->total_time_unbillable * (100 / $this->total_time));
 
 $filter_in = ($this->state->get('filter.isset') ? 'in ' : '');
+
+$print_url = PFtimeHelperRoute::getTimesheetRoute($this->state->get('filter.project'))
+           . '&tmpl=component&layout=print';
+$print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no';
 ?>
 <script type="text/javascript">
 Joomla.submitbutton = function(task)
@@ -42,7 +46,7 @@ Joomla.submitbutton = function(task)
     }
 }
 </script>
-<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-timesheet">
+<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-timesheet PrintArea all">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
@@ -58,6 +62,9 @@ Joomla.submitbutton = function(task)
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('pfhtml.project.filter');?>
                 </div>
+				<a class="btn button" id="print_btn" href="javascript:void(0);" onclick="window.open('<?php echo JRoute::_($print_url);?>', 'print', '<?php echo $print_opt; ?>')">
+                    <?php echo JText::_('COM_PROJECTFORK_PRINT'); ?>
+                </a>
             </div>
 
             <div class="<?php echo $filter_in;?>collapse" id="filters">

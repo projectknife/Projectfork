@@ -10,6 +10,8 @@
 
 defined('_JEXEC') or die();
 
+jimport('projectfork.library');
+
 
 /**
  * Dashboard Helper Class
@@ -27,7 +29,14 @@ abstract class PFtasksHelperDashboard
         $user    = JFactory::getUser();
         $buttons = array();
 
-        if ($user->authorise('core.create', 'com_pftasks')) {
+        $pid   = PFApplicationHelper::getActiveProjectId();
+        $asset = 'com_pftasks';
+
+        if ($pid) {
+            $asset .= '.project.' . $pid;
+        }
+
+        if ($user->authorise('core.create', $asset)) {
             $buttons[] = array(
                 'title' => 'MOD_PF_DASH_BUTTONS_ADD_TASK',
                 'link'  => PFtasksHelperRoute::getTasksRoute() . '&task=taskform.add',

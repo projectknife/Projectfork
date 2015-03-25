@@ -129,13 +129,8 @@ class PFrepoViewRepository extends JViewLegacy
         // Escape strings for HTML output
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
 
-        // Set the pagination object
-        if ($this->items['directory']->id == '1') {
-            $this->pagination = $this->get('Pagination');
-        }
-        else {
-            $this->pagination = null;
-        }
+        // Set the pagination object       
+        $this->pagination = $this->get('Pagination');        
 
         // Check for errors.
         if (count($errors = $this->get('Errors'))) {

@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension type="module" version="2.5" client="site" method="upgrade">
 	<name>mod_pf_time</name>
-	<author>ANGEK DESIGN</author>
-	<creationDate>July 2014</creationDate>
-	<copyright>Copyright (C) 2014 ANGEK DESIGN. All rights reserved.</copyright>
+	<author>Kon Angelopoulos</author>
+	<creationDate>March 2015</creationDate>
+	<copyright>Copyright (C) 2015 Kon Angelopoulos. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
-	<authorEmail>support@angekdesign.com.au</authorEmail>
-	<authorUrl>www.angekdesign.com.au</authorUrl>
-	<version>4.2.2</version>
+	<authorEmail>support@projectfork.net</authorEmail>
+	<authorUrl>www.projectfork.net</authorUrl>
+	<version>4.3.0</version>
 	<description>MOD_PF_TIME_XML_DESCRIPTION</description>
     <position>pf-dashboard-left</position>
     <published>1</published>
@@ -24,6 +24,9 @@
             <language tag="en-GB">language/en-GB/en-GB.mod_pf_time.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.mod_pf_time.sys.ini</language>
 	</languages>
+	<media destination="mod_pf_time" folder="media">
+        <folder>js</folder>
+    </media>
     <config>
         <fields name="params">
             <fieldset name="basic">
@@ -52,7 +55,7 @@
                     <option value="1">JYES</option>
                 </field>
 				<field
-					name="count"
+					name="list_limit"
 					type="text"
 					default="20"
 					label="MOD_PF_TIME_CONFIG_LISTSIZE"

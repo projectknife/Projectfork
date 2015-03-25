@@ -37,8 +37,12 @@ $style = '.large {'
         . 'margin: 0;'
         . '}';
 $doc->addStyleDeclaration( $style );
+
+$print_url = PFmilestonesHelperRoute::getMilestonesRoute($this->state->get('filter.project'))
+           . '&tmpl=component&layout=print';
+$print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no';
 ?>
-<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-milestones">
+<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-milestones PrintArea all">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
@@ -53,6 +57,9 @@ $doc->addStyleDeclaration( $style );
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('pfhtml.project.filter');?>
                 </div>
+				<a class="btn button" id="print_btn" href="javascript:void(0);" onclick="window.open('<?php echo JRoute::_($print_url);?>', 'print', '<?php echo $print_opt; ?>')">
+                    <?php echo JText::_('COM_PROJECTFORK_PRINT'); ?>
+                </a>
             </div>
 
             <div class="<?php echo $filter_in;?>collapse" id="filters">

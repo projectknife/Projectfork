@@ -4,7 +4,7 @@
  * @subpackage   lib_projectfork
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2014 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2015 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -21,10 +21,10 @@ final class PFVersion
     public $PRODUCT = 'Projectfork';
 
     /** @var  string  Release version. */
-    public $RELEASE = '4.2';
+    public $RELEASE = '4.3';
 
     /** @var  string  Maintenance version. */
-    public $DEV_LEVEL = '2';
+    public $DEV_LEVEL = '0';
 
     /** @var  string  Development status. */
     public $DEV_STATUS = 'Stable';
@@ -36,16 +36,16 @@ final class PFVersion
     public $CODENAME = 'Firehawk';
 
     /** @var  string  Release date. */
-    public $RELDATE = '29-July-2014';
+    public $RELDATE = '25-March-2015';
 
     /** @var  string  Release time. */
-    public $RELTIME = '21:00';
+    public $RELTIME = '17:00';
 
     /** @var  string  Release timezone. */
     public $RELTZ = 'CET';
 
     /** @var  string  Copyright Notice. */
-    public $COPYRIGHT = 'Copyright (C) 2006 - 2014 Tobias Kuhn and Kyle Ledbetter. All rights reserved.';
+    public $COPYRIGHT = 'Copyright (C) 2006 - 2015 Tobias Kuhn and Kyle Ledbetter. All rights reserved.';
 
     /** @var  string  Link text. */
     public $URL = '<a href="http://www.projectfork.net">Projectfork</a> is Free Software released under the GNU General Public License.';

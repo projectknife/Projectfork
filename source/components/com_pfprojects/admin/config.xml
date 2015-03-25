@@ -6,6 +6,11 @@
 			<option value="1">JYES</option>
 		</field>
         <field name="group_location" type="usergroup" label="COM_PFPROJECTS_CONFIG_GROUP_LOCATION_LABEL" description="COM_PFPROJECTS_CONFIG_GROUP_LOCATION_DESC"/>
+        <field name="project_color" type="color"
+			default="#ffffff"
+			description="COM_PFPROJECTS_CONFIG_PROJECT_COLOR_DESC"
+			label="COM_PFPROJECTS_CONFIG_PROJECT_COLOR_LABEL"
+		/>
     </fieldset>
     <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules"

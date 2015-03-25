@@ -44,7 +44,7 @@ $style = '.row-topics .well,.row-topics .btn-toolbar {'
         . '}';
 $doc->addStyleDeclaration( $style );
 ?>
-<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-topics">
+<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-topics PrintArea all">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>

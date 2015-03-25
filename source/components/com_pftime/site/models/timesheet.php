@@ -451,7 +451,7 @@ class PFtimeModelTimesheet extends JModelList
 
         // View Layout
         $this->setState('layout', $layout);
-        if ($layout) $this->context .= '.' . $layout;
+        if ($layout && $layout != 'print') $this->context .= '.' . $layout;
 
         // Params
         $value = $app->getParams();

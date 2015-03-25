@@ -128,7 +128,14 @@ if (!class_exists('ProjectforkAvatar'))
                 $query = $db->getQuery(true);
             }
 
-            $default = JURI::root(true) . '/components/com_comprofiler/images/english/tnnophoto.jpg';
+            // Check CB 2
+            if (is_dir(JPATH_LIBRARIES . '/CBLib')) {
+                $default = JURI::root(true) . '/components/com_comprofiler/plugin/templates/default/images/avatar/tnnophoto_n.png';
+            }
+            else {
+                // Fall back to CB 1
+                $default = JURI::root(true) . '/components/com_comprofiler/images/english/tnnophoto.jpg';
+            }
 
             $query->clear()
                   ->select('avatar')

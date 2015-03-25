@@ -64,6 +64,10 @@ abstract class PFInstallerHelper
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
+        if ($element == 'com_projectfork') {
+            return true;
+        }
+
         // Find the projectfork admin component menu item
         if (is_null($pf_menu_item)) {
             $query->select('id')
@@ -92,7 +96,46 @@ abstract class PFInstallerHelper
         $menu_item = (int) $db->loadResult();
 
         if (!$menu_item) {
-            return false;
+            // Menu item not found, re-recrate it
+
+            // Find the component id
+            $query->clear();
+            $query->select('extension_id')
+                  ->from('#__extensions')
+                  ->where('name = ' . $db->quote($element))
+                  ->where('type = ' . $db->quote('component'));
+
+            $db->setQuery($query);
+            $com_id = (int) $db->loadResult();
+
+            if (!$com_id) {
+                return false;
+            }
+
+            // Setup menu item data
+            $data = array();
+            $data['menutype']     = 'main';
+            $data['title']        = $element;
+            $data['alias']        = str_replace('_', '-', $element);
+            $data['link']         = 'index.php?option=' . $element;
+            $data['type']         = 'component';
+            $data['published']    = 0;
+            $data['parent_id']    = $pf_menu_item;
+            $data['component_id'] = $com_id;
+            $data['img']          = 'class:component';
+            $data['home']         = 0;
+            $data['language']     = '*';
+            $data['client_id']    = 1;
+
+
+            $menu = JTable::getInstance('menu');
+
+            $menu->setLocation($pf_menu_item, 'last-child');
+
+            $menu->bind($data);
+            $menu->check();
+
+            return $menu->store();
         }
 
         $menu = JTable::getInstance('menu');
@@ -100,10 +143,7 @@ abstract class PFInstallerHelper
         // Set the new parent item
         if ($menu->load($menu_item)) {
             $menu->setLocation($pf_menu_item, 'last-child');
-
-            if (!$menu->store()) {
-                return false;
-            }
+            return $menu->store();
         }
         else {
             return false;

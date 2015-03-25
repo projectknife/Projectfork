@@ -67,7 +67,6 @@
 
     <fields name="attribs">
         <fieldset name="basic" label="COM_PROJECTFORK_DETAILS_FIELDSET">
-            <field name="repo_dir" type="hidden" filter="int"/>
             <field name="website" type="text"
                 label="COM_PROJECTFORK_FIELD_WEBSITE_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_WEBSITE_DESC"
                 class="inputbox" size="30" filter="url"
@@ -84,6 +83,43 @@
                 label="COM_PROJECTFORK_FIELD_PROJECT_IMG_LABEL" description="COM_PROJECTFORK_FIELD_PROJECT_IMG_DESC"
                 class="inputbox"
             />
+            <field name="repo_dir" type="hidden" filter="int"/>
+
+            <field type="spacer" hr="true"/>
+
+			<field name="project_color" type="color"
+				default=""
+				description="COM_PROJECTFORK_FIELD_PROJECT_OVERVIEW_COLOR_DESC"
+				label="COM_PROJECTFORK_FIELD_PROJECT_OVERVIEW_COLOR_LABEL"
+			/>
+			<field name="milestone_color" type="color"
+				default=""
+				description="COM_PROJECTFORK_FIELD_PROJECT_MILESTONE_COLOR_DESC"
+				label="COM_PROJECTFORK_FIELD_PROJECT_MILESTONE_COLOR_LABEL"
+			/>
+			<field name="tasklist_color" type="color"
+				default=""
+				description="COM_PROJECTFORK_FIELD_PROJECT_TLIST_COLOR_DESC"
+				label="COM_PROJECTFORK_FIELD_PROJECT_TLIST_COLOR_LABEL"
+			/>
+			<field name="task_color" type="color"
+				default=""
+				description="COM_PROJECTFORK_FIELD_PROJECT_TASK_COLOR_DESC"
+				label="COM_PROJECTFORK_FIELD_PROJECT_TASK_COLOR_LABEL"
+			/>
+
+            <field type="spacer" hr="true"/>
+
+			<field type="text" name="currency_code" label="COM_PROJECTFORK_CONFIG_CURRENCY_CODE_LABEL" description="COM_PROJECTFORK_CONFIG_CURRENCY_CODE_DESC" default="" maxlength="3" size="10"/>
+			<field type="text" name="currency_sign" label="COM_PROJECTFORK_CONFIG_CURRENCY_SIGN_LABEL" description="COM_PROJECTFORK_CONFIG_CURRENCY_SIGN_DESC" default="" maxlength="2" size="10"/>
+			<field name="currency_position" type="list" label="COM_PROJECTFORK_CONFIG_CURRENCY_POS_LABEL" description="COM_PROJECTFORK_CONFIG_CURRENCY_POS_DESC">
+				<option value="">JGLOBAL_USE_GLOBAL</option>
+				<option value="0">COM_PROJECTFORK_CONFIG_CURRENCY_POS_BEFORE_OPTION</option>
+				<option value="1">COM_PROJECTFORK_CONFIG_CURRENCY_POS_AFTER_OPTION</option>
+			</field>
+			<field type="text" name="decimal_delimiter" label="COM_PROJECTFORK_CONFIG_DECIMAL_DELIMITER_LABEL" description="COM_PROJECTFORK_CONFIG_DECIMAL_DELIMITER_DESC" default="" maxlength="1" size="10"/>
+			<field type="text" name="thousands_delimiter" label="COM_PROJECTFORK_CONFIG_THOUSANDS_DELIMITER_LABEL" description="COM_PROJECTFORK_CONFIG_THOUSANDS_DELIMITER_DESC" default="" maxlength="1" size="10"/>
+
         </fieldset>
     </fields>
 </form>

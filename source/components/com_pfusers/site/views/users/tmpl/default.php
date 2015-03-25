@@ -10,6 +10,7 @@
 
 defined('_JEXEC') or die();
 
+JHtml::script('com_projectfork/projectfork/jquery.PrintArea.js', false, true);
 
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
@@ -32,8 +33,17 @@ $style = '.text-large {'
         . 'height: 197px;'
         . '}';
 $doc->addStyleDeclaration( $style );
+$doc->addScriptDeclaration('
+jQuery(document).ready(function()
+{
+	jQuery("div#print_btn").click(function(){		
+		var options = {mode:"popup"};
+		jQuery(".PrintArea.all").printArea(options);
+	});
+});
+');
 ?>
-<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-users">
+<div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-users PrintArea all">
 
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
         <h1><?php echo $this->escape($this->params->get('page_heading')); ?></h1>
@@ -48,6 +58,7 @@ $doc->addStyleDeclaration( $style );
                 <div class="filter-project btn-group">
                     <?php echo JHtml::_('pfhtml.project.filter');?>
                 </div>
+				<div class="btn button b1" id="print_btn"><?php echo JText::_('COM_PROJECTFORK_PRINT'); ?></div>
             </div>
 
             <div class="collapse" id="filters">

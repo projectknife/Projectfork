@@ -138,7 +138,7 @@ class JFormFieldLabelManager extends JFormField
                     $html[] = '<div class="button2-left"><div class="blank">';
                     $html[] = '<a href="javascript:void(0);" onclick="pfRemoveLabel_' . $this->id . '(this)">' . JText::_('JACTION_DELETE') . '</a>';
                     $html[] = '</div></div>';
-                    $html[] = '<input type="hidden" name="' . $this->name . '[' . $asset . '][id][]\" value="' . intval($item->id) . '"/>';
+                    $html[] = '<input type="hidden" name="' . $this->name . '[' . $asset . '][id][]" value="' . intval($item->id) . '"/>';
                     $html[] = '<div class="clr"></li>';
                 }
             }
@@ -202,7 +202,7 @@ class JFormFieldLabelManager extends JFormField
                     $html[] = '</select>';
                     $html[] = JText::_('COM_PROJECTFORK_LABEL_PREVIEW') . ': ';
                     $html[] = '<span class="label ' . $item->style . '"><i class="icon-bookmark"></i> ' . htmlspecialchars($item->title, ENT_COMPAT, 'UTF-8') . '</span>';
-                    $html[] = '<input type="hidden" name="' . $this->name . '[' . $asset . '][id][]\" value="' . intval($item->id) . '"/>';
+                    $html[] = '<input type="hidden" name="' . $this->name . '[' . $asset . '][id][]" value="' . intval($item->id) . '"/>';
                     $html[] = '</div></li>';
                 }
             }

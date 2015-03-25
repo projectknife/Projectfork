@@ -2,12 +2,12 @@
 <extension type="component" version="2.5" method="upgrade">
     <name>com_pfusers</name>
     <author>Tobias Kuhn</author>
-    <creationDate>July 2014</creationDate>
-    <copyright>(C) 2006 - 2014 Tobias Kuhn. All rights reserved.</copyright>
+    <creationDate>March 2015</creationDate>
+    <copyright>(C) 2006 - 2015 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>support@projectfork.net</authorEmail>
     <authorUrl>www.projectfork.net</authorUrl>
-    <version>4.2.2</version>
+    <version>4.3.0</version>
     <description>COM_PFUSERS_XML_DESCRIPTION</description>
     <scriptfile>script.php</scriptfile>
     <files folder="site">
@@ -32,5 +32,6 @@
             <language tag="en-GB">language/en-GB/en-GB.com_pfusers.ini</language>
             <language tag="en-GB">language/en-GB/en-GB.com_pfusers.sys.ini</language>
         </languages>
+        <menu>com_pfusers</menu>
     </administration>
 </extension>
