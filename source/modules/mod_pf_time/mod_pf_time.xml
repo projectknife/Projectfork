@@ -2,12 +2,12 @@
 <extension type="module" version="2.5" client="site" method="upgrade">
 	<name>mod_pf_time</name>
 	<author>Kon Angelopoulos</author>
-	<creationDate>February 2015</creationDate>
+	<creationDate>March 2015</creationDate>
 	<copyright>Copyright (C) 2015 Kon Angelopoulos. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see LICENSE.txt</license>
 	<authorEmail>support@projectfork.net</authorEmail>
 	<authorUrl>www.projectfork.net</authorUrl>
-	<version>4.2.2</version>
+	<version>4.3.0</version>
 	<description>MOD_PF_TIME_XML_DESCRIPTION</description>
     <position>pf-dashboard-left</position>
     <published>1</published>
@@ -26,7 +26,7 @@
 	</languages>
 	<media destination="mod_pf_time" folder="media">
         <folder>js</folder>
-    </media>    
+    </media>
     <config>
         <fields name="params">
             <fieldset name="basic">
