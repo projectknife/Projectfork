@@ -780,7 +780,8 @@ class PFrepoModelDirectory extends JModelAdmin
         if (isset($data['labels'])) {
             $labels = $this->getInstance('Labels', 'PFModel', $config = array());
 
-            $labels->setState('item.project', $table->project_id);            
+            $labels->getState('item.project');
+            $labels->setState('item.project', $table->project_id);
             $labels->setState('item.id', $table->id);
 
             if (!$labels->saveRefs($data['labels'],'com_pfrepo.directory')) {
@@ -933,6 +934,9 @@ class PFrepoModelDirectory extends JModelAdmin
                 }
             }
 
+            $basepath = PFrepoHelper::getBasePath();
+            $cmp_path = JPath::clean($basepath . '/');
+
             // Delete all sub-dirs
             if (count($sub_dirs)) {
                 foreach ($sub_dirs AS $sub_dir)
@@ -949,10 +953,12 @@ class PFrepoModelDirectory extends JModelAdmin
                     }
 
                     // Delete physical path if exists
-                    $basepath = PFrepoHelper::getBasePath();
+
                     $fullpath = JPath::clean($basepath . '/' . $sub_table->path);
 
-                    if (JFolder::exists($fullpath)) JFolder::delete($fullpath);
+                    if (JFolder::exists($fullpath) && $fullpath != $cmp_path && strpos($fullpath, $cmp_path) === 0) {
+                        JFolder::delete($fullpath);
+                    }
                 }
             }
 
@@ -963,10 +969,11 @@ class PFrepoModelDirectory extends JModelAdmin
             }
 
             // Delete physical path if exists
-            $basepath = PFrepoHelper::getBasePath();
             $fullpath = JPath::clean($basepath . '/' . $table->path);
 
-            if (JFolder::exists($fullpath)) JFolder::delete($fullpath);
+            if (JFolder::exists($fullpath) && $fullpath != $cmp_path && strpos($fullpath, $cmp_path) === 0) {
+                JFolder::delete($fullpath);
+            }
 
             // Trigger the onContentAfterDelete event.
             $dispatcher->trigger($this->event_after_delete, array($context, $table));
@@ -1085,8 +1092,13 @@ class PFrepoModelDirectory extends JModelAdmin
     {
         if (!$project) return false;
 
+        if (trim($path) == '') {
+            return false;
+        }
+
         $base        = PFrepoHelper::getBasePath();
         $path_exists = JFolder::exists($base . '/' . $path);
+
 
         // Create new directory?
         if (empty($dest)) {
