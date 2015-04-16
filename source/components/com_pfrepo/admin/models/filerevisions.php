@@ -58,13 +58,18 @@ class PFrepoModelFileRevisions extends JModelList
 
         if ($item) {
             $query = $this->_db->getQuery(true);
+            $uid   = ($item->modified_by > 0 ? $item->modified_by : $item->created_by);
 
             $query->select('name')
                   ->from('#__users')
-                  ->where('id = ' . (int) $item->created_by);
+                  ->where('id = ' . (int) $uid);
 
             $this->_db->setQuery($query);
             $item->author_name = $this->_db->loadResult();
+
+            if ($item->modified != $this->_db->getNullDate()) {
+                $item->created = $item->modified;
+            }
         }
 
         return $item;

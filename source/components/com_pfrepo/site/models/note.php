@@ -54,7 +54,7 @@ class PFrepoModelNote extends JModelItem
             $query->select($this->getState(
                     'item.select',
                     'a.id, a.asset_id, a.project_id, a.dir_id, a.title, a.alias, a.description AS text, '
-                    . 'a.created, a.created_by, a.modified_by, a.checked_out, a.checked_out_time, '
+                    . 'a.created, a.created_by, a.modified, a.modified_by, a.checked_out, a.checked_out_time, '
                     . 'a.attribs, a.access'
                 )
             );
