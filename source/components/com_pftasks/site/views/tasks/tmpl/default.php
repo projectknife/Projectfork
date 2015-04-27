@@ -29,7 +29,10 @@ $time_enabled  = PFApplicationHelper::enabled('com_pftime');
 $can_track     = ($user->authorise('core.create', 'com_pftime') && $time_enabled);
 
 $doc   = JFactory::getDocument();
-$style = '.task-title > a {'
+$style = '.complete .task-title > a, .complete .task-description, .complete .caret {'
+        . 'opacity:0.35;'
+        . '}'
+        . '.task-title > a {'
         . 'margin-left:10px;'
         . 'margin-right:10px;'
         . '}'

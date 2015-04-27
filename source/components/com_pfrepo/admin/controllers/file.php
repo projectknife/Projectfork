@@ -100,7 +100,11 @@ class PFrepoControllerFile extends JControllerForm
             return false;
         }
 
-        ob_end_clean();
+        while (ob_get_level())
+        {
+            ob_end_clean();
+        }
+
         header("Content-Type: APPLICATION/OCTET-STREAM");
         header("Content-Length: " . filesize($filepath . '/' . $filename));
         header("Content-Disposition: attachment; filename=\"" . $filename . "\";");
