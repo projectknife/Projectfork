@@ -2,12 +2,12 @@
 <extension type="component" version="2.5" method="upgrade">
     <name>com_pfmilestones</name>
     <author>Tobias Kuhn</author>
-    <creationDate>March 2015</creationDate>
+    <creationDate>June 2015</creationDate>
     <copyright>(C) 2006 - 2015 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later; see LICENSE.txt</license>
     <authorEmail>support@projectfork.net</authorEmail>
     <authorUrl>www.projectfork.net</authorUrl>
-    <version>4.3.1</version>
+    <version>4.3.2</version>
     <description>COM_PFMILESTONES_XML_DESCRIPTION</description>
     <scriptfile>script.php</scriptfile>
     <files folder="site">

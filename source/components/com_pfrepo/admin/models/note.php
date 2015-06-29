@@ -485,8 +485,9 @@ class PFrepoModelNote extends JModelAdmin
             $config    = array('ignore_request' => true);
             $rev_model = $this->getInstance('NoteRevision', 'PFrepoModel', $config);
 
-            $head_data['parent_id'] = $head_data['id'];
-            $head_data['id']        = null;
+            $head_data['parent_id']  = $head_data['id'];
+            $head_data['id']         = null;
+            $head_data['created_by'] = JFactory::getUser()->id;
 
             if (!$rev_model->save($head_data)) {
                 $this->setError($rev_model->getError());

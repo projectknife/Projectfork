@@ -226,7 +226,7 @@ $print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,loca
     	    	    		<div class="btn-toolbar">
     	    	    			<?php if ($can_edit || $can_edit_own) : ?>
     	    	    			<div class="btn-group">
-    	    	    			    <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_pfprojects&task=form.edit&id=' . $item->slug);?>">
+    	    	    			    <a class="btn btn-mini" href="<?php echo JRoute::_(PFprojectsHelperRoute::getProjectEditRoute($item->slug));?>">
     	    	    			        <span aria-hidden="true" class="icon-pencil"></span> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT'); ?>
     	    	    			    </a>
     	    	    			</div>

@@ -67,4 +67,19 @@ abstract class PFprojectsHelperRoute
 
         return $link;
     }
+
+
+    public static function getProjectEditRoute($project)
+    {
+        $link = 'index.php?option=com_pfprojects&task=form.edit&id=' . $project;
+
+        if ($item = PFApplicationHelper::itemRoute(null, 'com_pfprojects.form')) {
+            $link .= '&Itemid=' . $item;
+        }
+        elseif ($item = PFApplicationHelper::itemRoute(null, 'com_pfprojects.projects')) {
+            $link .= '&Itemid=' . $item;
+        }
+
+        return $link;
+    }
 }
