@@ -3,12 +3,12 @@
     <name>Projectfork</name>
     <libraryname>projectfork</libraryname>
     <author>Tobias Kuhn</author>
-    <creationDate>March 2015</creationDate>
+    <creationDate>June 2015</creationDate>
     <copyright>Copyright (C) 2006 - 2015 Tobias Kuhn. All rights reserved.</copyright>
     <license>GNU General Public License version 2 or later.</license>
     <authorEmail>support@projectfork.net</authorEmail>
     <authorUrl>www.projectfork.net</authorUrl>
-    <version>4.3.1</version>
+    <version>4.3.2</version>
     <description>Shared classes and tools for Projectfork related components. Do not remove!</description>
     <files>
         <folder>access</folder>

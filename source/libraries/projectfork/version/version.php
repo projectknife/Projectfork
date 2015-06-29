@@ -24,7 +24,7 @@ final class PFVersion
     public $RELEASE = '4.3';
 
     /** @var  string  Maintenance version. */
-    public $DEV_LEVEL = '1';
+    public $DEV_LEVEL = '2';
 
     /** @var  string  Development status. */
     public $DEV_STATUS = 'Stable';
@@ -36,10 +36,10 @@ final class PFVersion
     public $CODENAME = 'Octarine';
 
     /** @var  string  Release date. */
-    public $RELDATE = '26-March-2015';
+    public $RELDATE = '29-June-2015';
 
     /** @var  string  Release time. */
-    public $RELTIME = '18:00';
+    public $RELTIME = '16:00';
 
     /** @var  string  Release timezone. */
     public $RELTZ = 'CET';
