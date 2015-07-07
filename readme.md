@@ -5,7 +5,7 @@ _A Project Management Extension for Joomla!_
 
 ## Quick start
 
-* [Download the latest release](https://projectfork.net/downloads/projectfork-4/projectfork-4-4-0-0) *(Just install this package through the Joomla installer)*
+* [Download the latest release](https://github.com/projectfork/Projectfork/releases) *(Just install this package through the Joomla installer)*
 
 #### Optional Downloads
 * ~~[Download Language Package](http://projectfork.net/downloads)~~ _([See availiable languages and their translation status](https://www.transifex.com/projects/p/projectfork-languages/))_
