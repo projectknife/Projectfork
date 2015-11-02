@@ -125,9 +125,52 @@ class PFrepoModelRepository extends JModelList
 
             // Get the data
             $items['directory']   = $dir->getItem($parent);
-            $items['directories'] = $dirs->getItems();
-            $items['notes']       = $notes->getItems();
-            $items['files']       = $files->getItems();
+
+            $totaldirs = $dirs->getTotal();
+            $totalnotes = $notes->getTotal();
+            $totalfiles = $files->getTotal();
+
+            $itemsToSkip = $this->getState('list.start');
+            $itemsToShow = $this->getState('list.limit');
+
+            $items['directories'] = array();
+            $items['notes']       = array();
+            $items['files']       = array();
+
+            if ($itemsToSkip < $totaldirs)
+            {
+                $items['directories'] = $dirs->getItems();
+
+                $itemsToShow -= count($items['directories']);
+
+                $itemsToSkip -= $totaldirs - count($items['directories']);
+            }
+            else
+            {
+                $itemsToSkip -= $totaldirs;
+            }
+
+            if ($itemsToShow > 0 && $itemsToSkip < $totalnotes)
+            {
+                $notes->setState('list.limit', $itemsToShow);
+                $notes->setState('list.start', $itemsToSkip);
+                $items['notes']       = $notes->getItems();
+
+                $itemsToShow -= count($items['notes']);
+                $itemsToSkip -= $totalnotes - count($items['notes']);
+            }
+            else
+            {
+                $itemsToSkip -= $totalnotes;
+            }
+
+            if ($itemsToShow > 0)
+            {
+                $files->setState('list.limit', $itemsToShow);
+                $files->setState('list.start', $itemsToSkip);
+
+                $items['files']       = $files->getItems();
+            }
 
             // Check for errors
             if ($dir->getError()) {
@@ -394,9 +437,6 @@ class PFrepoModelRepository extends JModelList
         JRequest::setVar('filter_parent_id', $parent_id);
         JRequest::setVar('filter_project',   $project);
 
-        // Handle list limit
-        JRequest::setVar('limit', $app->getCfg('list_limit'));
-
         // Do not allow to filter by author if no project is selected
         if ($project <= 0) {
             $this->setState('filter.labels', array());
@@ -436,6 +476,23 @@ class PFrepoModelRepository extends JModelList
         return $model->getElementCount($pks);
     }
 
+    /**
+     * Method to get the total number of items for the data set.
+     *
+     * @return  integer  The total number of items available in the data set.
+     *
+     * @since   12.2
+     */
+    public function getTotal()
+    {
+
+        $dirs   = $this->getInstance('Directories', 'PFrepoModel', $config = array());
+        $notes  = $this->getInstance('Notes', 'PFrepoModel', $config = array());
+        $files  = $this->getInstance('Files', 'PFrepoModel', $config = array());
+
+        return $dirs->getTotal() + $notes->getTotal() + $files->getTotal();
+
+    }
 
     /**
      * Method to get a store id based on model configuration state.
