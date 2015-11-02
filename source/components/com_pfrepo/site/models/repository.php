@@ -404,6 +404,13 @@ class PFrepoModelRepository extends JModelList
 
             $labels    = array();
             $author_id = '';
+
+            JRequest::setVar('limit', JRequest::getVar('limit', $app->getCfg('list_limit')));
+        }
+        else {
+            // Show all folders if in project.
+            JRequest::setVar('limit', 0);
+            $app->input->set('limit', 0);
         }
 
         // Filter - Is set
