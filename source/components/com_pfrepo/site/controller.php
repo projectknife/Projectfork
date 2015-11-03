@@ -76,7 +76,7 @@ class PFrepoController extends JControllerLegacy
             $parent_id = JRequest::getUInt('filter_parent_id');
             $project   = PFApplicationHelper::getActiveProjectId('filter_project');
 
-            if ($parent_id && $project === "") {
+            if ($parent_id && $project == "") {
                 $this->setRedirect(JRoute::_(PFrepoHelperRoute::getRepositoryRoute()));
                 return $this;
             }
