@@ -61,6 +61,12 @@ foreach ($this->items['directories'] as $i => $item) :
     elseif ($item->protected) {
         $icon = 'icon-locked';
     }
+
+    $nav_link = JRoute::_('index.php?option=com_pfrepo&view=repository&filter_parent_id=' . $item->id);
+
+    if (!$filter_project) {
+        $nav_link .= '&filter_project=' . $item->project_id;
+    }
     ?>
     <tr class="row<?php echo $i % 2; ?>">
         <td class="center hidden-phone">
@@ -73,7 +79,7 @@ foreach ($this->items['directories'] as $i => $item) :
                 <?php endif; ?>
 
                 <i class="<?php echo $icon; ?> hasTip" title="<?php echo $txt_icon;?>"></i>
-                <a href="<?php echo JRoute::_('index.php?option=com_pfrepo&view=repository&filter_parent_id=' . $item->id);?>">
+                <a href="<?php echo $nav_link;?>">
                     <?php echo JText::_($this->escape($item->title)); ?>
                 </a>
 
