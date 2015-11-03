@@ -25,7 +25,7 @@ class PFrepoModelRepository extends JModelList
      * Constructor
      *
      * @param    array          An optional associative array of configuration settings.
-     * @see      jcontroller
+     * @see      jcontroller    
      */
     public function __construct($config = array())
     {
@@ -200,7 +200,7 @@ class PFrepoModelRepository extends JModelList
     /**
      * Build a list of authors
      *
-     * @return    array
+     * @return    array    
      */
     public function getAuthors()
     {
@@ -233,7 +233,7 @@ class PFrepoModelRepository extends JModelList
      * Build an SQL query to load the list data.
      * This query loads the project repo list only!
      *
-     * @return    jdatabasequery
+     * @return    jdatabasequery    
      */
     protected function getListQuery()
     {
@@ -334,7 +334,7 @@ class PFrepoModelRepository extends JModelList
      * Method to auto-populate the model state.
      * Note: Calling getState in this method will result in recursion.
      *
-     * @return    void
+     * @return    void    
      */
     protected function populateState($ordering = 'a.title', $direction = 'asc')
     {
@@ -444,13 +444,6 @@ class PFrepoModelRepository extends JModelList
 
             $labels    = array();
             $author_id = '';
-
-            JRequest::setVar('limit', JRequest::getVar('limit', $app->getCfg('list_limit')));
-        }
-        else {
-            // Show all folders if in project.
-            JRequest::setVar('limit', 0);
-            $app->input->set('limit', 0);
         }
 
         // Filter - Is set
@@ -476,15 +469,17 @@ class PFrepoModelRepository extends JModelList
         return $model->getElementCount($pks);
     }
 
+
     /**
      * Method to get the total number of items for the data set.
      *
-     * @return  integer  The total number of items available in the data set.
-     *
-     * @since   12.2
+     * @return    integer    The total number of items available in the data set.
      */
     public function getTotal()
     {
+        if ((int) $this->getState('filter.parent_id', 1) === 1) {
+            return parent::getTotal();
+        }
 
         $dirs   = $this->getInstance('Directories', 'PFrepoModel', $config = array());
         $notes  = $this->getInstance('Notes', 'PFrepoModel', $config = array());
@@ -494,12 +489,9 @@ class PFrepoModelRepository extends JModelList
 
     }
 
+
     /**
      * Method to get a store id based on model configuration state.
-     *
-     * This is necessary because the model is used by the component and
-     * different modules that might need different sets of data or different
-     * ordering requirements.
      *
      * @param     string    $id    A prefix for the store id.
      *
