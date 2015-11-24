@@ -162,6 +162,14 @@ class PFtasksModelTasks extends JModelList
      */
     public function getAssignedUsers()
     {
+        $items = array();
+
+        $item = new stdClass();
+        $item->value = '0';
+        $item->text  = '* ' . JText::_('COM_PFTASKS_UNASSIGNED') . ' *';
+
+        $items[] = $item;
+
         // Load only if project filter is set
         $project = (int) $this->getState('filter.project');
 
@@ -174,12 +182,10 @@ class PFtasksModelTasks extends JModelList
                 $item->value = $user->id;
                 $item->text  = $user->name;
 
-                $items = array($item);
-
-                return $items;
+                $items[] = $item;
             }
 
-            return array();
+            return $items;
         }
 
         // Create a new query object.
@@ -197,7 +203,7 @@ class PFtasksModelTasks extends JModelList
 
         // Return the result
         $this->_db->setQuery($query);
-        return (array) $this->_db->loadObjectList();
+        return array_merge($items, (array) $this->_db->loadObjectList());
     }
 
 
@@ -437,11 +443,21 @@ class PFtasksModelTasks extends JModelList
 
         // Filter by assigned user
         if (is_numeric($filter_assign)) {
-            $query->join('INNER',
-                '#__pf_ref_users AS ru ON (ru.item_type = ' . $this->_db->quote('com_pftasks.task') . ' AND ru.item_id = a.id)'
-            );
+            $filter_assign = (int) $filter_assign;
 
-            $query->where('ru.user_id = '. (int) $filter_assign);
+            if ($filter_assign) {
+                $query->join('INNER',
+                '#__pf_ref_users AS ru ON (ru.item_type = ' . $this->_db->quote('com_pftasks.task') . ' AND ru.item_id = a.id)'
+                );
+
+                $query->where('ru.user_id = '. (int) $filter_assign);
+            }
+            else {
+                $query->select('COUNT(ru.id) AS assignee_count')
+                      ->join('left', '#__pf_ref_users AS ru ON (ru.item_type = ' . $this->_db->quote('com_pftasks.task') . ' AND ru.item_id = a.id)')
+                      ->having('assignee_count = 0')
+                      ->group('a.id');
+            }
         }
 
         // Filter by search in title.

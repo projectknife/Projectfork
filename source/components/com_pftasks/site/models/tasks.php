@@ -134,9 +134,23 @@ class PFtasksModelTasks extends JModelList
 
         // Filter by assigned user
         $assigned = $this->getState('filter.assigned');
-        if (is_numeric($assigned) && intval($assigned) != 0) {
-            $query->join('INNER', '#__pf_ref_users AS ru ON (ru.item_type = ' . $db->quote('com_pftasks.task') . ' AND ru.item_id = a.id)');
-            $query->where('ru.user_id = ' . (int) $assigned);
+
+        if (is_numeric($assigned)) {
+            $assigned = (int) $assigned;
+
+            if ($assigned) {
+                $query->join('INNER',
+                '#__pf_ref_users AS ru ON (ru.item_type = ' . $this->_db->quote('com_pftasks.task') . ' AND ru.item_id = a.id)'
+                );
+
+                $query->where('ru.user_id = '. (int) $assigned);
+            }
+            else {
+                $query->select('COUNT(ru.id) AS assignee_count')
+                      ->join('left', '#__pf_ref_users AS ru ON (ru.item_type = ' . $this->_db->quote('com_pftasks.task') . ' AND ru.item_id = a.id)')
+                      ->having('assignee_count = 0')
+                      ->group('a.id');
+            }
         }
 
         // Filter labels
@@ -572,6 +586,14 @@ class PFtasksModelTasks extends JModelList
         $query   = $this->_db->getQuery(true);
         $project = (int) $this->getState('filter.project');
 
+        $items = array();
+
+        $item = new stdClass();
+        $item->value = '0';
+        $item->text  = '* ' . JText::_('COM_PFTASKS_UNASSIGNED') . ' *';
+
+        $items[] = $item;
+
         // Return empty array if no project is select
         if ($project <= 0) {
             // Make an exception if we are logged in...
@@ -580,12 +602,10 @@ class PFtasksModelTasks extends JModelList
                 $item->value = $user->id;
                 $item->text  = $user->name;
 
-                $items = array($item);
-
-                return $items;
+                $items[] = $item;
             }
 
-            return array();
+            return $items;
         }
 
         // Construct the query
@@ -615,10 +635,9 @@ class PFtasksModelTasks extends JModelList
 
         // Get results
         $this->_db->setQuery($query);
-        $items = (array) $this->_db->loadObjectList();
 
         // Return the items
-        return $items;
+        return array_merge($items, (array) $this->_db->loadObjectList());
     }
 
 
