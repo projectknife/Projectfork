@@ -24,7 +24,7 @@ final class PFVersion
     public $RELEASE = '4.3';
 
     /** @var  string  Maintenance version. */
-    public $DEV_LEVEL = '2';
+    public $DEV_LEVEL = '3';
 
     /** @var  string  Development status. */
     public $DEV_STATUS = 'Stable';
@@ -33,10 +33,10 @@ final class PFVersion
     public $BUILD = '0';
 
     /** @var  string  Code name. */
-    public $CODENAME = 'Octarine';
+    public $CODENAME = 'Sterling';
 
     /** @var  string  Release date. */
-    public $RELDATE = '29-June-2015';
+    public $RELDATE = '27-November-2015';
 
     /** @var  string  Release time. */
     public $RELTIME = '16:00';
