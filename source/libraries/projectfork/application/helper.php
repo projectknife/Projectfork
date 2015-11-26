@@ -246,7 +246,7 @@ abstract class PFApplicationHelper
         $request = JRequest::getVar($request, null);
 
         if (!is_null($request) && self::setActiveProject((int) $request)) {
-            $current = is_numeric($request) ? $request : (int) $request;
+            $current = JFactory::getApplication()->getUserState($key);
         }
 
         return $current;

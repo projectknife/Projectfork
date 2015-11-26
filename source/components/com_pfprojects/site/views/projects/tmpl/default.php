@@ -16,9 +16,11 @@ JHtml::_('pfhtml.script.listform');
 $list_order = $this->escape($this->state->get('list.ordering'));
 $list_dir   = $this->escape($this->state->get('list.direction'));
 $user       = JFactory::getUser();
+$app        = JFactory::getApplication();
+$nulldate   = JFactory::getDbo()->getNullDate();
 $uid        = $user->get('id');
-
-$nulldate = JFactory::getDbo()->getNullDate();
+$menu       = $app->getMenu()->getActive();
+$itemid     = 0;
 
 $filter_in     = ($this->state->get('filter.isset') ? 'in ' : '');
 $milestones_enabled = PFApplicationHelper::enabled('com_pfmilestones');
@@ -34,6 +36,10 @@ $is_ssl = JFactory::getURI()->isSSL();
 $print_url = PFprojectsHelperRoute::getProjectsRoute()
            . '&tmpl=component&layout=print';
 $print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no';
+
+if ($menu) {
+    $itemid = $menu->id;
+}
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects PrintArea all">
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -43,8 +49,7 @@ $print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,loca
     <div class="clearfix"></div>
 
     <div class="grid">
-        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(PFprojectsHelperRoute::getProjectsRoute()); ?>" method="post">
-
+        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(PFprojectsHelperRoute::getProjectsRoute($this->params->get('filter_category'), $itemid)); ?>" method="post">
             <div class="btn-toolbar btn-toolbar-top">
                 <?php echo $this->toolbar;?>
 				<a class="btn button" id="print_btn" href="javascript:void(0);" onclick="window.open('<?php echo JRoute::_($print_url);?>', 'print', '<?php echo $print_opt; ?>')">
@@ -54,7 +59,11 @@ $print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,loca
 
             <div class="clearfix"></div>
 
-            <div class="<?php echo $filter_in;?>collapse" id="filters">
+            <?php if (!$this->params->get('show_filter', '1')) : ?>
+                <div style="display: none !important">
+            <?php else : ?>
+                <div class="<?php echo $filter_in;?>collapse" id="filters">
+            <?php endif; ?>
                 <div class="btn-toolbar clearfix">
                     <div class="filter-search btn-group pull-left">
                         <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_SEARCH'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>"/>

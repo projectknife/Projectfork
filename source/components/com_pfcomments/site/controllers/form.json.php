@@ -50,4 +50,35 @@ class PFcommentsControllerForm extends PFControllerFormJson
 
         return $model;
     }
+
+
+    /**
+     * Method to check if you can add a new record.
+     *
+     * @param     array      $data    An array of input data.
+     *
+     * @return    boolean
+     */
+    protected function allowAdd($data = array())
+    {
+        // Get form input
+        $project = isset($data['project_id']) ? (int) $data['project_id'] : PFApplicationHelper::getActiveProjectId();
+
+        $user   = JFactory::getUser();
+        $asset  = 'com_pfcomments';
+        $access = true;
+
+        // Check if the user has access to the project
+        if ($project) {
+            // Check if in allowed projects when not a super admin
+            if (!$user->authorise('core.admin')) {
+                $access = in_array($project, PFUserHelper::getAuthorisedProjects());
+            }
+
+            // Change the asset name
+            $asset  .= '.project.' . $project;
+        }
+
+        return ($user->authorise('core.create', $asset) && $access);
+    }
 }

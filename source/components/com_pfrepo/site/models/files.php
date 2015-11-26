@@ -360,6 +360,36 @@ class PFrepoModelFiles extends JModelList
         parent::populateState($ordering, $direction);
     }
 
+    /**
+     * Method to get the starting number of items for the data set.
+     *
+     * @return  integer  The starting number of items available in the data set.
+     */
+    public function getStart()
+    {
+        $store = $this->getStoreId('getstart');
+
+        // Try to load the data from internal storage.
+        if (isset($this->cache[$store]))
+        {
+            return $this->cache[$store];
+        }
+
+        $start = $this->getState('list.start');
+        $limit = $this->getState('list.limit');
+        $total = $this->getTotal();
+
+        if ($start > $total)
+        {
+            $start = max(0, (int) (ceil($total / $limit) - 1) * $limit);
+        }
+
+        // Add the total to the internal cache.
+        $this->cache[$store] = $start;
+
+        return $this->cache[$store];
+    }
+
 
     /**
      * Method to get a store id based on model configuration state.

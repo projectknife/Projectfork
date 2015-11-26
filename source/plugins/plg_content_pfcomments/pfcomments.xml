@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="content" method="upgrade">
 	<name>plg_content_pfcomments</name>
-	<creationDate>June 2015</creationDate>
+	<creationDate>November 2015</creationDate>
 	<author>Tobias Kuhn</author>
 	<copyright>(C) 2006 - 2015 Tobias Kuhn. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>support@projectfork.net</authorEmail>
 	<authorUrl>www.projectfork.net</authorUrl>
-	<version>4.3.2</version>
+	<version>4.3.3</version>
 	<description>PLG_CONTENT_PFCOMMENTS_XML_DESCRIPTION</description>
     <published>1</published>
     <scriptfile>script.php</scriptfile>

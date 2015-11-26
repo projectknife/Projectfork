@@ -4,7 +4,7 @@
  * @subpackage   com_pftasks
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2015 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -12,6 +12,7 @@ defined('_JEXEC') or die();
 
 
 jimport('joomla.application.component.modeladmin');
+JLoader::register('PFtasksHelperRoute', JPATH_SITE . '/components/com_pftasks/helpers/route.php');
 
 
 /**

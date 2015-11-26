@@ -11,6 +11,9 @@
 defined('_JEXEC') or die();
 
 
+JLoader::register('PFrepoHelperRoute', JPATH_SITE . '/components/com_pfrepo/helpers/route.php');
+
+
 /**
  * Email Notification Helper Class
  * This class is invoked by the Projectfork notifications plugin

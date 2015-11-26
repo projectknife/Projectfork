@@ -5,11 +5,11 @@ _A Project Management Extension for Joomla!_
 
 ## Quick start
 
-* [Download the latest release](https://projectfork.net/downloads/projectfork-4/projectfork-4-4-0-0) *(Just install this package through the Joomla installer)*
+* [Download the latest release](https://github.com/projectfork/Projectfork/releases) *(Just install this package through the Joomla installer)*
 
 #### Optional Downloads
 * ~~[Download Language Package](http://projectfork.net/downloads)~~ _([See availiable languages and their translation status](https://www.transifex.com/projects/p/projectfork-languages/))_
-* [Download Goggles](https://projectfork.net/downloads/projectfork-4-goggles/projectfork-4-goggles-4-0-0) _(Site Template for Joomla! 2.5.x and Joomla! 3.0.x)_
+* [Download Goggles](https://projectfork.net/downloads/projectfork-4-goggles) _(Site Template for Joomla! 2.5.x and Joomla! 3.0.x)_
 
 #### Minimum Requirements to install Projectfork 4
 * Joomla 2.5.5 + (Recommended: Joomla 3.0 +)

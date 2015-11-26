@@ -41,6 +41,16 @@ function PFprojectsBuildRoute(&$query)
     if($view == 'projects') {
         if (!$menu_item_given) $segments[] = $view;
         unset($query['view']);
+
+        // Get category filter
+        if (isset($query['filter_category'])) {
+            if (strpos($query['filter_category'], ':') === false) {
+                $query['filter_category'] = PFprojectsMakeSlug($query['filter_category'], '#__categories');
+            }
+        }
+        else {
+            unset($query['filter_category']);
+        }
     }
 
     // Handle the layout
@@ -90,5 +100,64 @@ function PFprojectsParseRoute($segments)
     // Set the view var
     $vars['view'] = $item->query['view'];
 
+    if ($vars['view'] == 'projects') {
+        if ($count >= 1) {
+            $vars['filter_category'] = PFprojectsParseSlug($segments[0]);
+        }
+
+        return $vars;
+    }
+
     return $vars;
+}
+
+
+/**
+ * Parses a slug segment and extracts the ID of the item
+ *
+ * @param     string    $segment    The slug segment
+ *
+ * @return    int                   The item id
+ */
+function PFprojectsParseSlug($segment)
+{
+    if (strpos($segment, ':') === false) {
+        return (int) $segment;
+    }
+    else {
+        list($id, $alias) = explode(':', $segment, 2);
+        return (int) $id;
+    }
+}
+
+
+/**
+ * Creates a slug segment
+ *
+ * @param     int       $id       The item id
+ * @param     string    $table    The item table
+ * @param     string    $alt      Alternative alias if the id is 0
+ * @param     string    $field    The field to query
+ *
+ * @return    string              The slug
+ */
+function PFprojectsMakeSlug($id, $table, $alt = 'all', $field = 'alias')
+{
+    if ($id == '' || $id == '0') {
+        return '';
+    }
+
+    $db    = JFactory::getDbo();
+    $query = $db->getQuery(true);
+
+    $query->select($db->quoteName($field))
+          ->from($db->quoteName($table))
+          ->where('id = ' . (int) $id);
+
+    $db->setQuery($query->__toString());
+
+    $alias = $db->loadResult();
+    $slug  = $id . ':' . $alias;
+
+    return $slug;
 }
