@@ -176,7 +176,10 @@ class PFprojectsViewProjects extends JViewLegacy
             PFToolbar::listButton($options);
         }
 
-        PFToolbar::filterButton($this->state->get('filter.isset'));
+
+        if ($this->params->get('show_filter', '1')) {
+            PFToolbar::filterButton($this->state->get('filter.isset'));
+        }
 
         return PFToolbar::render();
     }

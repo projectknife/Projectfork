@@ -245,7 +245,18 @@ class PFprojectsModelProjects extends JModelList
         $query->group('a.id');
 
         // Add the list ordering clause.
-        $query->order($this->getState('list.ordering', 'category_title, a.title') . ' ' . $this->getState('list.direction', 'ASC'));
+        $sort = $this->getState('list.ordering', 'category_title, a.title');
+        $dir  = $this->getState('list.direction', 'ASC');
+
+        if (empty($sort)) {
+            $sort = 'category_title, a.title';
+        }
+
+        if (empty($dir)) {
+            $dir = 'ASC';
+        }
+
+        $query->order($sort . ' ' . $dir);
 
         return $query;
     }
@@ -259,7 +270,25 @@ class PFprojectsModelProjects extends JModelList
      */
     protected function populateState($ordering = 'category_title, a.title', $direction = 'ASC')
     {
-        $app = JFactory::getApplication();
+        $app     = JFactory::getApplication();
+		$params  = $app->getParams();
+        $menu    = $app->getMenu()->getActive();
+        $itemid  = $app->input->get('Itemid', 0, 'int');
+
+        // Merge app params with menu item params
+		if ($menu) {
+		    $menu_params = new JRegistry();
+
+			$menu_params->loadString($menu->params);
+            $clone_params = clone $menu_params;
+            $clone_params->merge($params);
+
+            if (!$itemid) {
+                $itemid .= (int) $menu->id;
+            }
+		}
+
+        $this->context .= '.' . $itemid;
 
         // Adjust the context to support modal layouts.
         $layout = JRequest::getCmd('layout');
@@ -268,12 +297,11 @@ class PFprojectsModelProjects extends JModelList
         $this->setState('layout', $layout);
         if ($layout && $layout != 'print') $this->context .= '.' . $layout;
 
-        // Params
-        $value = $app->getParams();
-        $this->setState('params', $value);
+        // Set params state
+        $this->setState('params', $params);
 
         // State
-        $state = $app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+        $state = $app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', $params->get('filter_published'));
         $this->setState('filter.published', $state);
 
         // Filter on published for those who do not have edit or edit.state rights.
@@ -292,11 +320,30 @@ class PFprojectsModelProjects extends JModelList
         $this->setState('filter.author', $author);
 
         // Filter - Category
-        $cat = $app->getUserStateFromRequest($this->context . '.filter.category', 'filter_category', '');
+        $cat = $app->getUserStateFromRequest($this->context . '.filter.category', 'filter_category', $params->get('filter_category'));
         $this->setState('filter.category', $cat);
 
         // Filter - Is set
         $this->setState('filter.isset', (is_numeric($state) || !empty($search) || is_numeric($author) || is_numeric($cat)));
+
+        // Set list limit
+        $cfg   = JFactory::getConfig();
+        $limit = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $params->get('display_num', $cfg->get('list_limit')), 'uint');
+        $this->setState('list.limit', $limit);
+        $app->set('list_limit', $limit);
+        JRequest::setVar('list_limit', $limit);
+
+        // Set sorting order
+        $sort = $app->getUserStateFromRequest($this->context . '.list.ordering', 'filter_order', $params->get('filter_order'));
+        $this->setState('list.ordering', $sort);
+        $app->set('filter_order', $sort);
+        JRequest::setVar('filter_order', $sort);
+
+        // Set order direction
+        $dir = $app->getUserStateFromRequest($this->context . '.list.direction', 'filter_order_Dir', $params->get('filter_order_Dir'));
+        $this->setState('list.direction', $dir);
+        $app->set('filter_order_Dir', $dir);
+        JRequest::setVar('filter_order_Dir', $dir);
 
         // Call parent method
         parent::populateState($ordering, $direction);

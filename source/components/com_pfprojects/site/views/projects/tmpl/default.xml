@@ -1,6 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <metadata>
-	<layout title="COM_PFPROJECTS_PROJECTS_VIEW_DEFAULT_TITLE" option="COM_PFPROJECTS_PROJECTS_VIEW_DEFAULT_OPTION">
-		<message><![CDATA[COM_PFPROJECTS_PROJECTS_VIEW_DEFAULT_DESC]]></message>
-	</layout>
+    <layout title="COM_PFPROJECTS_PROJECTS_VIEW_DEFAULT_TITLE" option="COM_PFPROJECTS_PROJECTS_VIEW_DEFAULT_OPTION">
+        <message><![CDATA[COM_PFPROJECTS_PROJECTS_VIEW_DEFAULT_DESC]]></message>
+    </layout>
+    <fields name="request">
+        <fieldset name="request">
+            <field name="filter_category" type="category" description="JGLOBAL_CHOOSE_CATEGORY_DESC" extension="com_pfprojects" label="JGLOBAL_CHOOSE_CATEGORY_LABEL" required="false">
+                <option value="">JALL</option>
+            </field>
+        </fieldset>
+    </fields>
+    <fields name="params">
+        <fieldset name="advanced" label="COM_PFPROJECTS_GRID_LAYOUT_OPTIONS">
+            <field name="show_filter" type="list" default="1" label="COM_PFPROJECTS_SHOW_FILTER">
+                <option value="1">JYES</option>
+                <option value="0">JNO</option>
+            </field>
+            <field name="filter_published" type="list" default="" label="JSTATUS">
+                <option value="">JPUBLISHED</option>
+                <option value="0">JUNPUBLISHED</option>
+                <option value="2">JARCHIVED</option>
+                <option value="-2">JTRASHED</option>
+            </field>
+            <field name="filter_order" type="list" default="" label="COM_PFPROJECTS_SORT_BY">
+                <option value="">JDEFAULT</option>
+                <option value="category_title, a.title">JGLOBAL_TITLE</option>
+                <option value="a.end_date">Deadline</option>
+                <option value="author_name">JAUTHOR</option>
+            </field>
+            <field name="filter_order_Dir" type="list" default="" label="COM_PFPROJECTS_ORDER">
+                <option value="">JDEFAULT</option>
+                <option value="ASC">JGLOBAL_ORDER_ASCENDING</option>
+                <option value="DESC">JGLOBAL_ORDER_DESCENDING</option>
+            </field>
+            <field name="display_num" type="list" default="25" description="COM_PFPROJECTS_NUMBER_ITEMS_LIST_DESC" label="COM_PFPROJECTS_NUMBER_ITEMS_LIST_LABEL">
+                <option value="5">J5</option>
+                <option value="10">J10</option>
+                <option value="15">J15</option>
+                <option value="20">J20</option>
+                <option value="25">J25</option>
+                <option value="30">J30</option>
+                <option value="50">J50</option>
+                <option value="100">J100</option>
+                <option value="0">JALL</option>
+            </field>
+        </fieldset>
+    </fields>
 </metadata>

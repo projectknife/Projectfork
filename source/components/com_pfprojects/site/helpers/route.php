@@ -39,7 +39,7 @@ abstract class PFprojectsHelperRoute
             $link = 'index.php?option=com_projectfork&view=dashboard';
         }
 
-        $needles = array('id'  => array((int) $project));
+        $needles = array('id' => array((int) $project));
 
         if ($item = PFApplicationHelper::itemRoute($needles, 'com_projectfork.dashboard')) {
             $link .= '&Itemid=' . $item;
@@ -57,12 +57,24 @@ abstract class PFprojectsHelperRoute
      *
      * @return    string    $link    The link
      */
-    public static function getProjectsRoute()
+    public static function getProjectsRoute($catid = 0, $item = null)
     {
         $link = 'index.php?option=com_pfprojects&view=projects';
 
-        if ($item = PFApplicationHelper::itemRoute(null, 'com_pfprojects.projects')) {
+        if ($catid) {
+            $link .= '&filter_category=' . $catid;
+        }
+
+        $needles = array('filter_category'  => array((int) $catid));
+
+        if (!is_null($item)) {
             $link .= '&Itemid=' . $item;
+        }
+        else if ($item = PFApplicationHelper::itemRoute($needles, 'com_pfprojects.projects')) {
+            $link .= '&Itemid=' . $item;
+        }
+        elseif ($item = PFApplicationHelper::itemRoute(null, 'com_pfprojects.projects')) {
+            $link .= '&Itemid=' . $item . '&yes=true';
         }
 
         return $link;
