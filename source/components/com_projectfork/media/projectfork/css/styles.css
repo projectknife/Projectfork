@@ -68,6 +68,7 @@
 #projectfork ul li
 {
     list-style: none;
+    font-size: 14px;
 }
 
 #projectfork .inline-block{
