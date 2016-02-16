@@ -97,7 +97,7 @@ class PFprojectsModelProjects extends JModelList
             $params->loadString($item->attribs);
 
             // Convert the parameter fields into objects.
-            $items[$i]->params = clone $this->getState('params');
+            $items[$i]->params = $params->merge(clone $this->getState('params'));
 
             // Create slug
             $items[$i]->slug = $items[$i]->alias ? ($items[$i]->id . ':' . $items[$i]->alias) : $items[$i]->id;
