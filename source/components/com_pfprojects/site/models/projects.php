@@ -284,7 +284,7 @@ class PFprojectsModelProjects extends JModelList
             $clone_params->merge($params);
 
             if (!$itemid) {
-                $itemid .= (int) $menu->id;
+                $itemid = (int) $menu->id;
             }
 		}
 

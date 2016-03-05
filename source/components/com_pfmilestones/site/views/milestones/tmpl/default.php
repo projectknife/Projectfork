@@ -62,7 +62,11 @@ $print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,loca
                 </a>
             </div>
 
-            <div class="<?php echo $filter_in;?>collapse" id="filters">
+            <?php if (!$this->params->get('show_filter', '1')) : ?>
+                <div style="display: none !important">
+            <?php else : ?>
+                <div class="<?php echo $filter_in;?>collapse" id="filters">
+            <?php endif; ?>
                 <div class="btn-toolbar clearfix">
                     <div class="filter-search btn-group pull-left">
                         <input type="text" name="filter_search" placeholder="<?php echo JText::_('JSEARCH_FILTER_SEARCH'); ?>" id="filter_search" value="<?php echo $this->escape($this->state->get('filter.search')); ?>" />
