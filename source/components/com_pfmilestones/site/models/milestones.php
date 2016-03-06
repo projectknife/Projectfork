@@ -151,6 +151,10 @@ class PFmilestonesModelMilestones extends JModelList
         $project = (int) $this->getState('filter.project');
         $order   = $this->getState('list.ordering', 'a.title');
 
+        if ($order == '') {
+            $order = 'a.title';
+        }
+
         if ($project <= 0) {
             if ($order != 'project_title') {
                 $order = 'project_title ASC, ' . $order;
