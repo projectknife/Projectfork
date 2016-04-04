@@ -330,19 +330,19 @@ class PFprojectsModelProjects extends JModelList
         $cfg   = JFactory::getConfig();
         $limit = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $params->get('display_num', $cfg->get('list_limit')), 'uint');
         $this->setState('list.limit', $limit);
-        $app->set('list_limit', $limit);
+        $app->input->set('list_limit', $limit);
         JRequest::setVar('list_limit', $limit);
 
         // Set sorting order
         $sort = $app->getUserStateFromRequest($this->context . '.list.ordering', 'filter_order', $params->get('filter_order'));
         $this->setState('list.ordering', $sort);
-        $app->set('filter_order', $sort);
+        $app->input->set('filter_order', $sort);
         JRequest::setVar('filter_order', $sort);
 
         // Set order direction
         $dir = $app->getUserStateFromRequest($this->context . '.list.direction', 'filter_order_Dir', $params->get('filter_order_Dir'));
         $this->setState('list.direction', $dir);
-        $app->set('filter_order_Dir', $dir);
+        $app->input->set('filter_order_Dir', $dir);
         JRequest::setVar('filter_order_Dir', $dir);
 
         // Call parent method
