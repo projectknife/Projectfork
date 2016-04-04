@@ -529,12 +529,18 @@ class PFprojectsModelProject extends JModelAdmin
 
             $this->setActive(array('id' => $id));
 
-            // Add to watch list
+            // Add to watch list - if not opt-out
             if ($is_new) {
-                $cid = array($id);
+                $plugin  = JPluginHelper::getPlugin('content', 'pfnotifications');
+                $params  = new JRegistry($plugin->params);
+                $opt_out = (int) $params->get('sub_method', 0);
 
-                if (!$this->watch($cid, 1)) {
-                    return false;
+                if (!$opt_out) {
+                    $cid = array($id);
+
+                    if (!$this->watch($cid, 1)) {
+                        return false;
+                    }
                 }
             }
 

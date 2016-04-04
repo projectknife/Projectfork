@@ -96,7 +96,12 @@ abstract class PFrepoNotificationsHelper
      */
     public static function getObservers($context, $table, $is_new = false)
     {
-        $db = JFactory::getDbo();
+        $plugin  = JPluginHelper::getPlugin('content', 'pfnotifications');
+        $params  = new JRegistry($plugin->params);
+        $opt_out = (int) $params->get('sub_method', 0);
+
+        $db    = JFactory::getDbo();
+        $query = $db->getQuery(true);
 
         if (in_array($context, array('com_pfrepo.file', 'com_pfrepo.fileform', 'com_pfrepo.note', 'com_pfrepo.noteform'))) {
             $parents = self::getParentDirectories($table->dir_id);
@@ -133,6 +138,47 @@ abstract class PFrepoNotificationsHelper
 
         $db->setQuery($query);
         $users = (array) $db->loadColumn();
+
+        if ($opt_out) {
+            $blacklist   = $users;
+            $users       = array();
+            $repo_groups = array();
+
+            if (isset($table->access)) {
+                $repo_groups = PFAccessHelper::getGroupsByAccessLevel($table->access);
+            }
+
+            $query->clear()
+                  ->select('access')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . (int) $table->project_id);
+
+            $db->setQuery($query);
+            $project_access = $db->loadResult();
+
+            $p_groups = PFAccessHelper::getGroupsByAccessLevel($project_access);
+            $groups   = array_unique(array_merge($p_groups, $repo_groups));
+
+            if (!count($groups)) {
+                return array();
+            }
+
+            $query->clear()
+                  ->select('a.user_id')
+                  ->from('#__user_usergroup_map AS a')
+                  ->innerJoin('#__users AS u ON u.id = a.user_id');
+
+            if (count($blacklist)) {
+                $query->where('a.user_id NOT IN(' . implode(', ', $blacklist) . ')');
+            }
+
+            $query->where('a.group_id IN(' . implode(', ', $groups) . ')')
+                  ->group('a.user_id')
+                  ->order('a.user_id ASC');
+
+            $db->setQuery($query);
+            $users = (array) $db->loadColumn();
+        }
 
         return $users;
     }

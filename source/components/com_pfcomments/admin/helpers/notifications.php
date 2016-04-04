@@ -79,16 +79,128 @@ abstract class PFcommentsNotificationsHelper
             return array();
         }
 
+        $plugin  = JPluginHelper::getPlugin('content', 'pfnotifications');
+        $params  = new JRegistry($plugin->params);
+        $opt_out = (int) $params->get('sub_method', 0);
+
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
+        $task_ms = 0;
+
+        if ($table->context == 'com_pftasks.task') {
+            $query->select('milestone_id')
+                  ->from('#__pf_milestones')
+                  ->where('id = ' . (int) $table->item_id);
+
+            $db->setQuery($query);
+            $task_ms = (int) $db->loadResult();
+        }
+
+        $query->clear();
         $query->select('a.user_id')
-              ->from('#__pf_ref_observer AS a')
-              ->where('a.item_type = ' . $db->quote($db->escape($table->context)))
-              ->where('a.item_id = ' . $db->quote((int) $table->item_id));
+              ->from('#__pf_ref_observer AS a');
+
+        if ($table->context != 'com_pfprojects.form' && $table->context != 'com_pfprojects.project' && isset($table->project_id)) {
+            if ($task_ms) {
+                $query->where(
+                    '(a.item_type = ' . $db->quote($db->escape($table->context)) . ' AND a.item_id = ' . $db->quote((int) $table->item_id) . ')'
+                    . ' OR (a.item_type = ' . $db->quote('com_pfmilestones.milestone') . ' AND a.item_id = ' . $task_ms . ')'
+                    . ' OR (a.item_type = ' . $db->quote('com_pfprojects.project') . ' AND a.item_id = ' . $table->project_id . ')'
+                );
+            }
+            else {
+                $query->where(
+                    '(a.item_type = ' . $db->quote($db->escape($table->context)) . ' AND a.item_id = ' . $db->quote((int) $table->item_id) . ')'
+                    . ' OR (a.item_type = ' . $db->quote('com_pfprojects.project') . ' AND a.item_id = ' . $table->project_id . ')'
+                );
+            }
+
+        }
+        else {
+            $query->where('a.item_type = ' . $db->quote($db->escape($table->context)))
+                  ->where('a.item_id = ' . $db->quote((int) $table->item_id));
+        }
 
         $db->setQuery($query);
         $users = (array) $db->loadColumn();
+
+        if ($opt_out) {
+            $blacklist = $users;
+            $users     = array();
+
+            $tables = array(
+                'com_pfprojects.project' => '#__pf_projects',
+                'com_pfmilestones.milestone' => '#__pf_milestones',
+                'com_pftasks.task' => '#__pf_tasks',
+                'com_pfdesigns.design' => '#__pf_designs',
+                'com_pfdesigns.revision' => '#__pf_designs',
+                'com_pfrepo.file' => '#__pf_repo_files',
+                'com_pfrepo.note' => '#__pf_repo_notes',
+            );
+
+            if (!isset($tables[$table->context])) {
+                return array();
+            }
+
+            $q_table = $tables[$table->context];
+            $q_id    = (int) $table->item_id;
+
+            if ($table->context == 'com_pfdesigns.revision') {
+                $query->clear()
+                      ->select('parent_id')
+                      ->from('#__pf_design_revisions')
+                      ->where('id = ' . $q_id);
+
+                $db->setQuery($query);
+                $q_id = (int) $db->loadResult();
+            }
+
+            if (!$q_id) {
+                return array();
+            }
+
+            $query->clear()
+                  ->select('access')
+                  ->from($q_table)
+                  ->where('id = ' . $q_id);
+
+            $db->setQuery($query);
+            $item_access = (int) $db->loadResult();
+
+            $item_groups = PFAccessHelper::getGroupsByAccessLevel($item_access);
+
+            $query->clear()
+                  ->select('access')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . (int) $table->project_id);
+
+            $db->setQuery($query);
+            $project_access = $db->loadResult();
+
+            $p_groups = PFAccessHelper::getGroupsByAccessLevel($project_access);
+            $groups   = array_unique(array_merge($p_groups, $item_groups));
+
+            if (!count($groups)) {
+                return array();
+            }
+
+            $query->clear()
+                  ->select('a.user_id')
+                  ->from('#__user_usergroup_map AS a')
+                  ->innerJoin('#__users AS u ON u.id = a.user_id');
+
+            if (count($blacklist)) {
+                $query->where('a.user_id NOT IN(' . implode(', ', $blacklist) . ')');
+            }
+
+            $query->where('a.group_id IN(' . implode(', ', $groups) . ')')
+                  ->group('a.user_id')
+                  ->order('a.user_id ASC');
+
+            $db->setQuery($query);
+            $users = (array) $db->loadColumn();
+        }
 
         return $users;
     }
@@ -116,6 +228,12 @@ abstract class PFcommentsNotificationsHelper
 
         $class_name = 'PF' . str_replace('com_pf', '', $component) . 'NotificationsHelper';
         $value      = null;
+
+        if (!class_exists($class_name)) {
+            if (file_exists(JPATH_ADMINISTRATOR . '/components/' . $component . '/helpers/notifications.php')) {
+                require_once JPATH_ADMINISTRATOR . '/components/' . $component . '/helpers/notifications.php';
+            }
+        }
 
         if (class_exists($class_name)) {
             $methods = get_class_methods($class_name);
@@ -172,6 +290,12 @@ abstract class PFcommentsNotificationsHelper
         $txt_prefix = self::$prefix . '_' . ($is_new ? 'NEW' : 'UPD');
         $class_name = 'PF' . str_replace('com_pf', '', $component) . 'NotificationsHelper';
         $value      = null;
+
+        if (!class_exists($class_name)) {
+            if (file_exists(JPATH_ADMINISTRATOR . '/components/' . $component . '/helpers/notifications.php')) {
+                require_once JPATH_ADMINISTRATOR . '/components/' . $component . '/helpers/notifications.php';
+            }
+        }
 
         if (class_exists($class_name)) {
             if (in_array('getItemName', get_class_methods($class_name))) {

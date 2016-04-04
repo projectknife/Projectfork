@@ -75,6 +75,10 @@ abstract class PFmilestonesNotificationsHelper
      */
     public static function getObservers($context, $table, $is_new = false)
     {
+        $plugin  = JPluginHelper::getPlugin('content', 'pfnotifications');
+        $params  = new JRegistry($plugin->params);
+        $opt_out = (int) $params->get('sub_method', 0);
+
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -93,6 +97,44 @@ abstract class PFmilestonesNotificationsHelper
 
         $db->setQuery($query);
         $users = (array) $db->loadColumn();
+
+        if ($opt_out) {
+            $blacklist = $users;
+            $users     = array();
+
+            $ms_groups = PFAccessHelper::getGroupsByAccessLevel($table->access);
+
+            $query->clear()
+                  ->select('access')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . (int) $table->project_id);
+
+            $db->setQuery($query);
+            $project_access = $db->loadResult();
+
+            $p_groups = PFAccessHelper::getGroupsByAccessLevel($project_access);
+            $groups   = array_unique(array_merge($p_groups, $ms_groups));
+
+            if (!count($groups)) {
+                return array();
+            }
+
+            $query->clear()
+                  ->select('a.user_id')
+                  ->from('#__user_usergroup_map AS a')
+                  ->innerJoin('#__users AS u ON u.id = a.user_id');
+
+            if (count($blacklist)) {
+                $query->where('a.user_id NOT IN(' . implode(', ', $blacklist) . ')');
+            }
+
+            $query->where('a.group_id IN(' . implode(', ', $groups) . ')')
+                  ->group('a.user_id')
+                  ->order('a.user_id ASC');
+
+            $db->setQuery($query);
+            $users = (array) $db->loadColumn();
+        }
 
         return $users;
     }

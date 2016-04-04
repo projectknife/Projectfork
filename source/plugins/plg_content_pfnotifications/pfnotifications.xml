@@ -35,6 +35,16 @@
                     <option value="1">PLG_CONTENT_PFNOTIFICATIONS_FIELD_SEND_TYPE_NEW</option>
                     <option value="2">PLG_CONTENT_PFNOTIFICATIONS_FIELD_SEND_TYPE_UPD</option>
                 </field>
+                <field name="sub_method"
+					type="radio"
+                    class="btn-group"
+					default="0"
+					description="PLG_CONTENT_PFNOTIFICATIONS_FIELD_SUB_METHOD_DESC"
+					label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_SUB_METHOD_LABEL"
+                >
+                    <option value="0">PLG_CONTENT_PFNOTIFICATIONS_FIELD_SUB_METHOD_OPT_IN</option>
+                    <option value="1">PLG_CONTENT_PFNOTIFICATIONS_FIELD_SUB_METHOD_OPT_OUT</option>
+                </field>
                 <field name="send_method"
 					type="radio"
                     class="btn-group"
