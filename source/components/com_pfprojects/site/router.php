@@ -1,14 +1,14 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Projects
+ * @package      pkg_projectfork
+ * @subpackage   com_pfprojects
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2016 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 
 /**
@@ -29,7 +29,9 @@ function PFprojectsBuildRoute(&$query)
     $segments = array();
     $view     = $query['view'];
 
-    // We need a menu item.  Either the one specified in the query, or the current active one if none specified
+    unset($query['view']);
+
+    // We need a menu item. Either the one specified in the query, or the current active one if none specified
     if (empty($query['Itemid'])) {
         $menu_item_given = false;
     }
@@ -39,16 +41,19 @@ function PFprojectsBuildRoute(&$query)
 
     // Handle projects query
     if($view == 'projects') {
-        if (!$menu_item_given) $segments[] = $view;
-        unset($query['view']);
+        if (!$menu_item_given) {
+            $segments[] = $view;
+        }
 
         // Get category filter
         if (isset($query['filter_category'])) {
-            if (strpos($query['filter_category'], ':') === false) {
+            if (strrpos($query['filter_category'], ':') === false) {
                 $query['filter_category'] = PFprojectsMakeSlug($query['filter_category'], '#__categories');
             }
-        }
-        else {
+
+            $slug_parts = explode(':', $query['filter_category']);
+            $segments[] = $slug_parts[1];
+
             unset($query['filter_category']);
         }
     }
@@ -102,7 +107,7 @@ function PFprojectsParseRoute($segments)
 
     if ($vars['view'] == 'projects') {
         if ($count >= 1) {
-            $vars['filter_category'] = PFprojectsParseSlug($segments[0]);
+            $vars['filter_category'] = PFprojectsParseSlug($segments[1]);
         }
 
         return $vars;
