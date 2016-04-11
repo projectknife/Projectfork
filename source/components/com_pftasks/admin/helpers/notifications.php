@@ -119,7 +119,6 @@ abstract class PFtasksNotificationsHelper
 
         if ($opt_out) {
             $blacklist = $users;
-            $users     = array();
 
             $t_groups = PFAccessHelper::getGroupsByAccessLevel($table->access);
 
@@ -167,7 +166,7 @@ abstract class PFtasksNotificationsHelper
                   ->order('a.user_id ASC');
 
             $db->setQuery($query);
-            $users = (array) $db->loadColumn();
+            $return = (array) $db->loadColumn();
         }
 
         return $return;
