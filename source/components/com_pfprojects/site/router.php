@@ -36,25 +36,42 @@ function PFprojectsBuildRoute(&$query)
         $menu_item_given = false;
     }
     else {
-        $menu_item_given = true;
+        $menu = JFactory::getApplication()->getMenu();
+        $item = $menu->getActive();
+
+        if ($item->query['view'] != $view) {
+            $menu_item_given = false;
+        }
+        else {
+            $menu_item_given = true;
+        }
+    }
+
+    if (!$menu_item_given) {
+        $segments[] = $view;
     }
 
     // Handle projects query
     if($view == 'projects') {
-        if (!$menu_item_given) {
-            $segments[] = $view;
-        }
-
         // Get category filter
         if (isset($query['filter_category'])) {
             if (strrpos($query['filter_category'], ':') === false) {
                 $query['filter_category'] = PFprojectsMakeSlug($query['filter_category'], '#__categories');
             }
 
-            $slug_parts = explode(':', $query['filter_category']);
-            $segments[] = $slug_parts[1];
-
+            $segments[] = $query['filter_category'];
             unset($query['filter_category']);
+        }
+    }
+
+    if($view == 'form') {
+        if (isset($query['id'])) {
+            if (strrpos($query['id'], ':') === false) {
+                $query['id'] = PFprojectsMakeSlug($query['id'], '#__pf_projects');
+            }
+
+            $segments[] = $query['id'];
+            unset($query['id']);
         }
     }
 
@@ -105,8 +122,13 @@ function PFprojectsParseRoute($segments)
     // Set the view var
     $vars['view'] = $item->query['view'];
 
+    if ($count && $segments[0] == 'form') {
+        $vars['view'] = $segments[0];
+        $vars['id']   = $segments[$count - 1];
+    }
+
     if ($vars['view'] == 'projects') {
-        if ($count >= 1) {
+        if ($count >= 2) {
             $vars['filter_category'] = PFprojectsParseSlug($segments[1]);
         }
 

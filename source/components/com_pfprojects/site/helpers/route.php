@@ -85,11 +85,11 @@ abstract class PFprojectsHelperRoute
         if (!is_null($item)) {
             $link .= '&Itemid=' . $item;
         }
-        else if ($item = PFApplicationHelper::itemRoute($needles, 'com_pfprojects.projects')) {
+        elseif ($item = PFApplicationHelper::itemRoute($needles, 'com_pfprojects.projects')) {
             $link .= '&Itemid=' . $item;
         }
         elseif ($item = PFApplicationHelper::itemRoute(null, 'com_pfprojects.projects')) {
-            $link .= '&Itemid=' . $item . '&yes=true';
+            $link .= '&Itemid=' . $item;
         }
 
         return $link;
@@ -97,7 +97,7 @@ abstract class PFprojectsHelperRoute
 
 
     /**
-     * Creates a link to the dashboard
+     * Creates a link to the project form
      *
      * @param     string    $project_slug    The project slug. Optional
      *

@@ -245,7 +245,7 @@ $print_opt  = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,loc
                                 <?php endif; ?>
                                 <?php if ($milestones_enabled) : ?>
                                     <div class="btn-group">
-                                        <a class="btn btn-mini" href="<?php echo JRoute::_(PFmilestonesHelperRoute::getMilestonesRoute($item->slug, $item->slug));?>">
+                                        <a class="btn btn-mini" href="<?php echo JRoute::_(PFmilestonesHelperRoute::getMilestonesRoute($item->slug));?>">
                                             <span aria-hidden="true" class="icon-location"></span>
                                             <?php echo (int) $item->milestones;?> <?php echo JText::_('JGRID_HEADING_MILESTONES'); ?>
                                         </a>
