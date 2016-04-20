@@ -102,7 +102,7 @@ class PFmilestonesControllerForm extends JControllerForm
         $result = parent::cancel($key);
 
         // Redirect to the return page.
-        $this->setRedirect($this->getReturnPage());
+        $this->setRedirect(JRoute::_($this->getReturnPage()));
 
         return $result;
     }
@@ -278,7 +278,7 @@ class PFmilestonesControllerForm extends JControllerForm
                 break;
 
             default:
-                $this->setRedirect($this->getReturnPage());
+                $this->setRedirect(JRoute::_($this->getReturnPage()));
                 break;
         }
     }

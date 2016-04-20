@@ -41,6 +41,10 @@ $doc->addStyleDeclaration( $style );
 $print_url = PFmilestonesHelperRoute::getMilestonesRoute($this->state->get('filter.project'))
            . '&tmpl=component&layout=print';
 $print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no';
+
+$itemid     = PFApplicationHelper::getActiveMenuItemId();
+$list_url   = PFmilestonesHelperRoute::getMilestonesRoute($this->params->get('filter_category'), $itemid);
+$return_url = base64_encode($list_url);
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-milestones PrintArea all">
 
@@ -51,7 +55,7 @@ $print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,loca
     <div class="clearfix"></div>
 
     <div class="cat-items">
-        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(PFmilestonesHelperRoute::getMilestonesRoute()); ?>" method="post">
+        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_($list_url); ?>" method="post">
             <div class="btn-toolbar btn-toolbar-top">
                 <?php echo $this->toolbar;?>
                 <div class="filter-project btn-group">
@@ -192,7 +196,7 @@ $print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,loca
                 			<div class="btn-toolbar margin-none">
                 			<?php if ($can_edit || $can_edit_own) : ?>
     	    	    			<div class="btn-group">
-    	    	    			    <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_pfmilestones&task=form.edit&id=' . $item->slug);?>">
+    	    	    			    <a class="btn btn-mini" href="<?php echo JRoute::_('index.php?option=com_pfmilestones&task=form.edit&id=' . $item->slug . '&return=' . $return_url);?>">
     	    	    			        <span aria-hidden="true" class="icon-pencil"></span><?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT'); ?>
     	    	    			    </a>
     	    	    			</div>

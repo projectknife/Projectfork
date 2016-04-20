@@ -214,9 +214,12 @@ class PFmilestonesViewMilestone extends JViewLegacy
     {
         $access = PFmilestonesHelper::getActions($this->item->id);
         $uid    = JFactory::getUser()->get('id');
+        $app    = JFactory::getApplication();
 
         if ($this->item->id) {
-            $slug = $this->item->id . ':' . $this->item->alias;
+            $slug   = $this->item->id . ':' . $this->item->alias;
+            $project_slug = $app->input->getCmd('filter_project');
+            $return = base64_encode(PFmilestonesHelperRoute::getMilestoneRoute($slug, $project_slug));
 
             PFToolbar::button(
                 'COM_PROJECTFORK_ACTION_EDIT',
@@ -224,7 +227,7 @@ class PFmilestonesViewMilestone extends JViewLegacy
                 false,
                 array(
                     'access' => ($access->get('core.edit') || $access->get('core.edit.own') && $uid == $this->item->created_by),
-                    'href' => JRoute::_(PFmilestonesHelperRoute::getMilestonesRoute() . '&task=form.edit&id=' . $slug)
+                    'href' => JRoute::_(PFmilestonesHelperRoute::getMilestonesRoute() . '&task=form.edit&id=' . $slug . '&return=' . $return)
                 )
             );
         }

@@ -1,14 +1,14 @@
 <?php
 /**
- * @package      Projectfork
- * @subpackage   Milestones
+ * @package      pkg_projectfork
+ * @subpackage   com_pfmilestones
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2012 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2016 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 
 /**
@@ -27,24 +27,53 @@ function PFmilestonesBuildRoute(&$query)
 
     // Setup vars
     $segments = array();
-    $view     = $query['view'];
 
-    // We need a menu item.  Either the one specified in the query, or the current active one if none specified
+    // Get the view
+    $view = $query['view'];
+    unset($query['view']);
+
+    // If there is no menu item, add view to segments
     if (empty($query['Itemid'])) {
         $menu_item_given = false;
     }
     else {
-        $menu_item_given = true;
+        $menu = JFactory::getApplication()->getMenu();
+        $item = $menu->getActive();
+
+        if ($item->query['view'] != $view) {
+            $menu_item_given = false;
+        }
+        else {
+            $menu_item_given = true;
+        }
     }
 
-    // Handle milestones and milestone query
-    if($view == 'milestones' || $view == 'milestone') {
-        if (!$menu_item_given) $segments[] = $view;
-        unset($query['view']);
+    if (!$menu_item_given) {
+        $segments[] = $view;
+    }
 
-        // Get project filter
+
+    // Handle milestones query
+    if($view == 'milestones') {
         if (isset($query['filter_project'])) {
-            if (strpos($query['filter_project'], ':') === false) {
+            if (strrpos($query['filter_project'], ':') === false) {
+                $query['filter_project'] = PFmilestonesMakeSlug($query['filter_project'], '#__pf_projects');
+            }
+        }
+        else {
+            $query['filter_project'] = PFmilestonesMakeSlug('0', '#__pf_projects');
+        }
+
+        $segments[] = $query['filter_project'];
+        unset($query['filter_project']);
+    }
+
+
+
+    // Handle milestone query
+    if ($view == 'milestone' && isset($query['id'])) {
+        if (isset($query['filter_project'])) {
+            if (strrpos($query['filter_project'], ':') === false) {
                 $query['filter_project'] = PFmilestonesMakeSlug($query['filter_project'], '#__pf_projects');
             }
         }
@@ -55,30 +84,24 @@ function PFmilestonesBuildRoute(&$query)
         $segments[] = $query['filter_project'];
         unset($query['filter_project']);
 
-        // Get milestone id
-        if ($view == 'milestone' && isset($query['id'])) {
-            if (strpos($query['id'], ':') === false) {
+        if (strrpos($query['id'], ':') === false) {
+            $query['id'] = PFmilestonesMakeSlug($query['id'], '#__pf_milestones');
+        }
+
+        $segments[] = $query['id'];
+        unset($query['id']);
+    }
+
+
+    // Handle form query
+    if($view == 'form') {
+        if (isset($query['id'])) {
+            if (strrpos($query['id'], ':') === false) {
                 $query['id'] = PFmilestonesMakeSlug($query['id'], '#__pf_milestones');
             }
 
             $segments[] = $query['id'];
             unset($query['id']);
-        }
-
-        return $segments;
-    }
-
-    // Handle the layout
-    if (isset($query['layout'])) {
-        if ($menu_item_given && isset($menuItem->query['layout'])) {
-            if ($query['layout'] == $menuItem->query['layout']) {
-                unset($query['layout']);
-            }
-        }
-        else {
-            if ($query['layout'] == 'default') {
-                unset($query['layout']);
-            }
         }
     }
 
@@ -114,6 +137,14 @@ function PFmilestonesParseRoute($segments)
 
     // Set the view var
     $vars['view'] = $item->query['view'];
+    $alt_view     = false;
+
+    if ($count && ($segments[0] == 'form' || $segments[0] == 'milestone')) {
+        $vars['view'] = $segments[0];
+        $vars['id']   = $segments[1];
+
+        $alt_view = true;
+    }
 
     // Handle Milestones
     if ($vars['view'] == 'milestones') {
@@ -130,11 +161,21 @@ function PFmilestonesParseRoute($segments)
 
     // Handle Milestone details
     if ($vars['view'] == 'milestone') {
-        if ($count >= 1) {
-            $vars['filter_project'] = PFmilestonesParseSlug($segments[0]);
+        if ($alt_view) {
+            if ($count >= 2) {
+                $vars['filter_project'] = PFmilestonesParseSlug($segments[1]);
+            }
+            if ($count >= 3) {
+                $vars['id'] = PFmilestonesParseSlug($segments[2]);
+            }
         }
-        if ($count >= 2) {
-            $vars['id'] = PFmilestonesParseSlug($segments[1]);
+        else {
+            if ($count >= 1) {
+                $vars['filter_project'] = PFmilestonesParseSlug($segments[0]);
+            }
+            if ($count >= 2) {
+                $vars['id'] = PFmilestonesParseSlug($segments[1]);
+            }
         }
 
         return $vars;
@@ -196,7 +237,7 @@ function PFmilestonesMakeSlug($id, $table, $alt = 'all', $field = 'alias')
           ->from($db->quoteName($table))
           ->where('id = ' . (int) $id);
 
-    $db->setQuery($query->__toString());
+    $db->setQuery((string) $query);
 
     $alias = $db->loadResult();
     $slug  = $id . ':' . $alias;
