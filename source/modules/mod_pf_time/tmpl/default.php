@@ -109,21 +109,33 @@ $doc->addStyleDeclaration( $style );
 modPFtimeHelper::loadMedia();
 ?>
 
-<form id="adminPFTEForm" name="adminPFTEForm" class="adminPFTEForm" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>">
-	<div class="cat-list-row">
-		<div class="filter-search-buttons btn-group pull-left" style="width:100%">
-			<div class="drange controls pull-left">
-					<label style="width:50px" class="control-label pull-left" for="dpstart"><?php echo JText::_('MOD_PF_TIME_CONFIG_FILTER_DATE_FROM'); ?></label>
-					<?php echo JHTML::calendar('','filter_start_date','filter_start_date','%Y-%m-%d'); ?>
-					<label style="width:50px" class="control-label pull-left" for="dpend"><?php echo JText::_('MOD_PF_TIME_CONFIG_FILTER_DATE_TO'); ?></label>
-					<?php echo JHTML::calendar(date('y-m-d', strtotime('now')),'filter_end_date','filter_end_date','%Y-%m-%d'); ?>
-				</div>
-			<div class="filters btn-group pull-right">
-				<button class="btn dfilter" value="filter"><?php echo JText::_('MOD_PF_TIME_CONFIG_DISPLAY_LABEL'); ?></button>
-				<!--<button class="btn dfilter" value="export"><?php echo JText::_('MOD_PF_TIME_CONFIG_EXPORT_LABEL'); ?></button>-->
-				</div>
-	</div>
-	</div>		<div class="clearfix"> </div>
+<form id="adminPFTEForm" name="adminPFTEForm" class="adminPFTEForm form-horizontal" method="post" action="<?php echo htmlspecialchars(JFactory::getURI()->toString()); ?>">
+	<div class="row-fluid">
+        <div class="span12">
+            <div class="btn-group pull-left">
+                <label for="filter_start_date">
+                    <?php echo JText::_('MOD_PF_TIME_CONFIG_FILTER_DATE_FROM'); ?>
+                    <?php
+                        $cal = JHTML::calendar('', 'filter_start_date', 'filter_start_date', '%Y-%m-%d');
+                        echo str_replace('id="filter_start_date"', 'id="filter_start_date" class="input-small"', $cal);
+                    ?>
+                </label>
+            </div>
+            <div class="btn-group pull-left">
+                <label for="filter_end_date">
+                    <?php echo JText::_('MOD_PF_TIME_CONFIG_FILTER_DATE_TO'); ?>
+                    <?php
+                        $cal = JHtml::calendar(date('y-m-d', strtotime('now')), 'filter_end_date', 'filter_end_date', '%Y-%m-%d');
+                        echo str_replace('id="filter_end_date"', 'id="filter_end_date" class="input-small"', $cal);
+                    ?>
+                </label>
+            </div>
+            <div class="btn-group pull-left">
+                <button class="btn dfilter" value="filter"><?php echo JText::_('MOD_PF_TIME_CONFIG_DISPLAY_LABEL'); ?></button>
+            </div>
+            <div style="clear:both !important"></div>
+        </div>
+    </div>
 	<?php echo JHtml::_('form.token'); ?>
 	<input type="hidden" name="filter_project" id="filter.project" value="<?php echo PFApplicationHelper::getActiveProjectId(); ?>" />
 </form>
