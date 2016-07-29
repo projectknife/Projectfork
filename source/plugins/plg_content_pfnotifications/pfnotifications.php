@@ -57,7 +57,7 @@ class plgContentPfnotifications extends JPlugin
         jimport('projectfork.library');
 
         // Make sure the item is supported
-        if (!PFnotificationsHelper::isSupported($context)) {
+        if (!PFnotificationsHelper::isSupported($context, $this->params)) {
             return;
         }
 
@@ -109,7 +109,7 @@ class plgContentPfnotifications extends JPlugin
         jimport('projectfork.library');
 
         // Make sure the item is supported
-        if (!PFnotificationsHelper::isSupported($context)) {
+        if (!PFnotificationsHelper::isSupported($context, $this->params)) {
             return true;
         }
 

@@ -322,7 +322,7 @@ class PFnotificationsHelper
     }
 
 
-    public static function isSupported($context)
+    public static function isSupported($context, $params = null)
     {
         list($component, $item) = explode('.', $context, 2);
 
@@ -341,6 +341,23 @@ class PFnotificationsHelper
 
         if (!in_array('isSupported', $methods)) {
             return false;
+        }
+
+        if (is_object($params)) {
+            $settings = array(
+                'com_pfprojects'   => (int) $params->get('projects_enabled', 1),
+                'com_pfmilestones' => (int) $params->get('milestones_enabled', 1),
+                'com_pftasks'      => (int) $params->get('tasks_enabled', 1),
+                'com_pfforum'      => (int) $params->get('forum_enabled', 1),
+                'com_pfrepo'       => (int) $params->get('repo_enabled', 1),
+                'com_pfdesigns'    => (int) $params->get('designs_enabled', 1)
+            );
+
+            if (array_key_exists($component, $settings)) {
+                if (!$settings[$component]) {
+                    return false;
+                }
+            }
         }
 
         $supported = call_user_func(array($class_name, 'isSupported'), $context);

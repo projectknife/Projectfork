@@ -61,6 +61,30 @@
                     label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_CRON_LIMIT_LABEL"
                     description="PLG_CONTENT_PFNOTIFICATIONS_FIELD_CRON_LIMIT_DESC"
                 />
+                <field name="projects_enabled" type="radio" class="btn-group" default="1" label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_PROJECTS_ENABLED_LABEL">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="milestones_enabled" type="radio" class="btn-group" default="1" label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_MILESTONES_ENABLED_LABEL">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="tasks_enabled" type="radio" class="btn-group" default="1" label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_TASKS_ENABLED_LABEL">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="forum_enabled" type="radio" class="btn-group" default="1" label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_FORUM_ENABLED_LABEL">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="repo_enabled" type="radio" class="btn-group" default="1" label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_REPOSITORY_ENABLED_LABEL">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="designs_enabled" type="radio" class="btn-group" default="1" label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_DESIGNS_ENABLED_LABEL">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
             </fieldset>
         </fields>
    </config>
