@@ -12,6 +12,7 @@ defined('_JEXEC') or die();
 
 
 JLoader::register('PFmilestonesHelperRoute', JPATH_SITE . '/components/com_pfmilestones/helpers/route.php');
+JLoader::register('PFtableMilestone', JPATH_ADMINISTRATOR . '/components/com_pfmilestones/tables/milestone.php');
 
 
 /**
@@ -61,6 +62,19 @@ abstract class PFmilestonesNotificationsHelper
     public static function getItemName($context)
     {
         return 'milestone';
+    }
+
+
+    /**
+     * Method to get a table class instance
+     *
+     * @return    object
+     */
+    public static function getMilestoneTable()
+    {
+        $table = JTable::getInstance('Milestone', 'PFtable');
+
+        return $table;
     }
 
 
@@ -165,6 +179,28 @@ abstract class PFmilestonesNotificationsHelper
 
 
     /**
+     * Method to generate the email subject for completed milestones
+     *
+     * @param     object     $lang         Instance of the default user language
+     * @param     object     $receiveer    Instance of the the receiving user
+     * @param     object     $user         Instance of the user who made the change
+     * @param     object     $table        Instance of the item table after it was updated
+     *
+     * @return    string
+     */
+    public static function getMilestoneCompletedSubject($lang, $receiver, $user, $table)
+    {
+        $txt_prefix = self::$prefix;
+
+        $format  = $lang->_($txt_prefix . '_SUBJECT_COMPLETED');
+        $project = PFnotificationsHelper::translateValue('project_id', $table->project_id);
+        $txt     = sprintf($format, $project, $user->name, $table->title);
+
+        return $txt;
+    }
+
+
+    /**
      * Method to generate the email message
      *
      * @param     object     $lang         Instance of the default user language
@@ -199,6 +235,37 @@ abstract class PFmilestonesNotificationsHelper
         $changes = PFnotificationsHelper::formatChanges($lang, $changes);
         $footer  = sprintf($lang->_('COM_PROJECTFORK_EMAIL_FOOTER'), JURI::root());
         $link    = JRoute::_(JURI::root() . PFmilestonesHelperRoute::getMilestoneRoute($after->id, $after->project_id));
+        $txt     = sprintf($format, $receiver->name, $user->name, $changes, $link);
+        $txt     = str_replace('\n', "\n", $txt . "\n\n" . $footer);
+
+        return $txt;
+    }
+
+
+    /**
+     * Method to generate the email message for completed milestones
+     *
+     * @param     object     $lang         Instance of the default user language
+     * @param     object     $receiveer    Instance of the the receiving user
+     * @param     object     $user         Instance of the user who made the change
+     * @param     object     $table        Instance of the item table after it was updated
+     *
+     * @return    string
+     */
+    public static function getMilestoneCompletedMessage($lang, $receiver, $user, $table)
+    {
+        // Get the changed fields
+        $props = array(
+            'description', 'created_by', 'access', array('start_date', 'NE-SQLDATE'), array('end_date', 'NE-SQLDATE')
+        );
+
+        $changes    = PFObjectHelper::toArray($table, $props);
+        $txt_prefix = self::$prefix;
+
+        $format  = $lang->_($txt_prefix . '_MESSAGE_COMPLETED');
+        $changes = PFnotificationsHelper::formatChanges($lang, $changes);
+        $footer  = sprintf($lang->_('COM_PROJECTFORK_EMAIL_FOOTER'), JURI::root());
+        $link    = JRoute::_(JURI::root() . PFmilestonesHelperRoute::getMilestoneRoute($table->id, $table->project_id));
         $txt     = sprintf($format, $receiver->name, $user->name, $changes, $link);
         $txt     = str_replace('\n', "\n", $txt . "\n\n" . $footer);
 

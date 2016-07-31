@@ -144,6 +144,38 @@ class PFtasksModelTask extends JModelAdmin
 
 
     /**
+     * Returns the milestone id for each given task
+     *
+     * @param     array $pks    The tasks
+     *
+     * @return    array      The milestone ids
+     */
+    public function getMilestoneIds($pks)
+    {
+        if (!is_array($pks) || !count($pks)) {
+            return array();
+        }
+
+        $query = $this->_db->getQuery(true);
+
+        $query->select('id, milestone_id')
+              ->from('#__pf_tasks')
+              ->where('id IN(' . implode(', ', $pks) . ')');
+
+        try {
+            $this->_db->setQuery($query);
+            $items = $this->_db->loadAssocList('id', 'milestone_id');
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return array();
+        }
+
+        return $items;
+    }
+
+
+    /**
      * Method to get the record form.
      *
      * @param     array      Data for the form.
@@ -421,6 +453,8 @@ class PFtasksModelTask extends JModelAdmin
                 $data['priority'] = 1;
             }
 
+
+
             // Bind the data.
             if (!$table->bind($data)) {
                 $this->setError($table->getError());
@@ -442,6 +476,13 @@ class PFtasksModelTask extends JModelAdmin
             if (in_array(false, $result, true)) {
                 $this->setError($table->getError());
                 return false;
+            }
+
+            JLoader::register('PFmilestonesModelMilestone', JPATH_ADMINISTRATOR . '/components/com_pfmilestones/models/milestone.php');
+            $ms_model = $this->getInstance('Milestone', 'PFmilestonesModel', array('ignore_request' => true));
+
+            if ($table->milestone_id > 0 && $table->complete == 1) {
+                $ms_progress_before = $ms_model->getProgress(array($table->milestone_id));
             }
 
             // Store the data.
@@ -550,6 +591,18 @@ class PFtasksModelTask extends JModelAdmin
 
             // Trigger the onContentAfterSave event.
             $dispatcher->trigger($this->event_after_save, array($this->option . '.' . $this->name, &$table, $is_new));
+
+            // Trigger milestone complete event?
+            if ($table->milestone_id > 0 && $table->complete) {
+                $ms_progress_after = $ms_model->getProgress(array($table->milestone_id));
+
+                foreach ($ms_progress_before AS $mid => $progress)
+                {
+                    if ($progress != 100 && $ms_progress_after[$mid] == 100) {
+                        $dispatcher->trigger('onProjectforkComplete', array('com_pfmilestones.milestone', array($mid)));
+                    }
+                }
+            }
         }
         catch (Exception $e) {
             $this->setError($e->getMessage());
