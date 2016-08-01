@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <config>
+    <fieldset name="general" label="COM_PFCOMMENTS_CONFIG_GENERAL_LABEL" description="COM_PFCOMMENTS_CONFIG_GENERAL_DESC">
+        <field name="filter_order_Dir" type="list" default="ASC" label="COM_PFCOMMENTS_ORDER">
+            <option value="ASC">JGLOBAL_ORDER_ASCENDING</option>
+            <option value="DESC">JGLOBAL_ORDER_DESCENDING</option>
+        </field>
+    </fieldset>
     <fieldset name="permissions" label="JCONFIG_PERMISSIONS_LABEL" description="JCONFIG_PERMISSIONS_DESC">
 		<field name="rules" type="rules"
 			label="JCONFIG_PERMISSIONS_LABEL"
@@ -7,5 +13,4 @@
 			component="com_pfcomments" section="component"
         />
 	</fieldset>
-
 </config>
