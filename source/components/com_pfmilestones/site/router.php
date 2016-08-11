@@ -141,7 +141,10 @@ function PFmilestonesParseRoute($segments)
 
     if ($count && ($segments[0] == 'form' || $segments[0] == 'milestone')) {
         $vars['view'] = $segments[0];
-        $vars['id']   = $segments[1];
+
+        if ($count == 2) {
+            $vars['id'] = $segments[1];
+        }
 
         $alt_view = true;
     }
