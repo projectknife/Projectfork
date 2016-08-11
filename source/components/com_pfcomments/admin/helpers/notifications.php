@@ -90,7 +90,7 @@ abstract class PFcommentsNotificationsHelper
 
         if ($table->context == 'com_pftasks.task') {
             $query->select('milestone_id')
-                  ->from('#__pf_milestones')
+                  ->from('#__pf_tasks')
                   ->where('id = ' . (int) $table->item_id);
 
             $db->setQuery($query);
