@@ -255,7 +255,7 @@ class PFmilestonesControllerForm extends JControllerForm
      *
      * @return    void
      */
-    protected function postSaveHook(&$model, $data)
+    protected function postSaveHook(JModelLegacy $model, $data = array())
     {
         $task = $this->getTask();
         $id   = (int) $model->getState('form.id');
