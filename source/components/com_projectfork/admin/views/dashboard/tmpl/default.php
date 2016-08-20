@@ -170,15 +170,17 @@ $jv      = new JVersion();
         <div class="well well-small">
         	<div class="module-title nav-header">Projectfork <?php echo PFVERSION; ?></div>
             <p>
-                <a href="http://projectfork.net" class="btn btn-success btn-wide btn-small" target="_blank">
+                <a href="http://projectfork.net" class="btn btn-success span12 btn-small" target="_blank">
                     <span aria-hidden="true" class="icon-home"></span> Visit the website
                 </a>
             </p>
+            <p>&nbsp;</p>
             <p>
-                <a href="https://github.com/projectfork/Projectfork/issues" class="btn btn-primary btn-wide btn-small" target="_blank">
+                <a href="https://github.com/projectknife/Projectfork/issues" class="btn btn-primary span12 btn-small" target="_blank">
                     <span aria-hidden="true" class="icon-warning"></span> Report an Issue
                 </a>
             </p>
+            <p>&nbsp;</p>
             <div class="alert alert-info small">
             	<strong>Please include:</strong>
             	<ul class="unstyled">
@@ -231,6 +233,7 @@ JHtml::_('pfhtml.script.jquery');
         	</div>
         </div>
 
+        <!--
         <h3><?php echo JText::_('COM_PROJECTFORK_MAINTENANCE_TOOLS'); ?></h3>
         <form action="<?php echo JRoute::_('index.php?option=com_projectfork'); ?>" method="post" id="jform_maintenance" name="maintenanceForm" autocomplete="off">
             <table class="table">
@@ -355,20 +358,21 @@ JHtml::_('pfhtml.script.jquery');
             }
         }
         </script>
+        -->
     </div>
     <div class="cpanel-right width-40">
         <div class="well well-small">
         	<h3>Projectfork <?php echo PFVERSION; ?></h3>
             <div class="button2-left">
               <div class="blank">
-            		<a href="http://projectfork.net" class="button" target="_blank">
+            		<a href="http://projectfork.net" class="button span12" target="_blank">
             		    Visit the Website
             		</a>
               </div>
             </div>
             <div class="button2-left">
               <div class="blank">
-            		<a href="https://github.com/projectfork/Projectfork/issues" class="button" target="_blank">
+            		<a href="https://github.com/projectknife/Projectfork/issues" class="button span12" target="_blank">
             		    Report an Issue
             		</a>
               </div>
