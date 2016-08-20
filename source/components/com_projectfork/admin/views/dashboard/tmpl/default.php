@@ -40,6 +40,7 @@ $jv      = new JVersion();
         <?php echo $modules->render('pf-dashboard-top', array('style' => 'xhtml'), null); ?>
         <?php echo $modules->render('pf-dashboard-left', array('style' => 'xhtml'), null); ?>
 
+        <!--
         <h3><?php echo JText::_('COM_PROJECTFORK_MAINTENANCE_TOOLS'); ?></h3>
         <form action="<?php echo JRoute::_('index.php?option=com_projectfork'); ?>" method="post" id="jform_maintenance" name="maintenanceForm" autocomplete="off">
             <table class="table">
@@ -163,7 +164,7 @@ $jv      = new JVersion();
                 });
             }
         }
-        </script>
+        </script>-->
     </div>
     <div class="span4">
         <div class="well well-small">
