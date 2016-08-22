@@ -42,6 +42,7 @@ class PFusersViewUser extends JViewLegacy
         // Process the content plugins.
         if ($item) {
             $item->title = $item->username;
+            $item->text  = '';
 
     		// Import comment plugin only
     		JPluginHelper::importPlugin('content', 'pfcomments');

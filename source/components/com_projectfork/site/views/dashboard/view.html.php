@@ -153,7 +153,8 @@ class ProjectforkViewDashboard extends JViewLegacy
         $uid    = JFactory::getUser()->get('id');
 
         if (!empty($id)) {
-            $slug = $this->item->id . ':' . $this->item->alias;
+            $slug   = $this->item->id . ':' . $this->item->alias;
+            $return = base64_encode(PFprojectsHelperRoute::getDashboardRoute($slug));
 
             PFToolbar::button(
                 'COM_PROJECTFORK_ACTION_EDIT',
@@ -161,7 +162,7 @@ class ProjectforkViewDashboard extends JViewLegacy
                 false,
                 array(
                     'access' => ($access->get('core.edit') || $access->get('core.edit.own') && $uid == $this->item->created_by),
-                    'href' => JRoute::_(PFprojectsHelperRoute::getProjectsRoute() . '&task=form.edit&id=' . $slug)
+                    'href' => JRoute::_(PFprojectsHelperRoute::getProjectsRoute() . '&task=form.edit&id=' . $slug . '&return=' . $return)
                 )
             );
         }

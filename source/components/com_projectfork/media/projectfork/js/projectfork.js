@@ -39,13 +39,18 @@ var Projectfork =
                 if (btn.length && resp.success == "true") {
                     if (c.val() == '0') {
                         c.val('1');
-                        btn.addClass('btn-success');
-                        btn.addClass('active');
                     }
                     else {
                         c.val('0');
+                    }
+
+                    if (btn.hasClass('btn-success')) {
                         btn.removeClass('btn-success');
                         btn.removeClass('active');
+                    }
+                    else {
+                        btn.addClass('btn-success');
+                        btn.addClass('active');
                     }
                 }
             }

@@ -102,7 +102,7 @@ class PFmilestonesControllerForm extends JControllerForm
         $result = parent::cancel($key);
 
         // Redirect to the return page.
-        $this->setRedirect($this->getReturnPage());
+        $this->setRedirect(JRoute::_($this->getReturnPage()));
 
         return $result;
     }
@@ -255,7 +255,7 @@ class PFmilestonesControllerForm extends JControllerForm
      *
      * @return    void
      */
-    protected function postSaveHook(&$model, $data)
+    protected function postSaveHook(JModelLegacy $model, $data = array())
     {
         $task = $this->getTask();
         $id   = (int) $model->getState('form.id');
@@ -278,7 +278,7 @@ class PFmilestonesControllerForm extends JControllerForm
                 break;
 
             default:
-                $this->setRedirect($this->getReturnPage());
+                $this->setRedirect(JRoute::_($this->getReturnPage()));
                 break;
         }
     }

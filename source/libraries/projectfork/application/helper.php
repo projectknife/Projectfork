@@ -4,11 +4,11 @@
  * @subpackage   lib_projectfork
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2016 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 
 /**
@@ -31,6 +31,14 @@ abstract class PFApplicationHelper
      * @var    array
      */
     protected static $routes;
+
+
+    /**
+     * The current menu item id
+     *
+     * @var integer
+     */
+    protected static $active_itemid = null;
 
 
     /**
@@ -356,5 +364,39 @@ abstract class PFApplicationHelper
         }
 
         return null;
+    }
+
+
+    /**
+     * Returns the current menu item id
+     *
+     * @return integer
+     */
+    public static function getActiveMenuItemId()
+    {
+        if (!is_null(self::$active_itemid)) {
+            return self::$active_itemid;
+        }
+
+        $app    = JFactory::getApplication();
+        $menus  = $app->getMenu('site');
+        $active = $menus->getActive();
+
+        if ($active) {
+            self::$active_itemid = $active->id;
+        }
+        else {
+            // No active menu item, fall back to home page
+            $default = $menus->getDefault('*');
+
+            if (!empty($default->id)) {
+                self::$active_itemid = $default->id;
+            }
+            else {
+                self::$active_itemid = 0;
+            }
+        }
+
+        return self::$active_itemid;
     }
 }

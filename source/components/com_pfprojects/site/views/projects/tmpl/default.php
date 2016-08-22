@@ -4,11 +4,11 @@
  * @subpackage   com_pfprojects
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2013 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2016 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
-defined('_JEXEC') or die();
+defined('_JEXEC') or die;
 
 
 JHtml::_('pfhtml.script.listform');
@@ -19,27 +19,22 @@ $user       = JFactory::getUser();
 $app        = JFactory::getApplication();
 $nulldate   = JFactory::getDbo()->getNullDate();
 $uid        = $user->get('id');
-$menu       = $app->getMenu()->getActive();
-$itemid     = 0;
+$itemid     = PFApplicationHelper::getActiveMenuItemId();
 
-$filter_in     = ($this->state->get('filter.isset') ? 'in ' : '');
+$filter_in          = ($this->state->get('filter.isset') ? 'in ' : '');
 $milestones_enabled = PFApplicationHelper::enabled('com_pfmilestones');
-$tasks_enabled = PFApplicationHelper::enabled('com_pftasks');
-$time_enabled = PFApplicationHelper::enabled('com_pftime');
-$repo_enabled  = PFApplicationHelper::enabled('com_pfrepo');
-$forum_enabled = PFApplicationHelper::enabled('com_pfforum');
-$users_enabled = PFApplicationHelper::enabled('com_pfusers');
-$cmnts_enabled = PFApplicationHelper::enabled('com_pfcomments');
+$tasks_enabled      = PFApplicationHelper::enabled('com_pftasks');
+$time_enabled       = PFApplicationHelper::enabled('com_pftime');
+$repo_enabled       = PFApplicationHelper::enabled('com_pfrepo');
+$forum_enabled      = PFApplicationHelper::enabled('com_pfforum');
+$users_enabled      = PFApplicationHelper::enabled('com_pfusers');
+$cmnts_enabled      = PFApplicationHelper::enabled('com_pfcomments');
+$is_ssl             = JFactory::getURI()->isSSL();
 
-$is_ssl = JFactory::getURI()->isSSL();
-
-$print_url = PFprojectsHelperRoute::getProjectsRoute()
-           . '&tmpl=component&layout=print';
-$print_opt = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no';
-
-if ($menu) {
-    $itemid = $menu->id;
-}
+$list_url   = PFprojectsHelperRoute::getProjectsRoute($this->params->get('filter_category'), $itemid);
+$return_url = base64_encode($list_url);
+$print_url  = $list_url . '&tmpl=component&layout=print';
+$print_opt  = 'width=1024,height=600,resizable=yes,scrollbars=yes,toolbar=no,location=no,directories=no,status=no,menubar=no';
 ?>
 <div id="projectfork" class="category-list<?php echo $this->pageclass_sfx;?> view-projects PrintArea all">
     <?php if ($this->params->get('show_page_heading', 1)) : ?>
@@ -49,10 +44,10 @@ if ($menu) {
     <div class="clearfix"></div>
 
     <div class="grid">
-        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_(PFprojectsHelperRoute::getProjectsRoute($this->params->get('filter_category'), $itemid)); ?>" method="post">
+        <form name="adminForm" id="adminForm" action="<?php echo JRoute::_($list_url); ?>" method="post">
             <div class="btn-toolbar btn-toolbar-top">
                 <?php echo $this->toolbar;?>
-				<a class="btn button" id="print_btn" href="javascript:void(0);" onclick="window.open('<?php echo JRoute::_($print_url);?>', 'print', '<?php echo $print_opt; ?>')">
+                <a class="btn button" id="print_btn" href="javascript:void(0);" onclick="window.open('<?php echo JRoute::_($print_url);?>', 'print', '<?php echo $print_opt; ?>')">
                     <?php echo JText::_('COM_PROJECTFORK_PRINT'); ?>
                 </a>
             </div>
@@ -142,16 +137,16 @@ if ($menu) {
                     <hr />
 
                 <?php $current_cat = $item->category_title; endif; ?>
-                	<div class="row-fluid">
-    	    	    	<div class="span7">
-    	    	    		<a href="<?php echo JRoute::_($link);?>">
-	    	    	    		<?php if (!empty($item->logo_img)) : ?>
-	    	    	    		        <img src="<?php echo $item->logo_img;?>" width="100" class="thumbnail pull-left" alt="<?php echo $this->escape($item->title);?>" />
-	    	    	    		<?php else : ?>
-	    	    	    		        <img src="<?php echo JURI::root(true) . '/media/com_projectfork/projectfork/images/icons/project-placeholder.png'; ?>"  class="thumbnail pull-left" width="100" alt="<?php echo $this->escape($item->title);?>" />
-	    	    	    		<?php endif ; ?>
-	    	    	    		</a>
-    	    	    		<h2 class="item-title">
+                    <div class="row-fluid">
+                        <div class="span7">
+                            <a href="<?php echo JRoute::_($link);?>">
+                                <?php if (!empty($item->logo_img)) : ?>
+                                        <img src="<?php echo $item->logo_img;?>" width="100" class="thumbnail pull-left" alt="<?php echo $this->escape($item->title);?>" />
+                                <?php else : ?>
+                                        <img src="<?php echo JURI::root(true) . '/media/com_projectfork/projectfork/images/icons/project-placeholder.png'; ?>"  class="thumbnail pull-left" width="100" alt="<?php echo $this->escape($item->title);?>" />
+                                <?php endif ; ?>
+                                </a>
+                            <h2 class="item-title">
                                 <?php if ($can_change || $uid) : ?>
                                     <label for="cb<?php echo $i; ?>" class="checkbox pull-left">
                                         <?php echo JHtml::_('pf.html.id', $i, $item->id); ?>
@@ -167,123 +162,123 @@ if ($menu) {
                                 </a>
                             </h2>
                             <hr />
-	    	    	    	<div class="project-description"><?php echo JHtml::_('pf.html.truncate', $item->description, 200); ?></div>
+                            <div class="project-description"><?php echo JHtml::_('pf.html.truncate', $item->description, 200); ?></div>
 
 
-    	    	    	</div>
-    	    	    	<div class="span5">
-    	    	    		<hr class="visible-phone" />
-    	    	    		<div class="progress progress-<?php echo $progress_class;?> progress-striped progress-project">
-    	    	    		    <div class="bar" style="width: <?php echo ($item->progress > 0) ? $item->progress . "%" : "24px"; ?>">
-    	    	    		        <span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $item->progress; ?>%</span>
-    	    	    		    </div>
-    	    	    		</div>
-    	    	    		<dl class="article-info dl-horizontal">
-                        		<?php if($item->start_date != $nulldate): ?>
-                        			<dt class="start-title">
-                        				<span class="pull-left"><?php echo JText::_('JGRID_HEADING_START_DATE'); ?>:</span>
-                        			</dt>
-                        			<dd class="start-data">
+                        </div>
+                        <div class="span5">
+                            <hr class="visible-phone" />
+                            <div class="progress progress-<?php echo $progress_class;?> progress-striped progress-project">
+                                <div class="bar" style="width: <?php echo ($item->progress > 0) ? $item->progress . "%" : "24px"; ?>">
+                                    <span class="label label-<?php echo $progress_class;?> pull-right"><?php echo $item->progress; ?>%</span>
+                                </div>
+                            </div>
+                            <dl class="article-info dl-horizontal">
+                                <?php if ($item->start_date != $nulldate): ?>
+                                    <dt class="start-title">
+                                        <span class="pull-left"><?php echo JText::_('JGRID_HEADING_START_DATE'); ?>:</span>
+                                    </dt>
+                                    <dd class="start-data">
                                         <?php echo JHtml::_('pfhtml.label.datetime', $item->start_date); ?>
-                        			</dd>
-                        		<?php endif; ?>
-                        		<?php if($item->end_date != $nulldate): ?>
-                        			<dt class="due-title">
-                        				<span class="pull-left"><?php echo JText::_('JGRID_HEADING_DEADLINE'); ?>:</span>
-                        			</dt>
-                        			<dd class="due-data">
+                                    </dd>
+                                <?php endif; ?>
+                                <?php if ($item->end_date != $nulldate): ?>
+                                    <dt class="due-title">
+                                        <span class="pull-left"><?php echo JText::_('JGRID_HEADING_DEADLINE'); ?>:</span>
+                                    </dt>
+                                    <dd class="due-data">
                                         <?php echo JHtml::_('pfhtml.label.datetime', $item->end_date); ?>
-                        			</dd>
-                        		<?php endif;?>
-                        		<dt class="owner-title">
-                        			<span class="pull-left"><?php echo JText::_('JGRID_HEADING_CREATED_BY'); ?>:</span>
-                        		</dt>
-                        		<dd class="owner-data">
+                                    </dd>
+                                <?php endif;?>
+                                <dt class="owner-title">
+                                    <span class="pull-left"><?php echo JText::_('JGRID_HEADING_CREATED_BY'); ?>:</span>
+                                </dt>
+                                <dd class="owner-data">
                                      <?php echo JHtml::_('pfhtml.label.author', $item->author_name, $item->created); ?>
-                        		</dd>
+                                </dd>
                                 <?php if ($item->params->get('website')) : ?>
                                     <dt class="owner-title">
-                            			<span class="pull-left"><?php echo JText::_('COM_PROJECTFORK_FIELD_WEBSITE_LABEL'); ?>:</span>
-                            		</dt>
-                            		<dd class="owner-data">
+                                        <span class="pull-left"><?php echo JText::_('COM_PROJECTFORK_FIELD_WEBSITE_LABEL'); ?>:</span>
+                                    </dt>
+                                    <dd class="owner-data">
                                         <a href="<?php echo $item->params->get('website');?>" target="_blank">
                                             <?php echo JText::_('COM_PROJECTFORK_FIELD_WEBSITE_VISIT_LABEL');?>
                                         </a>
-                            		</dd>
+                                    </dd>
                                 <?php endif; ?>
                                 <?php if ($item->params->get('email')) : ?>
                                     <dt class="owner-title">
-                            			<span class="pull-left"><?php echo JText::_('COM_PROJECTFORK_FIELD_EMAIL_LABEL'); ?>:</span>
-                            		</dt>
-                            		<dd class="owner-data">
+                                        <span class="pull-left"><?php echo JText::_('COM_PROJECTFORK_FIELD_EMAIL_LABEL'); ?>:</span>
+                                    </dt>
+                                    <dd class="owner-data">
                                         <a href="mailto:<?php echo $item->params->get('email');?>" target="_blank">
                                             <?php echo $item->params->get('email');?>
                                         </a>
-                            		</dd>
+                                    </dd>
                                 <?php endif; ?>
                                 <?php if ($item->params->get('phone')) : ?>
                                     <dt class="owner-title">
-                            			<span class="pull-left"><?php echo JText::_('COM_PROJECTFORK_FIELD_PHONE_LABEL'); ?>:</span>
-                            		</dt>
-                            		<dd class="owner-data">
+                                        <span class="pull-left"><?php echo JText::_('COM_PROJECTFORK_FIELD_PHONE_LABEL'); ?>:</span>
+                                    </dt>
+                                    <dd class="owner-data">
                                         <?php echo $item->params->get('phone');?>
-                            		</dd>
+                                    </dd>
                                 <?php endif; ?>
-                        	</dl>
-    	    	    	</div>
-    	    	    	<div class="span12 hidden-phone">
-    	    	    		<div class="btn-toolbar">
-    	    	    			<?php if ($can_edit || $can_edit_own) : ?>
-    	    	    			<div class="btn-group">
-    	    	    			    <a class="btn btn-mini" href="<?php echo JRoute::_(PFprojectsHelperRoute::getProjectEditRoute($item->slug));?>">
-    	    	    			        <span aria-hidden="true" class="icon-pencil"></span> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT'); ?>
-    	    	    			    </a>
-    	    	    			</div>
-    	    	    			<?php endif; ?>
+                            </dl>
+                        </div>
+                        <div class="span12 hidden-phone">
+                            <div class="btn-toolbar">
+                                <?php if ($can_edit || $can_edit_own) : ?>
+                                <div class="btn-group">
+                                    <a class="btn btn-mini" href="<?php echo JRoute::_(PFprojectsHelperRoute::getProjectEditRoute($item->slug) . '&return=' . $return_url); ?>">
+                                        <span aria-hidden="true" class="icon-pencil"></span> <?php echo JText::_('COM_PROJECTFORK_ACTION_EDIT'); ?>
+                                    </a>
+                                </div>
+                                <?php endif; ?>
 
-	    	    				<?php if ($cmnts_enabled) : ?>
-	    	    				<div class="btn-group">
-	    	    					<a class="btn btn-mini" href="<?php echo JRoute::_($link);?>#comments">
-	    	    			       	 <span aria-hidden="true" class="icon-comment"></span> <?php echo $item->comments; ?> <?php echo JText::_('Comments'); ?>
-	    	    			        </a>
-	    	    			    </div>
-	    	    				<?php endif; ?>
-	    	    				<?php if ($milestones_enabled) : ?>
-    	    	    				<div class="btn-group">
-    	    	    			        <a class="btn btn-mini" href="<?php echo JRoute::_(PFmilestonesHelperRoute::getMilestonesRoute($item->slug, $item->slug));?>">
-    	    	    			            <span aria-hidden="true" class="icon-location"></span>
-    	    	    			            <?php echo (int) $item->milestones;?> <?php echo JText::_('JGRID_HEADING_MILESTONES'); ?>
-    	    	    			        </a>
-    	    	    				</div>
-    	    	    			<?php endif; ?>
-    	    	    			<?php if ($tasks_enabled) : ?>
-    	    	    				<div class="btn-group">
-    	    	    			        <a class="btn btn-mini" href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->slug));?>">
-    	    	    			            <span aria-hidden="true" class="icon-list-view"></span>
-    	    	    			            <?php echo (int) $item->tasklists;?> <?php echo JText::_('JGRID_HEADING_TASKLISTS'); ?>
-    	    	    			        </a>
-    	    	    				</div>
-    	    	    			<?php endif; ?>
-    	    	    			<?php if ($tasks_enabled) : ?>
-	    	    	    			<div class="btn-group">
-	                                    <a class="btn btn-mini" href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->slug));?>">
-	                                        <span aria-hidden="true" class="icon-checkmark"></span>
-	                                        <?php echo (int) $item->tasks;?> <?php echo JText::_('JGRID_HEADING_TASKS'); ?>
-	                                    </a>
-	    	    	    			</div>
-    	    	    			<?php endif; ?>
-    	    	    			<?php if ($repo_enabled) : ?>
-    	    	    				<div class="btn-group">
-    	    	    			        <a class="btn btn-mini" href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($item->slug, $repo_dir));?>">
-    	    	    			            <span aria-hidden="true" class="icon-flag-2"></span>
-    	    	    			            <?php echo (int) $item->attachments;?> <?php echo JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'); ?>
-    	    	    			        </a>
-    	    	    				</div>
-    	    	    			<?php endif; ?>
-    	    	    			<?php echo $watch; ?>
-    	    	    		</div>
-    	    	    	</div>
-    	    	    </div>
+                                <?php if ($cmnts_enabled) : ?>
+                                <div class="btn-group">
+                                    <a class="btn btn-mini" href="<?php echo JRoute::_($link);?>#comments">
+                                        <span aria-hidden="true" class="icon-comment"></span> <?php echo $item->comments; ?> <?php echo JText::_('Comments'); ?>
+                                    </a>
+                                </div>
+                                <?php endif; ?>
+                                <?php if ($milestones_enabled) : ?>
+                                    <div class="btn-group">
+                                        <a class="btn btn-mini" href="<?php echo JRoute::_(PFmilestonesHelperRoute::getMilestonesRoute($item->slug));?>">
+                                            <span aria-hidden="true" class="icon-location"></span>
+                                            <?php echo (int) $item->milestones;?> <?php echo JText::_('JGRID_HEADING_MILESTONES'); ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($tasks_enabled) : ?>
+                                    <div class="btn-group">
+                                        <a class="btn btn-mini" href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->slug));?>">
+                                            <span aria-hidden="true" class="icon-list-view"></span>
+                                            <?php echo (int) $item->tasklists;?> <?php echo JText::_('JGRID_HEADING_TASKLISTS'); ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($tasks_enabled) : ?>
+                                    <div class="btn-group">
+                                        <a class="btn btn-mini" href="<?php echo JRoute::_(PFtasksHelperRoute::getTasksRoute($item->slug));?>">
+                                            <span aria-hidden="true" class="icon-checkmark"></span>
+                                            <?php echo (int) $item->tasks;?> <?php echo JText::_('JGRID_HEADING_TASKS'); ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                                <?php if ($repo_enabled) : ?>
+                                    <div class="btn-group">
+                                        <a class="btn btn-mini" href="<?php echo JRoute::_(PFrepoHelperRoute::getRepositoryRoute($item->slug, $repo_dir));?>">
+                                            <span aria-hidden="true" class="icon-flag-2"></span>
+                                            <?php echo (int) $item->attachments;?> <?php echo JText::_('COM_PROJECTFORK_FIELDSET_ATTACHMENTS'); ?>
+                                        </a>
+                                    </div>
+                                <?php endif; ?>
+                                <?php echo $watch; ?>
+                            </div>
+                        </div>
+                    </div>
 
                 <?php
                     $k = 1 - $k;
@@ -291,16 +286,16 @@ if ($menu) {
                 ?>
                 </div>
 
-        	<?php if ($this->pagination->get('pages.total') > 1) : ?>
-        	    <div class="pagination center">
-        	        <?php echo $this->pagination->getPagesLinks(); ?>
-        	    </div>
-        	    <p class="counter center"><?php echo $this->pagination->getPagesCounter(); ?></p>
-        	<?php endif; ?>
+            <?php if ($this->pagination->get('pages.total') > 1) : ?>
+                <div class="pagination center">
+                    <?php echo $this->pagination->getPagesLinks(); ?>
+                </div>
+                <p class="counter center"><?php echo $this->pagination->getPagesCounter(); ?></p>
+            <?php endif; ?>
             <div class="filters center">
-            	<span class="display-limit">
-            	    <?php echo $this->pagination->getLimitBox(); ?>
-            	</span>
+                <span class="display-limit">
+                    <?php echo $this->pagination->getLimitBox(); ?>
+                </span>
             </div>
 
             <input type="hidden" id="boxchecked" name="boxchecked" value="0" />

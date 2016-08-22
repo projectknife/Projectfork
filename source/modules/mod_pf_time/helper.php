@@ -27,19 +27,20 @@ abstract class modPFtimeHelper
 	public static function exportCSV()
 	{
 		$dispatcher	= JDispatcher::getInstance();
-        $dispatcher->register('onBeforeCompileHead', 'prepareData');		
+        $dispatcher->register('onBeforeCompileHead', 'prepareData');
 	}
-	
+
 	public static function displayData()
 	{
 		$dispatcher	= JDispatcher::getInstance();
         $dispatcher->register('onBeforeRender', 'prepareData');
+        prepareData();
 	}
 }
 
 class moduleHelperPagination extends JPagination
 {
-	
+
 	protected function _buildDataObject()
 	{
 		$data = new stdClass;
@@ -107,13 +108,13 @@ class moduleHelperPagination extends JPagination
 
 		return $data;
 	}
-	
+
 	public function getListFooter($ajax = false)
 	{
 		if(!$ajax) {
 			return parent::getListFooter();
 		}
-		
+
 		$app = JFactory::getApplication();
 
 		$list 					= array();
@@ -123,10 +124,10 @@ class moduleHelperPagination extends JPagination
 		$list['total'] 			= $this->total;
 		$list['limitfield'] 	= $this->getLimitBox();
 		$list['pagescounter'] 	= $this->getPagesCounter();
-		
+
 		//override getPageLinks to introduce ajax pagination...
 		$list['pageslinks'] 	= $this->getPagesLinks();
-		
+
 		$chromePath 			= JPATH_THEMES . '/' . $app->getTemplate() . '/html/pagination.php';
 
 		if (file_exists($chromePath)) {
@@ -136,10 +137,10 @@ class moduleHelperPagination extends JPagination
 				return pagination_list_footer($list);
 			}
 		}
-		
+
 		return $this->_list_footer($list);
 	}
-	
+
 	public function getPagesLinks()
 	{
 		$app = JFactory::getApplication();
@@ -233,7 +234,7 @@ class moduleHelperPagination extends JPagination
 		else {
 			return '';
 		}
-	}	
+	}
 }
 
 function triggerPFtimeScript()
@@ -244,8 +245,8 @@ function triggerPFtimeScript()
 function displayData($items)
 {
 	jimport('joomla.html.pagination');
-	
-	$module 			= JModuleHelper::getModule('mod_pf_time'); 
+
+	$module 			= JModuleHelper::getModule('mod_pf_time');
 	$params 			= new JRegistry();
 	$params->loadString($module->params);
 
@@ -253,37 +254,37 @@ function displayData($items)
 	$show_monetary 		= (int) $params->get('show_monetary');
 	$show_date 			= (int) $params->get('show_date');
 	$show_author		= (int) $params->get('show_author');
-	
+
 	$menu 				= new PFMenuContext();
-	$app 				= JFactory::getApplication();	
+	$app 				= JFactory::getApplication();
 	$limitstart 		= (int) JRequest::getVar('limitstart',0);
 	$stotal_time		= 0;
 	$total_time			= 0;
-	
+
 	$html ='
 		<div class="cat-list-row">
 		<ul class="list-tasks list-striped list-condensed unstyled" id="tasklist">';
-    
+
 	$x = 0;
 	$k = 0;
-	
+
     foreach ($items AS $i => $item) {
 		$total_time += $item->log_time;
 		if ($limitstart == 0) {
 			if ($i > $list_limit - 1 ) continue;
 		}
 		else {
-			if ( ($i < $limitstart) || ($i >= ($limitstart  + $list_limit)) ) continue; 
+			if ( ($i < $limitstart) || ($i >= ($limitstart  + $list_limit)) ) continue;
 		}
-		
+
 		$stotal_time += $item->log_time;
-		
+
 		$items[$i]->slug 			= $items[$i]->id;
 		$items[$i]->project_slug 	= $items[$i]->project_alias ? ($items[$i]->project_id . ':' . $items[$i]->project_alias) : $items[$i]->project_id;
 		$items[$i]->task_slug 		= $items[$i]->task_alias ? ($items[$i]->task_id . ':' . $items[$i]->task_alias) : $items[$i]->task_id;
 		$items[$i]->milestone_slug 	= $items[$i]->milestone_alias ? ($items[$i]->milestone_id . ':' . $items[$i]->milestone_alias) : $items[$i]->milestone_id;
 		$items[$i]->list_slug 		= $items[$i]->list_alias ? ($items[$i]->list_id . ':' . $items[$i]->list_alias) : $items[$i]->list_id;
-		
+
 		$exists 					= ((int) $item->task_exists > 0);
 		$html .= '
 			<li id="list-item-'.$x.'" class="clearfix ">
@@ -294,7 +295,7 @@ function displayData($items)
 						rel="popover" title="'. htmlspecialchars($item->task_title, ENT_QUOTES, "UTF-8").'" data-content="'. htmlspecialchars($item->description, ENT_QUOTES, "UTF-8").'">'
 						 . htmlspecialchars($item->task_title, ENT_QUOTES, 'UTF-8'). '</a>
 						<span class="dropdown pull-left">';
-						
+
 							$menu->start(array('class' => 'btn-mini btn-link'));
 							$itm_icon = 'icon-menu-2';
 							$itm_txt  = 'COM_PROJECTFORK_DETAILS_LABEL';
@@ -302,41 +303,41 @@ function displayData($items)
 							$menu->itemCollapse($itm_icon, $itm_txt, $itm_link);
 							$menu->end();
 							$html .= $menu->render(array('class' => 'btn-mini btn-link', 'pull' => 'left'));
-						
-						$html .= '</span>';				
+
+						$html .= '</span>';
 						}
 						else {
-							$html .=  htmlspecialchars($item->task_title, ENT_QUOTES, 'UTF-8'); 
-						} 
+							$html .=  htmlspecialchars($item->task_title, ENT_QUOTES, 'UTF-8');
+						}
 					$html .= '</span>
 					<span class="pull-right">' . JHtml::_('time.format', $item->log_time). '</span>
 				</div>
 				<div id="collapse-'.$x.'" class="collapse">
 					<hr />
-					<small class="task-description">' . JText::_('COM_PROJECTFORK_FIELD_PROJECT_LABEL').':'.htmlspecialchars($item->project_title, ENT_COMPAT, 'UTF-8').'</small>';				
-					
+					<small class="task-description">' . JText::_('COM_PROJECTFORK_FIELD_PROJECT_LABEL').':'.htmlspecialchars($item->project_title, ENT_COMPAT, 'UTF-8').'</small>';
+
 					if ($show_author) {
 						$html .= '<span class="label user">
 							<span aria-hidden="true" class="icon-user icon-white"></span>' . htmlspecialchars($item->author_name, ENT_COMPAT, 'UTF-8') . '</span>
 						<input type="hidden" id="assigned'. $i.'" name="assigned['.$item->id.']" />';
 					}
-					
+
 					if ($show_date) {
 						$html .= '<span class="label label-success"><span aria-hidden="true" class="icon-calendar"></span>' . JHtml::_('date', $item->log_date, JText::_('DATE_FORMAT_LC4')) . '</span>';
 					}
-					 
-					if ($show_monetary) { 
+
+					if ($show_monetary) {
 						$html .= '<span class="label label-inverse">'.JText::_('COM_PROJECTFORK_TIME_TRACKING_RATE').': '.JHtml::_('pfhtml.format.money', $item->rate).'</span>';
 						if (!$item->billable) {
 							$html .= '<span class="label label-info">'.JText::_('COM_PROJECTFORK_TIME_TRACKING_UNBILLABLE').': '.JHtml::_('pfhtml.format.money', $item->billable_total).'</span>';
 						}
 						else {
 							$html .= '<span class="label label-success">'.JText::_('COM_PROJECTFORK_TIME_TRACKING_BILLABLE').': '.JHtml::_('pfhtml.format.money', $item->billable_total).'</span>';
-						}						 
-					} 
-						        	
+						}
+					}
+
 				$html .= '</div>
-		   </li>';			
+		   </li>';
 
 		$x++;
 		$k = 1 - $k;
@@ -347,12 +348,12 @@ function displayData($items)
 	if ($total_time == $stotal_time) {
 		$html .= '			<span class="task-title">'.JText::_('MOD_PF_TIME_TOTAL').'</span><span class="pull-right">'.JHtml::_('time.format', $total_time).'</span>';
 	}
-	else {		
+	else {
 		$html .= '			<span class="task-title">'.JText::_('MOD_PF_TIME_TOTAL').'</span><span class="pull-right">'.JHtml::_('time.format', $stotal_time).' / '.JHtml::_('time.format', $total_time).'</span>';
 	}
 	$html .= '</div></li>';
-	$html .= '	</ul>	
-	</div>';		
+	$html .= '	</ul>
+	</div>';
 	$pageNav = new moduleHelperPagination( count($items), $limitstart, $list_limit );
 	$html .= $pageNav->getListFooter(true);
 
@@ -363,24 +364,24 @@ function displayData($items)
 function prepareData()
     {
 
-	$module 			= JModuleHelper::getModule('mod_pf_time'); 
+	$module 			= JModuleHelper::getModule('mod_pf_time');
 	$params 			= new JRegistry();
 	$params->loadString($module->params);
-	
+
 	$action 			= JRequest::getVar('action',null);
 
 	$filter_author 		= $params->get('filter_own',null);
 	$filter_start_date 	= JRequest::getVar('filter_start_date',null);
 	$filter_end_date 	= JRequest::getVar('filter_end_date',null);
-	$filter_project 	= JRequest::getVar('filter_project',null);		
-	
-	$app 				= JFactory::getApplication();		
+	$filter_project 	= JRequest::getVar('filter_project',null);
+
+	$app 				= JFactory::getApplication();
 	$db 				= JFactory::getDBO();
 	$query 				= $db->getQuery(true);
 	$user  				= JFactory::getUser();
 	$access 			= PFtasksHelper::getActions();
 	$taskdata			= null;
-		
+
 	// Select the required fields from the table.
 	$query->select(
 			'a.id, a.project_id, a.task_id, a.task_title, a.description, '
@@ -393,7 +394,7 @@ function prepareData()
         // Join over the users for the checked out user.
         $query->select('uc.name AS editor');
         $query->join('LEFT', '#__users AS uc ON uc.id = a.checked_out');
-		
+
         // Join over the asset groups.
         $query->select('ag.title AS access_level');
         $query->join('LEFT', '#__viewlevels AS ag ON ag.id = a.access');
@@ -431,15 +432,15 @@ function prepareData()
                        . 'ELSE "0.00"'
                        . 'END AS billable_total');
 
-	
+
 	// Filter fields
 	$filters 					= array();
-	$filters['a.project_id'] 	= array('INT-NOTZERO', $filter_project );   
-	
+	$filters['a.project_id'] 	= array('INT-NOTZERO', $filter_project );
+
 	if ($filter_author == 1) {
 		$filters['a.created_by'] 	= array('INT-NOTZERO', $user->get('id') );
 	}
-	
+
 	// Apply Filter
 	PFQueryHelper::buildFilter($query, $filters);
 
@@ -461,7 +462,7 @@ function prepareData()
 	$query->order($db->escape($order_col . ' ' . $order_dir));
 	$query->group('a.id');
 	$db->setQuery($query);
-	
+
 	$taskdata 	= $db->loadObjectList();
 
 	if ($action == 'export') {
@@ -474,17 +475,17 @@ function prepareData()
 
 function exportData($taskdata)
 {
-	$user 				= JFactory::getUser();	
+	$user 				= JFactory::getUser();
 		$app = JFactory::getApplication();
-		
-	$module 			= JModuleHelper::getModule('mod_pf_time'); 
+
+	$module 			= JModuleHelper::getModule('mod_pf_time');
 	$params 			= new JRegistry();
 	$params->loadString($module->params);
 
 	$show_monetary 		= (int) $params->get('show_monetary');
 	$show_date 			= (int) $params->get('show_date');
 	$show_author		= (int) $params->get('show_author');
-	
+
 	$csv_header = array(
 		JText::_('MOD_PF_TIME_CSV_PROJECT'),
 		JText::_('MOD_PF_TIME_CSV_TITLE'),
@@ -501,7 +502,7 @@ function exportData($taskdata)
 
 	$csv				= implode(',', $csv_header)."\r\n";
 
-	foreach ($taskdata as $result){	
+	foreach ($taskdata as $result){
 		if (!property_exists($result,'milestone_title')) {
 			$result->milestone_title = '-';
 		}
@@ -513,27 +514,27 @@ function exportData($taskdata)
 		$csv 		.= "\"$result->project_title\",";
 		$csv 		.= "\"$result->task_title\",";
 		$csv 		.= "\"$result->description\",";
-		
+
 		$csv 		.= "\"$result->milestone_title\",";
 		$csv 		.= "\"$result->list_title\",";
-		
+
 		if ($user->authorise('core.edit','com_pftime') || $show_author) {
-			$csv 		.= "\"$result->author_name\",";		
+			$csv 		.= "\"$result->author_name\",";
 		}
 		else {
-			$csv 		.= ",";	
+			$csv 		.= ",";
 		}
-		
-		$ldate 		= explode(" ",$result->log_date);		
+
+		$ldate 		= explode(" ",$result->log_date);
 		$logdate	= $ldate[0];
-		
+
 		if ($user->authorise('core.edit','com_pftime') || $show_date) {
 			$csv 		.= "$logdate,";
 		}
 		else {
 			$csv 		.= ",";
 		}
-		
+
 		if ($user->authorise('core.edit','com_pftime') || $show_monetary) {
 			$csv 		.= "$result->rate,";
 		}
@@ -542,27 +543,27 @@ function exportData($taskdata)
 		}
 		$hrs 		= $result->log_time/3600;
 		$csv 		.= "$hrs,";
-		
+
 		$rate 		= $result->rate;
-		
+
 		if (!$result->rate) {
 			$rate = 0;
 		}
 
 		if ($user->authorise('core.edit','com_pftime') || $show_monetary) {
-			$amount = $rate * $hrs;		
+			$amount = $rate * $hrs;
 		}
 		else {
 			$amount = "";
 		}
 		$csv 	.= "$amount,";
- 	
+
 		if ($result->billable == 1){
 			$billable = "Yes";
 		}
-	
+
 		$csv 	.= $billable."\r\n";
-    }	
+    }
 
 	header('Set-Cookie:fileDownload=true; path=/');
 	header('Content-type: text/csv');

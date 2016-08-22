@@ -82,6 +82,22 @@ class PFprojectsControllerForm extends JControllerForm
 
 
     /**
+	 * Method to cancel an edit.
+	 *
+	 * @param   string  $key  The name of the primary key of the URL variable.
+	 *
+	 * @return  boolean  True if access level checks pass, false otherwise.
+	 */
+	public function cancel($key = 'a_id')
+	{
+		parent::cancel($key);
+
+		// Redirect to the return page.
+		$this->setRedirect(JRoute::_($this->getReturnPage()));
+	}
+
+
+    /**
      * Method to save a record.
      *
      * @param     string     $key       The name of the primary key of the URL variable.
@@ -383,7 +399,7 @@ class PFprojectsControllerForm extends JControllerForm
      *
      * @return    void
      */
-    protected function postSaveHook($model, $data = array())
+    protected function postSaveHook(JModelLegacy $model, $data = array())
     {
         $task = $this->getTask();
 
@@ -410,7 +426,7 @@ class PFprojectsControllerForm extends JControllerForm
                 break;
 
             default:
-                $this->setRedirect($this->getReturnPage());
+                $this->setRedirect(JRoute::_($this->getReturnPage()));
                 break;
         }
     }

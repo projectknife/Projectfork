@@ -34,7 +34,8 @@ class PFtasksViewTasks extends JViewLegacy
     protected $authors;
     protected $access;
     protected $menu;
-
+    protected $sort_options;
+    protected $order_options;
 
     /**
      * Display the view
@@ -66,6 +67,9 @@ class PFtasksViewTasks extends JViewLegacy
         $this->access     = PFtasksHelper::getActions();
         $this->nulldate   = JFactory::getDbo()->getNullDate();
         $this->menu       = new PFMenuContext();
+
+        $this->sort_options  = $this->getSortOptions();
+        $this->order_options = $this->getOrderOptions();
 
         // Escape strings for HTML output
         $this->pageclass_sfx = htmlspecialchars($this->params->get('pageclass_sfx'));
@@ -196,5 +200,46 @@ class PFtasksViewTasks extends JViewLegacy
         PFToolbar::filterButton($this->state->get('filter.isset'));
 
         return PFToolbar::render();
+    }
+
+
+    /**
+     * Generates the table sort options
+     *
+     * @return    array    HTML list options
+     */
+    protected function getSortOptions()
+    {
+        $options = array();
+
+        $options[] = JHtml::_('select.option', '', JText::_('COM_PROJECTFORK_ORDER_SELECT'));
+        $options[] = JHtml::_('select.option', 'a.ordering', JText::_('JGRID_HEADING_ORDERING'));
+        $options[] = JHtml::_('select.option', 'a.state', JText::_('JSTATUS'));
+        $options[] = JHtml::_('select.option', 'a.title', JText::_('JGLOBAL_TITLE'));
+        $options[] = JHtml::_('select.option', 'project_title', JText::_('JGRID_HEADING_PROJECT'));
+        $options[] = JHtml::_('select.option', 'a.end_date', JText::_('JGRID_HEADING_DEADLINE'));
+        $options[] = JHtml::_('select.option', 'access_level', JText::_('JGRID_HEADING_ACCESS'));
+        $options[] = JHtml::_('select.option', 'author_name', JText::_('JAUTHOR'));
+        $options[] = JHtml::_('select.option', 'a.created', JText::_('JDATE'));
+        $options[] = JHtml::_('select.option', 'a.id', JText::_('JGRID_HEADING_ID'));
+
+        return $options;
+    }
+
+
+    /**
+     * Generates the table order options
+     *
+     * @return    array    HTML list options
+     */
+    protected function getOrderOptions()
+    {
+        $options = array();
+
+        $options[] = JHtml::_('select.option', '', JText::_('COM_PROJECTFORK_ORDER_SELECT_DIR'));
+        $options[] = JHtml::_('select.option', 'ASC', JText::_('COM_PROJECTFORK_ORDER_ASC'));
+        $options[] = JHtml::_('select.option', 'DESC', JText::_('COM_PROJECTFORK_ORDER_DESC'));
+
+        return $options;
     }
 }

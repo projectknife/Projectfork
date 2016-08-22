@@ -107,6 +107,66 @@ class PFmilestonesModelMilestone extends JModelAdmin
     }
 
 
+    public function getProgress($pks)
+    {
+        if (!is_array($pks) || !count($pks)) {
+            return array();
+        }
+
+        // Get total task count
+        $query = $this->_db->getQuery(true);
+
+        $query->select('milestone_id, COUNT(*) AS total')
+              ->from('#__pf_tasks')
+              ->where('milestone_id IN(' . implode(', ', $pks) . ')')
+              ->where('milestone_id > 0')
+              ->where('state > 0')
+              ->group('milestone_id');
+
+        try {
+            $this->_db->setQuery($query);
+            $items_total = $this->_db->loadAssocList('milestone_id', 'total');
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return array();
+        }
+
+        // Count completed tasks
+        $query->clear()
+              ->select('milestone_id, COUNT(*) AS completed')
+              ->from('#__pf_tasks')
+              ->where('milestone_id IN(' . implode(', ', $pks) . ')')
+              ->where('state > 0')
+              ->where('complete = 1')
+              ->where('milestone_id > 0')
+              ->group('milestone_id');
+
+        try {
+            $this->_db->setQuery($query);
+            $items_completed = $this->_db->loadAssocList('milestone_id', 'completed');
+        }
+        catch (RuntimeException $e) {
+            $this->setError($e->getMessage());
+            return array();
+        }
+
+        $progress = array();
+
+        foreach ($items_total AS $id => $total)
+        {
+            if (!array_key_exists($id, $items_completed) || $items_completed[$id] == 0 || $total == 0) {
+                $progress[$id] = 0;
+            }
+            else {
+                $progress[$id] = ($items_completed[$id] / $total) * 100;
+            }
+        }
+
+        return $progress;
+    }
+
+
     /**
      * Method to get the record form.
      *
@@ -312,12 +372,18 @@ class PFmilestonesModelMilestone extends JModelAdmin
             // Set the active project
             PFApplicationHelper::setActiveProject($table->project_id);
 
-            // Add to watch list
+            // Add to watch list - if not opt-out
             if ($is_new) {
-                $cid = array($id);
+                $plugin  = JPluginHelper::getPlugin('content', 'pfnotifications');
+                $params  = new JRegistry($plugin->params);
+                $opt_out = (int) $params->get('sub_method', 0);
 
-                if (!$this->watch($cid, 1)) {
-                    return false;
+                if (!$opt_out) {
+                    $cid = array($id);
+
+                    if (!$this->watch($cid, 1)) {
+                        return false;
+                    }
                 }
             }
 

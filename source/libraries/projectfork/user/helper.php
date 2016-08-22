@@ -35,7 +35,7 @@ abstract class PFUserHelper
     protected static $routes;
 
 
-    public function getAuthorisedProjects($uid = null)
+    public static function getAuthorisedProjects($uid = null)
     {
         $cache_key  = (int) $uid;
 

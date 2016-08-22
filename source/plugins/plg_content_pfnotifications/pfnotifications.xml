@@ -1,13 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <extension version="2.5" type="plugin" group="content" method="upgrade">
 	<name>plg_content_pfnotifications</name>
-	<creationDate>November 2015</creationDate>
+	<creationDate>August 2016</creationDate>
 	<author>Tobias Kuhn</author>
-	<copyright>(C) 2006 - 2015 Tobias Kuhn. All rights reserved.</copyright>
+	<copyright>(C) 2006 - 2016 Tobias Kuhn. All rights reserved.</copyright>
 	<license>GNU General Public License version 2 or later; see	LICENSE.txt</license>
 	<authorEmail>support@projectfork.net</authorEmail>
 	<authorUrl>www.projectfork.net</authorUrl>
-	<version>4.3.3</version>
+	<version>4.4.0</version>
 	<description>PLG_CONTENT_PFNOTIFICATIONS_XML_DESCRIPTION</description>
     <published>1</published>
     <scriptfile>script.php</scriptfile>
@@ -35,6 +35,16 @@
                     <option value="1">PLG_CONTENT_PFNOTIFICATIONS_FIELD_SEND_TYPE_NEW</option>
                     <option value="2">PLG_CONTENT_PFNOTIFICATIONS_FIELD_SEND_TYPE_UPD</option>
                 </field>
+                <field name="sub_method"
+					type="radio"
+                    class="btn-group"
+					default="0"
+					description="PLG_CONTENT_PFNOTIFICATIONS_FIELD_SUB_METHOD_DESC"
+					label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_SUB_METHOD_LABEL"
+                >
+                    <option value="0">PLG_CONTENT_PFNOTIFICATIONS_FIELD_SUB_METHOD_OPT_IN</option>
+                    <option value="1">PLG_CONTENT_PFNOTIFICATIONS_FIELD_SUB_METHOD_OPT_OUT</option>
+                </field>
                 <field name="send_method"
 					type="radio"
                     class="btn-group"
@@ -51,6 +61,30 @@
                     label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_CRON_LIMIT_LABEL"
                     description="PLG_CONTENT_PFNOTIFICATIONS_FIELD_CRON_LIMIT_DESC"
                 />
+                <field name="projects_enabled" type="radio" class="btn-group" default="1" label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_PROJECTS_ENABLED_LABEL">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="milestones_enabled" type="radio" class="btn-group" default="1" label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_MILESTONES_ENABLED_LABEL">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="tasks_enabled" type="radio" class="btn-group" default="1" label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_TASKS_ENABLED_LABEL">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="forum_enabled" type="radio" class="btn-group" default="1" label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_FORUM_ENABLED_LABEL">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="repo_enabled" type="radio" class="btn-group" default="1" label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_REPOSITORY_ENABLED_LABEL">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
+                <field name="designs_enabled" type="radio" class="btn-group" default="1" label="PLG_CONTENT_PFNOTIFICATIONS_FIELD_DESIGNS_ENABLED_LABEL">
+                    <option value="0">JNO</option>
+                    <option value="1">JYES</option>
+                </field>
             </fieldset>
         </fields>
    </config>

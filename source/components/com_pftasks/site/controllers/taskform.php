@@ -287,7 +287,7 @@ class PFtasksControllerTaskForm extends JControllerForm
      *
      * @return    void
      */
-    protected function postSaveHook(&$model, $validData)
+    protected function postSaveHook(JModelLegacy $model, $validData = array())
     {
         $task = $this->getTask();
 

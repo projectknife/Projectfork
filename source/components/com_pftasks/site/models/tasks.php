@@ -187,6 +187,14 @@ class PFtasksModelTasks extends JModelList
         $order_col = $this->state->get('list.ordering', 'a.title');
         $order_dir = $this->state->get('list.direction', 'asc');
 
+        if ($order_col == '') {
+            $order_col = 'a.title';
+        }
+
+        if ($order_dir == '') {
+            $order_dir = 'asc';
+        }
+
         if ($order_col == 'a.title') {
             $order_col = 'tl.title, p.title, a.ordering ' . $order_dir . ', ' . $order_col;
         }
@@ -655,17 +663,34 @@ class PFtasksModelTasks extends JModelList
 
         // Adjust the context to support modal layouts.
         $layout = JRequest::getCmd('layout');
+        $params  = $app->getParams();
+        $itemid  = $app->input->get('Itemid', 0, 'int');
+        $menu    = $app->getMenu()->getActive();
+
+        // Merge app params with menu item params
+		if ($menu) {
+		    $menu_params = new JRegistry();
+
+			$menu_params->loadString($menu->params);
+            $clone_params = clone $menu_params;
+            $clone_params->merge($params);
+
+            if (!$itemid) {
+                $itemid = (int) $menu->id;
+            }
+		}
 
         // View Layout
         $this->setState('layout', $layout);
         if ($layout && $layout != 'print') $this->context .= '.' . $layout;
 
-        // Params
-        $value = $app->getParams();
-        $this->setState('params', $value);
+        $this->context .= '.' . $itemid;
+
+        // Set Params
+        $this->setState('params', $params);
 
         // State
-        $state = $app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', '');
+        $state = $app->getUserStateFromRequest($this->context . '.filter.published', 'filter_published', $params->get('filter_published'));
         $this->setState('filter.published', $state);
 
         // Filter on published for those who do not have edit or edit.state rights.
@@ -741,6 +766,25 @@ class PFtasksModelTasks extends JModelList
             is_numeric($assigned) || (is_numeric($list) && $list > 0) || (is_numeric($milestone) && $milestone > 0) ||
             count($labels) || is_numeric($complete))
         );
+
+        // Set list limit
+        $cfg   = JFactory::getConfig();
+        $limit = $app->getUserStateFromRequest($this->context . '.list.limit', 'limit', $params->get('display_num', $cfg->get('list_limit')), 'uint');
+        $this->setState('list.limit', $limit);
+        $app->set('list_limit', $limit);
+        JRequest::setVar('list_limit', $limit);
+
+        // Set sorting order
+        $ordering = $app->getUserStateFromRequest($this->context . '.list.ordering', 'filter_order', $params->get('filter_order'));
+        $this->setState('list.ordering', $ordering);
+        $app->set('filter_order', $ordering);
+        JRequest::setVar('filter_order', $ordering);
+
+        // Set order direction
+        $direction = $app->getUserStateFromRequest($this->context . '.list.direction', 'filter_order_Dir', $params->get('filter_order_Dir'));
+        $this->setState('list.direction', $direction);
+        $app->set('filter_order_Dir', $direction);
+        JRequest::setVar('filter_order_Dir', $direction);
 
         // Call parent method
         parent::populateState($ordering, $direction);

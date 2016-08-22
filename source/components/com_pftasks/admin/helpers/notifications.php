@@ -75,6 +75,10 @@ abstract class PFtasksNotificationsHelper
      */
     public static function getObservers($context, $table, $is_new = false)
     {
+        $plugin  = JPluginHelper::getPlugin('content', 'pfnotifications');
+        $params  = new JRegistry($plugin->params);
+        $opt_out = (int) $params->get('sub_method', 0);
+
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -112,6 +116,58 @@ abstract class PFtasksNotificationsHelper
         $assigned = (array) $db->loadColumn();
 
         $return = array_merge($users, $assigned);
+
+        if ($opt_out) {
+            $blacklist = $users;
+
+            $t_groups = PFAccessHelper::getGroupsByAccessLevel($table->access);
+
+            if ($table->milestone_id > 0) {
+                $query->clear()
+                      ->select('access')
+                      ->from('#__pf_milestones')
+                      ->where('id = ' . (int) $table->milestone_id);
+
+                $db->setQuery($query);
+                $ms_access = $db->loadResult();
+
+                $ms_groups = PFAccessHelper::getGroupsByAccessLevel($ms_access);
+            }
+            else {
+                $ms_groups = array();
+            }
+
+            $query->clear()
+                  ->select('access')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . (int) $table->project_id);
+
+            $db->setQuery($query);
+            $project_access = $db->loadResult();
+
+            $p_groups  = PFAccessHelper::getGroupsByAccessLevel($project_access);
+            $groups    = array_unique(array_merge($t_groups, $p_groups, $ms_groups));
+
+            if (!count($groups)) {
+                return array();
+            }
+
+            $query->clear()
+                  ->select('a.user_id')
+                  ->from('#__user_usergroup_map AS a')
+                  ->innerJoin('#__users AS u ON u.id = a.user_id');
+
+            if (count($blacklist)) {
+                $query->where('a.user_id NOT IN(' . implode(', ', $blacklist) . ')');
+            }
+
+            $query->where('a.group_id IN(' . implode(', ', $groups) . ')')
+                  ->group('a.user_id')
+                  ->order('a.user_id ASC');
+
+            $db->setQuery($query);
+            $return = (array) $db->loadColumn();
+        }
 
         return $return;
     }

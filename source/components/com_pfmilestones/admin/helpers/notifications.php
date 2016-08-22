@@ -12,6 +12,7 @@ defined('_JEXEC') or die();
 
 
 JLoader::register('PFmilestonesHelperRoute', JPATH_SITE . '/components/com_pfmilestones/helpers/route.php');
+JLoader::register('PFtableMilestone', JPATH_ADMINISTRATOR . '/components/com_pfmilestones/tables/milestone.php');
 
 
 /**
@@ -65,6 +66,19 @@ abstract class PFmilestonesNotificationsHelper
 
 
     /**
+     * Method to get a table class instance
+     *
+     * @return    object
+     */
+    public static function getMilestoneTable()
+    {
+        $table = JTable::getInstance('Milestone', 'PFtable');
+
+        return $table;
+    }
+
+
+    /**
      * Method to get a list of user id's which are observing the item
      *
      * @param     string     $context    The item context
@@ -75,6 +89,10 @@ abstract class PFmilestonesNotificationsHelper
      */
     public static function getObservers($context, $table, $is_new = false)
     {
+        $plugin  = JPluginHelper::getPlugin('content', 'pfnotifications');
+        $params  = new JRegistry($plugin->params);
+        $opt_out = (int) $params->get('sub_method', 0);
+
         $db    = JFactory::getDbo();
         $query = $db->getQuery(true);
 
@@ -93,6 +111,44 @@ abstract class PFmilestonesNotificationsHelper
 
         $db->setQuery($query);
         $users = (array) $db->loadColumn();
+
+        if ($opt_out) {
+            $blacklist = $users;
+            $users     = array();
+
+            $ms_groups = PFAccessHelper::getGroupsByAccessLevel($table->access);
+
+            $query->clear()
+                  ->select('access')
+                  ->from('#__pf_projects')
+                  ->where('id = ' . (int) $table->project_id);
+
+            $db->setQuery($query);
+            $project_access = $db->loadResult();
+
+            $p_groups = PFAccessHelper::getGroupsByAccessLevel($project_access);
+            $groups   = array_unique(array_merge($p_groups, $ms_groups));
+
+            if (!count($groups)) {
+                return array();
+            }
+
+            $query->clear()
+                  ->select('a.user_id')
+                  ->from('#__user_usergroup_map AS a')
+                  ->innerJoin('#__users AS u ON u.id = a.user_id');
+
+            if (count($blacklist)) {
+                $query->where('a.user_id NOT IN(' . implode(', ', $blacklist) . ')');
+            }
+
+            $query->where('a.group_id IN(' . implode(', ', $groups) . ')')
+                  ->group('a.user_id')
+                  ->order('a.user_id ASC');
+
+            $db->setQuery($query);
+            $users = (array) $db->loadColumn();
+        }
 
         return $users;
     }
@@ -117,6 +173,28 @@ abstract class PFmilestonesNotificationsHelper
         $format  = $lang->_($txt_prefix . '_SUBJECT');
         $project = PFnotificationsHelper::translateValue('project_id', $after->project_id);
         $txt     = sprintf($format, $project, $user->name, $after->title);
+
+        return $txt;
+    }
+
+
+    /**
+     * Method to generate the email subject for completed milestones
+     *
+     * @param     object     $lang         Instance of the default user language
+     * @param     object     $receiveer    Instance of the the receiving user
+     * @param     object     $user         Instance of the user who made the change
+     * @param     object     $table        Instance of the item table after it was updated
+     *
+     * @return    string
+     */
+    public static function getMilestoneCompletedSubject($lang, $receiver, $user, $table)
+    {
+        $txt_prefix = self::$prefix;
+
+        $format  = $lang->_($txt_prefix . '_SUBJECT_COMPLETED');
+        $project = PFnotificationsHelper::translateValue('project_id', $table->project_id);
+        $txt     = sprintf($format, $project, $user->name, $table->title);
 
         return $txt;
     }
@@ -157,6 +235,37 @@ abstract class PFmilestonesNotificationsHelper
         $changes = PFnotificationsHelper::formatChanges($lang, $changes);
         $footer  = sprintf($lang->_('COM_PROJECTFORK_EMAIL_FOOTER'), JURI::root());
         $link    = JRoute::_(JURI::root() . PFmilestonesHelperRoute::getMilestoneRoute($after->id, $after->project_id));
+        $txt     = sprintf($format, $receiver->name, $user->name, $changes, $link);
+        $txt     = str_replace('\n', "\n", $txt . "\n\n" . $footer);
+
+        return $txt;
+    }
+
+
+    /**
+     * Method to generate the email message for completed milestones
+     *
+     * @param     object     $lang         Instance of the default user language
+     * @param     object     $receiveer    Instance of the the receiving user
+     * @param     object     $user         Instance of the user who made the change
+     * @param     object     $table        Instance of the item table after it was updated
+     *
+     * @return    string
+     */
+    public static function getMilestoneCompletedMessage($lang, $receiver, $user, $table)
+    {
+        // Get the changed fields
+        $props = array(
+            'description', 'created_by', 'access', array('start_date', 'NE-SQLDATE'), array('end_date', 'NE-SQLDATE')
+        );
+
+        $changes    = PFObjectHelper::toArray($table, $props);
+        $txt_prefix = self::$prefix;
+
+        $format  = $lang->_($txt_prefix . '_MESSAGE_COMPLETED');
+        $changes = PFnotificationsHelper::formatChanges($lang, $changes);
+        $footer  = sprintf($lang->_('COM_PROJECTFORK_EMAIL_FOOTER'), JURI::root());
+        $link    = JRoute::_(JURI::root() . PFmilestonesHelperRoute::getMilestoneRoute($table->id, $table->project_id));
         $txt     = sprintf($format, $receiver->name, $user->name, $changes, $link);
         $txt     = str_replace('\n', "\n", $txt . "\n\n" . $footer);
 

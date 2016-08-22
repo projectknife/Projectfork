@@ -104,12 +104,14 @@ class PFcommentsModelComments extends JModelList
 
         // Filter by context
         $context = $this->getState('filter.context');
+
         if ($context != '') {
             $query->where('a.context = ' . $db->quote($context));
         }
 
         // Filter by item id
         $item_id = $this->getState('filter.item_id');
+
         if (is_numeric($item_id)) {
             $query->where('a.item_id = ' . (int) $item_id);
         }
@@ -172,7 +174,8 @@ class PFcommentsModelComments extends JModelList
         $this->setState('list.ordering', $ordering);
 
         // Query order direction
-        $this->setState('list.direction', $direction);
+        $params = JComponentHelper::getParams('com_pfcomments');
+        $this->setState('list.direction', $params->get('filter_order_Dir', 'ASC'));
 
         // Params
         $value = $app->getParams();

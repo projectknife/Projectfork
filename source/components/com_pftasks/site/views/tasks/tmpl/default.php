@@ -175,6 +175,18 @@ jQuery(document).ready(function() {
                         </select>
                     </div>
 
+                    <div class="btn-group filter-order">
+                        <select name="filter_order" class="inputbox input-small" onchange="this.form.submit()">
+                            <?php echo JHtml::_('select.options', $this->sort_options, 'value', 'text', $list_order, true);?>
+                        </select>
+                    </div>
+
+                    <div class="btn-group folder-order-dir">
+                        <select name="filter_order_Dir" class="inputbox input-small" onchange="this.form.submit()">
+                            <?php echo JHtml::_('select.options', $this->order_options, 'value', 'text', $list_dir, true);?>
+                        </select>
+                    </div>
+
                     <?php if ($this->state->get('filter.project')) : ?>
                         <hr />
                         <div class="filter-labels">
@@ -405,8 +417,6 @@ jQuery(document).ready(function() {
 
             <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
             <input type="hidden" id="target-item" name="target_item" value="0" />
-            <input type="hidden" name="filter_order" value="<?php echo $list_order; ?>" />
-            <input type="hidden" name="filter_order_Dir" value="<?php echo $list_dir; ?>" />
             <input type="hidden" name="task" value="" />
             <?php echo JHtml::_('form.token'); ?>
         </form>

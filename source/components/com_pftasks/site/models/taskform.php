@@ -192,6 +192,16 @@ class PFtasksModelTaskForm extends PFtasksModelTask
             return false;
         }
 
+        // Get milestone ids
+        JLoader::register('PFmilestonesModelMilestone', JPATH_ADMINISTRATOR . '/components/com_pfmilestones/models/milestone.php');
+
+        $milestones = array_unique(array_values($this->getMilestoneIds($pks)));
+
+        // Get milestone progress before the save
+        $ms_model = JModelLegacy::getInstance('Milestone', 'PFmilestonesModel', array('ignore_request' => true));
+        $progress_before = $ms_model->getProgress($milestones);
+
+
         // Include the content plugins for the on save events.
         JPluginHelper::importPlugin('content');
         $dispatcher = JDispatcher::getInstance();
@@ -249,6 +259,26 @@ class PFtasksModelTaskForm extends PFtasksModelTask
 
         // Clear the component's cache
         $this->cleanCache();
+
+        // Get progress after the save
+        $progress_after = $ms_model->getProgress($milestones);
+
+        // Trigger event for completed milestones
+        $completed_ms = array();
+
+        foreach ($progress_before AS $id => $progress)
+        {
+            if ($progress == 100 || !array_key_exists($id, $progress_after) || $progress_after[$id] != 100) {
+                continue;
+            }
+
+            // This milestone was just completed!
+            $completed_ms[] = $id;
+        }
+
+        if (count($completed_ms)) {
+            $dispatcher->trigger('onProjectforkComplete', array('com_pfmilestones.milestone', $completed_ms));
+        }
 
         return true;
     }

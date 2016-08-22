@@ -766,11 +766,19 @@ class PFrepoModelDirectory extends JModelAdmin
             return false;
         }
 
-        // Add to watch list
+        // Add to watch list - if not opt-out
         if ($is_new) {
-            $cid = array($table->id);
+            $plugin  = JPluginHelper::getPlugin('content', 'pfnotifications');
+            $params  = new JRegistry($plugin->params);
+            $opt_out = (int) $params->get('sub_method', 0);
 
-            $this->watch($cid, 1);
+            if (!$opt_out) {
+                $cid = array($table->id);
+
+                if (!$this->watch($cid, 1)) {
+                    return false;
+                }
+            }
         }
 
         // Trigger the onContentAfterSave event.
