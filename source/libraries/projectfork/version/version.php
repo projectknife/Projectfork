@@ -4,7 +4,7 @@
  * @subpackage   lib_projectfork
  *
  * @author       Tobias Kuhn (eaxs)
- * @copyright    Copyright (C) 2006-2015 Tobias Kuhn. All rights reserved.
+ * @copyright    Copyright (C) 2006-2016 Tobias Kuhn. All rights reserved.
  * @license      http://www.gnu.org/licenses/gpl.html GNU/GPL, see LICENSE.txt
  */
 
@@ -21,10 +21,10 @@ final class PFVersion
     public $PRODUCT = 'Projectfork';
 
     /** @var  string  Release version. */
-    public $RELEASE = '4.3';
+    public $RELEASE = '4.4';
 
     /** @var  string  Maintenance version. */
-    public $DEV_LEVEL = '3';
+    public $DEV_LEVEL = '0';
 
     /** @var  string  Development status. */
     public $DEV_STATUS = 'Stable';
@@ -36,7 +36,7 @@ final class PFVersion
     public $CODENAME = 'Sterling';
 
     /** @var  string  Release date. */
-    public $RELDATE = '27-November-2015';
+    public $RELDATE = '22-August-2016';
 
     /** @var  string  Release time. */
     public $RELTIME = '16:00';
@@ -45,7 +45,7 @@ final class PFVersion
     public $RELTZ = 'CET';
 
     /** @var  string  Copyright Notice. */
-    public $COPYRIGHT = 'Copyright (C) 2006 - 2015 Tobias Kuhn and Kyle Ledbetter. All rights reserved.';
+    public $COPYRIGHT = 'Copyright (C) 2006 - 2016 Tobias Kuhn and Kyle Ledbetter. All rights reserved.';
 
     /** @var  string  Link text. */
     public $URL = '<a href="http://www.projectfork.net">Projectfork</a> is Free Software released under the GNU General Public License.';
