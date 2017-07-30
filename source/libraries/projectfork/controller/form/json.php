@@ -342,7 +342,7 @@ class PFControllerFormJson extends JControllerForm
      * Method to reload specific form elements
      *
      */
-    public function reload()
+    public function reload($key = NULL, $urlVal = NULL)
     {
         $rdata = array();
         $rdata['success']  = "true";
