@@ -195,7 +195,7 @@ class PFtasksModelTasks extends JModelList
         $query->select('u.id AS value, u.name AS text')
               ->from('#__users AS u')
               ->join('INNER', '#__pf_ref_users AS a ON a.user_id = u.id')
-              ->join('INNER', '#__pf_tasks AS t ON a.id = a.item_id')
+              ->join('INNER', '#__pf_tasks AS t ON t.id = a.item_id')
               ->where('a.item_type = ' . $this->_db->quote('com_pftasks.task'))
               ->where('t.project_id = ' . $this->_db->quote($project))
               ->group('u.id')
