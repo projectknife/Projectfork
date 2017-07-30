@@ -226,28 +226,7 @@ class PFtasksModelTasks extends JModelList
      */
     public function getItems()
     {
-        // Get a storage key.
-        $store = $this->getStoreId();
-
-        // Try to load the data from internal storage.
-        if (!isset($this->cache[$store])) {
-            // Load the list items.
-            $limit = ($this->getState('filter.project') ? 0 : $this->getState('list.limit'));
-            $query = $this->_getListQuery();
-            $items = $this->_getList($query, $this->getStart(), $limit);
-
-            // Check for a database error.
-            if ($this->_db->getErrorNum()) {
-                $this->setError($this->_db->getErrorMsg());
-                $this->cache[$store] = false;
-            }
-            else {
-                // Add the items to the internal cache.
-                $this->cache[$store] = $items;
-            }
-        }
-
-        $items  = $this->cache[$store];
+        $items  = parent::getItems();
         $ref    = JModelLegacy::getInstance('UserRefs', 'PFusersModel');
         $tref   = JModelLegacy::getInstance('TaskRefs', 'PFtasksModel');
         $labels = $this->getInstance('Labels', 'PFModel');
@@ -382,34 +361,6 @@ class PFtasksModelTasks extends JModelList
 
         return $cache[$key];
     }
-
-
-    /**
-     * Method to get a JPagination object for the data set.
-     *
-     * @return    jpagination    A JPagination object for the data set.
-     */
-    public function getPagination()
-    {
-        // Get a storage key.
-        $store = $this->getStoreId('getPagination');
-
-        // Try to load the data from internal storage.
-        if (isset($this->cache[$store])) {
-            return $this->cache[$store];
-        }
-
-        // Create the pagination object.
-        jimport('joomla.html.pagination');
-        $limit = (int) ($this->getState('filter.project') ? 0 : $this->getState('list.limit')) - (int) $this->getState('list.links');
-        $page  = new JPagination($this->getTotal(), $this->getStart(), $limit);
-
-        // Add the object to the internal cache.
-        $this->cache[$store] = $page;
-
-        return $this->cache[$store];
-    }
-
 
     /**
      * Build a list of project authors

@@ -407,13 +407,11 @@ jQuery(document).ready(function() {
                 </p>
             <?php endif; ?>
 
-            <?php if (!$this->state->get('filter.project')) : ?>
-                <div class="filters center">
-                    <span class="display-limit">
-                        <?php echo $this->pagination->getLimitBox(); ?>
-                    </span>
-                </div>
-            <?php endif; ?>
+            <div class="filters center">
+                <span class="display-limit">
+                    <?php echo $this->pagination->getLimitBox(); ?>
+                </span>
+            </div>
 
             <input type="hidden" id="boxchecked" name="boxchecked" value="0" />
             <input type="hidden" id="target-item" name="target_item" value="0" />
