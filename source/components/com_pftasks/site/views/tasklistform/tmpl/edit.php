@@ -175,7 +175,9 @@ Joomla.submitbutton = function(task)
         echo $this->form->getInput('asset_id');
         echo $this->form->getInput('elements');
     ?>
-
+    <?php if ($this->item->id > 0) : ?>
+        <input type="hidden" name="jform[project_id]" value="<?php echo $this->item->project_id; ?>" />
+    <?php endif; ?>
     <input type="hidden" name="task" value="" />
     <input type="hidden" name="return" value="<?php echo $this->return_page;?>" />
     <input type="hidden" name="view" value="<?php echo htmlspecialchars($this->get('Name'), ENT_COMPAT, 'UTF-8');?>" />
