@@ -75,7 +75,7 @@ Joomla.submitbutton = function(task)
     <div class="clr"></div>
 
     <?php if ($user->authorise('core.admin', 'com_pfforum')) : ?>
-        <div class="width-100 fltlft">
+        <div class="width-100 fltlft span12">
     		<?php echo JHtml::_('sliders.start', 'permissions-sliders-' . $this->item->id, array('useCookie'=>1)); ?>
 
     			<?php echo JHtml::_('sliders.panel', JText::_('COM_PROJECTFORK_FIELDSET_RULES'), 'access-rules'); ?>
